@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>报告模板编辑</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+.chapter-list { list-style: none; padding: 0; }
+.chapter-item {
+  display: flex; align-items: center; gap: 12px; padding: 10px 16px;
+  border: 1px solid var(--border); border-radius: 4px; margin-bottom: 8px;
+  background: #fff; transition: box-shadow 0.15s;
+}
+.chapter-item:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.chapter-drag { color: var(--text-4); cursor: grab; font-size: 16px; }
+.chapter-name { flex: 1; font-size: 13px; color: var(--text-1); }
+.chapter-actions { display: flex; gap: 8px; }
+.placeholder-table td, .placeholder-table th { padding: 8px 12px; font-size: 12px; }
+</style>
+</head>
+<body>
+<div id="page-content">
+
+  <div style="margin-bottom:16px;">
+    <a href="pc_report_template_list.html" class="btn btn-default btn-sm"><i class="fa-solid fa-arrow-left"></i> 返回列表</a>
+  </div>
+
+  <!-- 基本信息 -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-header">
+      <div class="card-title">基本信息</div>
+    </div>
+    <div class="card-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">模板名称 <span class="required">*</span></label>
+          <input type="text" class="form-input" style="width:100%" value="角钢塔安全检测报告模板">
+        </div>
+        <div class="form-group">
+          <label class="form-label">模板编号</label>
+          <input type="text" class="form-input" style="width:100%;background:#f7f8fa" value="BGMB-001" readonly>
+        </div>
+        <div class="form-group">
+          <label class="form-label">适用塔型 <span class="required">*</span></label>
+          <select class="form-select" style="width:100%">
+            <option>单管无</option>
+            <option selected>角钢无</option>
+            <option>三管无</option>
+            <option>四管无</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">报告类型 <span class="required">*</span></label>
+          <select class="form-select" style="width:100%">
+            <option selected>角钢塔报告</option>
+            <option>格构塔报告</option>
+            <option>法兰式单管报告</option>
+            <option>插接式单管报告</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">版本</label>
+          <input type="text" class="form-input" style="width:100%;background:#f7f8fa" value="V2.1" readonly>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 章节结构 -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-header">
+      <div class="card-title">章节结构</div>
+    </div>
+    <div class="card-body">
+      <ul class="chapter-list">
+        <li class="chapter-item">
+          <span class="chapter-drag"><i class="fa-solid fa-grip-vertical"></i></span>
+          <span class="chapter-name">封面</span>
+          <div class="chapter-actions">
+            <button class="btn btn-text btn-sm">编辑</button>
+            <button class="btn btn-text btn-sm" style="color:var(--danger)">删除</button>
+          </div>
+        </li>
+        <li class="chapter-item">
+          <span class="chapter-drag"><i class="fa-solid fa-grip-vertical"></i></span>
+          <span class="chapter-name">目录</span>
+          <div class="chapter-actions">
+            <button class="btn btn-text btn-sm">编辑</button>
+            <button class="btn btn-text btn-sm" style="color:var(--danger)">删除</button>
+          </div>
+        </li>
+        <li class="chapter-item">
+          <span class="chapter-drag"><i class="fa-solid fa-grip-vertical"></i></span>
+          <span class="chapter-name">检测依据</span>
+          <div class="chapter-actions">
+            <button class="btn btn-text btn-sm">编辑</button>
+            <button class="btn btn-text btn-sm" style="color:var(--danger)">删除</button>
+          </div>
+        </li>
+        <li class="chapter-item">
+          <span class="chapter-drag"><i class="fa-solid fa-grip-vertical"></i></span>
+          <span class="chapter-name">检测设备</span>
+          <div class="chapter-actions">
+            <button class="btn btn-text btn-sm">编辑</button>
+            <button class="btn btn-text btn-sm" style="color:var(--danger)">删除</button>
+          </div>
+        </li>
+        <li class="chapter-item">
+          <span class="chapter-drag"><i class="fa-solid fa-grip-vertical"></i></span>
+          <span class="chapter-name">铁塔概况</span>
+          <div class="chapter-actions">
+            <button class="btn btn-text btn-sm">编辑</button>
+            <button class="btn btn-text btn-sm" style="color:var(--danger)">删除</button>
+          </div>
+        </li>
+        <li class="chapter-item">
+          <span class="chapter-drag"><i class="fa-solid fa-grip-vertical"></i></span>
+          <span class="chapter-name">检测结果</span>
+          <div class="chapter-actions">
+            <button class="btn btn-text btn-sm">编辑</button>
+            <button class="btn btn-text btn-sm" style="color:var(--danger)">删除</button>
+          </div>
+        </li>
+        <li class="chapter-item">
+          <span class="chapter-drag"><i class="fa-solid fa-grip-vertical"></i></span>
+          <span class="chapter-name">不合格项分析</span>
+          <div class="chapter-actions">
+            <button class="btn btn-text btn-sm">编辑</button>
+            <button class="btn btn-text btn-sm" style="color:var(--danger)">删除</button>
+          </div>
+        </li>
+        <li class="chapter-item">
+          <span class="chapter-drag"><i class="fa-solid fa-grip-vertical"></i></span>
+          <span class="chapter-name">检测结论</span>
+          <div class="chapter-actions">
+            <button class="btn btn-text btn-sm">编辑</button>
+            <button class="btn btn-text btn-sm" style="color:var(--danger)">删除</button>
+          </div>
+        </li>
+        <li class="chapter-item">
+          <span class="chapter-drag"><i class="fa-solid fa-grip-vertical"></i></span>
+          <span class="chapter-name">签字页</span>
+          <div class="chapter-actions">
+            <button class="btn btn-text btn-sm">编辑</button>
+            <button class="btn btn-text btn-sm" style="color:var(--danger)">删除</button>
+          </div>
+        </li>
+      </ul>
+      <div style="padding:4px 0;">
+        <button class="btn btn-default"><i class="fa-solid fa-plus"></i> 添加章节</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 占位符说明-->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-header">
+      <div class="card-title">占位符说</div>
+    </div>
+    <div class="card-body">
+      <table class="data-table placeholder-table">
+        <thead>
+          <tr>
+            <th>占位</th>
+            <th>说明</th>
+            <th>示例</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code>{{委托单位}}</code></td><td>委托检测的单位名称</td><td>中国铁塔股份有限公司XX分公</td></tr>
+          <tr><td><code>{{工程名称}}</code></td><td>检测工程名</td><td>XX基站铁塔安全性检</td></tr>
+          <tr><td><code>{{铁塔名称}}</code></td><td>被检测铁塔名</td><td>XX基站角钢</td></tr>
+          <tr><td><code>{{检测日期}}</code></td><td>实际检测日</td><td>2026-05-08</td></tr>
+          <tr><td><code>{{检测类型}}</code></td><td>检测类型名</td><td>安全性鉴定</td></tr>
+          <tr><td><code>{{编制人}}</code></td><td>报告编制人员</td><td>张伟</td></tr>
+          <tr><td><code>{{审核人}}</code></td><td>报告审核人员</td><td>李明</td></tr>
+          <tr><td><code>{{签发人}}</code></td><td>报告签发人员</td><td>王强</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="form-footer">
+    <button class="btn btn-default">保存草稿</button>
+    <button class="btn btn-primary">发布</button>
+  </div>
+
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'report_template_list', breadcrumb:['模板配置','报告模板管理','模板编辑']};</script>
+</body>
+</html>
+
+

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>用户管理</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .status-switch { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:500; padding:2px 10px; border-radius:12px; }
+  .status-on { background:var(--success-bg); color:var(--success); }
+  .status-off { background:#F2F3F5; color:var(--text-3); }
+  .status-locked { background:var(--danger-bg); color:var(--danger); }
+</style>
+</head>
+<body>
+<div id="page-content">
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">用户管理</div>
+    </div>
+    <div class="card-body">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <input type="text" class="form-input" placeholder="搜索姓名/账号">
+          <select class="form-select">
+            <option value="">全部部门</option>
+            <option>技术部</option>
+            <option>合同部</option>
+            <option>检测一组</option>
+            <option>检测二组</option>
+            <option>设备管理部</option>
+            <option>管理部</option>
+          </select>
+          <select class="form-select">
+            <option value="">全部角色</option>
+            <option>系统管理员</option>
+            <option>合同专员</option>
+            <option>营销人员</option>
+            <option>检测人员</option>
+            <option>审核员</option>
+            <option>审批员</option>
+            <option>设备管理员</option>
+            <option>部门管理员</option>
+          </select>
+          <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> 查询</button>
+          <button class="btn btn-default">重置</button>
+        </div>
+      </div>
+
+      <div class="pc-table-actions">
+        <button class="btn btn-primary"><i class="fa-solid fa-plus"></i> 新增用户</button>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>账号</th>
+            <th>姓名</th>
+            <th>部门</th>
+            <th>岗位</th>
+            <th>手机</th>
+            <th>角色</th>
+            <th>状态</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>admin</td>
+            <td>系统管理</td>
+            <td>技术部</td>
+            <td>系统管理</td>
+            <td>138****0001</td>
+            <td><span class="tag tag-red">管理</span></td>
+            <td><span class="status-switch status-on"><i class="fa-solid fa-circle" style="font-size:6px"></i> 启用</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">编辑</button>
+              <button class="btn btn-text">重置密码</button>
+            </td>
+          </tr>
+          <tr>
+            <td>zhangwei</td>
+            <td>张伟</td>
+            <td>合同</td>
+            <td>合同专员</td>
+            <td>138****0002</td>
+            <td><span class="tag tag-blue">合同</span></td>
+            <td><span class="status-switch status-on"><i class="fa-solid fa-circle" style="font-size:6px"></i> 启用</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">编辑</button>
+              <button class="btn btn-text">重置密码</button>
+              <button class="btn btn-text" style="color:var(--danger)">停用</button>
+            </td>
+          </tr>
+          <tr>
+            <td>liming</td>
+            <td>李明</td>
+            <td>检测一</td>
+            <td>检测工程师</td>
+            <td>138****0003</td>
+            <td><span class="tag tag-green">检测人</span></td>
+            <td><span class="status-switch status-on"><i class="fa-solid fa-circle" style="font-size:6px"></i> 启用</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">编辑</button>
+              <button class="btn btn-text">重置密码</button>
+              <button class="btn btn-text" style="color:var(--danger)">停用</button>
+            </td>
+          </tr>
+          <tr>
+            <td>wangqiang</td>
+            <td>王强</td>
+            <td>检测二</td>
+            <td>高级工程师</td>
+            <td>138****0004</td>
+            <td><span class="tag tag-orange">审核</span></td>
+            <td><span class="status-switch status-on"><i class="fa-solid fa-circle" style="font-size:6px"></i> 启用</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">编辑</button>
+              <button class="btn btn-text">重置密码</button>
+              <button class="btn btn-text" style="color:var(--danger)">停用</button>
+            </td>
+          </tr>
+          <tr>
+            <td>liuqi</td>
+            <td>刘七</td>
+            <td>管理</td>
+            <td>技术总监</td>
+            <td>138****0005</td>
+            <td><span class="tag tag-orange">审批</span></td>
+            <td><span class="status-switch status-locked"><i class="fa-solid fa-lock" style="font-size:8px"></i> 锁定</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">编辑</button>
+              <button class="btn btn-text">重置密码</button>
+              <button class="btn btn-text" style="color:var(--danger)">停用</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <span>共 5 条记录</span>
+        <div class="pagination-btns">
+          <button class="page-btn"><i class="fa-solid fa-chevron-left"></i></button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'system_users', breadcrumb:['系统管理','用户管理']};</script>
+</body>
+</html>
+

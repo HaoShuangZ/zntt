@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<!-- iPad-INDEX v2.0 · 平板端原型导航 · 横屏 1024×768 基准 -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>通信铁塔检测系统 · iPad端</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="assets/ipad-tokens.css">
+<link rel="stylesheet" href="assets/ipad-frame.css">
+<link rel="stylesheet" href="assets/ipad-layout.css">
+<link rel="stylesheet" href="assets/ipad-visual.css">
+<script>
+tailwind.config = { theme: { extend: { colors: { brand: '#165DFF', brandLight: '#E8F3FF' } } } };
+</script>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", Roboto, sans-serif; }
+.nav-link { display:block; padding:8px 14px; border-radius:8px; font-size:13px; color:#1D2129; text-decoration:none; transition:all 0.15s; cursor:pointer; }
+.nav-link:hover { background:#E8F3FF; color:#165DFF; }
+.nav-link.active { background:#165DFF; color:#fff; }
+.nav-group-title { font-size:11px; font-weight:600; color:#86909C; text-transform:uppercase; letter-spacing:0.05em; padding:12px 14px 4px; }
+.nav-page-id { float:right; font-size:10px; color:#C9CDD4; font-weight:500; letter-spacing:0; text-transform:none; }
+</style>
+</head>
+<body style="background:#F2F3F5; min-height:100vh;">
+
+<div style="max-width:1440px; margin:0 auto; padding:40px 24px;">
+
+  <header style="margin-bottom:32px;">
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+      <div style="width:40px; height:40px; background:linear-gradient(135deg, #165DFF 0%, #4080FF 100%); border-radius:12px; display:flex; align-items:center; justify-content:center;">
+        <i class="fa-solid fa-tower-broadcast" style="font-size:18px; color:#fff;"></i>
+      </div>
+      <div>
+        <h1 style="font-size:22px; font-weight:700; color:#1D2129; margin:0;">通信铁塔检测系统</h1>
+        <p style="font-size:13px; color:#86909C; margin:0;">iPad 平板端 · 横屏主布局 · v2.0 · 1024×768</p>
+      </div>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+      <a href="index.html" style="display:inline-flex; align-items:center; gap:6px; padding:6px 16px; background:#fff; border:1px solid #E5E6EB; color:#165DFF; border-radius:8px; font-size:13px; font-weight:500; text-decoration:none;">
+        <i class="fa-solid fa-desktop"></i> PC端
+      </a>
+      <a href="app-index.html" style="display:inline-flex; align-items:center; gap:6px; padding:6px 16px; background:#fff; border:1px solid #E5E6EB; color:#165DFF; border-radius:8px; font-size:13px; font-weight:500; text-decoration:none;">
+        <i class="fa-solid fa-mobile-screen"></i> APP端
+      </a>
+    </div>
+  </header>
+
+  <div style="display:flex; gap:32px; align-items:flex-start;">
+
+    <div class="ipad-shell">
+      <iframe id="ipadFrame" src="pages/iPad端/工作台/首页/ipad_workbench_index.html" title="iPad横屏预览"></iframe>
+    </div>
+
+    <div style="flex:1; min-width:0; background:#fff; border-radius:16px; border:1px solid #E5E6EB; box-shadow:0 1px 4px rgba(0,0,0,0.04); max-height:768px; overflow-y:auto;">
+
+      <div style="padding:16px 14px 8px; border-bottom:1px solid #F2F3F5;">
+        <div style="font-size:15px; font-weight:600; color:#1D2129; margin-bottom:4px;">页面导航</div>
+        <div style="font-size:12px; color:#86909C;">点击切换 iPad 横屏预览（35 页 · v2.0 · 1024×768 基准）</div>
+      </div>
+
+      <div class="nav-group-title">登录</div>
+      <div style="padding:0 8px;">
+        <a class="nav-link" onclick="loadPage('账号/登录/ipad_login.html', this)"><i class="fa-solid fa-right-to-bracket" style="width:20px; color:#C9CDD4;"></i> 登录页 <span class="nav-page-id">IP-01</span></a>
+      </div>
+
+      <div class="nav-group-title">工作台</div>
+      <div style="padding:0 8px;">
+        <a class="nav-link active" onclick="loadPage('工作台/首页/ipad_workbench_index.html', this)"><i class="fa-solid fa-house" style="width:20px; color:#C9CDD4;"></i> 工作台首页 <span class="nav-page-id">IP-02</span></a>
+      </div>
+
+      <div class="nav-group-title">检测任务</div>
+      <div style="padding:0 8px;">
+        <a class="nav-link" onclick="loadPage('任务/开启检测任务/ipad_task_start_wizard.html', this)"><i class="fa-solid fa-play" style="width:20px; color:#C9CDD4;"></i> 开启检测任务 <span class="nav-page-id">IP-03</span></a>
+        <a class="nav-link" onclick="loadPage('任务/填报主页/ipad_task_inspect_home.html', this)"><i class="fa-solid fa-table-cells-large" style="width:20px; color:#C9CDD4;"></i> 检测填报主页 <span class="nav-page-id">IP-04</span></a>
+        <a class="nav-link" onclick="loadPage('任务/备忘录/ipad_task_memo.html', this)"><i class="fa-solid fa-note-sticky" style="width:20px; color:#C9CDD4;"></i> 备忘录 <span class="nav-page-id">IP-05</span></a>
+        <a class="nav-link" onclick="loadPage('任务/详情/ipad_task_detail.html', this)"><i class="fa-solid fa-list-check" style="width:20px; color:#C9CDD4;"></i> 模板包分步 <span class="nav-page-id">IP-06</span></a>
+      </div>
+
+      <div class="nav-group-title">订单管理</div>
+      <div style="padding:0 8px;">
+        <a class="nav-link" onclick="loadPage('工作台/首页/ipad_workbench_index.html#orders', this)"><i class="fa-solid fa-file-lines" style="width:20px; color:#C9CDD4;"></i> 工单列表 <span class="nav-page-id">IP-02</span></a>
+        <a class="nav-link" onclick="loadPage('工作台/首页/ipad_message_center.html', this)"><i class="fa-regular fa-bell" style="width:20px; color:#C9CDD4;"></i> 消息中心 <span class="nav-page-id">IP-07</span></a>
+        <a class="nav-link" onclick="loadPage('工单/列表/ipad_order_map.html', this)"><i class="fa-solid fa-map-location-dot" style="width:20px; color:#C9CDD4;"></i> 订单地图 <span class="nav-page-id">IP-08</span></a>
+        <a class="nav-link" onclick="loadPage('工单/列表/ipad_order_create.html', this)"><i class="fa-solid fa-plus" style="width:20px; color:#C9CDD4;"></i> 添加订单 <span class="nav-page-id">IP-09</span></a>
+        <a class="nav-link" onclick="loadPage('工单/详情/ipad_order_detail.html?order=DD20260506001', this)"><i class="fa-solid fa-file-circle-info" style="width:20px; color:#C9CDD4;"></i> 订单详情 <span class="nav-page-id">IP-10</span></a>
+        <a class="nav-link" onclick="loadPage('工单/列表/ipad_order_list.html', this)"><i class="fa-solid fa-list" style="width:20px; color:#C9CDD4;"></i> 订单列表 <span class="nav-page-id">IP-30</span></a>
+        <a class="nav-link" onclick="loadPage('工单/详情/ipad_order_edit.html', this)"><i class="fa-solid fa-pen" style="width:20px; color:#C9CDD4;"></i> 编辑订单 <span class="nav-page-id">IP-31</span></a>
+      </div>
+
+      <div class="nav-group-title">检测流程</div>
+      <div style="padding:0 8px;">
+        <a class="nav-link" onclick="loadPage('检测/ipad_inspect_shell.html', this)"><i class="fa-solid fa-table-columns" style="width:20px; color:#C9CDD4;"></i> 检测工作台 <span class="nav-page-id">IP-11</span></a>
+        <a class="nav-link" onclick="loadPage('检测/总览/ipad_inspect_index.html', this)"><i class="fa-solid fa-grip" style="width:20px; color:#C9CDD4;"></i> 检测九宫格 <span class="nav-page-id">IP-12</span></a>
+        <a class="nav-link" onclick="loadPage('检测/塔体/ipad_inspect_tower.html', this)"><i class="fa-solid fa-tower-broadcast" style="width:20px; color:#C9CDD4;"></i> 铁塔信息 <span class="nav-page-id">IP-13</span></a>
+        <a class="nav-link" onclick="loadPage('检测/塔体/ipad_inspect_tower_photos.html', this)"><i class="fa-solid fa-camera" style="width:20px; color:#C9CDD4;"></i> 上传铁塔照片 <span class="nav-page-id">IP-32</span></a>
+        <a class="nav-link" onclick="loadPage('检测/地基/ipad_inspect_foundation.html', this)"><i class="fa-solid fa-monument" style="width:20px; color:#C9CDD4;"></i> 基础及地锚 <span class="nav-page-id">IP-14</span></a>
+        <a class="nav-link" onclick="loadPage('检测/结构图/ipad_inspect_diagram.html', this)"><i class="fa-solid fa-diagram-project" style="width:20px; color:#C9CDD4;"></i> 结构简图 <span class="nav-page-id">IP-15</span></a>
+        <a class="nav-link" onclick="loadPage('检测/分段/ipad_inspect_segment.html', this)"><i class="fa-solid fa-layer-group" style="width:20px; color:#C9CDD4;"></i> 塔段检测 <span class="nav-page-id">IP-16</span></a>
+        <a class="nav-link" onclick="loadPage('检测/平台/ipad_inspect_platform.html', this)"><i class="fa-solid fa-satellite-dish" style="width:20px; color:#C9CDD4;"></i> 平台/天线 <span class="nav-page-id">IP-17</span></a>
+        <a class="nav-link" onclick="loadPage('检测/馈线/ipad_inspect_feed.html', this)"><i class="fa-solid fa-ethernet" style="width:20px; color:#C9CDD4;"></i> 馈线检测 <span class="nav-page-id">IP-18</span></a>
+        <a class="nav-link" onclick="loadPage('检测/回弹/ipad_inspect_rebound.html', this)"><i class="fa-solid fa-hammer" style="width:20px; color:#C9CDD4;"></i> 回弹强度 <span class="nav-page-id">IP-19</span></a>
+        <a class="nav-link" onclick="loadPage('检测/接地/ipad_inspect_ground.html', this)"><i class="fa-solid fa-bolt" style="width:20px; color:#C9CDD4;"></i> 接地电阻 <span class="nav-page-id">IP-20</span></a>
+        <a class="nav-link" onclick="loadPage('检测/垂直度/ipad_inspect_vertical.html', this)"><i class="fa-solid fa-ruler-vertical" style="width:20px; color:#C9CDD4;"></i> 垂直度 <span class="nav-page-id">IP-21</span></a>
+        <a class="nav-link" onclick="loadPage('检测/备注/ipad_inspect_note.html', this)"><i class="fa-solid fa-note-sticky" style="width:20px; color:#C9CDD4;"></i> 快捷手记 <span class="nav-page-id">IP-22</span></a>
+      </div>
+
+      <div class="nav-group-title">其他功能</div>
+      <div style="padding:0 8px 16px;">
+        <a class="nav-link" onclick="loadPage('检测/校验/ipad_inspect_validate.html', this)"><i class="fa-solid fa-check-double" style="width:20px; color:#C9CDD4;"></i> 数据校验 <span class="nav-page-id">IP-23</span></a>
+        <a class="nav-link" onclick="loadPage('检测/ipad_inspect_upload.html', this)"><i class="fa-solid fa-upload" style="width:20px; color:#C9CDD4;"></i> 上传数据 <span class="nav-page-id">IP-33</span></a>
+        <a class="nav-link" onclick="loadPage('检测/ipad_detect_entry.html', this)"><i class="fa-solid fa-door-open" style="width:20px; color:#C9CDD4;"></i> 检测入口 <span class="nav-page-id">IP-34</span></a>
+        <a class="nav-link" onclick="loadPage('系统/同步/ipad_sync_index.html', this)"><i class="fa-solid fa-cloud-arrow-up" style="width:20px; color:#C9CDD4;"></i> 数据同步 <span class="nav-page-id">IP-24</span></a>
+        <a class="nav-link" onclick="loadPage('个人中心/首页/ipad_profile_index.html', this)"><i class="fa-solid fa-user" style="width:20px; color:#C9CDD4;"></i> 我的 <span class="nav-page-id">IP-25</span></a>
+        <a class="nav-link" onclick="loadPage('个人中心/ipad_profile_orders.html', this)"><i class="fa-solid fa-file-invoice" style="width:20px; color:#C9CDD4;"></i> 订单管理 <span class="nav-page-id">IP-26</span></a>
+        <a class="nav-link" onclick="loadPage('个人中心/ipad_profile_order_create.html', this)"><i class="fa-solid fa-plus" style="width:20px; color:#C9CDD4;"></i> 新增订单 <span class="nav-page-id">IP-27</span></a>
+        <a class="nav-link" onclick="loadPage('个人中心/ipad_profile_flow.html', this)"><i class="fa-solid fa-diagram-project" style="width:20px; color:#C9CDD4;"></i> 流程中心 <span class="nav-page-id">IP-28</span></a>
+        <a class="nav-link" onclick="loadPage('个人中心/ipad_profile_ops_log.html', this)"><i class="fa-solid fa-clock-rotate-left" style="width:20px; color:#C9CDD4;"></i> 操作记录 <span class="nav-page-id">IP-29</span></a>
+        <a class="nav-link" onclick="loadPage('个人中心/ipad_profile_personnel_detail.html', this)"><i class="fa-solid fa-users" style="width:20px; color:#C9CDD4;"></i> 人员详情 <span class="nav-page-id">IP-35</span></a>
+        <a class="nav-link" onclick="loadPage('个人中心/ipad_profile_password.html', this)"><i class="fa-solid fa-key" style="width:20px; color:#C9CDD4;"></i> 修改密码 <span class="nav-page-id">IP-36</span></a>
+        <a class="nav-link" onclick="loadPage('个人中心/ipad_profile_about.html', this)"><i class="fa-solid fa-circle-info" style="width:20px; color:#C9CDD4;"></i> 关于系统 <span class="nav-page-id">IP-37</span></a>
+      </div>
+
+    </div>
+  </div>
+
+  <footer style="text-align:center; margin-top:40px; padding:24px 0;">
+    <p style="font-size:12px; color:#C9CDD4; margin:0;">浙江中能工程检测有限公司 · 通信铁塔检测系统 · iPad端 v1.0</p>
+  </footer>
+
+</div>
+
+<script>
+function loadPage(page, el) {
+  document.getElementById('ipadFrame').src = 'pages/iPad端/' + page;
+  document.querySelectorAll('.nav-link').forEach(function(a) { a.classList.remove('active'); });
+  if (el) el.classList.add('active');
+}
+</script>
+</body>
+</html>

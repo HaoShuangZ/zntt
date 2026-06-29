@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>塔段类型</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">塔段类型管理</div>
+    </div>
+    <div class="card-body">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <select class="form-select">
+            <option value="">全部塔型</option>
+            <option>单管无</option>
+            <option>角钢无</option>
+            <option>三管无</option>
+            <option>四管无</option>
+          </select>
+          <button class="btn btn-primary">查询</button>
+          <button class="btn btn-default">重置</button>
+        </div>
+      </div>
+
+      <div class="pc-table-actions">
+        <a class="btn btn-primary" href="pc_config_segment_create.html"><i class="fa-solid fa-plus"></i> 新增模板</a>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>模板编码</th>
+            <th>模板名称</th>
+            <th>适用塔型</th>
+            <th>检测项目数</th>
+            <th>状态</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>TD01</td>
+            <td>单管塔标准塔</td>
+            <td>单管</td>
+            <td>12</td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">编辑</button>
+              <button class="btn btn-text">配置检测项</button>
+            </td>
+          </tr>
+          <tr>
+            <td>TD02</td>
+            <td>角钢塔标准塔</td>
+            <td>角钢</td>
+            <td>15</td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">编辑</button>
+              <button class="btn btn-text">配置检测项</button>
+            </td>
+          </tr>
+          <tr>
+            <td>TD03</td>
+            <td>特殊塔段模板</td>
+            <td>通用</td>
+            <td>8</td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">编辑</button>
+              <button class="btn btn-text">配置检测项</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <span>共 3 条记录</span>
+        <div class="pagination-btns">
+          <button class="page-btn"><i class="fa-solid fa-chevron-left"></i></button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'config_segment', breadcrumb:['铁塔基础配置','塔段类型']};</script>
+</body>
+</html>
+
+

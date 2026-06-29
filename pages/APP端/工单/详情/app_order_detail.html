@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>订单详情</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/app-frame.css">
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; background: #F2F3F5; margin: 0; }
+.info-row { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #F2F3F5; font-size:14px; }
+.info-label { color:#86909C; }
+.info-value { color:#1D2129; font-weight:500; text-align:right; max-width:60%; }
+.map-open-link {
+  color: #165DFF;
+  text-decoration: none;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 13px;
+}
+.map-open-link:active { opacity: 0.75; }
+</style>
+</head>
+<body>
+<!-- Status bar -->
+<div style="height:44px; display:flex; align-items:center; justify-content:space-between; padding:0 16px; background:#fff;">
+  <span style="font-size:14px; font-weight:600;">9:41</span>
+  <span style="font-size:12px;"><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+</div>
+<!-- Navigation bar -->
+<div style="height:44px; display:flex; align-items:center; padding:0 16px; background:#fff; border-bottom:1px solid #E5E6EB;">
+  <a href="../../工作台/首页/app_workbench_index.html#orders" style="color:#165DFF; text-decoration:none; font-size:14px;"><i class="fa-solid fa-chevron-left"></i> 返回</a>
+  <span style="flex:1; text-align:center; font-size:16px; font-weight:600;">订单详情</span>
+</div>
+
+<!-- Content area -->
+<div style="padding:12px 16px 80px; overflow-y:auto; height:calc(100vh - 44px - 44px - 60px);">
+
+  <!-- 基本信息 -->
+  <div style="background:#fff; border-radius:12px; padding:16px; margin-bottom:12px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+    <div style="font-size:15px; font-weight:600; color:#1D2129; margin-bottom:12px;">基本信息</div>
+    <div class="info-row"><span class="info-label">订单编号</span><span class="info-value" id="elOrderId">—</span></div>
+    <div class="info-row"><span class="info-label">订单名称</span><span class="info-value" id="elOrderName">—</span></div>
+    <div class="info-row"><span class="info-label">订单状态</span><span class="info-value"><span id="elStatusBadge" style="padding:2px 8px; border-radius:4px; font-size:12px;">—</span></span></div>
+    <div class="info-row"><span class="info-label">截止日期</span><span class="info-value" id="elDeadline" style="font-family:ui-monospace,SFMono-Regular,monospace;font-variant-numeric:tabular-nums;">—</span></div>
+    <div class="info-row"><span class="info-label">站址编码</span><span class="info-value" id="elSite">—</span></div>
+    <div class="info-row"><span class="info-label">经纬度</span><span class="info-value" style="font-weight:400;max-width:72%;"><a class="map-open-link" id="elMapLink" href="#" target="_blank" rel="noopener noreferrer" title="在高德地图中打开导航">—<i class="fa-solid fa-up-right-from-square" style="font-size:10px;" aria-hidden="true"></i></a></span></div>
+    <div class="info-row"><span class="info-label">联系人</span><span class="info-value" id="elContact">—</span></div>
+    <div class="info-row"><span class="info-label">发布时间</span><span class="info-value" id="elPublish">—</span></div>
+    <div class="info-row"><span class="info-label">所属项目</span><span class="info-value" id="elProject">—</span></div>
+    <div class="info-row"><span class="info-label">省份地市</span><span class="info-value" id="elRegion">—</span></div>
+    <div class="info-row"><span class="info-label">检测需求</span><span class="info-value" id="elDemand">—</span></div>
+    <div class="info-row" style="border-bottom:none;"><span class="info-label">地图</span><span class="info-value" style="font-weight:400;"><a href="../列表/app_order_map.html" style="color:#165DFF;text-decoration:none;"><i class="fa-solid fa-map-location-dot"></i> 查看本订单铁塔位置</a></span></div>
+  </div>
+
+  <!-- 铁塔信息 -->
+  <div style="background:#fff; border-radius:12px; padding:16px; margin-bottom:12px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+    <div style="font-size:15px; font-weight:600; color:#1D2129; margin-bottom:12px;">铁塔信息</div>
+    <div class="info-row"><span class="info-label">铁塔编号</span><span class="info-value" id="elTowerNo">—</span></div>
+    <div class="info-row"><span class="info-label">铁塔名称</span><span class="info-value" id="elTowerName">—</span></div>
+    <div class="info-row"><span class="info-label">塔型</span><span class="info-value" id="elTowerType">—</span></div>
+    <div class="info-row"><span class="info-label">塔高</span><span class="info-value" id="elTowerHeight">—</span></div>
+    <div class="info-row" style="border-bottom:none;"><span class="info-label">所属站点</span><span class="info-value" id="elTowerSite">—</span></div>
+  </div>
+
+  <!-- 关联信息 -->
+  <div style="background:#fff; border-radius:12px; padding:16px; margin-bottom:12px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+    <div style="font-size:15px; font-weight:600; color:#1D2129; margin-bottom:12px;">关联信息</div>
+    <div class="info-row"><span class="info-label">客户名称</span><span class="info-value" id="elCustomer">—</span></div>
+    <div class="info-row"><span class="info-label">工程名称</span><span class="info-value" id="elEngineering">—</span></div>
+    <div class="info-row" style="border-bottom:none;"><span class="info-label">检测类型</span><span class="info-value" id="elInspectType">—</span></div>
+  </div>
+
+  <!-- 检测人员 -->
+  <div style="background:#fff; border-radius:12px; padding:16px; margin-bottom:12px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+    <div style="font-size:15px; font-weight:600; color:#1D2129; margin-bottom:12px;">检测人员</div>
+    <div style="display:flex; align-items:center; gap:12px;">
+      <div style="width:40px; height:40px; border-radius:50%; background:#E8F3FF; display:flex; align-items:center; justify-content:center;">
+        <i class="fa-solid fa-user" style="color:#165DFF; font-size:16px;"></i>
+      </div>
+      <div>
+        <div style="font-size:14px; font-weight:600; color:#1D2129;">李明</div>
+        <div style="font-size:12px; color:#86909C;">检测一组</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Bottom button -->
+<div style="position:fixed; bottom:0; left:0; right:0; padding:12px 16px; background:#fff; border-top:1px solid #E5E6EB;">
+  <a id="btnPrimaryAction" href="#" style="display:block; width:100%; height:44px; background:#165DFF; color:#fff; border-radius:8px; font-size:16px; font-weight:600; text-decoration:none; text-align:center; line-height:44px; box-sizing:border-box;">开始检测</a>
+</div>
+
+<script>
+(function () {
+  var CATALOG = {
+    DD20260506001: {
+      orderName: '滨江区铁塔年度检测订单',
+      status: '待检测',
+      statusBg: '#E8F7FF',
+      statusColor: '#165DFF',
+      deadline: '2026-05-15',
+      site: '滨江基站01',
+      siteAddrCode: 'ZZ-HZ-BJ01',
+      towerNo: 'TT-BJ-001',
+      towerName: '滨江区01#单管塔',
+      towerType: '单管塔',
+      towerHeight: '45m',
+      contact: '王某某 138****5678',
+      publish: '2026-05-06 09:00',
+      project: '2026年杭州铁塔年检工程',
+      region: '浙江省杭州市',
+      demand: '年度常规检测，含塔体与基础',
+      customer: '中国铁塔杭州分公司',
+      engineering: '2026年杭州铁塔年检工程',
+      inspectType: '年度常规检测',
+      mapCoord: '120.2126，30.2084',
+      mapNav: 'https://uri.amap.com/navigation?to=120.2126,30.2084&mode=car&src=tower-app&callnative=1',
+      flow: 'wizard'
+    },
+    DD20260507002: {
+      orderName: '城西区铁塔专项安全检测',
+      status: '检测中',
+      statusBg: '#FFF7E8',
+      statusColor: '#FF7D00',
+      deadline: '2026-05-18',
+      site: '城西枢纽站',
+      siteAddrCode: 'ZZ-HZ-CX03',
+      towerNo: 'TT-CX-003',
+      towerName: '城西区03#角钢塔',
+      towerType: '角钢塔',
+      towerHeight: '52m',
+      contact: '李某某 139****1234',
+      publish: '2026-05-07 10:20',
+      project: '城西枢纽安全专项',
+      region: '浙江省杭州市',
+      demand: '专项安全检测',
+      customer: '中国铁塔杭州分公司',
+      engineering: '城西枢纽安全专项',
+      inspectType: '专项安全检测',
+      mapCoord: '120.0891，30.2955',
+      mapNav: 'https://uri.amap.com/navigation?to=120.0891,30.2955&mode=car&src=tower-app&callnative=1',
+      flow: 'continue'
+    },
+    DD20260508004: {
+      orderName: '余杭区铁塔季度巡检',
+      status: '待检测',
+      statusBg: '#E8F7FF',
+      statusColor: '#165DFF',
+      deadline: '2026-05-22',
+      site: '余杭南枢纽',
+      siteAddrCode: 'ZZ-YH-08',
+      towerNo: 'TT-YH-008',
+      towerName: '余杭区08#四管塔',
+      towerType: '四管塔',
+      towerHeight: '38m',
+      contact: '周某某 137****8899',
+      publish: '2026-05-08 14:00',
+      project: '2026年季度巡检',
+      region: '浙江省杭州市',
+      demand: '季度例行巡检',
+      customer: '中国铁塔杭州分公司',
+      engineering: '2026年季度巡检',
+      inspectType: '季度巡检',
+      mapCoord: '119.9780，30.4211',
+      mapNav: 'https://uri.amap.com/navigation?to=119.9780,30.4211&mode=car&src=tower-app&callnative=1',
+      flow: 'wizard'
+    },
+    DD20260505003: {
+      orderName: '拱墅区铁塔加固复检',
+      status: '已完成',
+      statusBg: '#E8FFEA',
+      statusColor: '#00B42A',
+      deadline: '2026-05-10',
+      site: '拱墅北环站',
+      siteAddrCode: 'ZZ-HZ-GS05',
+      towerNo: 'TT-GS-005',
+      towerName: '拱墅区05#三管塔',
+      towerType: '三管塔',
+      towerHeight: '42m',
+      contact: '陈某某 136****0001',
+      publish: '2026-05-01 09:30',
+      project: '加固复检工程',
+      region: '浙江省杭州市',
+      demand: '加固后复检',
+      customer: '中国铁塔杭州分公司',
+      engineering: '加固复检工程',
+      inspectType: '复检',
+      mapCoord: '120.1412，30.3320',
+      mapNav: 'https://uri.amap.com/navigation?to=120.1412,30.3320&mode=car&src=tower-app&callnative=1',
+      flow: 'done'
+    },
+    DD20260504005: {
+      orderName: '西湖区铁塔新建验收',
+      status: '已完成',
+      statusBg: '#E8FFEA',
+      statusColor: '#00B42A',
+      deadline: '2026-05-03',
+      site: '西湖景区东',
+      siteAddrCode: 'ZZ-XH-12',
+      towerNo: 'TT-XH-012',
+      towerName: '西湖区12#单管塔',
+      towerType: '单管塔',
+      towerHeight: '35m',
+      contact: '赵某某 135****7788',
+      publish: '2026-04-28 11:00',
+      project: '新建站验收',
+      region: '浙江省杭州市',
+      demand: '新建验收检测',
+      customer: '中国铁塔杭州分公司',
+      engineering: '新建站验收',
+      inspectType: '验收检测',
+      mapCoord: '120.1188，30.2455',
+      mapNav: 'https://uri.amap.com/navigation?to=120.1188,30.2455&mode=car&src=tower-app&callnative=1',
+      flow: 'done'
+    }
+  };
+
+  var id = '';
+  try {
+    id = (new URLSearchParams(window.location.search).get('order') || '').trim().toUpperCase();
+  } catch (e) {}
+  if (!id || !CATALOG[id]) id = 'DD20260506001';
+  var o = CATALOG[id];
+  var WIZ = '../../任务/开启检测任务/app_task_start_wizard.html?order=' + encodeURIComponent(id);
+  var HOME = '../../任务/填报主页/app_task_inspect_home.html?order=' + encodeURIComponent(id);
+
+  document.getElementById('elOrderId').textContent = id;
+  document.getElementById('elOrderName').textContent = o.orderName;
+  var badge = document.getElementById('elStatusBadge');
+  badge.textContent = o.status;
+  badge.style.background = o.statusBg;
+  badge.style.color = o.statusColor;
+  document.getElementById('elDeadline').textContent = o.deadline;
+  document.getElementById('elSite').textContent = o.siteAddrCode || '—';
+  document.getElementById('elContact').textContent = o.contact;
+  document.getElementById('elPublish').textContent = o.publish;
+  document.getElementById('elProject').textContent = o.project;
+  document.getElementById('elRegion').textContent = o.region;
+  document.getElementById('elDemand').textContent = o.demand;
+  document.getElementById('elTowerNo').textContent = o.towerNo;
+  document.getElementById('elTowerName').textContent = o.towerName;
+  document.getElementById('elTowerType').textContent = o.towerType;
+  document.getElementById('elTowerHeight').textContent = o.towerHeight;
+  document.getElementById('elTowerSite').textContent = o.site;
+  document.getElementById('elCustomer').textContent = o.customer;
+  document.getElementById('elEngineering').textContent = o.engineering;
+  document.getElementById('elInspectType').textContent = o.inspectType;
+  var mapA = document.getElementById('elMapLink');
+  mapA.textContent = o.mapCoord;
+  mapA.href = o.mapNav;
+
+  var btn = document.getElementById('btnPrimaryAction');
+  if (o.flow === 'wizard') {
+    btn.textContent = '开始检测';
+    btn.href = WIZ;
+    btn.style.background = '#165DFF';
+    btn.style.color = '#fff';
+    btn.style.pointerEvents = '';
+    btn.style.opacity = '';
+  } else if (o.flow === 'continue') {
+    btn.textContent = '继续填报';
+    btn.href = HOME;
+    btn.style.background = '#165DFF';
+    btn.style.color = '#fff';
+    btn.style.pointerEvents = '';
+    btn.style.opacity = '';
+  } else {
+    btn.textContent = '已完工';
+    btn.href = '#';
+    btn.style.background = '#E5E6EB';
+    btn.style.color = '#86909C';
+    btn.style.pointerEvents = 'none';
+    btn.style.opacity = '0.85';
+    btn.addEventListener('click', function (e) { e.preventDefault(); });
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>检测单位维护 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .mini-table { width:100%; border-collapse:collapse; font-size:13px; }
+  .mini-table th { background:#F7F8FA; text-align:left; padding:8px 10px; border-bottom:1px solid var(--border); font-weight:500; }
+  .mini-table td { padding:8px 10px; border-bottom:1px solid var(--border); vertical-align:middle; }
+  .mini-table tr:last-child td { border-bottom:none; }
+  .mini-table input.form-input, .mini-table select.form-select { width:100%; min-width:0; box-sizing:border-box; }
+  .table-wrap { border:1px solid var(--border); border-radius:8px; overflow:hidden; margin-bottom:10px; }
+  .group-org-split { display:flex; gap:16px; align-items:stretch; min-height:280px; }
+  .group-org-left { width:260px; flex-shrink:0; border:1px solid var(--border); border-radius:8px; padding:12px; display:flex; flex-direction:column; background:#FAFBFC; }
+  .group-org-left-title { font-size:13px; font-weight:600; color:var(--text-1); margin-bottom:10px; }
+  .group-list { flex:1; overflow-y:auto; margin-bottom:10px; }
+  .group-row { display:flex; align-items:center; gap:6px; padding:6px 8px; border-radius:6px; margin-bottom:4px; cursor:pointer; border:1px solid transparent; }
+  .group-row:hover { background:#fff; }
+  .group-row.active { background:#fff; border-color:var(--primary); box-shadow:0 0 0 1px var(--primary-light); }
+  .group-row .group-name-input { flex:1; min-width:0; }
+  .group-org-right { flex:1; min-width:0; border:1px solid var(--border); border-radius:8px; padding:12px 16px; }
+  .group-staff-head { font-size:14px; font-weight:600; color:var(--text-1); margin-bottom:4px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .group-staff-head .tag-lite { font-size:12px; font-weight:400; color:var(--text-3); }
+  .group-staff-panel { display:none; }
+  .group-staff-panel.active { display:block; }
+  .leader-cell { text-align:center; white-space:nowrap; }
+  .leader-cell input { accent-color:var(--primary); }
+</style>
+</head>
+<body>
+<div id="page-content">
+  <div class="page-header">
+    <div style="display:flex;align-items:center;gap:12px">
+      <a href="pc_data_inspection_unit.html" class="btn btn-default btn-sm"><i class="fa-solid fa-arrow-left"></i> 返回列表</a>
+      <h1 class="page-title" id="pageTitle">检测单位维护</h1>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <div class="form-section" id="sectionBasic">
+        <div class="form-section-title">基础信息</div>
+        <div class="form-grid form-grid-3">
+          <div class="form-group full">
+            <span class="form-label">检测单位名称<span class="required">*</span></span>
+            <input class="form-input" style="width:100%" placeholder="全称" value="浙江中能工程检测有限公司">
+          </div>
+          <div class="form-group">
+            <span class="form-label">检测单位编码<span class="required">*</span></span>
+            <input class="form-input" placeholder="如 ORG-ZN-001" value="ORG-ZN-001">
+          </div>
+          <div class="form-group full">
+            <span class="form-label">所在地址<span class="required">*</span></span>
+            <input class="form-input" style="width:100%" placeholder="省市区及详细地址" value="浙江省杭州市滨江区江南大道588号">
+          </div>
+          <div class="form-group">
+            <span class="form-label">公司负责人<span class="required">*</span></span>
+            <input class="form-input" placeholder="姓名" value="张某某">
+          </div>
+          <div class="form-group">
+            <span class="form-label">联系方式<span class="required">*</span></span>
+            <input class="form-input" placeholder="手机或固话" value="0571-88888888">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section" id="sectionOrg">
+        <div class="form-section-title">检测组架构</div>
+        <p style="font-size:12px;color:var(--text-3);margin:-4px 0 12px">左侧维护<strong>检测组名称</strong>；右侧为当前选中组的<strong>检测组人员</strong>。负责人使用单选，<strong>同一检测组仅允许一名负责人</strong>。</p>
+
+        <div class="group-org-split">
+          <div class="group-org-left">
+            <div class="group-org-left-title">检测组列表</div>
+            <div class="group-list" id="groupList">
+              <div class="group-row active" data-group-index="0" role="button" tabindex="0">
+                <input type="text" class="form-input group-name-input" value="外业一组" placeholder="检测组名称" aria-label="检测组名称">
+                <button type="button" class="btn btn-text btn-del-group" style="color:var(--danger);flex-shrink:0;padding:4px 6px" title="删除该组">删除</button>
+              </div>
+              <div class="group-row" data-group-index="1" role="button" tabindex="0">
+                <input type="text" class="form-input group-name-input" value="外业二组" placeholder="检测组名称" aria-label="检测组名称">
+                <button type="button" class="btn btn-text btn-del-group" style="color:var(--danger);flex-shrink:0;padding:4px 6px" title="删除该组">删除</button>
+              </div>
+            </div>
+            <button type="button" class="btn btn-default btn-sm" id="btnAddGroup" style="width:100%"><i class="fa-solid fa-plus"></i> 新增检测组</button>
+          </div>
+
+          <div class="group-org-right">
+            <div class="group-staff-head">
+              检测组人员
+              <span class="tag-lite" id="staffGroupLabel">当前组：<strong id="staffGroupName">外业一组</strong></span>
+            </div>
+            <p style="font-size:12px;color:var(--text-3);margin:0 0 10px">字段：人员名称、人员编码、手机号码、是否为负责人（单选）。</p>
+
+            <div class="group-staff-panel active" data-group-index="0">
+              <div class="table-wrap">
+                <table class="mini-table">
+                  <thead>
+                    <tr>
+                      <th style="width:22%">人员名称<span class="required">*</span></th>
+                      <th style="width:22%">人员编码<span class="required">*</span></th>
+                      <th style="width:22%">手机号码<span class="required">*</span></th>
+                      <th style="width:18%">是否为负责人</th>
+                      <th style="width:100px">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody class="staff-tbody">
+                    <tr>
+                      <td><input type="text" class="form-input" value="张伟"></td>
+                      <td><input type="text" class="form-input" value="USR-ZN-001"></td>
+                      <td><input type="text" class="form-input" value="13800001001"></td>
+                      <td class="leader-cell"><label style="cursor:pointer;font-size:13px"><input type="radio" name="leader_g_0" value="r0" checked> 负责人</label></td>
+                      <td><button type="button" class="btn btn-text btn-del-staff" style="color:var(--danger)">删除</button></td>
+                    </tr>
+                    <tr>
+                      <td><input type="text" class="form-input" value="李明"></td>
+                      <td><input type="text" class="form-input" value="USR-ZN-002"></td>
+                      <td><input type="text" class="form-input" value="13800001002"></td>
+                      <td class="leader-cell"><label style="cursor:pointer;font-size:13px"><input type="radio" name="leader_g_0" value="r1"> 负责人</label></td>
+                      <td><button type="button" class="btn btn-text btn-del-staff" style="color:var(--danger)">删除</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <button type="button" class="btn btn-default btn-sm btn-add-staff"><i class="fa-solid fa-plus"></i> 新增人员</button>
+            </div>
+
+            <div class="group-staff-panel" data-group-index="1">
+              <div class="table-wrap">
+                <table class="mini-table">
+                  <thead>
+                    <tr>
+                      <th style="width:22%">人员名称<span class="required">*</span></th>
+                      <th style="width:22%">人员编码<span class="required">*</span></th>
+                      <th style="width:22%">手机号码<span class="required">*</span></th>
+                      <th style="width:18%">是否为负责人</th>
+                      <th style="width:100px">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody class="staff-tbody">
+                    <tr>
+                      <td><input type="text" class="form-input" value="王强"></td>
+                      <td><input type="text" class="form-input" value="USR-ZN-101"></td>
+                      <td><input type="text" class="form-input" value="13800001003"></td>
+                      <td class="leader-cell"><label style="cursor:pointer;font-size:13px"><input type="radio" name="leader_g_1" value="r0" checked> 负责人</label></td>
+                      <td><button type="button" class="btn btn-text btn-del-staff" style="color:var(--danger)">删除</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <button type="button" class="btn btn-default btn-sm btn-add-staff"><i class="fa-solid fa-plus"></i> 新增人员</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-footer" id="formFooter">
+        <button type="button" class="btn btn-primary" id="btnSave">保存</button>
+        <button type="button" class="btn btn-default" onclick="location.href='pc_data_inspection_unit.html'">取消</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = { active: 'data_inspection_unit', breadcrumb: ['基础数据', '检测单位', '维护'] };</script>
+<script>
+(function () {
+  var params = new URLSearchParams(location.search);
+  var pageMode = params.get('mode') || (params.get('view') === 'org' ? '' : 'edit');
+  var viewOrg = params.get('view') === 'org';
+  var unitCode = params.get('code') || '';
+  var titleEl = document.getElementById('pageTitle');
+  var sectionBasic = document.getElementById('sectionBasic');
+  var sectionOrg = document.getElementById('sectionOrg');
+  var formFooter = document.getElementById('formFooter');
+
+  function setReadonlyIn(root) {
+    if (!root) return;
+    root.querySelectorAll('input.form-input, textarea, select.form-select').forEach(function (el) {
+      if (el.type === 'radio' || el.type === 'checkbox') {
+        el.disabled = true;
+      } else {
+        el.setAttribute('readonly', 'readonly');
+        el.style.background = '#F7F8FA';
+      }
+    });
+    root.querySelectorAll('button.btn-del-group, button.btn-del-staff, #btnAddGroup, .btn-add-staff').forEach(function (btn) {
+      btn.style.display = 'none';
+    });
+  }
+
+  if (pageMode === 'detail') {
+    if (titleEl) titleEl.textContent = '检测单位详情' + (unitCode ? ' · ' + unitCode : '');
+    if (sectionOrg) sectionOrg.style.display = 'none';
+    if (formFooter) formFooter.style.display = 'none';
+    setReadonlyIn(sectionBasic);
+    if (window.__layoutConfig) window.__layoutConfig.breadcrumb = ['基础数据', '检测单位', '详情'];
+  } else if (viewOrg) {
+    if (titleEl) titleEl.textContent = '检测单位架构' + (unitCode ? ' · ' + unitCode : '');
+    if (sectionBasic) sectionBasic.style.display = 'none';
+    if (formFooter) formFooter.style.display = 'none';
+    setReadonlyIn(sectionOrg);
+    if (sectionOrg) sectionOrg.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (window.__layoutConfig) window.__layoutConfig.breadcrumb = ['基础数据', '检测单位', '架构'];
+  } else if (unitCode && titleEl) {
+    titleEl.textContent = '检测单位维护 · ' + unitCode;
+  }
+
+  function syncStaffTitle() {
+    var row = document.querySelector('.group-row.active .group-name-input');
+    var el = document.getElementById('staffGroupName');
+    if (row && el) el.textContent = row.value.trim() || '（未命名组）';
+  }
+  function selectGroup(idx) {
+    document.querySelectorAll('.group-row').forEach(function (r) {
+      r.classList.toggle('active', parseInt(r.dataset.groupIndex, 10) === idx);
+    });
+    document.querySelectorAll('.group-staff-panel').forEach(function (p) {
+      p.classList.toggle('active', parseInt(p.dataset.groupIndex, 10) === idx);
+    });
+    syncStaffTitle();
+  }
+
+  window.addEventListener('DOMContentLoaded', function () {
+    var list = document.getElementById('groupList');
+    var panelsRoot = document.querySelector('.group-org-right');
+    if (!list || !panelsRoot) return;
+
+    list.addEventListener('click', function (e) {
+      var del = e.target.closest('.btn-del-group');
+      if (del) {
+        e.stopPropagation();
+        var row = del.closest('.group-row');
+        var rows = list.querySelectorAll('.group-row');
+        if (rows.length <= 1) {
+          alert('至少保留一个检测组');
+          return;
+        }
+        var idx = parseInt(row.dataset.groupIndex, 10);
+        row.remove();
+        var panel = panelsRoot.querySelector('.group-staff-panel[data-group-index="' + idx + '"]');
+        if (panel) panel.remove();
+        var first = list.querySelector('.group-row');
+        if (first) selectGroup(parseInt(first.dataset.groupIndex, 10));
+        return;
+      }
+      var row = e.target.closest('.group-row');
+      if (row) selectGroup(parseInt(row.dataset.groupIndex, 10));
+    });
+
+    list.addEventListener('input', function (e) {
+      if (e.target.classList.contains('group-name-input') && e.target.closest('.group-row.active')) syncStaffTitle();
+    });
+
+    var btnAdd = document.getElementById('btnAddGroup');
+    if (btnAdd) {
+      btnAdd.addEventListener('click', function () {
+        var maxIdx = -1;
+        list.querySelectorAll('.group-row').forEach(function (r) {
+          maxIdx = Math.max(maxIdx, parseInt(r.dataset.groupIndex, 10));
+        });
+        var n = maxIdx + 1;
+        var div = document.createElement('div');
+        div.className = 'group-row active';
+        div.dataset.groupIndex = String(n);
+        div.setAttribute('role', 'button');
+        div.setAttribute('tabindex', '0');
+        div.innerHTML =
+          '<input type="text" class="form-input group-name-input" value="新检测组" placeholder="检测组名称" aria-label="检测组名称">' +
+          '<button type="button" class="btn btn-text btn-del-group" style="color:var(--danger);flex-shrink:0;padding:4px 6px" title="删除该组">删除</button>';
+        list.querySelectorAll('.group-row').forEach(function (r) {
+          r.classList.remove('active');
+        });
+        list.appendChild(div);
+        var radioName = 'leader_g_' + n;
+        var panel = document.createElement('div');
+        panel.className = 'group-staff-panel active';
+        panel.dataset.groupIndex = String(n);
+        panel.innerHTML =
+          '<div class="table-wrap"><table class="mini-table"><thead><tr>' +
+          '<th style="width:22%">人员名称<span class="required">*</span></th>' +
+          '<th style="width:22%">人员编码<span class="required">*</span></th>' +
+          '<th style="width:22%">手机号码<span class="required">*</span></th>' +
+          '<th style="width:18%">是否为负责人</th><th style="width:100px">操作</th></tr></thead>' +
+          '<tbody class="staff-tbody"><tr>' +
+          '<td><input type="text" class="form-input" placeholder="姓名"></td>' +
+          '<td><input type="text" class="form-input" placeholder="编码"></td>' +
+          '<td><input type="text" class="form-input" placeholder="手机"></td>' +
+          '<td class="leader-cell"><label style="cursor:pointer;font-size:13px"><input type="radio" name="' +
+          radioName +
+          '" checked> 负责人</label></td>' +
+          '<td><button type="button" class="btn btn-text btn-del-staff" style="color:var(--danger)">删除</button></td></tr></tbody></table></div>' +
+          '<button type="button" class="btn btn-default btn-sm btn-add-staff" style="margin-top:8px"><i class="fa-solid fa-plus"></i> 新增人员</button>';
+        panelsRoot.querySelectorAll('.group-staff-panel').forEach(function (p) {
+          p.classList.remove('active');
+        });
+        panelsRoot.appendChild(panel);
+        selectGroup(n);
+      });
+    }
+
+    panelsRoot.addEventListener('click', function (e) {
+      var addBtn = e.target.closest('.btn-add-staff');
+      if (addBtn) {
+        var panel = addBtn.closest('.group-staff-panel');
+        if (!panel) return;
+        var idx = parseInt(panel.dataset.groupIndex, 10);
+        var tbody = panel.querySelector('.staff-tbody');
+        var radioName = 'leader_g_' + idx;
+        var tr = document.createElement('tr');
+        tr.innerHTML =
+          '<td><input type="text" class="form-input" placeholder="姓名"></td>' +
+          '<td><input type="text" class="form-input" placeholder="编码"></td>' +
+          '<td><input type="text" class="form-input" placeholder="手机"></td>' +
+          '<td class="leader-cell"><label style="cursor:pointer;font-size:13px"><input type="radio" name="' +
+          radioName +
+          '"> 负责人</label></td>' +
+          '<td><button type="button" class="btn btn-text btn-del-staff" style="color:var(--danger)">删除</button></td>';
+        tbody.appendChild(tr);
+        return;
+      }
+      var delStaff = e.target.closest('.btn-del-staff');
+      if (delStaff) {
+        var tr = delStaff.closest('tr');
+        var tbody = tr && tr.parentElement;
+        if (tbody && tbody.querySelectorAll('tr').length <= 1) {
+          alert('每组至少保留一行人员（可仅占位）');
+          return;
+        }
+        tr.remove();
+      }
+    });
+
+    syncStaffTitle();
+  });
+})();
+</script>
+</body>
+</html>

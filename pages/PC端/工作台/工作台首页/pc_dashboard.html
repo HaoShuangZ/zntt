@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>工作台首</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+<div class="space-y-8"><div class="grid md:grid-cols-2 gap-6">
+<div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm pc-card-hover"><div class="flex justify-between items-center mb-4"><h2 class="font-semibold text-lg">待办任务</h2><span class="bg-emerald-100 text-emerald-800 text-xs px-2 py-0.5 rounded-full">3</span></div>
+<ul class="space-y-3 text-sm"><li class="flex justify-between"><a href="../流程中心/pc_workflow_approve.html" class="text-slate-700 hover:text-brand">审批：铁塔检测报告签</a><span class="text-slate-400">紧</span></li><li class="flex justify-between"><span class="text-slate-700">现场数据审核·余杭站点</span><span class="text-slate-400">一</span></li></ul>
+<a href="../流程中心/pc_workflow.html" class="text-sm text-emerald-700 mt-4 inline-block hover:underline">查看更多</a></div>
+<div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm pc-card-hover"><h2 class="font-semibold text-lg mb-4">消息通知</h2><ul class="space-y-3 text-sm"><li class="flex gap-2"><span class="w-2 h-2 mt-1.5 rounded-full bg-orange-500 shrink-0"></span><a href="../../个人中心/消息中心/pc_messages.html" class="text-slate-700">【收款提醒】杭州移动框架 · 首付款到期</a></li><li class="flex gap-2"><span class="w-2 h-2 mt-1.5 rounded-full bg-red-500 shrink-0"></span><a href="../../个人中心/消息中心/pc_messages.html" class="text-slate-700">您有新的派单任务</a></li></ul><p class="text-xs text-slate-400 mt-3">合同提醒仅消息通知，不进待办</p></div></div>
+<div class="grid md:grid-cols-2 gap-6"><div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm pc-card-hover"><h2 class="font-semibold text-lg mb-3">在途项目双进度</h2><p class="text-xs text-slate-500 mb-4">查看订单与在途检测、报告进度（与订单列表、检测任务联动）。</p><div class="grid grid-cols-2 gap-3 text-sm"><div class="rounded-xl bg-slate-50 p-4"><div class="text-2xl font-semibold text-slate-900">68%</div><div class="text-slate-500 mt-1">现场检测</div></div><div class="rounded-xl bg-slate-50 p-4"><div class="text-2xl font-semibold text-slate-900">41%</div><div class="text-slate-500 mt-1">报告编制</div></div></div><a href="../../合同部管理/订单管理/pc_order_list.html" class="text-sm text-emerald-700 mt-4 inline-block hover:underline">打开订单管理</a></div><div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm pc-card-hover"><h2 class="font-semibold text-lg mb-4">快捷入口</h2><div class="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
+<a href="../../合同管理/合同列表/pc_contract_list.html" class="flex flex-col items-center gap-2 p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition btn-tap"><i class="fa-solid fa-file-signature text-xl text-slate-600"></i>对上合同</a>
+<a href="../../合同部管理/订单管理/pc_order_list.html" class="flex flex-col items-center gap-2 p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition btn-tap"><i class="fa-solid fa-file-contract text-xl text-slate-600"></i>订单</a>
+<a href="../../模板配置/检测模板/pc_inspect_template_list.html" class="flex flex-col items-center gap-2 p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition btn-tap"><i class="fa-solid fa-table-columns text-xl text-slate-600"></i>检测模板</a>
+<a href="../../铁塔检测业务/检测任务/pc_task_list.html" class="flex flex-col items-center gap-2 p-4 rounded-xl bg-slate-50 hover:bg-slate-100 btn-tap"><i class="fa-solid fa-clipboard-check text-xl text-slate-600"></i>检测任务</a>
+<a href="../../铁塔检测业务/报告编制/report-list.html" class="flex flex-col items-center gap-2 p-4 rounded-xl bg-slate-50 hover:bg-slate-100 btn-tap"><i class="fa-solid fa-file-lines text-xl text-slate-600"></i>报告</a>
+</div></div><div class="rounded-2xl border border-slate-200/80 bg-white p-6"><h2 class="font-semibold mb-4">系统公告</h2><ul class="text-sm text-slate-600 space-y-2"><li><a href="../../个人中心/消息中心/pc_messages.html" class="hover:text-brand">关于加强汛期检测安全的通知</a></li></ul></div></div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4"><div class="rounded-2xl border border-slate-200/80 bg-white p-5 pc-card-hover"><p class="text-2xl font-semibold text-slate-900">42</p><p class="text-sm text-slate-500 mt-1">本月任务</p><p class="text-xs text-emerald-600 mt-2"><i class="fa-solid fa-arrow-trend-up"></i> 同比上升</p></div><div class="rounded-2xl border border-slate-200/80 bg-white p-5 pc-card-hover"><p class="text-2xl font-semibold text-slate-900">28</p><p class="text-sm text-slate-500 mt-1">完成报告</p><p class="text-xs text-emerald-600 mt-2"><i class="fa-solid fa-arrow-trend-up"></i> 同比上升</p></div><div class="rounded-2xl border border-slate-200/80 bg-white p-5 pc-card-hover"><p class="text-2xl font-semibold text-slate-900">7</p><p class="text-sm text-slate-500 mt-1">催办中订单</p><p class="text-xs text-amber-600 mt-2"><i class="fa-solid fa-bell"></i> 催办提醒</p></div><div class="rounded-2xl border border-slate-200/80 bg-white p-5 pc-card-hover"><p class="text-2xl font-semibold text-slate-900">5</p><p class="text-sm text-slate-500 mt-1">不合格项</p><p class="text-xs text-emerald-600 mt-2"><i class="fa-solid fa-arrow-trend-up"></i> 同比上升</p></div></div></div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'', breadcrumb:["工作台首页"]};</script>
+</body>
+</html>
+

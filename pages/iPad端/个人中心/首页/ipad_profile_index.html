@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<!-- iPad-PROFILE_INDEX v2.1 landscape -->
+<html lang="zh-CN" class="ipad-profile-html">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>我的</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/app-frame.css">
+<link rel="stylesheet" href="../../../../assets/ipad-tokens.css">
+<link rel="stylesheet" href="../../../../assets/ipad-frame.css">
+<link rel="stylesheet" href="../../../../assets/ipad-layout.css">
+<link rel="stylesheet" href="../../../../assets/ipad-visual.css">
+<link rel="stylesheet" href="../../../../assets/ipad-embed.css">
+<link rel="stylesheet" href="../../../../assets/ipad-profile-shell.css">
+<script src="../../../../assets/ipad-adapt.js" defer></script>
+<script src="../../../../assets/app-menu-access-log.js" defer></script>
+</head>
+<body class="ipad-adapt ipad-profile-page">
+
+<div class="page-status page-status--with-back" aria-hidden="true">
+  <a class="nav-back-icon" href="../../工作台/首页/ipad_workbench_index.html" aria-label="返回工作台"><i class="fa-solid fa-chevron-left"></i></a>
+  <span class="page-status-time">9:41</span>
+  <span class="page-status-spacer" aria-hidden="true"></span>
+  <span class="icons"><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+</div>
+
+<div class="profile-scroll">
+  <header class="profile-hero">
+    <a href="ipad_profile_index.html" class="profile-hero-avatar" aria-label="我的"><i class="fa-solid fa-user"></i></a>
+    <div class="profile-hero-text">
+      <div class="profile-hero-name">李明</div>
+      <div class="profile-hero-sub">检测一组 · 检测工程师</div>
+    </div>
+  </header>
+
+  <div class="profile-menu-wrap">
+    <div class="profile-menu-grid">
+      <nav class="menu-group" aria-label="业务入口">
+        <a href="../ipad_profile_orders.html" class="menu-item">
+          <span class="menu-icon" style="background:#e8f3ff"><i class="fa-solid fa-file-invoice" style="color:#165dff"></i></span>
+          <span class="label">订单入口</span>
+          <i class="fa-solid fa-chevron-right chev"></i>
+        </a>
+        <a href="../ipad_profile_flow.html" class="menu-item">
+          <span class="menu-icon" style="background:#fff3e8"><i class="fa-solid fa-diagram-project" style="color:#ff7d00"></i></span>
+          <span class="label">流程中心</span>
+          <i class="fa-solid fa-chevron-right chev"></i>
+        </a>
+      </nav>
+
+      <nav class="menu-group" aria-label="账号与记录">
+        <a href="../ipad_profile_personnel_detail.html" class="menu-item">
+          <span class="menu-icon" style="background:#e8f3ff"><i class="fa-solid fa-user-pen" style="color:#165dff"></i></span>
+          <span class="label">个人信息</span>
+          <i class="fa-solid fa-chevron-right chev"></i>
+        </a>
+        <a href="../ipad_profile_password.html" class="menu-item">
+          <span class="menu-icon" style="background:#fff3e8"><i class="fa-solid fa-key" style="color:#ff7d00"></i></span>
+          <span class="label">修改密码</span>
+          <i class="fa-solid fa-chevron-right chev"></i>
+        </a>
+        <a href="../ipad_profile_ops_log.html" class="menu-item">
+          <span class="menu-icon" style="background:#e8ffea"><i class="fa-solid fa-clock-rotate-left" style="color:#00b42a"></i></span>
+          <span class="label">操作记录</span>
+          <i class="fa-solid fa-chevron-right chev"></i>
+        </a>
+      </nav>
+
+      <nav class="menu-group" aria-label="系统">
+        <a href="../ipad_profile_about.html" class="menu-item">
+          <span class="menu-icon" style="background:#f2f3f5"><i class="fa-solid fa-circle-info" style="color:#86909c"></i></span>
+          <span class="label">关于系统</span>
+          <i class="fa-solid fa-chevron-right chev"></i>
+        </a>
+        <a href="../../账号/登录/ipad_login.html" class="menu-item danger">
+          <span class="menu-icon" style="background:#fff1f0"><i class="fa-solid fa-right-from-bracket" style="color:#f53f3f"></i></span>
+          <span class="label">退出登录</span>
+        </a>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  if (typeof __logMenuAccess === 'function') __logMenuAccess('我的');
+});
+</script>
+</body>
+</html>

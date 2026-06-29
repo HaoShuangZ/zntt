@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>塔段样式信息</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .upload-box {
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    text-align: center;
+    color: var(--text-3);
+    background: #fafbfc;
+  }
+  .upload-box i {
+    font-size: 22px;
+    margin-bottom: 10px;
+    color: var(--primary);
+  }
+  .seg-img-placeholder {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    background: #F7F8FA;
+    font-size: 13px;
+    color: var(--text-2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .seg-img-placeholder i { color: var(--primary); font-size: 20px; }
+  .modal-mask {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 24px;
+  }
+  .modal-mask.open { display: flex; }
+  .modal-dialog {
+    width: min(980px, 96vw);
+    max-height: 90vh;
+    overflow: auto;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.2);
+  }
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .modal-close {
+    border: none;
+    background: transparent;
+    color: var(--text-3);
+    font-size: 18px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<div id="page-content">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">塔段样式信息</div>
+    </div>
+    <div class="card-body">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <select class="form-select">
+            <option value="">铁塔类型</option>
+            <option>单管塔</option>
+            <option>角钢塔</option>
+            <option>三管塔</option>
+            <option>四管塔</option>
+          </select>
+          <input type="text" class="form-input" placeholder="搜索塔段样式名称">
+          <button type="button" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> 查询</button>
+          <button type="button" class="btn btn-default">重置</button>
+        </div>
+      </div>
+
+      <div class="pc-table-actions">
+        <button type="button" class="btn btn-primary" id="open-create-modal"><i class="fa-solid fa-plus"></i> 新增塔段样式</button>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>样式编号</th>
+            <th>铁塔类型</th>
+            <th>塔段样式名称</th>
+            <th>塔段样式类型</th>
+            <th>塔段样式来源</th>
+            <th>创建人</th>
+            <th>创建时间</th>
+            <th>修改时间</th>
+            <th>状态</th>
+            <th class="col-action" style="width:260px">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-code="TDYS001" data-tower="单管塔" data-name="斜杆样式" data-style-type="原始记录" data-source="模板库导入" data-creator="张伟" data-created="2026-05-01 10:12" data-modified="2026-05-06 16:20" data-remark="" data-status="1">
+            <td>TDYS001</td>
+            <td>单管塔</td>
+            <td>斜杆样式</td>
+            <td>原始记录</td>
+            <td>模板库导入</td>
+            <td>张伟</td>
+            <td>2026-05-01 10:12</td>
+            <td>2026-05-06 16:20</td>
+            <td class="seg-status-cell"><span class="tag tag-green">启用</span></td>
+            <td class="col-action">
+              <button type="button" class="btn btn-text btn-seg-detail">详情</button>
+              <button type="button" class="btn btn-text btn-seg-edit">编辑</button>
+              <button type="button" class="btn btn-text btn-seg-toggle" style="color:var(--warning)">禁用</button>
+              <button type="button" class="btn btn-text btn-seg-delete" style="color:var(--danger)">删除</button>
+            </td>
+          </tr>
+          <tr data-code="TDYS002" data-tower="角钢塔" data-name="节点板样式" data-style-type="构件样式" data-source="手工录入" data-creator="李明" data-created="2026-04-21 09:03" data-modified="2026-05-02 14:11" data-remark="" data-status="1">
+            <td>TDYS002</td>
+            <td>角钢塔</td>
+            <td>节点板样式</td>
+            <td>构件样式</td>
+            <td>手工录入</td>
+            <td>李明</td>
+            <td>2026-04-21 09:03</td>
+            <td>2026-05-02 14:11</td>
+            <td class="seg-status-cell"><span class="tag tag-green">启用</span></td>
+            <td class="col-action">
+              <button type="button" class="btn btn-text btn-seg-detail">详情</button>
+              <button type="button" class="btn btn-text btn-seg-edit">编辑</button>
+              <button type="button" class="btn btn-text btn-seg-toggle" style="color:var(--warning)">禁用</button>
+              <button type="button" class="btn btn-text btn-seg-delete" style="color:var(--danger)">删除</button>
+            </td>
+          </tr>
+          <tr data-code="TDYS003" data-tower="三管塔" data-name="连接件样式" data-style-type="原始记录" data-source="模板库导入" data-creator="王强" data-created="2026-03-17 13:22" data-modified="2026-04-09 11:36" data-remark="" data-status="0">
+            <td>TDYS003</td>
+            <td>三管塔</td>
+            <td>连接件样式</td>
+            <td>原始记录</td>
+            <td>模板库导入</td>
+            <td>王强</td>
+            <td>2026-03-17 13:22</td>
+            <td>2026-04-09 11:36</td>
+            <td class="seg-status-cell"><span class="tag tag-gray">停用</span></td>
+            <td class="col-action">
+              <button type="button" class="btn btn-text btn-seg-detail">详情</button>
+              <button type="button" class="btn btn-text btn-seg-edit">编辑</button>
+              <button type="button" class="btn btn-text btn-seg-toggle" style="color:var(--success)">启用</button>
+              <button type="button" class="btn btn-text btn-seg-delete" style="color:var(--danger)">删除</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <span>共 3 条记录</span>
+        <div class="pagination-btns">
+          <button type="button" class="page-btn"><i class="fa-solid fa-chevron-left"></i></button>
+          <button type="button" class="page-btn active">1</button>
+          <button type="button" class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-mask" id="create-modal" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="card-title" id="segModalTitle">新增塔段样式信息</div>
+        <button type="button" class="modal-close" id="close-create-modal" aria-label="关闭">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="card-body">
+      <div class="form-grid">
+        <div class="form-group" id="segCodeGroup" style="display:none">
+          <label class="form-label">样式编号</label>
+          <input type="text" class="form-input" id="segFormCode" style="width:100%;" readonly>
+        </div>
+        <div class="form-group">
+          <label class="form-label">铁塔类型 <span class="required">*</span></label>
+          <select class="form-select" id="segFormTower" style="width:100%;">
+            <option value="">请选择</option>
+            <option>单管塔</option>
+            <option>角钢塔</option>
+            <option>三管塔</option>
+            <option>四管塔</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">塔段样式名称 <span class="required">*</span></label>
+          <input type="text" class="form-input" id="segFormName" style="width:100%;" placeholder="请输入塔段样式名称">
+        </div>
+        <div class="form-group">
+          <label class="form-label">塔段样式类型 <span class="required">*</span></label>
+          <select class="form-select" id="segFormStyleType" style="width:100%;">
+            <option value="">请选择</option>
+            <option>原始记录</option>
+            <option>构件样式</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">塔段样式来源 <span class="required">*</span></label>
+          <select class="form-select" id="segFormSource" style="width:100%;">
+            <option value="">请选择</option>
+            <option>模板库导入</option>
+            <option>手工录入</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top:8px;" id="segUploadGroup">
+        <label class="form-label">塔段样式图片 <span class="required" id="segImgRequired">*</span></label>
+        <div class="upload-box" id="segUploadBox">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+          <div>将文件拖到此处，或 <span style="color:var(--primary);">点击上传</span></div>
+        </div>
+        <div class="seg-img-placeholder" id="segImgReadonly" style="display:none">
+          <i class="fa-solid fa-image"></i>
+          <span>已上传塔段样式图片（原型占位）</span>
+        </div>
+      </div>
+
+      <div class="form-grid" style="margin-top:16px;" id="segMetaGroup">
+        <div class="form-group">
+          <label class="form-label">创建人</label>
+          <input type="text" class="form-input" id="segFormCreator" style="width:100%;" value="张伟">
+        </div>
+        <div class="form-group">
+          <label class="form-label">创建时间</label>
+          <input type="text" class="form-input" id="segFormCreated" style="width:100%;" value="2026-05-08 13:00">
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top:8px;">
+        <label class="form-label">备注</label>
+        <textarea class="form-textarea" id="segFormRemark" placeholder="请输入备注信息"></textarea>
+      </div>
+
+      <div class="form-footer">
+        <button type="button" class="btn btn-default" id="cancel-create-modal">关闭</button>
+        <button type="button" class="btn btn-primary" id="segModalSave">保存</button>
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'data_segment_style', breadcrumb:['基础数据','塔段样式信息']};</script>
+<script>
+(function () {
+  var modalMode = 'add';
+  var editingRow = null;
+
+  function getModal() { return document.getElementById('create-modal'); }
+  function selectVal(sel, val) {
+    if (!sel) return;
+    for (var i = 0; i < sel.options.length; i++) {
+      if (sel.options[i].text === val || sel.options[i].value === val) {
+        sel.selectedIndex = i;
+        return;
+      }
+    }
+    sel.value = val || '';
+  }
+  function setFieldsReadonly(readonly) {
+    ['segFormTower', 'segFormName', 'segFormStyleType', 'segFormSource', 'segFormCreator', 'segFormCreated', 'segFormRemark'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      if (el.tagName === 'SELECT') {
+        el.disabled = readonly;
+        el.style.background = readonly ? '#F7F8FA' : '';
+        el.style.pointerEvents = readonly ? 'none' : '';
+      } else if (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT') {
+        if (readonly) {
+          el.setAttribute('readonly', 'readonly');
+          el.style.background = '#F7F8FA';
+          el.style.pointerEvents = 'none';
+        } else {
+          el.removeAttribute('readonly');
+          el.style.background = '';
+          el.style.pointerEvents = '';
+        }
+      }
+    });
+    var upload = document.getElementById('segUploadBox');
+    var imgRo = document.getElementById('segImgReadonly');
+    var req = document.getElementById('segImgRequired');
+    if (readonly) {
+      if (upload) upload.style.display = 'none';
+      if (imgRo) imgRo.style.display = 'flex';
+      if (req) req.style.display = 'none';
+    } else {
+      if (upload) upload.style.display = '';
+      if (imgRo) imgRo.style.display = 'none';
+      if (req) req.style.display = '';
+    }
+  }
+  function fillFromRow(row) {
+    document.getElementById('segFormCode').value = row.dataset.code || '';
+    selectVal(document.getElementById('segFormTower'), row.dataset.tower);
+    document.getElementById('segFormName').value = row.dataset.name || '';
+    selectVal(document.getElementById('segFormStyleType'), row.dataset.styleType);
+    selectVal(document.getElementById('segFormSource'), row.dataset.source);
+    document.getElementById('segFormCreator').value = row.dataset.creator || '';
+    document.getElementById('segFormCreated').value = row.dataset.created || '';
+    document.getElementById('segFormRemark').value = row.dataset.remark || '';
+  }
+  function openModal(mode, row) {
+    var modal = getModal();
+    if (!modal) return;
+    modalMode = mode;
+    editingRow = row || null;
+    var saveBtn = document.getElementById('segModalSave');
+    var codeGroup = document.getElementById('segCodeGroup');
+    var metaGroup = document.getElementById('segMetaGroup');
+
+    if (mode === 'add') {
+      document.getElementById('segModalTitle').textContent = '新增塔段样式信息';
+      if (codeGroup) codeGroup.style.display = 'none';
+      if (metaGroup) metaGroup.style.display = '';
+      document.getElementById('segFormTower').value = '';
+      document.getElementById('segFormName').value = '';
+      document.getElementById('segFormStyleType').value = '';
+      document.getElementById('segFormSource').value = '';
+      document.getElementById('segFormCreator').value = '张伟';
+      document.getElementById('segFormCreated').value = '2026-05-08 13:00';
+      document.getElementById('segFormRemark').value = '';
+      setFieldsReadonly(false);
+      if (saveBtn) saveBtn.style.display = '';
+    } else if (row) {
+      fillFromRow(row);
+      if (codeGroup) codeGroup.style.display = '';
+      if (metaGroup) metaGroup.style.display = '';
+      if (mode === 'detail') {
+        document.getElementById('segModalTitle').textContent = '塔段样式详情';
+        setFieldsReadonly(true);
+        if (saveBtn) saveBtn.style.display = 'none';
+      } else {
+        document.getElementById('segModalTitle').textContent = '编辑塔段样式信息';
+        setFieldsReadonly(false);
+        document.getElementById('segFormCreator').setAttribute('readonly', 'readonly');
+        document.getElementById('segFormCreated').setAttribute('readonly', 'readonly');
+        if (saveBtn) saveBtn.style.display = '';
+      }
+    }
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+  }
+  function closeModal() {
+    var modal = getModal();
+    if (!modal) return;
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+    setFieldsReadonly(false);
+    editingRow = null;
+  }
+  function renderStatus(row, enabled) {
+    var cell = row.querySelector('.seg-status-cell');
+    var toggle = row.querySelector('.btn-seg-toggle');
+    row.dataset.status = enabled ? '1' : '0';
+    if (cell) cell.innerHTML = enabled ? '<span class="tag tag-green">启用</span>' : '<span class="tag tag-gray">停用</span>';
+    if (toggle) {
+      toggle.textContent = enabled ? '禁用' : '启用';
+      toggle.style.color = enabled ? 'var(--warning)' : 'var(--success)';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('open-create-modal').addEventListener('click', function () { openModal('add'); });
+    document.getElementById('close-create-modal').addEventListener('click', closeModal);
+    document.getElementById('cancel-create-modal').addEventListener('click', closeModal);
+    document.getElementById('segModalSave').addEventListener('click', function () {
+      var name = document.getElementById('segFormName').value.trim();
+      var tower = document.getElementById('segFormTower').value;
+      if (!tower || document.getElementById('segFormTower').selectedIndex === 0) { alert('请选择铁塔类型'); return; }
+      if (!name) { alert('请填写塔段样式名称'); return; }
+      if (modalMode === 'edit' && editingRow) {
+        editingRow.dataset.tower = tower;
+        editingRow.dataset.name = name;
+        editingRow.dataset.styleType = document.getElementById('segFormStyleType').options[document.getElementById('segFormStyleType').selectedIndex].text;
+        editingRow.dataset.source = document.getElementById('segFormSource').options[document.getElementById('segFormSource').selectedIndex].text;
+        editingRow.dataset.remark = document.getElementById('segFormRemark').value;
+        editingRow.cells[1].textContent = tower;
+        editingRow.cells[2].textContent = name;
+        editingRow.cells[3].textContent = editingRow.dataset.styleType;
+        editingRow.cells[4].textContent = editingRow.dataset.source;
+        alert('已保存（原型）');
+      } else {
+        alert('将保存塔段样式（原型）');
+      }
+      closeModal();
+    });
+    getModal().addEventListener('click', function (e) { if (e.target === getModal()) closeModal(); });
+    document.querySelector('tbody').addEventListener('click', function (e) {
+      var row = e.target.closest('tr[data-code]');
+      if (!row) return;
+      if (e.target.closest('.btn-seg-detail')) openModal('detail', row);
+      if (e.target.closest('.btn-seg-edit')) openModal('edit', row);
+      if (e.target.closest('.btn-seg-toggle')) {
+        var enabled = row.dataset.status !== '1';
+        renderStatus(row, enabled);
+        alert((enabled ? '已启用' : '已停用') + '：' + row.dataset.code);
+      }
+      if (e.target.closest('.btn-seg-delete')) {
+        var label = (row.dataset.name || '') + '（' + (row.dataset.code || '') + '）';
+        if (confirm('确定要删除「' + label + '」吗？删除后不可恢复。')) alert('已删除（原型）');
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>

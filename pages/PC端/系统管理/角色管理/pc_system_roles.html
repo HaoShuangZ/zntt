@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>角色管理</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .two-col { display:flex; gap:20px; min-height:calc(100vh - 180px); }
+  .left-col { width:30%; flex-shrink:0; }
+  .right-col { flex:1; min-width:0; }
+  .role-list { list-style:none; padding:0; }
+  .role-list li { padding:12px 16px; font-size:13px; color:var(--text-2); cursor:pointer; border-left:3px solid transparent; transition:all .15s; display:flex; align-items:center; justify-content:space-between; }
+  .role-list li:hover { background:#F7F8FA; }
+  .role-list li.active { background:var(--primary-bg); color:var(--primary); border-left-color:var(--primary); font-weight:500; }
+  .role-list li .role-count { font-size:12px; color:var(--text-4); background:#F2F3F5; padding:1px 8px; border-radius:10px; }
+  .role-list li.active .role-count { background:var(--primary-light); color:var(--primary); }
+  .perm-tree { list-style:none; padding:0; }
+  .perm-tree > li { margin-bottom:8px; }
+  .perm-group { font-size:14px; font-weight:500; color:var(--text-1); display:flex; align-items:center; gap:8px; padding:6px 0; }
+  .perm-group input[type="checkbox"] { width:16px; height:16px; accent-color:var(--primary); }
+  .perm-children { list-style:none; padding-left:28px; margin-top:4px; }
+  .perm-children li { padding:4px 0; font-size:13px; color:var(--text-2); display:flex; align-items:center; gap:8px; }
+  .perm-children li input[type="checkbox"] { width:14px; height:14px; accent-color:var(--primary); }
+  .radio-group { display:flex; gap:20px; align-items:center; }
+  .radio-group label { display:flex; align-items:center; gap:6px; font-size:13px; color:var(--text-2); cursor:pointer; }
+</style>
+</head>
+<body>
+<div id="page-content">
+
+  <div class="two-col">
+    <!-- Left -->
+    <div class="left-col">
+      <div class="card" style="position:sticky;top:20px;">
+        <div class="card-header"><div class="card-title">角色列表</div></div>
+        <div class="card-body" style="padding:0;">
+          <ul class="role-list">
+            <li class="active"><span>系统管理</span><span class="role-count">1</span></li>
+            <li><span>合同</span><span class="role-count">3</span></li>
+            <li><span>营销人员</span><span class="role-count">2</span></li>
+            <li><span>检测人</span><span class="role-count">8</span></li>
+            <li><span>审核</span><span class="role-count">3</span></li>
+            <li><span>审批</span><span class="role-count">2</span></li>
+            <li><span>设备管理</span><span class="role-count">2</span></li>
+            <li><span>管理</span><span class="role-count">3</span></li>
+          </ul>
+        </div>
+        <div style="padding:12px 16px;border-top:1px solid var(--border);">
+          <button class="btn btn-primary btn-sm" style="width:100%"><i class="fa-solid fa-plus"></i> 新增角色</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right -->
+    <div class="right-col">
+      <div class="card">
+        <div class="card-header"><div class="card-title">权限配置 - 系统管理</div></div>
+        <div class="card-body">
+
+          <div class="form-section">
+            <div class="form-section-title">菜单权限</div>
+            <ul class="perm-tree">
+              <li>
+                <div class="perm-group"><input type="checkbox" checked> 个人中心</div>
+                <ul class="perm-children">
+                  <li><input type="checkbox" checked> 我的信息</li>
+                  <li><input type="checkbox" checked> 消息中心</li>
+                  <li><input type="checkbox" checked> 登录日志</li>
+                </ul>
+              </li>
+              <li>
+                <div class="perm-group"><input type="checkbox" checked> 营销管理</div>
+                <ul class="perm-children">
+                  <li><input type="checkbox" checked> 客户管理</li>
+                  <li><input type="checkbox" checked> 工程管理</li>
+                  <li><input type="checkbox" checked> 订单管理</li>
+                </ul>
+              </li>
+              <li>
+                <div class="perm-group"><input type="checkbox" checked> 检测管理</div>
+                <ul class="perm-children">
+                  <li><input type="checkbox" checked> 检测任务</li>
+                  <li><input type="checkbox" checked> 报告编制</li>
+                  <li><input type="checkbox" checked> 报告流程处理（审核/签发）</li>
+                </ul>
+              </li>
+              <li>
+                <div class="perm-group"><input type="checkbox" checked> 统计分析</div>
+                <ul class="perm-children">
+                  <li><input type="checkbox" checked> 订单统计</li>
+                  <li><input type="checkbox" checked> 报告查询</li>
+                </ul>
+              </li>
+              <li>
+                <div class="perm-group"><input type="checkbox" checked> 模板配置</div>
+                <ul class="perm-children">
+                  <li><input type="checkbox" checked> 检测模板</li>
+                  <li><input type="checkbox" checked> 消息模板</li>
+                </ul>
+              </li>
+              <li>
+                <div class="perm-group"><input type="checkbox" checked> 基础数据</div>
+                <ul class="perm-children">
+                  <li><input type="checkbox" checked> 检测单位</li>
+                  <li><input type="checkbox" checked> 设备管理</li>
+                  <li><input type="checkbox" checked> 铁塔类型</li>
+                  <li><input type="checkbox" checked> 区域风压</li>
+                  <li><input type="checkbox" checked> 标准规范</li>
+                  <li><input type="checkbox" checked> 规范组</li>
+                  <li><input type="checkbox" checked> 设备类型</li>
+                  <li><input type="checkbox" checked> 检测类型</li>
+                  <li><input type="checkbox" checked> 塔段样式信息</li>
+                </ul>
+              </li>
+              <li>
+                <div class="perm-group"><input type="checkbox" checked> 系统管理</div>
+                <ul class="perm-children">
+                  <li><input type="checkbox" checked> 用户管理</li>
+                  <li><input type="checkbox" checked> 角色管理</li>
+                  <li><input type="checkbox" checked> 操作日志</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">数据权限</div>
+            <div class="radio-group">
+              <label><input type="radio" name="data_scope" checked> 全部数据</label>
+              <label><input type="radio" name="data_scope"> 本部门数</label>
+              <label><input type="radio" name="data_scope"> 仅本人数</label>
+            </div>
+          </div>
+
+          <div class="form-footer">
+            <button class="btn btn-primary">保存权限</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'system_roles', breadcrumb:['系统管理','角色管理']};</script>
+</body>
+</html>
+

@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<!-- iPad-WORKBENCH_INDEX v2.0 landscape -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>工作台</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/app-frame.css">
+<link rel="stylesheet" href="../../../../assets/ipad-tokens.css">
+<link rel="stylesheet" href="../../../../assets/ipad-frame.css">
+<link rel="stylesheet" href="../../../../assets/ipad-layout.css">
+<link rel="stylesheet" href="../../../../assets/ipad-visual.css">
+<link rel="stylesheet" href="../../../../assets/ipad-embed.css">
+<script src="../../../../assets/ipad-adapt.js" defer></script>
+<script src="../../../../assets/app-menu-access-log.js"></script>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; background: #F2F3F5; margin: 0; }
+.seg { flex:1; text-align:center; padding:10px 0; font-size:14px; color:#86909C; border-bottom:2px solid transparent; cursor:pointer; }
+.seg.on { color:#165DFF; font-weight:600; border-bottom-color:#165DFF; }
+.tag-f { padding:2px 8px; border-radius:4px; font-size:11px; }
+.tag-urge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #F53F3F;
+  background: #FFECE8;
+  border: 1px solid rgba(245, 63, 63, 0.35);
+  flex-shrink: 0;
+}
+.order-card[data-urged="1"] .order-card-inner {
+  border-color: rgba(245, 63, 63, 0.28);
+  box-shadow: 0 2px 10px rgba(245, 63, 63, 0.08);
+}
+.order-card[data-urged="1"] .order-card-inner::before {
+  content: "";
+  display: block;
+  height: 3px;
+  background: linear-gradient(90deg, #F53F3F 0%, #FF9A8B 100%);
+}
+#listArea {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.order-card { flex-shrink: 0; }
+.order-card-inner {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  border: 1px solid rgba(229, 230, 235, 0.9);
+  overflow: hidden;
+}
+.order-card-body {
+  display: block;
+  padding: 12px 14px 12px;
+  text-decoration: none;
+  color: inherit;
+}
+.card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  color: #4E5969;
+  line-height: 1.45;
+}
+.card-meta > div {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+}
+.card-meta .deadline-date {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-variant-numeric: tabular-nums;
+}
+.card-act-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px 12px;
+  padding: 8px 14px 10px;
+  border-top: 1px solid #F2F3F5;
+  background: #FAFBFC;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+}
+.card-footer-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+.card-nav-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #165DFF;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.card-nav-inline:active { opacity: 0.72; }
+.card-act-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+.mask { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:100; align-items:flex-end; justify-content:center; }
+.mask.show { display:flex; }
+.sheet { width:100%; max-height:70vh; background:#fff; border-radius:16px 16px 0 0; padding:16px; box-sizing:border-box; }
+#calendarMask { z-index:110; }
+.order-card.hidden { display:none !important; }
+.header-bell-wrap {
+  position: relative;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+}
+.header-bell {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.header-bell:active { background: rgba(255, 255, 255, 0.28); }
+.header-bell i { font-size: 18px; }
+.header-bell-badge {
+  display: none;
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  z-index: 1;
+  min-width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #F53F3F;
+  box-shadow: 0 0 0 2px #4080ff;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+  pointer-events: none;
+}
+.header-bell-badge.show {
+  display: flex;
+}
+.header-bell-badge.show.has-count {
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  font-size: 10px;
+  top: -1px;
+  right: -1px;
+  line-height: 16px;
+}
+.card-act-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  line-height: 1.3;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.card-act-btn i {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.card-act-reject { color: #F53F3F; }
+.card-act-reject:active { opacity: 0.72; }
+.card-act-transfer { color: #165DFF; }
+.card-act-transfer:active { opacity: 0.72; }
+#taskRejectMask, #taskTransferMask { z-index: 120; }
+/* 已办日历：有记录日期 + 角标（当日提交检测任务条数） */
+.cal-cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 6px 0;
+  font-size: 13px;
+  color: #1D2129;
+  box-sizing: border-box;
+}
+.cal-cell--muted { color: #C9CDD4; }
+.cal-cell--done {
+  border-radius: 8px;
+  background: #E8F7FF;
+  color: #165DFF;
+  font-weight: 600;
+}
+.cal-cell-day { line-height: 1; }
+.toolbar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.toolbar-row-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.sort-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: #1D2129;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  max-width: 52%;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+}
+.sort-trigger:active { opacity: 0.75; }
+.sort-trigger i.fa-sort { color: #86909C; font-size: 12px; flex-shrink: 0; }
+#sortMask { z-index: 115; }
+.sort-option {
+  display: block;
+  width: 100%;
+  padding: 14px 4px;
+  border: none;
+  border-bottom: 1px solid #F2F3F5;
+  background: none;
+  font-size: 15px;
+  color: #1D2129;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.sort-option:last-of-type { border-bottom: none; }
+.sort-option:active { background: #F7F8FA; }
+.sort-option.is-on { color: #165DFF; font-weight: 600; }
+.cal-cell-badge {
+  position: absolute;
+  top: 2px;
+  right: 3px;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: #F53F3F;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 15px;
+  text-align: center;
+  box-sizing: border-box;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 0 0 1px #fff;
+}
+</style>
+</head>
+<body class="ipad-adapt">
+<div style="height:44px; display:flex; align-items:center; justify-content:space-between; padding:0 16px; background:#165DFF;">
+  <span style="font-size:14px; font-weight:600; color:#fff;">9:41</span>
+  <span style="font-size:12px; color:#fff;"><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+</div>
+
+<div style="background:linear-gradient(135deg, #165DFF 0%, #4080FF 100%); padding:16px; color:#fff;">
+  <div style="display:flex; align-items:center; gap:12px;">
+    <a href="../../个人中心/首页/ipad_profile_index.html" aria-label="我的" style="width:48px; height:48px; border-radius:50%; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; text-decoration:none; color:#fff; flex-shrink:0; -webkit-tap-highlight-color:transparent;">
+      <i class="fa-solid fa-user" style="font-size:20px;"></i>
+    </a>
+    <div style="flex:1; min-width:0;">
+      <div style="font-size:17px; font-weight:600;">李明</div>
+      <div style="font-size:13px; opacity:0.8;">检测一组 · 检测工程师</div>
+    </div>
+    <span class="header-bell-wrap">
+      <a href="ipad_message_center.html" id="headerBellLink" class="header-bell" title="消息中心" aria-label="消息中心" style="text-decoration:none;">
+        <i class="fa-regular fa-bell" aria-hidden="true"></i>
+      </a>
+      <span id="bellUnreadBadge" class="header-bell-badge" aria-hidden="true"></span>
+    </span>
+  </div>
+</div>
+
+<!-- 工单列表：待办/已办、搜索、地图、已办日历、导出、卡片 -->
+<div id="panel-list">
+  <div style="display:flex; background:#fff; border-bottom:1px solid #E5E6EB;">
+    <div id="segTodo" class="seg on" data-seg="todo">待办</div>
+    <div id="segDone" class="seg" data-seg="done">已办</div>
+  </div>
+  <div style="padding:12px 16px 8px; background:#fff;">
+    <div style="position:relative;">
+      <i class="fa-solid fa-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#C9CDD4; font-size:14px;"></i>
+      <input id="searchInput" type="text" placeholder="搜索：订单号/站点名称/站址编码/坐标/日期" style="width:100%; height:36px; border:1px solid #E5E6EB; border-radius:18px; padding:0 12px 0 36px; font-size:14px; outline:none; box-sizing:border-box; background:#F7F8FA;">
+    </div>
+  </div>
+  <div style="padding:10px 16px; background:#fff; border-bottom:1px solid #F2F3F5;" class="toolbar-row">
+    <button type="button" class="sort-trigger" id="btnSort" aria-haspopup="dialog" aria-expanded="false" aria-controls="sortMask">
+      <i class="fa-solid fa-sort" aria-hidden="true"></i>
+      <span id="sortLabel">派单时间 ↓</span>
+    </button>
+    <div class="toolbar-row-right">
+      <a href="../../工单/列表/ipad_order_map.html" style="color:#165DFF;text-decoration:none;font-size:13px;white-space:nowrap;"><i class="fa-solid fa-map-location-dot"></i> 地图</a>
+      <button type="button" id="btnCalendar" style="border:none;background:none;color:#165DFF;font-size:13px;cursor:pointer;white-space:nowrap;"><i class="fa-solid fa-calendar-days"></i> 已办日历</button>
+      <button type="button" id="btnExport" style="border:none;background:none;color:#165DFF;font-size:13px;cursor:pointer;white-space:nowrap;"><i class="fa-solid fa-file-excel"></i> 导出</button>
+    </div>
+  </div>
+  <div id="listArea" style="padding:8px 16px 24px; overflow-y:auto; height:calc(100vh - 44px - 90px - 42px - 72px - 45px);">
+
+    <div class="order-card" data-scope="todo" data-status="待检测" data-urged="1" data-deadline="2026-05-15" data-dispatch="2026-05-06" data-lat="30.2084" data-lng="120.2126" data-search="dd20260506001 zz-hz-bj01 滨江 年检 单管 tt-bj 年度常规 120.2126 30.2084 2026-05-15 催办 催">
+      <div class="order-card-inner">
+        <a class="order-card-body" href="../../工单/详情/ipad_order_detail.html?order=DD20260506001">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="font-size:12px; color:#86909C; font-family:ui-monospace,monospace;">DD20260506001</span>
+            <span style="display:inline-flex; align-items:center; gap:6px; flex-shrink:0;">
+              <span class="tag-urge" title="已被催办，请优先处理" aria-label="催办">催</span>
+              <span class="tag-f" style="background:#E8F7FF; color:#165DFF;">待检测</span>
+            </span>
+          </div>
+          <div class="card-site-title" style="font-size:15px; font-weight:600; color:#1D2129; margin-bottom:10px; line-height:1.35;">滨江江南大道站</div>
+          <div class="card-meta">
+            <div><i class="fa-solid fa-barcode" style="width:14px;color:#C9CDD4;flex-shrink:0;"></i> 站址编码 <span style="font-family:ui-monospace,SFMono-Regular,monospace;font-variant-numeric:tabular-nums;">ZZ-HZ-BJ01</span></div>
+            <div><i class="fa-regular fa-calendar" style="width:14px;color:#C9CDD4;flex-shrink:0;"></i> 截止日期 <span class="deadline-date">2026-05-15</span></div>
+            <div><i class="fa-solid fa-crosshairs" style="width:14px;color:#165DFF;flex-shrink:0;" aria-hidden="true"></i><span style="font-family:ui-monospace,SFMono-Regular,monospace;font-variant-numeric:tabular-nums;">120.2126，30.2084</span></div>
+          </div>
+        </a>
+        <div class="card-act-row">
+          <div class="card-footer-left">
+            <a class="card-nav-inline" href="https://uri.amap.com/navigation?to=120.2126,30.2084&amp;mode=car&amp;src=tower-app&amp;callnative=1" target="_blank" rel="noopener noreferrer" title="在高德地图中打开导航">
+              <i class="fa-solid fa-diamond-turn-right" aria-hidden="true"></i><span>导航</span>
+            </a>
+          </div>
+          <div class="card-act-actions">
+            <button type="button" class="card-act-btn card-act-reject" data-order="DD20260506001" data-task="RW202606006" data-title="滨江江南大道站"><i class="fa-solid fa-circle-xmark" aria-hidden="true"></i><span>拒绝</span></button>
+            <button type="button" class="card-act-btn card-act-transfer" data-order="DD20260506001" data-task="RW202606006" data-title="滨江江南大道站"><i class="fa-solid fa-right-left" aria-hidden="true"></i><span>转派</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="order-card" data-scope="todo" data-status="检测中" data-deadline="2026-05-18" data-dispatch="2026-05-07" data-lat="30.2955" data-lng="120.0891" data-search="dd20260507002 zz-hz-cx03 城西 专项 角钢 tt-cx 120.0891 30.2955 2026-05-18">
+      <div class="order-card-inner">
+        <a class="order-card-body" href="../../工单/详情/ipad_order_detail.html?order=DD20260507002">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="font-size:12px; color:#86909C; font-family:ui-monospace,monospace;">DD20260507002</span>
+            <span class="tag-f" style="background:#FFF7E8; color:#FF7D00;">检测中</span>
+          </div>
+          <div class="card-site-title" style="font-size:15px; font-weight:600; color:#1D2129; margin-bottom:10px; line-height:1.35;">城西03#角钢塔站</div>
+          <div class="card-meta">
+            <div><i class="fa-solid fa-barcode" style="width:14px;color:#C9CDD4;flex-shrink:0;"></i> 站址编码 <span style="font-family:ui-monospace,SFMono-Regular,monospace;font-variant-numeric:tabular-nums;">ZZ-HZ-CX03</span></div>
+            <div><i class="fa-regular fa-calendar" style="width:14px;color:#C9CDD4;flex-shrink:0;"></i> 截止日期 <span class="deadline-date">2026-05-18</span></div>
+            <div><i class="fa-solid fa-crosshairs" style="width:14px;color:#165DFF;flex-shrink:0;" aria-hidden="true"></i><span style="font-family:ui-monospace,SFMono-Regular,monospace;font-variant-numeric:tabular-nums;">120.0891，30.2955</span></div>
+          </div>
+        </a>
+        <div class="card-act-row">
+          <div class="card-footer-left">
+            <a class="card-nav-inline" href="https://uri.amap.com/navigation?to=120.0891,30.2955&amp;mode=car&amp;src=tower-app&amp;callnative=1" target="_blank" rel="noopener noreferrer" title="在高德地图中打开导航">
+              <i class="fa-solid fa-diamond-turn-right" aria-hidden="true"></i><span>导航</span>
+            </a>
+          </div>
+          <div class="card-act-actions">
+            <button type="button" class="card-act-btn card-act-reject" data-order="DD20260507002" data-task="RW202606007" data-title="城西03#角钢塔站"><i class="fa-solid fa-circle-xmark" aria-hidden="true"></i><span>拒绝</span></button>
+            <button type="button" class="card-act-btn card-act-transfer" data-order="DD20260507002" data-task="RW202606007" data-title="城西03#角钢塔站"><i class="fa-solid fa-right-left" aria-hidden="true"></i><span>转派</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="order-card" data-scope="todo" data-status="待检测" data-deadline="2026-05-22" data-dispatch="2026-05-08" data-lat="30.4211" data-lng="119.9780" data-search="dd20260508004 zz-hz-yh09 余杭 季度 四管 119.9780 30.4211 2026-05-22">
+      <div class="order-card-inner">
+        <a class="order-card-body" href="../../工单/详情/ipad_order_detail.html?order=DD20260508004">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="font-size:12px; color:#86909C; font-family:ui-monospace,monospace;">DD20260508004</span>
+            <span class="tag-f" style="background:#E8F7FF; color:#165DFF;">待检测</span>
+          </div>
+          <div class="card-site-title" style="font-size:15px; font-weight:600; color:#1D2129; margin-bottom:10px; line-height:1.35;">余杭角钢塔站</div>
+          <div class="card-meta">
+            <div><i class="fa-solid fa-barcode" style="width:14px;color:#C9CDD4;flex-shrink:0;"></i> 站址编码 <span style="font-family:ui-monospace,SFMono-Regular,monospace;font-variant-numeric:tabular-nums;">ZZ-HZ-YH09</span></div>
+            <div><i class="fa-regular fa-calendar" style="width:14px;color:#C9CDD4;flex-shrink:0;"></i> 截止日期 <span class="deadline-date">2026-05-22</span></div>
+            <div><i class="fa-solid fa-crosshairs" style="width:14px;color:#165DFF;flex-shrink:0;" aria-hidden="true"></i><span style="font-family:ui-monospace,SFMono-Regular,monospace;font-variant-numeric:tabular-nums;">119.9780，30.4211</span></div>
+          </div>
+        </a>
+        <div class="card-act-row">
+          <div class="card-footer-left">
+            <a class="card-nav-inline" href="https://uri.amap.com/navigation?to=119.9780,30.4211&amp;mode=car&amp;src=tower-app&amp;callnative=1" target="_blank" rel="noopener noreferrer" title="在高德地图中打开导航">
+              <i class="fa-solid fa-diamond-turn-right" aria-hidden="true"></i><span>导航</span>
+            </a>
+          </div>
+          <div class="card-act-actions">
+            <button type="button" class="card-act-btn card-act-reject" data-order="DD20260508004" data-task="RW202606008" data-title="余杭角钢塔站"><i class="fa-solid fa-circle-xmark" aria-hidden="true"></i><span>拒绝</span></button>
+            <button type="button" class="card-act-btn card-act-transfer" data-order="DD20260508004" data-task="RW202606008" data-title="余杭角钢塔站"><i class="fa-solid fa-right-left" aria-hidden="true"></i><span>转派</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="order-card" data-scope="done" data-status="已完成" data-deadline="2026-05-10" data-dispatch="2026-05-05" data-lat="30.3320" data-lng="120.1412" data-search="dd20260505003 zz-hz-gs05 拱墅 复检 三管 120.1412 30.3320 2026-05-10">
+      <div class="order-card-inner">
+        <a class="order-card-body" href="../../工单/详情/ipad_order_detail.html?order=DD20260505003">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="font-size:12px; color:#86909C; font-family:ui-monospace,monospace;">DD20260505003</span>
+            <span class="tag-f" style="background:#E8FFEA; color:#00B42A;">已完成</span>
+          </div>
+          <div class="card-site-title" style="font-size:15px; font-weight:600; color:#1D2129; margin-bottom:10px; line-height:1.35;">拱墅05#三管塔站</div>
+          <div class="card-meta">
+            <div><i class="fa-solid fa-barcode" style="width:14px;color:#C9CDD4;flex-shrink:0;"></i> 站址编码 <span style="font-family:ui-monospace,SFMono-Regular,monospace;font-variant-numeric:tabular-nums;">ZZ-HZ-GS05</span></div>
+            <div><i class="fa-regular fa-calendar" style="width:14px;color:#C9CDD4;flex-shrink:0;"></i> 截止日期 <span class="deadline-date">2026-05-10</span></div>
+            <div><i class="fa-solid fa-crosshairs" style="width:14px;color:#165DFF;flex-shrink:0;" aria-hidden="true"></i><span style="font-family:ui-monospace,SFMono-Regular,monospace;font-variant-numeric:tabular-nums;">120.1412，30.3320</span></div>
+          </div>
+        </a>
+        <div class="card-act-row">
+          <div class="card-footer-left">
+            <a class="card-nav-inline" href="https://uri.amap.com/navigation?to=120.1412,30.3320&amp;mode=car&amp;src=tower-app&amp;callnative=1" target="_blank" rel="noopener noreferrer" title="在高德地图中打开导航">
+              <i class="fa-solid fa-diamond-turn-right" aria-hidden="true"></i><span>导航</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="order-card" data-scope="done" data-status="已完成" data-deadline="2026-05-03" data-dispatch="2026-05-04" data-lat="30.2455" data-lng="120.1188" data-search="dd20260504005 zz-hz-xh02 西湖 验收 单管 120.1188 30.2455 2026-05-03">
+      <div class="order-card-inner">
+        <a class="order-card-body" href="../../工单/详情/ipad_order_detail.html?order=DD20260504005">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="font-size:12px; color:#86909C; font-family:ui-monospace,monospace;">DD20260504005</span>
+            <span class="tag-f" style="background:#E8FFEA; color:#00B42A;">已完成</span>
+          </div>
+          <div class="card-site-title" style="font-size:15px; font-weight:600; color:#1D2129; margin-bottom:10px; line-height:1.35;">西湖02#验收站</div>
+          <div class="card-meta">
+            <div><i class="fa-solid fa-barcode" style="width:14px;color:#C9CDD4;flex-shrink:0;"></i> 站址编码 <span style="font-family:ui-monospace,SFMono-Regular,monospace;font-variant-numeric:tabular-nums;">ZZ-HZ-XH02</span></div>
+            <div><i class="fa-regular fa-calendar" style="width:14px;color:#C9CDD4;flex-shrink:0;"></i> 截止日期 <span class="deadline-date">2026-05-03</span></div>
+            <div><i class="fa-solid fa-crosshairs" style="width:14px;color:#165DFF;flex-shrink:0;" aria-hidden="true"></i><span style="font-family:ui-monospace,SFMono-Regular,monospace;font-variant-numeric:tabular-nums;">120.1188，30.2455</span></div>
+          </div>
+        </a>
+        <div class="card-act-row">
+          <div class="card-footer-left">
+            <a class="card-nav-inline" href="https://uri.amap.com/navigation?to=120.1188,30.2455&amp;mode=car&amp;src=tower-app&amp;callnative=1" target="_blank" rel="noopener noreferrer" title="在高德地图中打开导航">
+              <i class="fa-solid fa-diamond-turn-right" aria-hidden="true"></i><span>导航</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="sortMask" class="mask" role="dialog" aria-modal="true" aria-labelledby="sortSheetTitle">
+  <div class="sheet" style="padding-bottom:calc(16px + env(safe-area-inset-bottom, 0px));">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+      <span id="sortSheetTitle" style="font-size:16px;font-weight:600;color:#1D2129;">排序方式</span>
+      <button type="button" id="closeSort" style="border:none;background:none;font-size:22px;color:#86909C;cursor:pointer;line-height:1;padding:4px;">×</button>
+    </div>
+    <p style="font-size:12px;color:#86909C;margin:0 0 8px;line-height:1.4;">直线距离按与当前位置（原型固定参考点）计算</p>
+    <div id="sortOptions">
+      <button type="button" class="sort-option" data-sort="deadline_asc">截止时间 ↑</button>
+      <button type="button" class="sort-option" data-sort="deadline_desc">截止时间 ↓</button>
+      <button type="button" class="sort-option" data-sort="distance_asc">直线距离 ↑</button>
+      <button type="button" class="sort-option" data-sort="distance_desc">直线距离 ↓</button>
+      <button type="button" class="sort-option" data-sort="dispatch_asc">派单时间 ↑</button>
+      <button type="button" class="sort-option" data-sort="dispatch_desc">派单时间 ↓</button>
+    </div>
+  </div>
+</div>
+
+<div id="calendarMask" class="mask">
+  <div class="sheet" style="max-height:90vh; overflow-y:auto; padding-bottom:16px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <span style="font-size:16px;font-weight:600;color:#1D2129;"><i class="fa-solid fa-calendar-days" style="color:#165DFF;"></i> 已办日历</span>
+      <button type="button" id="closeCalendar" style="border:none;background:none;font-size:22px;color:#86909C;cursor:pointer;line-height:1;padding:4px;">×</button>
+    </div>
+    <div style="background:#F7F8FA;border-radius:12px;padding:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;gap:10px;">
+        <span style="font-size:15px;font-weight:600;color:#1D2129;">2026年5月</span>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;font-size:11px;color:#86909C;line-height:1.35;text-align:right;">
+          <span><i class="fa-solid fa-circle" style="color:#165DFF;font-size:7px;"></i> 蓝底：当日有检测记录</span>
+          <span><i class="fa-solid fa-certificate" style="color:#F53F3F;font-size:9px;"></i> 红标：当日提交任务条数</span>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;font-size:11px;color:#86909C;margin-bottom:6px;">
+        <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;font-size:13px;">
+        <span class="cal-cell cal-cell--muted"></span><span class="cal-cell cal-cell--muted"></span><span class="cal-cell cal-cell--muted"></span><span class="cal-cell cal-cell--muted"></span><span class="cal-cell cal-cell--muted"></span>
+        <span class="cal-cell">1</span>
+        <span class="cal-cell cal-cell--done" title="5月2日 提交检测任务 2 条"><span class="cal-cell-day">2</span><span class="cal-cell-badge" aria-label="2条">2</span></span>
+        <span class="cal-cell">3</span><span class="cal-cell">4</span><span class="cal-cell">5</span>
+        <span class="cal-cell cal-cell--done" title="5月6日 提交检测任务 3 条"><span class="cal-cell-day">6</span><span class="cal-cell-badge">3</span></span>
+        <span class="cal-cell cal-cell--done" title="5月7日 提交检测任务 5 条"><span class="cal-cell-day">7</span><span class="cal-cell-badge">5</span></span>
+        <span class="cal-cell cal-cell--done" title="5月8日 提交检测任务 1 条"><span class="cal-cell-day">8</span><span class="cal-cell-badge">1</span></span>
+        <span class="cal-cell cal-cell--done" title="5月9日 提交检测任务 4 条"><span class="cal-cell-day">9</span><span class="cal-cell-badge">4</span></span>
+        <span class="cal-cell">10</span>
+        <span class="cal-cell cal-cell--done" title="5月11日 提交检测任务 2 条"><span class="cal-cell-day">11</span><span class="cal-cell-badge">2</span></span>
+        <span class="cal-cell">12</span><span class="cal-cell">13</span><span class="cal-cell">14</span><span class="cal-cell">15</span><span class="cal-cell">16</span>
+        <span class="cal-cell">17</span><span class="cal-cell">18</span><span class="cal-cell">19</span><span class="cal-cell">20</span><span class="cal-cell">21</span><span class="cal-cell">22</span><span class="cal-cell">23</span>
+        <span class="cal-cell">24</span><span class="cal-cell">25</span><span class="cal-cell">26</span><span class="cal-cell">27</span><span class="cal-cell">28</span><span class="cal-cell">29</span><span class="cal-cell">30</span>
+        <span class="cal-cell">31</span><span class="cal-cell cal-cell--muted"></span><span class="cal-cell cal-cell--muted"></span><span class="cal-cell cal-cell--muted"></span><span class="cal-cell cal-cell--muted"></span><span class="cal-cell cal-cell--muted"></span><span class="cal-cell cal-cell--muted"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="exportMask" class="mask">
+  <div class="sheet">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <span style="font-size:16px;font-weight:600;">导出订单 Excel</span>
+      <button type="button" id="closeExport" style="border:none;background:none;font-size:20px;color:#86909C;cursor:pointer;">×</button>
+    </div>
+    <p style="font-size:13px;color:#4E5969;line-height:1.6;margin:0 0 16px;">将当前「待办/已办」视图下可见订单生成表格，供在电脑端下载或通过企业微信发送文件。</p>
+    <button type="button" id="doExport" style="width:100%;height:44px;background:#165DFF;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;">生成并通知 PC 下载</button>
+    <p id="exportOk" style="display:none;margin-top:12px;font-size:13px;color:#00B42A;text-align:center;">已生成，请在 PC 端「消息中心」查收下载链接</p>
+  </div>
+</div>
+
+<div id="taskRejectMask" class="mask">
+  <div class="sheet" style="padding-bottom:calc(16px + env(safe-area-inset-bottom, 0px));">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <span style="font-size:16px;font-weight:600;color:#1D2129;">拒绝任务</span>
+      <button type="button" id="taskRejectCloseX" style="border:none;background:none;font-size:22px;color:#86909C;cursor:pointer;line-height:1;">×</button>
+    </div>
+    <p id="taskRejectCtx" style="font-size:14px;color:#1D2129;margin:0 0 12px;font-weight:600;line-height:1.4;"></p>
+    <label style="font-size:13px;color:#4E5969;display:block;margin-bottom:6px;">拒绝原因 <span style="color:#F53F3F">*</span></label>
+    <textarea id="taskRejectReason" placeholder="请填写拒绝原因（必填）" style="width:100%;min-height:96px;border:1px solid #E5E6EB;border-radius:10px;padding:10px 12px;font-size:15px;box-sizing:border-box;font-family:inherit;"></textarea>
+    <div style="display:flex;gap:10px;margin-top:16px;">
+      <button type="button" id="taskRejectCancel" style="flex:1;height:44px;border:1px solid #E5E6EB;background:#fff;color:#4E5969;border-radius:10px;font-size:15px;font-weight:600;font-family:inherit;">取消</button>
+      <button type="button" id="taskRejectOk" style="flex:1;height:44px;border:none;background:#FF7D00;color:#fff;border-radius:10px;font-size:15px;font-weight:600;font-family:inherit;">确认拒绝</button>
+    </div>
+  </div>
+</div>
+
+<div id="taskTransferMask" class="mask">
+  <div class="sheet" style="padding-bottom:calc(16px + env(safe-area-inset-bottom, 0px));">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <span style="font-size:16px;font-weight:600;color:#1D2129;">转派任务</span>
+      <button type="button" id="taskTransferCloseX" style="border:none;background:none;font-size:22px;color:#86909C;cursor:pointer;line-height:1;">×</button>
+    </div>
+    <p id="taskTransferCtx" style="font-size:14px;color:#1D2129;margin:0 0 12px;font-weight:600;line-height:1.4;"></p>
+    <label style="font-size:13px;color:#4E5969;display:block;margin-bottom:6px;">转派给 <span style="color:#F53F3F">*</span></label>
+    <select id="taskTransferPerson" style="width:100%;height:44px;border:1px solid #E5E6EB;border-radius:10px;padding:0 12px;font-size:15px;box-sizing:border-box;font-family:inherit;background:#fff;">
+      <option value="">请选择</option>
+      <option>王强（检测二组）</option>
+      <option>张华（检测三组）</option>
+      <option>赵六（外业机动）</option>
+    </select>
+    <label style="font-size:13px;color:#4E5969;display:block;margin:10px 0 6px;">转派说明</label>
+    <textarea id="taskTransferRemark" placeholder="选填：交接要点、现场注意事项等" style="width:100%;min-height:72px;border:1px solid #E5E6EB;border-radius:10px;padding:10px 12px;font-size:15px;box-sizing:border-box;font-family:inherit;"></textarea>
+    <div style="display:flex;gap:10px;margin-top:16px;">
+      <button type="button" id="taskTransferCancel" style="flex:1;height:44px;border:1px solid #E5E6EB;background:#fff;color:#4E5969;border-radius:10px;font-size:15px;font-weight:600;font-family:inherit;">取消</button>
+      <button type="button" id="taskTransferOk" style="flex:1;height:44px;border:none;background:#165DFF;color:#fff;border-radius:10px;font-size:15px;font-weight:600;font-family:inherit;">确认转派</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var MSG_UNREAD_LS = 'tower_proto_msg_unread_count';
+
+function getUnreadMsgCount() {
+  try {
+    var raw = localStorage.getItem(MSG_UNREAD_LS);
+    if (raw === null || raw === '') return 2;
+    var n = parseInt(raw, 10);
+    if (isNaN(n)) return 0;
+    return Math.max(0, Math.min(99, n));
+  } catch (e) {
+    return 2;
+  }
+}
+
+function syncHeaderBellUnread() {
+  var bell = document.getElementById('headerBellLink');
+  var badge = document.getElementById('bellUnreadBadge');
+  if (!bell || !badge) return;
+  var n = getUnreadMsgCount();
+  badge.classList.remove('show', 'has-count');
+  badge.textContent = '';
+  if (n <= 0) {
+    bell.setAttribute('aria-label', '消息中心');
+    return;
+  }
+  badge.classList.add('show');
+  if (n === 1) {
+    bell.setAttribute('aria-label', '消息中心，1条未读');
+  } else {
+    badge.classList.add('has-count');
+    badge.textContent = n > 99 ? '99+' : String(n);
+    bell.setAttribute('aria-label', '消息中心，' + (n > 99 ? '99+' : n) + '条未读');
+  }
+}
+
+window.addEventListener('pageshow', function () {
+  syncHeaderBellUnread();
+});
+
+function closeCalendarSheet() {
+  var m = document.getElementById('calendarMask');
+  if (m) m.classList.remove('show');
+  try {
+    var q = location.search || '';
+    if (location.hash === '#calendar' || location.hash === '#done') {
+      history.replaceState(null, '', location.pathname + q);
+    }
+  } catch (e) {}
+}
+
+function openCalendarSheet() {
+  var m = document.getElementById('calendarMask');
+  if (m) m.classList.add('show');
+}
+
+(function orderList() {
+  if (typeof __logMenuAccess === 'function') __logMenuAccess('工作台');
+  var segTodo = document.getElementById('segTodo');
+  var segDone = document.getElementById('segDone');
+  var currentSeg = 'todo';
+
+  var SORT_LABELS = {
+    deadline_asc: '截止时间 ↑',
+    deadline_desc: '截止时间 ↓',
+    distance_asc: '直线距离 ↑',
+    distance_desc: '直线距离 ↓',
+    dispatch_asc: '派单时间 ↑',
+    dispatch_desc: '派单时间 ↓'
+  };
+  var sortMode = 'dispatch_desc';
+  var REF_LAT = 30.25;
+  var REF_LNG = 120.18;
+
+  function toRad(deg) { return (deg * Math.PI) / 180; }
+  function haversineM(lat1, lng1, lat2, lng2) {
+    if (lat1 == null || lng1 == null || lat2 == null || lng2 == null) return Number.POSITIVE_INFINITY;
+    if (isNaN(lat1) || isNaN(lng1) || isNaN(lat2) || isNaN(lng2)) return Number.POSITIVE_INFINITY;
+    var R = 6371000;
+    var dLat = toRad(lat2 - lat1);
+    var dLng = toRad(lng2 - lng1);
+    var a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }
+
+  function cardSortPayload(card) {
+    var dStr = card.getAttribute('data-deadline') || '';
+    var pStr = card.getAttribute('data-dispatch') || '';
+    var lat = parseFloat(card.getAttribute('data-lat'));
+    var lng = parseFloat(card.getAttribute('data-lng'));
+    var deadlineMs = dStr ? new Date(dStr + 'T12:00:00').getTime() : 0;
+    var dispatchMs = pStr ? new Date(pStr + 'T12:00:00').getTime() : 0;
+    var dist = haversineM(REF_LAT, REF_LNG, lat, lng);
+    var tie = (card.getAttribute('data-search') || '').split(/\s+/)[0] || '';
+    return { deadlineMs: deadlineMs || 0, dispatchMs: dispatchMs || 0, dist: dist, tie: tie };
+  }
+
+  function isUrgedCard(card) {
+    return card.getAttribute('data-urged') === '1';
+  }
+
+  function compareCards(a, b) {
+    var ua = isUrgedCard(a) ? 1 : 0;
+    var ub = isUrgedCard(b) ? 1 : 0;
+    if (ua !== ub) return ub - ua;
+    var A = cardSortPayload(a);
+    var B = cardSortPayload(b);
+    var primary = 0;
+    switch (sortMode) {
+      case 'deadline_asc':
+        primary = A.deadlineMs - B.deadlineMs;
+        break;
+      case 'deadline_desc':
+        primary = B.deadlineMs - A.deadlineMs;
+        break;
+      case 'distance_asc':
+        primary = A.dist - B.dist;
+        break;
+      case 'distance_desc':
+        primary = B.dist - A.dist;
+        break;
+      case 'dispatch_asc':
+        primary = A.dispatchMs - B.dispatchMs;
+        break;
+      case 'dispatch_desc':
+      default:
+        primary = B.dispatchMs - A.dispatchMs;
+        break;
+    }
+    if (primary !== 0) return primary;
+    return (A.tie < B.tie ? -1 : A.tie > B.tie ? 1 : 0);
+  }
+
+  function applySortOrder() {
+    var list = document.getElementById('listArea');
+    if (!list) return;
+    var todos = Array.prototype.slice.call(list.querySelectorAll('.order-card[data-scope="todo"]'));
+    var dones = Array.prototype.slice.call(list.querySelectorAll('.order-card[data-scope="done"]'));
+    todos.sort(compareCards);
+    dones.sort(compareCards);
+    todos.forEach(function (c) {
+      list.appendChild(c);
+    });
+    dones.forEach(function (c) {
+      list.appendChild(c);
+    });
+  }
+
+  function updateSortUi() {
+    var lab = document.getElementById('sortLabel');
+    if (lab) lab.textContent = SORT_LABELS[sortMode] || SORT_LABELS.dispatch_desc;
+    document.querySelectorAll('#sortOptions .sort-option').forEach(function (btn) {
+      var v = btn.getAttribute('data-sort');
+      btn.classList.toggle('is-on', v === sortMode);
+    });
+  }
+
+  var sortMask = document.getElementById('sortMask');
+  var btnSort = document.getElementById('btnSort');
+  function openSortSheet() {
+    if (sortMask) sortMask.classList.add('show');
+    if (btnSort) btnSort.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeSortSheet() {
+    if (sortMask) sortMask.classList.remove('show');
+    if (btnSort) btnSort.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+  if (btnSort) btnSort.addEventListener('click', function () {
+    openSortSheet();
+  });
+  var closeSort = document.getElementById('closeSort');
+  if (closeSort) closeSort.addEventListener('click', closeSortSheet);
+  if (sortMask) sortMask.addEventListener('click', function (e) {
+    if (e.target === sortMask) closeSortSheet();
+  });
+  var sortOpts = document.getElementById('sortOptions');
+  if (sortOpts) sortOpts.addEventListener('click', function (e) {
+    var btn = e.target.closest('.sort-option');
+    if (!btn) return;
+    var v = btn.getAttribute('data-sort');
+    if (!v || !SORT_LABELS[v]) return;
+    sortMode = v;
+    updateSortUi();
+    closeSortSheet();
+    refresh();
+  });
+
+  function countTodoBySearch() {
+    var q = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+    var n = 0;
+    document.querySelectorAll('.order-card[data-scope="todo"]').forEach(function (card) {
+      var hay = (card.getAttribute('data-search') || '').toLowerCase();
+      if (!q || hay.indexOf(q) !== -1) n++;
+    });
+    return n;
+  }
+
+  function updateTodoTabLabel() {
+    if (!segTodo) return;
+    segTodo.textContent = '待办(' + countTodoBySearch() + ')';
+  }
+
+  function applyFilters() {
+    var q = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+    document.querySelectorAll('.order-card').forEach(function (card) {
+      var scopeOk = (currentSeg === 'todo' && card.getAttribute('data-scope') === 'todo') ||
+        (currentSeg === 'done' && card.getAttribute('data-scope') === 'done');
+      var hay = (card.getAttribute('data-search') || '').toLowerCase();
+      var searchOk = !q || hay.indexOf(q) !== -1;
+      card.classList.toggle('hidden', !(scopeOk && searchOk));
+    });
+  }
+
+  var listArea = document.getElementById('listArea');
+
+  window.syncListAreaHeight = function () {
+    if (!listArea) return;
+    listArea.style.height = 'calc(100vh - 44px - 90px - 42px - 56px - 45px)';
+  };
+
+  function refresh() {
+    applySortOrder();
+    applyFilters();
+    updateTodoTabLabel();
+    updateSortUi();
+    window.syncListAreaHeight();
+  }
+
+  if (segTodo) segTodo.addEventListener('click', function () {
+    currentSeg = 'todo';
+    segTodo.classList.add('on');
+    segDone.classList.remove('on');
+    refresh();
+  });
+  if (segDone) segDone.addEventListener('click', function () {
+    currentSeg = 'done';
+    segDone.classList.add('on');
+    segTodo.classList.remove('on');
+    refresh();
+  });
+
+  var si = document.getElementById('searchInput');
+  if (si) si.addEventListener('input', refresh);
+
+  var mask = document.getElementById('exportMask');
+  var btnExport = document.getElementById('btnExport');
+  if (btnExport) btnExport.addEventListener('click', function () {
+    var ok = document.getElementById('exportOk');
+    if (ok) ok.style.display = 'none';
+    if (mask) mask.classList.add('show');
+  });
+  var closeExport = document.getElementById('closeExport');
+  if (closeExport) closeExport.addEventListener('click', function () { if (mask) mask.classList.remove('show'); });
+  if (mask) mask.addEventListener('click', function (e) { if (e.target === mask) mask.classList.remove('show'); });
+  var doExport = document.getElementById('doExport');
+  if (doExport) doExport.addEventListener('click', function () {
+    var ok = document.getElementById('exportOk');
+    if (ok) ok.style.display = 'block';
+  });
+
+  var btnCal = document.getElementById('btnCalendar');
+  if (btnCal) btnCal.addEventListener('click', function () { openCalendarSheet(); });
+
+  var calMask = document.getElementById('calendarMask');
+  var closeCal = document.getElementById('closeCalendar');
+  if (closeCal) closeCal.addEventListener('click', function () { closeCalendarSheet(); });
+  if (calMask) calMask.addEventListener('click', function (e) { if (e.target === calMask) closeCalendarSheet(); });
+
+  var taskCtx = { order: '', task: '', title: '' };
+  var taskRejectMask = document.getElementById('taskRejectMask');
+  var taskTransferMask = document.getElementById('taskTransferMask');
+  function lockBody(on) {
+    document.body.style.overflow = on ? 'hidden' : '';
+  }
+  function closeTaskReject() {
+    if (taskRejectMask) taskRejectMask.classList.remove('show');
+    var ta = document.getElementById('taskRejectReason');
+    if (ta) ta.value = '';
+    lockBody(false);
+  }
+  function closeTaskTransfer() {
+    if (taskTransferMask) taskTransferMask.classList.remove('show');
+    var sel = document.getElementById('taskTransferPerson');
+    var rm = document.getElementById('taskTransferRemark');
+    if (sel) sel.value = '';
+    if (rm) rm.value = '';
+    lockBody(false);
+  }
+  if (listArea) listArea.addEventListener('click', function (e) {
+    var rej = e.target.closest('.card-act-reject');
+    var tr = e.target.closest('.card-act-transfer');
+    if (rej) {
+      e.preventDefault();
+      e.stopPropagation();
+      taskCtx.order = rej.getAttribute('data-order') || '';
+      taskCtx.task = rej.getAttribute('data-task') || '';
+      taskCtx.title = rej.getAttribute('data-title') || '';
+      var rc = document.getElementById('taskRejectCtx');
+      if (rc) rc.textContent = '检测任务 ' + taskCtx.task + ' · 订单 ' + taskCtx.order + ' · ' + taskCtx.title;
+      if (taskRejectMask) taskRejectMask.classList.add('show');
+      lockBody(true);
+      return;
+    }
+    if (tr) {
+      e.preventDefault();
+      e.stopPropagation();
+      taskCtx.order = tr.getAttribute('data-order') || '';
+      taskCtx.task = tr.getAttribute('data-task') || '';
+      taskCtx.title = tr.getAttribute('data-title') || '';
+      var tc = document.getElementById('taskTransferCtx');
+      if (tc) tc.textContent = '检测任务 ' + taskCtx.task + ' · 订单 ' + taskCtx.order + ' · ' + taskCtx.title;
+      if (taskTransferMask) taskTransferMask.classList.add('show');
+      lockBody(true);
+    }
+  });
+  var trx = document.getElementById('taskRejectCloseX');
+  var trc = document.getElementById('taskRejectCancel');
+  if (trx) trx.addEventListener('click', closeTaskReject);
+  if (trc) trc.addEventListener('click', closeTaskReject);
+  if (taskRejectMask) taskRejectMask.addEventListener('click', function (e) { if (e.target === taskRejectMask) closeTaskReject(); });
+  var tro = document.getElementById('taskRejectOk');
+  if (tro) tro.addEventListener('click', function () {
+    var ta = document.getElementById('taskRejectReason');
+    var v = (ta && ta.value || '').trim();
+    if (!v) {
+      alert('请填写拒绝原因');
+      return;
+    }
+    alert('已拒绝任务 ' + taskCtx.task + '（订单 ' + taskCtx.order + '）。订单侧可重新改派检测单位。');
+    closeTaskReject();
+  });
+  var ttx = document.getElementById('taskTransferCloseX');
+  var ttc = document.getElementById('taskTransferCancel');
+  if (ttx) ttx.addEventListener('click', closeTaskTransfer);
+  if (ttc) ttc.addEventListener('click', closeTaskTransfer);
+  if (taskTransferMask) taskTransferMask.addEventListener('click', function (e) { if (e.target === taskTransferMask) closeTaskTransfer(); });
+  var tto = document.getElementById('taskTransferOk');
+  if (tto) tto.addEventListener('click', function () {
+    var sel = document.getElementById('taskTransferPerson');
+    var pv = sel && sel.value;
+    if (!pv) {
+      alert('请选择转派对象');
+      return;
+    }
+    var rm = document.getElementById('taskTransferRemark');
+    var rtxt = (rm && rm.value || '').trim();
+    alert('已将任务 ' + taskCtx.task + ' 转派给「' + pv + '」' + (rtxt ? '。说明：' + rtxt : '') + '。');
+    closeTaskTransfer();
+  });
+
+  refresh();
+
+  window.addEventListener('hashchange', function () {
+    var h = location.hash;
+    if (h === '#calendar' || h === '#done') openCalendarSheet();
+    else if (h === '#orders') {
+      closeCalendarSheet();
+      window.scrollTo(0, 0);
+    } else if (!h || h === '#') {
+      closeCalendarSheet();
+    }
+  });
+})();
+
+syncHeaderBellUnread();
+
+function boot() {
+  var h = location.hash || '';
+  var segParam = '';
+  try { segParam = new URLSearchParams(location.search).get('seg'); } catch (e2) {}
+  if (h === '#calendar' || h === '#done') {
+    openCalendarSheet();
+  } else {
+    if (h === '#orders') window.scrollTo(0, 0);
+    if (segParam === 'done') {
+      var sd = document.getElementById('segDone');
+      if (sd) sd.click();
+    }
+  }
+}
+window.addEventListener('load', boot);
+</script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+/* iPad 嵌入检测 Shell（?embed=1） */
+html.app-embed.ipad-embed #appStatusBar,
+html.app-embed.ipad-embed #appNavBar {
+  display: none !important;
+}
+
+/* iframe 内文档：固定高度链，避免 iOS 上 100vh 撑破父级导致无法滑动 */
+html.app-embed.ipad-embed,
+html.task-embed.ipad-embed {
+  height: 100%;
+  min-height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+html.app-embed.ipad-embed body.ipad-adapt,
+html.app-embed.ipad-embed body.inspect-app-layout.ipad-adapt,
+html.task-embed.ipad-embed body.inspect-app-layout.ipad-adapt {
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  margin: 0;
+  overflow: hidden !important;
+}
+
+html.app-embed.ipad-embed #appSegmentTabBar {
+  flex-shrink: 0;
+}
+
+html.app-embed.ipad-embed #appEmbedContent,
+html.task-embed.ipad-embed body.inspect-app-layout.ipad-adapt #appEmbedContent {
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  /* flex 子项在 iPad Safari 上需明确高度边界，overflow 才能生效 */
+  height: 0 !important;
+  max-height: 100% !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior-y: contain;
+  touch-action: pan-y;
+}
+
+/* grid 表单区（基础信息 / 检查项等）保持双列，同时允许纵向滚动 */
+html.app-embed.ipad-embed body.inspect-app-layout.ipad-adapt #appEmbedContent:has(> .basic-field),
+html.app-embed.ipad-embed body.inspect-app-layout.ipad-adapt #appEmbedContent:has(> .basic-card),
+html.app-embed.ipad-embed body.inspect-app-layout.ipad-adapt #appEmbedContent:has(> .check-card),
+html.task-embed.ipad-embed body.inspect-app-layout.ipad-adapt #appEmbedContent:has(> .basic-field),
+html.task-embed.ipad-embed body.inspect-app-layout.ipad-adapt #appEmbedContent:has(> .basic-card),
+html.task-embed.ipad-embed body.inspect-app-layout.ipad-adapt #appEmbedContent:has(> .check-card),
+html.app-embed.ipad-embed body.inspect-app-layout.ipad-adapt #appEmbedContent.inspect-form-stack,
+html.task-embed.ipad-embed body.inspect-app-layout.ipad-adapt #appEmbedContent.inspect-form-stack {
+  align-content: start;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+/* 检测填报嵌入：模块说明文字正常换行 */
+html.task-embed.ipad-embed body.ipad-adapt .mod .t,
+html.task-embed.ipad-embed body.ipad-adapt .mod .s {
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
+  white-space: normal !important;
+  writing-mode: horizontal-tb !important;
+}
+html.task-embed.ipad-embed body.ipad-adapt .grid2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+/* 嵌入填报主页：子页底栏（下一步 / 备忘录 / 拍照）由父页顶栏与悬浮钮承载 */
+html.app-embed.ipad-embed body.inspect-app-layout [data-app-flow-footer],
+html.app-embed.ipad-embed [data-app-flow-footer] {
+  display: none !important;
+}
+
+/* 同步队列：?embed=1 时底栏「一键同步」由填报主页顶栏承载 */
+html.app-embed.ipad-embed body.inspect-app-layout.ipad-sync-page [data-app-flow-footer].sync-flow-footer {
+  display: none !important;
+}
+
+/* 校验与提交：?embed=1 时底栏改由填报主页顶栏「确认提交」承载 */
+html.app-embed.ipad-embed body.inspect-app-layout.ipad-validate-page [data-app-flow-footer].validate-flow-footer {
+  display: none !important;
+}
+
+/* 模板包分步视图：嵌入填报主页时去掉重复顶栏/底栏，仅保留步骤网格 */
+html.app-embed.ipad-embed body.ipad-task-detail-embed .header-fixed,
+html.app-embed.ipad-embed body.ipad-task-detail-page.ipad-task-detail-embed .header-fixed {
+  display: none !important;
+}
+html.app-embed.ipad-embed body.ipad-task-detail-embed .task-footer,
+html.app-embed.ipad-embed body.ipad-task-detail-page.ipad-task-detail-embed .task-footer {
+  display: none !important;
+}
+html.app-embed.ipad-embed body.ipad-task-detail-embed,
+html.app-embed.ipad-embed body.ipad-task-detail-page.ipad-task-detail-embed {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
+  margin: 0;
+  background: var(--ipad-bg-page, #f2f3f5);
+}
+html.app-embed.ipad-embed body.ipad-task-detail-embed .scroll-main,
+html.app-embed.ipad-embed body.ipad-task-detail-page.ipad-task-detail-embed #taskDetailScroll {
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  height: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 16px !important;
+  box-sizing: border-box;
+}
+
+html.task-embed.ipad-embed body.inspect-app-layout.ipad-sync-page #appEmbedContent.sync-page-stack,
+html.task-embed.ipad-embed body.inspect-app-layout.ipad-validate-page #appEmbedContent.validate-page-stack,
+html.task-embed.ipad-embed body.inspect-app-layout.ipad-note-page #appEmbedContent.note-page-stack {
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  height: 0 !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+/* 嵌入填报 Shell：去掉底栏留白，表单区铺满 iframe */
+html.task-embed.ipad-embed body.inspect-app-layout.ipad-adapt #appEmbedContent {
+  max-width: none !important;
+  margin: 0 !important;
+  padding-bottom: var(--ipad-space-2, 20px) !important;
+}
+html.app-embed.ipad-embed .ipad-global-tabbar {
+  display: none !important;
+}

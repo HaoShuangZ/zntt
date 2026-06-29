@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>导出订单 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+
+  <div class="page-header">
+    <div class="page-title">导出订单</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">导出设置</div>
+    </div>
+    <div class="card-body">
+
+      <!-- 导出字段 -->
+      <div class="form-section">
+        <div class="form-section-title">选择导出字段</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-2);cursor:pointer">
+            <input type="checkbox" checked> 订单编号
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-2);cursor:pointer">
+            <input type="checkbox" checked> 订单名称
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-2);cursor:pointer">
+            <input type="checkbox" checked> 关联铁塔
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-2);cursor:pointer">
+            <input type="checkbox" checked> 关联工程
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-2);cursor:pointer">
+            <input type="checkbox" checked> 检测类型          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-2);cursor:pointer">
+            <input type="checkbox" checked> 状态          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-2);cursor:pointer">
+            <input type="checkbox" checked> 派单时间
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-2);cursor:pointer">
+            <input type="checkbox" checked> 检测人员          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-2);cursor:pointer">
+            <input type="checkbox" checked> 计划完成日期
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-2);cursor:pointer">
+            <input type="checkbox" checked> 客户信息
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-2);cursor:pointer">
+            <input type="checkbox" checked> 站点信息
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-2);cursor:pointer">
+            <input type="checkbox" checked> 检测依据          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-2);cursor:pointer">
+            <input type="checkbox" checked> 审核状态
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-2);cursor:pointer">
+            <input type="checkbox" checked> 审核节点
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-2);cursor:pointer">
+            <input type="checkbox" checked> 审核人
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-2);cursor:pointer">
+            <input type="checkbox" checked> 审核时间
+          </label>
+        </div>
+      </div>
+
+      <!-- 导出格式 -->
+      <div class="form-section">
+        <div class="form-section-title">导出格式</div>
+        <div style="display:flex;gap:24px">
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-2);cursor:pointer">
+            <input type="radio" name="format" checked> Excel (.xlsx)
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-2);cursor:pointer">
+            <input type="radio" name="format"> PDF
+          </label>
+        </div>
+      </div>
+
+      <!-- 数据范围 -->
+      <div class="form-section" style="margin-bottom:0">
+        <div class="form-section-title">数据范围</div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-2);cursor:pointer">
+            <input type="radio" name="range" checked> 当前页（共20 条）
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-2);cursor:pointer">
+            <input type="radio" name="range"> 全部数据（共 128 条）
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-2);cursor:pointer">
+            <input type="radio" name="range"> 自定义时间范围          </label>
+          <div style="display:flex;align-items:center;gap:8px;margin-left:24px">
+            <input type="date" class="form-input" style="width:160px" value="2026-05-01">
+            <span style="color:var(--text-4)"></span>
+            <input type="date" class="form-input" style="width:160px" value="2026-05-08">
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="form-footer">
+      <a href="pc_order_list.html" class="btn btn-default">取消</a>
+      <button class="btn btn-primary"><i class="fa-solid fa-file-export"></i> 确认导出</button>
+    </div>
+  </div>
+
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'order_list', breadcrumb:['营销管理','订单管理','导出订单']};</script>
+</body>
+</html>
+
+

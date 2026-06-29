@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>转办</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+
+  <div class="card" style="max-width:640px;">
+    <div class="card-header"><div class="card-title">转办设置</div></div>
+    <div class="card-body">
+      <div class="form-grid">
+        <div class="form-group full">
+          <label class="form-label">选择转办人<span class="required">*</span></label>
+          <select class="form-select" style="width:100%">
+            <option value="">请选择审核无</option>
+            <option>王强 - 高级工程无</option>
+            <option>李明 - 检测工程师</option>
+            <option>赵六 - 质量主管</option>
+            <option>刘七 - 技术总监</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">转办说明</label>
+          <textarea class="form-textarea" placeholder="请输入转办说明，如转办原因等"""""></textarea>
+        </div>
+      </div>
+
+      <div class="form-footer">
+        <a href="pc_report_audit.html" class="btn btn-default">取消</a>
+        <button class="btn btn-primary">确认转办</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'report_audit', breadcrumb:['检测管理','报告审核','转办']};</script>
+</body>
+</html>
+

@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>开票管理 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .modal-mask { position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:2000; display:none; align-items:center; justify-content:center; padding:20px; }
+  .modal-mask.open { display:flex; }
+  .modal-dialog { background:#fff; border-radius:8px; width:min(760px,96vw); max-height:90vh; overflow:auto; box-shadow:0 12px 48px rgba(0,0,0,.18); }
+  .modal-head { padding:14px 18px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+  .modal-head h3 { margin:0; font-size:16px; font-weight:600; color:var(--text-1); }
+  .modal-body { padding:16px 18px; }
+  .modal-foot { padding:12px 18px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:8px; }
+  .modal-close { border:none; background:transparent; color:var(--text-3); cursor:pointer; font-size:18px; line-height:1; padding:4px; }
+  .search-select-wrap { position:relative; }
+  .search-select-dropdown { position:absolute; top:calc(100% + 4px); left:0; right:0; z-index:30; background:#fff; border:1px solid var(--border); border-radius:6px; box-shadow:0 6px 18px rgba(0,0,0,.08); max-height:220px; overflow:auto; display:none; }
+  .search-select-dropdown.open { display:block; }
+  .search-select-item { padding:8px 10px; font-size:13px; cursor:pointer; line-height:1.5; }
+  .search-select-item:hover { background:#F2F6FF; }
+  .search-select-empty { padding:8px 10px; font-size:12px; color:var(--text-3); }
+  .modal-dialog.order-modal { width:min(1200px,98vw); }
+  #sitePickMask { z-index:2100; }
+  .order-picker-toolbar { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+  .order-summary { font-size:12px; color:var(--text-2); margin-top:8px; min-height:18px; }
+  .order-echo { margin-top:8px; font-size:12px; color:var(--text-2); line-height:1.6; max-height:72px; overflow:auto; border:1px solid var(--border); border-radius:4px; padding:6px 8px; background:#fafafa; }
+  .order-picker-batch { display:flex; align-items:center; gap:6px; margin-top:10px; font-size:13px; }
+  .order-picker-batch .batch-sep { color:var(--text-4); user-select:none; }
+  .order-picker-toolbar-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:8px; }
+  .order-picker-toolbar-row .picker-label { font-size:12px; color:var(--text-3); white-space:nowrap; }
+  .order-picker-toolbar-row .picker-arrow { color:var(--text-4); font-size:12px; }
+  .order-cascade-wrap { position:relative; width:min(240px,100%); }
+  .order-cascade-wrap .form-input { width:100%; }
+  .order-cascade-wrap .form-input:disabled { background:#F7F8FA; cursor:not-allowed; }
+  .inv-attach-hint { font-size:12px; color:var(--text-3); margin:6px 0 0; line-height:1.5; }
+  .inv-attach-hint.has-file { color:var(--text-2); }
+  .site-count-summary { font-size:13px; color:var(--text-1); font-weight:600; }
+  .site-count-summary .site-count-num { color:var(--primary); font-size:15px; margin:0 2px; }
+  .detail-grid { display:grid; grid-template-columns:120px 1fr; gap:10px 16px; font-size:13px; }
+  .detail-grid .detail-label { color:var(--text-3); }
+  .detail-grid .detail-value { color:var(--text-1); word-break:break-all; }
+  .detail-grid .detail-value.void-reason { color:var(--danger); }
+  #voidMask { z-index:2200; }
+  #viewMask { z-index:2150; }
+  .inv-summary-cards { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px; margin-bottom:16px; }
+  .inv-summary-card { background:#F7F8FA; border:1px solid var(--border); border-radius:6px; padding:14px 16px; }
+  .inv-summary-card .inv-summary-label { font-size:12px; color:var(--text-3); margin-bottom:6px; }
+  .inv-summary-card .inv-summary-val { font-size:20px; font-weight:600; color:var(--text-1); line-height:1.3; }
+  .inv-summary-card.sum-amount .inv-summary-val { color:#165DFF; }
+  .inv-summary-card.sum-pending .inv-summary-val { color:#FF7D00; }
+  .inv-summary-card.sum-received .inv-summary-val { color:#00B42A; }
+  @media (max-width:1280px) { .inv-summary-cards { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+  @media (max-width:768px) { .inv-summary-cards { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+</style>
+</head>
+<body>
+<div id="page-content">
+  <div class="page-header">
+    <div class="page-title">开票管理</div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="toolbar" style="margin-bottom:16px">
+        <div class="toolbar-left">
+          <span style="font-size:13px;color:var(--text-3);white-space:nowrap">开票时间</span>
+          <input type="month" class="form-input" id="monthStart" value="2026-05" style="width:150px" title="开始月份">
+          <span style="color:var(--text-4);font-size:13px">至</span>
+          <input type="month" class="form-input" id="monthEnd" value="2026-05" style="width:150px" title="结束月份">
+          <input type="text" class="form-input" id="kwInput" placeholder="发票票号/合同编号/客户" style="width:220px">
+          <select class="form-select" id="statusFilter" style="width:140px">
+            <option value="">全部状态</option>
+            <option value="待收款">待收款</option>
+            <option value="已收款">已收款</option>
+            <option value="已作废">已作废</option>
+          </select>
+          <button type="button" class="btn btn-primary" id="btnSearch"><i class="fa-solid fa-magnifying-glass"></i> 查询</button>
+          <button type="button" class="btn btn-default" id="btnReset"><i class="fa-solid fa-rotate-right"></i> 重置</button>
+        </div>
+      </div>
+
+      <div class="inv-summary-cards" id="invSummaryCards">
+        <div class="inv-summary-card sum-amount">
+          <div class="inv-summary-label">累计开票金额</div>
+          <div class="inv-summary-val" id="sumAmount">¥ 0.00</div>
+        </div>
+        <div class="inv-summary-card">
+          <div class="inv-summary-label">累计开票站点数量</div>
+          <div class="inv-summary-val" id="sumSiteCount">0</div>
+        </div>
+        <div class="inv-summary-card">
+          <div class="inv-summary-label">累计开票数量</div>
+          <div class="inv-summary-val" id="sumInvoiceCount">0</div>
+        </div>
+        <div class="inv-summary-card sum-pending">
+          <div class="inv-summary-label">待收款数量</div>
+          <div class="inv-summary-val" id="sumPendingCount">0</div>
+        </div>
+        <div class="inv-summary-card sum-received">
+          <div class="inv-summary-label">已收款数量</div>
+          <div class="inv-summary-val" id="sumReceivedCount">0</div>
+        </div>
+      </div>
+
+      <p style="font-size:12px;color:var(--text-3);margin:12px 0;line-height:1.5">
+        <i class="fa-solid fa-circle-info"></i> 收款在对上合同「收款登记」中关联开票单后自动回写；本页仅维护开票信息，不提供收款操作。下方汇总按<strong>开票时间（月）</strong>筛选统计，已作废开票不计入累计开票金额/数量/站点数。
+      </p>
+
+      <div class="pc-table-actions">
+        <button type="button" class="btn btn-primary" id="btnOpenAdd"><i class="fa-solid fa-plus"></i> 新增开票</button>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>关联客户</th>
+            <th>关联合同</th>
+            <th>发票票号</th>
+            <th>开票金额</th>
+            <th style="width:110px">关联站点数量</th>
+            <th>开票时间</th>
+            <th>收款状态</th>
+            <th>收款时间</th>
+            <th class="col-action" style="width:160px">操作</th>
+          </tr>
+        </thead>
+        <tbody id="listBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="modal-mask" id="editMask" role="dialog" aria-modal="true" aria-labelledby="editTitle">
+    <div class="modal-dialog">
+      <div class="modal-head">
+        <h3 id="editTitle">新增开票</h3>
+        <button type="button" class="modal-close" id="btnEditX" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grid form-grid-2">
+          <div class="form-group">
+            <label class="form-label">关联客户 <span class="required">*</span></label>
+            <div class="search-select-wrap">
+              <input class="form-input" id="mCustomerText" placeholder="搜索客户并选择" style="width:100%">
+              <div class="search-select-dropdown" id="mCustomerDropdown"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">关联合同 <span class="required">*</span></label>
+            <div class="search-select-wrap">
+              <input class="form-input" id="mContractText" placeholder="搜索合同并选择" style="width:100%">
+              <div class="search-select-dropdown" id="mContractDropdown"></div>
+            </div>
+          </div>
+          <div class="form-group full">
+            <label class="form-label">关联站点</label>
+            <button type="button" class="btn btn-default btn-sm" id="btnPickSites"><i class="fa-solid fa-link"></i> 关联站点</button>
+            <div class="site-count-summary" id="mSiteSummary">关联站点总数：<span class="site-count-num" id="mSiteCount">0</span></div>
+            <div class="order-echo" id="mSiteEcho">请点击「关联站点」选择待开票站点</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">发票票号 <span class="required">*</span></label>
+            <input type="text" class="form-input" id="mInvoiceCode" style="width:100%" placeholder="如：12345678901234">
+          </div>
+          <div class="form-group">
+            <label class="form-label">开票金额(元) <span class="required">*</span></label>
+            <input type="number" class="form-input" id="mInvoiceAmount" style="width:100%" min="0" step="0.01">
+          </div>
+          <div class="form-group">
+            <label class="form-label">开票时间 <span class="required">*</span></label>
+            <input type="date" class="form-input" id="mInvoiceTime" style="width:100%">
+          </div>
+          <div class="form-group full">
+            <label class="form-label">附件（发票）</label>
+            <input type="file" class="form-input" id="mInvoiceAttachment" accept=".pdf,.jpg,.jpeg,.png,.ofd,.doc,.docx" style="width:100%">
+            <p class="inv-attach-hint" id="mAttachmentHint">支持 PDF、图片等，可上传发票扫描件或电子发票文件</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-default" id="btnEditCancel">取消</button>
+        <button type="button" class="btn btn-primary" id="btnEditSave"><i class="fa-solid fa-check"></i> 确定</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-mask" id="sitePickMask" role="dialog" aria-modal="true" aria-labelledby="sitePickTitle">
+    <div class="modal-dialog order-modal">
+      <div class="modal-head">
+        <h3 id="sitePickTitle">关联站点</h3>
+        <button type="button" class="modal-close" id="btnSitePickX" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="order-picker-toolbar-row">
+          <span class="picker-label">工程</span>
+          <div class="order-cascade-wrap search-select-wrap">
+            <input type="text" class="form-input" id="orderFilterProject" placeholder="工程名称 / 工程编码" autocomplete="off">
+            <div class="search-select-dropdown" id="orderProjectDropdown"></div>
+          </div>
+          <span class="picker-arrow"><i class="fa-solid fa-angle-right"></i></span>
+          <span class="picker-label">订单</span>
+          <div class="order-cascade-wrap search-select-wrap">
+            <input type="text" class="form-input" id="orderFilterOrder" placeholder="请先选择工程" autocomplete="off" disabled>
+            <div class="search-select-dropdown" id="orderOrderDropdown"></div>
+          </div>
+        </div>
+        <div class="order-picker-toolbar">
+          <input type="text" class="form-input" id="orderFilterKeyword" placeholder="站址编码 / 站点名称" style="width:200px">
+          <select class="form-select" id="orderFilterStatus" style="width:140px">
+            <option value="未开票" selected>未开票</option>
+            <option value="全部">全部</option>
+            <option value="已开票">已开票</option>
+          </select>
+          <button type="button" class="btn btn-primary btn-sm" id="btnOrderFilterSearch"><i class="fa-solid fa-magnifying-glass"></i> 筛选</button>
+          <button type="button" class="btn btn-default btn-sm" id="btnOrderFilterReset"><i class="fa-solid fa-rotate-right"></i> 重置</button>
+        </div>
+        <p class="toolbar-note" style="margin:0 0 10px;font-size:12px;color:var(--text-3)">级联选择工程与订单；搜索框仅匹配站址编码、站点名称。</p>
+        <p class="toolbar-note" id="orderDefaultHint" style="margin:0 0 10px"></p>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width:50px">选择</th>
+              <th>站址编码</th>
+              <th>站点名称</th>
+              <th>订单编码</th>
+              <th>订单名称</th>
+              <th>关联工程</th>
+              <th>关联合同</th>
+              <th>关联客户</th>
+              <th style="width:100px">开票状态</th>
+            </tr>
+          </thead>
+          <tbody id="sitePickBody"></tbody>
+        </table>
+        <div class="order-picker-batch">
+          <button type="button" class="btn-text" id="btnSiteSelectAll">全选</button>
+          <span class="batch-sep">|</span>
+          <button type="button" class="btn-text" id="btnSiteInvert">反选</button>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-default" id="btnSitePickCancel">取消</button>
+        <button type="button" class="btn btn-primary" id="btnSitePickOk"><i class="fa-solid fa-check"></i> 确定</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-mask" id="viewMask" role="dialog" aria-modal="true" aria-labelledby="viewTitle">
+    <div class="modal-dialog">
+      <div class="modal-head">
+        <h3 id="viewTitle">查看开票</h3>
+        <button type="button" class="modal-close" id="btnViewX" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" id="viewBody"></div>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-default" id="btnViewClose">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-mask" id="voidMask" role="dialog" aria-modal="true" aria-labelledby="voidTitle">
+    <div class="modal-dialog" style="width:min(520px,96vw)">
+      <div class="modal-head">
+        <h3 id="voidTitle">作废开票</h3>
+        <button type="button" class="modal-close" id="btnVoidX" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:13px;color:var(--text-2);margin:0 0 12px;line-height:1.6">
+          作废后该开票单不可再编辑或用于收款登记，请填写作废原因以便追溯。
+        </p>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">作废原因 <span class="required">*</span></label>
+          <textarea class="form-input" id="voidReasonInput" rows="4" style="width:100%;resize:vertical" placeholder="请说明作废原因，如：发票信息填写错误、重复开票等"></textarea>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-default" id="btnVoidCancel">取消</button>
+        <button type="button" class="btn btn-primary" id="btnVoidConfirm" style="background:var(--danger);border-color:var(--danger)"><i class="fa-solid fa-ban"></i> 确认作废</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../../../../assets/shared-layout.js"></script>
+<script>
+window.__layoutConfig = { active: 'invoice_manage', breadcrumb: ['合同管理', '开票管理'] };
+
+window.addEventListener('DOMContentLoaded', function () {
+  var CUSTOMER_OPTIONS = [
+    '中国移动通信集团浙江有限公司',
+    '浙江某建设集团有限公司',
+    '中国铁塔股份有限公司嘉兴市分公司'
+  ];
+  var CONTRACT_OPTIONS = [
+    { code: 'HT2026-0512', name: '杭州移动 2026 年度铁塔检测框架', customer: '中国移动通信集团浙江有限公司' },
+    { code: 'HT2026-0428', name: '城西改造专项检测分包', customer: '浙江某建设集团有限公司' }
+  ];
+  var SITE_ORDER_MOCK = [
+    { id: 'DD2026-0001', code: 'DD2026-0001', name: '余杭站点季度巡检', siteCode: 'ZJ-HZ-YH-001', siteName: '余杭五常基站', project: 'GC2026-0088 杭州移动余杭站点包', contractCode: 'HT2026-0512', customer: '中国移动通信集团浙江有限公司', invoiceStatus: '未开票' },
+    { id: 'DD2026-0002', code: 'DD2026-0002', name: '临安重点站加固检测', siteCode: 'ZJ-HZ-LA-009', siteName: '临安重点加固站', project: 'GC2026-0091 临安整治项目', contractCode: 'HT2026-0512', customer: '中国移动通信集团浙江有限公司', invoiceStatus: '未开票' },
+    { id: 'DD2026-0003', code: 'DD2026-0003', name: '城西改造专项复检', siteCode: 'ZJ-HZ-XH-015', siteName: '城西15#复检站', project: 'GC2026-0066 城西改造专项', contractCode: 'HT2026-0428', customer: '浙江某建设集团有限公司', invoiceStatus: '未开票' },
+    { id: 'DD2026-0004', code: 'DD2026-0004', name: '城西改造阶段验收', siteCode: 'ZJ-HZ-XH-022', siteName: '城西22#验收站', project: 'GC2026-0066 城西改造专项', contractCode: 'HT2026-0428', customer: '浙江某建设集团有限公司', invoiceStatus: '已开票' },
+    { id: 'DD2026-0005', code: 'DD2026-0005', name: '萧山站点复测', siteCode: 'ZJ-HZ-XS-013', siteName: '萧山复测站', project: 'GC2026-0103 萧山站点复测', contractCode: 'HT2026-0512', customer: '中国移动通信集团浙江有限公司', invoiceStatus: '已开票' }
+  ];
+  SITE_ORDER_MOCK.forEach(function (o) {
+    if (o.projectCode) return;
+    var m = String(o.project || '').match(/^(\S+)\s+(.+)$/);
+    o.projectCode = m ? m[1] : String(o.project || '');
+    o.projectName = m ? m[2] : '';
+  });
+  var rows = [
+    { id: '1', customer: '中国移动通信集团浙江有限公司', contract: 'HT2026-0512', invoiceCode: '12345678901234', siteIds: ['DD2026-0001', 'DD2026-0002'], amount: 120000, invoiceTime: '2026-05-08', attachmentName: '发票-12345678901234.pdf', status: '待收款', receiveTime: '—' },
+    { id: '2', customer: '浙江某建设集团有限公司', contract: 'HT2026-0428', invoiceCode: '98765432109876', siteIds: ['DD2026-0003'], amount: 45000, invoiceTime: '2026-05-10', attachmentName: '发票-98765432109876.pdf', status: '已收款', receiveTime: '2026-05-18' },
+    { id: '3', customer: '中国移动通信集团浙江有限公司', contract: 'HT2026-0512', invoiceCode: '11112222333344', siteIds: ['DD2026-0002'], amount: 80000, invoiceTime: '2026-05-12', attachmentName: '', status: '已作废', receiveTime: '—', voidReason: '发票票号录入错误，需重新开票', voidTime: '2026-05-15' }
+  ];
+  var editingId = '';
+  var voidingId = '';
+  var viewMask = document.getElementById('viewMask');
+  var voidMask = document.getElementById('voidMask');
+  var voidReasonInput = document.getElementById('voidReasonInput');
+  var listBody = document.getElementById('listBody');
+  var editMask = document.getElementById('editMask');
+  var kwInput = document.getElementById('kwInput');
+  var statusFilter = document.getElementById('statusFilter');
+  var monthStart = document.getElementById('monthStart');
+  var monthEnd = document.getElementById('monthEnd');
+
+  function siteCountForRow(row) {
+    return row && row.siteIds ? row.siteIds.length : 0;
+  }
+  function invoiceMonthKey(dateStr) {
+    return String(dateStr || '').slice(0, 7);
+  }
+  function inMonthRange(row) {
+    var start = monthStart ? monthStart.value : '';
+    var end = monthEnd ? monthEnd.value : '';
+    if (!start && !end) return true;
+    var m = invoiceMonthKey(row.invoiceTime);
+    if (!m) return false;
+    if (start && m < start) return false;
+    if (end && m > end) return false;
+    return true;
+  }
+  function rowsInSummaryScope() {
+    return rows.filter(function (r) { return inMonthRange(r); });
+  }
+  function renderSummaryCards() {
+    var scoped = rowsInSummaryScope();
+    var active = scoped.filter(function (r) { return r.status !== '已作废'; });
+    var amount = active.reduce(function (s, r) { return s + Number(r.amount || 0); }, 0);
+    var siteCount = active.reduce(function (s, r) { return s + siteCountForRow(r); }, 0);
+    var elAmount = document.getElementById('sumAmount');
+    var elSite = document.getElementById('sumSiteCount');
+    var elInv = document.getElementById('sumInvoiceCount');
+    var elPending = document.getElementById('sumPendingCount');
+    var elReceived = document.getElementById('sumReceivedCount');
+    if (elAmount) elAmount.textContent = fmtMoney(amount);
+    if (elSite) elSite.textContent = String(siteCount);
+    if (elInv) elInv.textContent = String(active.length);
+    if (elPending) elPending.textContent = String(scoped.filter(function (r) { return r.status === '待收款'; }).length);
+    if (elReceived) elReceived.textContent = String(scoped.filter(function (r) { return r.status === '已收款'; }).length);
+  }
+
+  function fmtMoney(n) {
+    var x = Number(n || 0);
+    return '¥ ' + x.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/"/g, '&quot;');
+  }
+  function todayText() {
+    var d = new Date();
+    var p = function (n) { return String(n).padStart(2, '0'); };
+    return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+  }
+  function contractName(code) {
+    var c = CONTRACT_OPTIONS.find(function (x) { return x.code === code; });
+    return c ? (c.code + ' · ' + c.name) : code;
+  }
+  function isRowLocked(r) {
+    return r.status === '已收款' || r.status === '已作废';
+  }
+  function statusTagClass(status) {
+    if (status === '已收款') return 'tag-green';
+    if (status === '已作废') return 'tag-gray';
+    return 'tag-orange';
+  }
+  function siteNamesForRow(row) {
+    if (!row || !row.siteIds || !row.siteIds.length) return '—';
+    return SITE_ORDER_MOCK.filter(function (o) { return row.siteIds.indexOf(o.id) >= 0; })
+      .map(function (o) { return o.siteCode + ' · ' + (o.siteName || '—'); })
+      .join('；') || '—';
+  }
+  function renderViewDetail(row) {
+    var body = document.getElementById('viewBody');
+    if (!body || !row) return;
+    var items = [
+      ['关联客户', row.customer],
+      ['关联合同', contractName(row.contract)],
+      ['关联站点', siteNamesForRow(row)],
+      ['关联站点数量', String(siteCountForRow(row))],
+      ['发票票号', row.invoiceCode],
+      ['开票金额', fmtMoney(row.amount)],
+      ['开票时间', row.invoiceTime],
+      ['收款状态', row.status],
+      ['收款时间', row.receiveTime || '—'],
+      ['附件', row.attachmentName || '未上传']
+    ];
+    if (row.status === '已作废') {
+      items.push(['作废时间', row.voidTime || '—']);
+      items.push(['作废原因', row.voidReason || '—']);
+    }
+    body.innerHTML = '<div class="detail-grid">' + items.map(function (pair) {
+      var isVoidReason = pair[0] === '作废原因';
+      return '<div class="detail-label">' + esc(pair[0]) + '</div>' +
+        '<div class="detail-value' + (isVoidReason ? ' void-reason' : '') + '">' + esc(pair[1]) + '</div>';
+    }).join('') + '</div>';
+  }
+  function openViewModal(row) {
+    renderViewDetail(row);
+    viewMask.classList.add('open');
+  }
+  function closeViewModal() { viewMask.classList.remove('open'); }
+  function openVoidModal(row) {
+    voidingId = row.id;
+    if (voidReasonInput) voidReasonInput.value = '';
+    voidMask.classList.add('open');
+    if (voidReasonInput) setTimeout(function () { voidReasonInput.focus(); }, 80);
+  }
+  function closeVoidModal() {
+    voidingId = '';
+    voidMask.classList.remove('open');
+  }
+  function confirmVoid() {
+    var reason = (voidReasonInput && voidReasonInput.value || '').trim();
+    if (!reason) return alert('请填写作废原因');
+    var row = rows.find(function (x) { return x.id === voidingId; });
+    if (!row) return closeVoidModal();
+    if (row.status === '已收款') return alert('该开票单已收款，不可作废');
+    if (row.status === '已作废') return alert('该开票单已作废');
+    row.status = '已作废';
+    row.voidReason = reason;
+    row.voidTime = todayText();
+    row.receiveTime = row.receiveTime || '—';
+    closeVoidModal();
+    renderTable();
+  }
+
+  function filterRows() {
+    var kw = (kwInput.value || '').trim().toLowerCase();
+    var st = statusFilter.value || '';
+    return rows.filter(function (r) {
+      if (!inMonthRange(r)) return false;
+      if (st && r.status !== st) return false;
+      if (!kw) return true;
+      return r.customer.toLowerCase().indexOf(kw) >= 0 ||
+        r.contract.toLowerCase().indexOf(kw) >= 0 ||
+        r.invoiceCode.toLowerCase().indexOf(kw) >= 0;
+    });
+  }
+
+  function renderTable() {
+    renderSummaryCards();
+    var data = filterRows();
+    if (!data.length) {
+      listBody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--text-3)">暂无数据</td></tr>';
+      return;
+    }
+    listBody.innerHTML = data.map(function (r) {
+      var tagCls = statusTagClass(r.status);
+      var locked = isRowLocked(r);
+      var editTitle = r.status === '已作废' ? '已作废，不可编辑' : '已收款，不可编辑';
+      var voidTitle = r.status === '已作废' ? '已作废' : '已收款，不可作废';
+      var editBtn = locked
+        ? '<button type="button" class="btn-text" disabled style="color:#bfbfbf;cursor:not-allowed" title="' + editTitle + '">编辑</button>'
+        : '<button type="button" class="btn-text js-edit">编辑</button>';
+      var voidBtn = locked
+        ? '<button type="button" class="btn-text" disabled style="color:#bfbfbf;cursor:not-allowed" title="' + voidTitle + '">作废</button>'
+        : '<button type="button" class="btn-text js-void" style="color:var(--danger)">作废</button>';
+      return '<tr data-id="' + esc(r.id) + '">' +
+        '<td>' + esc(r.customer) + '</td>' +
+        '<td>' + esc(contractName(r.contract)) + '</td>' +
+        '<td>' + esc(r.invoiceCode) + '</td>' +
+        '<td>' + esc(fmtMoney(r.amount)) + '</td>' +
+        '<td style="text-align:center">' + siteCountForRow(r) + '</td>' +
+        '<td>' + esc(r.invoiceTime) + '</td>' +
+        '<td><span class="tag ' + tagCls + '">' + esc(r.status) + '</span></td>' +
+        '<td>' + esc(r.receiveTime || '—') + '</td>' +
+        '<td class="col-action">' +
+          '<button type="button" class="btn-text js-view">查看</button> ' +
+          editBtn + ' ' + voidBtn +
+        '</td></tr>';
+    }).join('');
+  }
+
+  function openEditModal(isEdit) {
+    document.getElementById('editTitle').textContent = isEdit ? '编辑开票' : '新增开票';
+    editMask.classList.add('open');
+  }
+  function closeEditModal() { editMask.classList.remove('open'); }
+
+  function initSearchSelect(inputId, dropdownId, getItems, onPick) {
+    var input = document.getElementById(inputId);
+    var dropdown = document.getElementById(dropdownId);
+    if (!input || !dropdown) return;
+    function render(filterText) {
+      var f = String(filterText || '').trim().toLowerCase();
+      var items = getItems().filter(function (it) {
+        return !f || it.label.toLowerCase().indexOf(f) >= 0;
+      });
+      if (!items.length) {
+        dropdown.innerHTML = '<div class="search-select-empty">无匹配项</div>';
+        return;
+      }
+      dropdown.innerHTML = items.map(function (it) {
+        return '<div class="search-select-item" data-value="' + esc(it.value) + '">' + esc(it.label) + '</div>';
+      }).join('');
+    }
+    input.addEventListener('focus', function () { render(input.value); dropdown.classList.add('open'); });
+    input.addEventListener('input', function () { render(input.value); dropdown.classList.add('open'); });
+    input.addEventListener('blur', function () { setTimeout(function () { dropdown.classList.remove('open'); }, 120); });
+    dropdown.addEventListener('mousedown', function (e) {
+      var t = e.target;
+      if (!(t instanceof Element)) return;
+      var item = t.closest('.search-select-item');
+      if (!item) return;
+      var val = item.getAttribute('data-value') || '';
+      var label = item.textContent || '';
+      input.value = label;
+      onPick(val, label);
+      dropdown.classList.remove('open');
+    });
+  }
+
+  var mCustomerText = document.getElementById('mCustomerText');
+  var mContractText = document.getElementById('mContractText');
+  var mInvoiceCode = document.getElementById('mInvoiceCode');
+  var mInvoiceAmount = document.getElementById('mInvoiceAmount');
+  var mInvoiceTime = document.getElementById('mInvoiceTime');
+  var mInvoiceAttachment = document.getElementById('mInvoiceAttachment');
+  var mAttachmentHint = document.getElementById('mAttachmentHint');
+  var selectedCustomer = '';
+  var selectedContract = '';
+  var selectedSiteIds = [];
+  var draftSiteIds = [];
+  var pickProjectCode = '';
+  var pickOrderId = '';
+  var mSiteSummary = document.getElementById('mSiteSummary');
+  var mSiteEcho = document.getElementById('mSiteEcho');
+  var sitePickMask = document.getElementById('sitePickMask');
+  var sitePickBody = document.getElementById('sitePickBody');
+  var orderFilterProject = document.getElementById('orderFilterProject');
+  var orderFilterOrder = document.getElementById('orderFilterOrder');
+  var orderProjectDropdown = document.getElementById('orderProjectDropdown');
+  var orderOrderDropdown = document.getElementById('orderOrderDropdown');
+  var orderFilterKeyword = document.getElementById('orderFilterKeyword');
+  var orderFilterStatus = document.getElementById('orderFilterStatus');
+  var orderDefaultHint = document.getElementById('orderDefaultHint');
+
+  initSearchSelect('mCustomerText', 'mCustomerDropdown', function () {
+    return CUSTOMER_OPTIONS.map(function (c) { return { value: c, label: c }; });
+  }, function (value) {
+    selectedCustomer = value;
+    if (selectedContract) {
+      var c = CONTRACT_OPTIONS.find(function (x) { return x.code === selectedContract; });
+      if (c && c.customer !== selectedCustomer) {
+        selectedContract = '';
+        mContractText.value = '';
+      }
+    }
+    selectedSiteIds = [];
+    renderSiteSummary();
+  });
+  initSearchSelect('mContractText', 'mContractDropdown', function () {
+    return CONTRACT_OPTIONS
+      .filter(function (c) { return !selectedCustomer || c.customer === selectedCustomer; })
+      .map(function (c) { return { value: c.code, label: c.code + ' · ' + c.name }; });
+  }, function (value) {
+    selectedContract = value;
+    var c = CONTRACT_OPTIONS.find(function (x) { return x.code === value; });
+    if (c) {
+      selectedCustomer = c.customer;
+      mCustomerText.value = c.customer;
+    }
+    selectedSiteIds = [];
+    renderSiteSummary();
+  });
+
+  function getCurrentContractCode() {
+    return (selectedContract || '').trim();
+  }
+
+  function renderSiteSummary() {
+    var n = selectedSiteIds.length;
+    var countEl = document.getElementById('mSiteCount');
+    if (countEl) countEl.textContent = String(n);
+    if (!mSiteEcho) return;
+    if (!n) {
+      mSiteEcho.textContent = '请点击「关联站点」选择待开票站点';
+      return;
+    }
+    var selected = SITE_ORDER_MOCK.filter(function (o) { return selectedSiteIds.indexOf(o.id) >= 0; });
+    mSiteEcho.innerHTML = selected.map(function (o) {
+      return o.siteCode + ' · ' + (o.siteName || '—');
+    }).join('<br>');
+  }
+
+  function getContractOrders() {
+    return SITE_ORDER_MOCK.filter(function (o) { return o.contractCode === getCurrentContractCode(); });
+  }
+
+  function getProjectList() {
+    var map = {};
+    getContractOrders().forEach(function (o) {
+      if (!o.projectCode) return;
+      map[o.projectCode] = { code: o.projectCode, name: o.projectName || '', label: (o.projectName || '') + '（' + o.projectCode + '）' };
+    });
+    return Object.keys(map).map(function (k) { return map[k]; }).sort(function (a, b) { return a.code.localeCompare(b.code); });
+  }
+
+  function getOrdersByProject(projectCode) {
+    if (!projectCode) return [];
+    return getContractOrders().filter(function (o) { return o.projectCode === projectCode; });
+  }
+
+  function closeCascadeDropdowns() {
+    if (orderProjectDropdown) orderProjectDropdown.classList.remove('open');
+    if (orderOrderDropdown) orderOrderDropdown.classList.remove('open');
+  }
+
+  function renderProjectDropdown(filterText) {
+    if (!orderProjectDropdown) return;
+    var f = String(filterText || '').trim().toLowerCase();
+    var list = getProjectList().filter(function (p) {
+      if (!f) return true;
+      return p.code.toLowerCase().indexOf(f) >= 0 || p.name.toLowerCase().indexOf(f) >= 0 || p.label.toLowerCase().indexOf(f) >= 0;
+    });
+    orderProjectDropdown.innerHTML = list.length
+      ? list.map(function (p) { return '<div class="search-select-item" data-project-code="' + p.code + '">' + p.label + '</div>'; }).join('')
+      : '<div class="search-select-empty">无匹配工程</div>';
+  }
+
+  function renderOrderDropdown(filterText) {
+    if (!orderOrderDropdown) return;
+    if (!pickProjectCode) {
+      orderOrderDropdown.innerHTML = '<div class="search-select-empty">请先选择工程</div>';
+      return;
+    }
+    var f = String(filterText || '').trim().toLowerCase();
+    var list = getOrdersByProject(pickProjectCode).filter(function (o) {
+      if (!f) return true;
+      return o.code.toLowerCase().indexOf(f) >= 0 || o.name.toLowerCase().indexOf(f) >= 0 ||
+        (o.name + '（' + o.code + '）').toLowerCase().indexOf(f) >= 0;
+    });
+    orderOrderDropdown.innerHTML = list.length
+      ? list.map(function (o) { return '<div class="search-select-item" data-order-id="' + o.id + '">' + o.name + '（' + o.code + '）</div>'; }).join('')
+      : '<div class="search-select-empty">无匹配订单</div>';
+  }
+
+  function setPickProject(code, name) {
+    pickProjectCode = code || '';
+    pickOrderId = '';
+    if (orderFilterProject) orderFilterProject.value = code ? ((name || '') + '（' + code + '）') : '';
+    if (orderFilterOrder) {
+      orderFilterOrder.disabled = !pickProjectCode;
+      orderFilterOrder.value = '';
+      orderFilterOrder.placeholder = pickProjectCode ? '订单名称 / 订单编码' : '请先选择工程';
+    }
+    closeCascadeDropdowns();
+    renderSitePickRows();
+  }
+
+  function setPickOrder(id, name, code) {
+    pickOrderId = id || '';
+    if (orderFilterOrder) orderFilterOrder.value = id ? (name + '（' + code + '）') : '';
+    closeCascadeDropdowns();
+    renderSitePickRows();
+  }
+
+  function resetSitePickFilters() {
+    pickProjectCode = '';
+    pickOrderId = '';
+    if (orderFilterProject) orderFilterProject.value = '';
+    if (orderFilterOrder) {
+      orderFilterOrder.value = '';
+      orderFilterOrder.disabled = true;
+      orderFilterOrder.placeholder = '请先选择工程';
+    }
+    if (orderFilterKeyword) orderFilterKeyword.value = '';
+    if (orderFilterStatus) orderFilterStatus.value = '未开票';
+    closeCascadeDropdowns();
+  }
+
+  function filterSiteOrders() {
+    var contractCode = getCurrentContractCode();
+    var kw = String(orderFilterKeyword && orderFilterKeyword.value || '').trim().toLowerCase();
+    var statusFilter = orderFilterStatus ? orderFilterStatus.value : '未开票';
+    return SITE_ORDER_MOCK.filter(function (o) {
+      if (o.contractCode !== contractCode) return false;
+      if (pickProjectCode && o.projectCode !== pickProjectCode) return false;
+      if (pickOrderId && o.id !== pickOrderId) return false;
+      if (statusFilter === '未开票' && o.invoiceStatus !== '未开票') return false;
+      if (statusFilter === '已开票' && o.invoiceStatus !== '已开票') return false;
+      if (!kw) return true;
+      return o.siteCode.toLowerCase().indexOf(kw) >= 0 || (o.siteName || '').toLowerCase().indexOf(kw) >= 0;
+    });
+  }
+
+  function getVisibleSiteIds() {
+    return filterSiteOrders().map(function (o) { return o.id; });
+  }
+
+  function renderSitePickRows() {
+    if (!sitePickBody) return;
+    var list = filterSiteOrders();
+    if (!list.length) {
+      sitePickBody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--text-3)">无匹配站点</td></tr>';
+      return;
+    }
+    sitePickBody.innerHTML = list.map(function (o) {
+      var checked = draftSiteIds.indexOf(o.id) >= 0 ? ' checked' : '';
+      return '<tr data-order-id="' + o.id + '">' +
+        '<td><input type="checkbox" class="js-site-check"' + checked + '></td>' +
+        '<td>' + esc(o.siteCode) + '</td>' +
+        '<td>' + esc(o.siteName || '—') + '</td>' +
+        '<td>' + esc(o.code) + '</td>' +
+        '<td>' + esc(o.name) + '</td>' +
+        '<td>' + esc(o.project) + '</td>' +
+        '<td>' + esc(o.contractCode) + '</td>' +
+        '<td>' + esc(o.customer) + '</td>' +
+        '<td>' + esc(o.invoiceStatus || '—') + '</td></tr>';
+    }).join('');
+  }
+
+  function openSitePickModal() {
+    if (!getCurrentContractCode()) {
+      alert('请先选择关联合同');
+      return;
+    }
+    draftSiteIds = selectedSiteIds.slice();
+    resetSitePickFilters();
+    if (orderDefaultHint) {
+      orderDefaultHint.textContent = '默认展示：与当前合同「' + getCurrentContractCode() + '」关联且开票状态为「未开票」的数据。';
+    }
+    renderSitePickRows();
+    sitePickMask.classList.add('open');
+  }
+
+  function closeSitePickModal() {
+    sitePickMask.classList.remove('open');
+  }
+
+  function updateAttachmentHint(name) {
+    if (!mAttachmentHint) return;
+    if (name) {
+      mAttachmentHint.textContent = '已选择：' + name;
+      mAttachmentHint.classList.add('has-file');
+    } else {
+      mAttachmentHint.textContent = '支持 PDF、图片等，可上传发票扫描件或电子发票文件';
+      mAttachmentHint.classList.remove('has-file');
+    }
+  }
+
+  function getAttachmentNameFromInput(existingName) {
+    if (mInvoiceAttachment && mInvoiceAttachment.files && mInvoiceAttachment.files[0]) {
+      return mInvoiceAttachment.files[0].name;
+    }
+    return existingName || '';
+  }
+
+  if (mInvoiceAttachment) {
+    mInvoiceAttachment.addEventListener('change', function () {
+      var f = mInvoiceAttachment.files && mInvoiceAttachment.files[0];
+      updateAttachmentHint(f ? f.name : '');
+    });
+  }
+
+  function loadModalData(row) {
+    selectedCustomer = row ? row.customer : '';
+    selectedContract = row ? row.contract : '';
+    selectedSiteIds = row && row.siteIds ? row.siteIds.slice() : [];
+    mCustomerText.value = row ? row.customer : '';
+    mContractText.value = row ? contractName(row.contract) : '';
+    mInvoiceCode.value = row ? row.invoiceCode : '';
+    mInvoiceAmount.value = row ? row.amount : '';
+    mInvoiceTime.value = row ? row.invoiceTime : todayText();
+    if (mInvoiceAttachment) mInvoiceAttachment.value = '';
+    updateAttachmentHint(row && row.attachmentName ? row.attachmentName : '');
+    renderSiteSummary();
+  }
+
+  function saveModal() {
+    if (!selectedCustomer) return alert('请选择关联客户');
+    if (!selectedContract) return alert('请选择关联合同');
+    if (!mInvoiceCode.value.trim()) return alert('请输入发票票号');
+    if (!mInvoiceAmount.value || Number(mInvoiceAmount.value) <= 0) return alert('请输入有效开票金额');
+    if (!mInvoiceTime.value) return alert('请选择开票时间');
+    if (editingId) {
+      var r = rows.find(function (x) { return x.id === editingId; });
+      if (!r) return;
+      if (isRowLocked(r)) return alert(r.status === '已作废' ? '该开票单已作废，不可编辑' : '该开票单已收款，不可编辑');
+      r.customer = selectedCustomer;
+      r.contract = selectedContract;
+      r.invoiceCode = mInvoiceCode.value.trim();
+      r.amount = Number(mInvoiceAmount.value);
+      r.invoiceTime = mInvoiceTime.value;
+      r.siteIds = selectedSiteIds.slice();
+      r.attachmentName = getAttachmentNameFromInput(r.attachmentName);
+    } else {
+      rows.unshift({
+        id: String(Date.now()),
+        customer: selectedCustomer,
+        contract: selectedContract,
+        invoiceCode: mInvoiceCode.value.trim(),
+        siteIds: selectedSiteIds.slice(),
+        amount: Number(mInvoiceAmount.value),
+        invoiceTime: mInvoiceTime.value,
+        attachmentName: getAttachmentNameFromInput(''),
+        status: '待收款',
+        receiveTime: '—'
+      });
+    }
+    closeEditModal();
+    renderTable();
+  }
+
+  document.getElementById('btnOpenAdd').addEventListener('click', function () {
+    editingId = '';
+    loadModalData(null);
+    openEditModal(false);
+  });
+  document.getElementById('btnEditX').addEventListener('click', closeEditModal);
+  document.getElementById('btnEditCancel').addEventListener('click', closeEditModal);
+  document.getElementById('btnEditSave').addEventListener('click', saveModal);
+  editMask.addEventListener('click', function (e) { if (e.target === editMask) closeEditModal(); });
+
+  document.getElementById('btnPickSites').addEventListener('click', openSitePickModal);
+  document.getElementById('btnSitePickX').addEventListener('click', closeSitePickModal);
+  document.getElementById('btnSitePickCancel').addEventListener('click', closeSitePickModal);
+  document.getElementById('btnSitePickOk').addEventListener('click', function () {
+    selectedSiteIds = draftSiteIds.slice();
+    renderSiteSummary();
+    closeSitePickModal();
+  });
+  sitePickMask.addEventListener('click', function (e) { if (e.target === sitePickMask) closeSitePickModal(); });
+  document.getElementById('btnOrderFilterSearch').addEventListener('click', renderSitePickRows);
+  document.getElementById('btnOrderFilterReset').addEventListener('click', function () {
+    resetSitePickFilters();
+    renderSitePickRows();
+  });
+  document.getElementById('btnSiteSelectAll').addEventListener('click', function () {
+    getVisibleSiteIds().forEach(function (id) {
+      if (draftSiteIds.indexOf(id) < 0) draftSiteIds.push(id);
+    });
+    renderSitePickRows();
+  });
+  document.getElementById('btnSiteInvert').addEventListener('click', function () {
+    getVisibleSiteIds().forEach(function (id) {
+      var idx = draftSiteIds.indexOf(id);
+      if (idx >= 0) draftSiteIds.splice(idx, 1);
+      else draftSiteIds.push(id);
+    });
+    renderSitePickRows();
+  });
+  sitePickBody.addEventListener('change', function (e) {
+    var target = e.target;
+    if (!(target instanceof HTMLInputElement) || !target.classList.contains('js-site-check')) return;
+    var tr = target.closest('tr');
+    if (!tr) return;
+    var id = tr.getAttribute('data-order-id');
+    if (!id) return;
+    if (target.checked) {
+      if (draftSiteIds.indexOf(id) < 0) draftSiteIds.push(id);
+    } else {
+      draftSiteIds = draftSiteIds.filter(function (x) { return x !== id; });
+    }
+  });
+  if (orderFilterProject) {
+    orderFilterProject.addEventListener('focus', function () {
+      renderProjectDropdown(orderFilterProject.value);
+      orderProjectDropdown.classList.add('open');
+      if (orderOrderDropdown) orderOrderDropdown.classList.remove('open');
+    });
+    orderFilterProject.addEventListener('input', function () {
+      if (!String(orderFilterProject.value || '').trim()) {
+        pickProjectCode = '';
+        pickOrderId = '';
+        if (orderFilterOrder) {
+          orderFilterOrder.disabled = true;
+          orderFilterOrder.value = '';
+          orderFilterOrder.placeholder = '请先选择工程';
+        }
+      }
+      renderProjectDropdown(orderFilterProject.value);
+      orderProjectDropdown.classList.add('open');
+    });
+    orderFilterProject.addEventListener('blur', function () { setTimeout(closeCascadeDropdowns, 150); });
+  }
+  if (orderProjectDropdown) {
+    orderProjectDropdown.addEventListener('mousedown', function (e) {
+      var item = e.target.closest('.search-select-item');
+      if (!item) return;
+      var code = item.getAttribute('data-project-code') || '';
+      var p = getProjectList().filter(function (x) { return x.code === code; })[0];
+      if (p) setPickProject(p.code, p.name);
+    });
+  }
+  if (orderFilterOrder) {
+    orderFilterOrder.addEventListener('focus', function () {
+      if (!pickProjectCode) return;
+      renderOrderDropdown(orderFilterOrder.value);
+      orderOrderDropdown.classList.add('open');
+      if (orderProjectDropdown) orderProjectDropdown.classList.remove('open');
+    });
+    orderFilterOrder.addEventListener('input', function () {
+      if (!pickProjectCode) return;
+      if (!String(orderFilterOrder.value || '').trim()) pickOrderId = '';
+      renderOrderDropdown(orderFilterOrder.value);
+      orderOrderDropdown.classList.add('open');
+    });
+    orderFilterOrder.addEventListener('blur', function () { setTimeout(closeCascadeDropdowns, 150); });
+  }
+  if (orderOrderDropdown) {
+    orderOrderDropdown.addEventListener('mousedown', function (e) {
+      var item = e.target.closest('.search-select-item');
+      if (!item) return;
+      var id = item.getAttribute('data-order-id') || '';
+      var o = getOrdersByProject(pickProjectCode).filter(function (x) { return x.id === id; })[0];
+      if (o) setPickOrder(o.id, o.name, o.code);
+    });
+  }
+
+  document.getElementById('btnSearch').addEventListener('click', renderTable);
+  document.getElementById('btnReset').addEventListener('click', function () {
+    if (monthStart) monthStart.value = '2026-05';
+    if (monthEnd) monthEnd.value = '2026-05';
+    kwInput.value = '';
+    statusFilter.value = '';
+    renderTable();
+  });
+  document.getElementById('btnViewX').addEventListener('click', closeViewModal);
+  document.getElementById('btnViewClose').addEventListener('click', closeViewModal);
+  viewMask.addEventListener('click', function (e) { if (e.target === viewMask) closeViewModal(); });
+  document.getElementById('btnVoidX').addEventListener('click', closeVoidModal);
+  document.getElementById('btnVoidCancel').addEventListener('click', closeVoidModal);
+  document.getElementById('btnVoidConfirm').addEventListener('click', confirmVoid);
+  voidMask.addEventListener('click', function (e) { if (e.target === voidMask) closeVoidModal(); });
+  listBody.addEventListener('click', function (e) {
+    var t = e.target;
+    if (!(t instanceof Element)) return;
+    var tr = t.closest('tr');
+    if (!tr) return;
+    var id = tr.getAttribute('data-id');
+    var row = rows.find(function (x) { return x.id === id; });
+    if (!row) return;
+    if (t.closest('.js-view')) {
+      openViewModal(row);
+      return;
+    }
+    if (t.closest('.js-edit')) {
+      if (isRowLocked(row)) {
+        alert(row.status === '已作废' ? '该开票单已作废，不可编辑' : '该开票单已收款，不可编辑');
+        return;
+      }
+      editingId = row.id;
+      loadModalData(row);
+      openEditModal(true);
+      return;
+    }
+    if (t.closest('.js-void')) {
+      if (isRowLocked(row)) {
+        alert(row.status === '已作废' ? '该开票单已作废' : '该开票单已收款，不可作废');
+        return;
+      }
+      openVoidModal(row);
+    }
+  });
+
+  renderTable();
+});
+</script>
+</body>
+</html>

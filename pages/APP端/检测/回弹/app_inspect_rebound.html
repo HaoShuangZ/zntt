@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>回弹强度</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/app-frame.css">
+<link rel="stylesheet" href="../../../../assets/app-embed.css">
+<link rel="stylesheet" href="../../../../assets/app-inspect-layout.css">
+<script src="../../../../assets/app-embed.js" defer></script>
+<script src="../../../../assets/app-inspect-back.js" defer></script>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; background: #F2F3F5; margin: 0; }
+.form-label { font-size:13px; color:#86909C; margin-bottom:6px; display:block; }
+.rb-input { width:100%; height:36px; border:1px solid #E5E6EB; border-radius:8px; padding:0 8px; font-size:13px; outline:none; box-sizing:border-box; background:#fff; text-align:center; }
+.rb-input:focus { border-color:#165DFF; }
+</style>
+</head>
+<body class="inspect-app-layout inspect-embed-pad-116">
+<!-- Status bar -->
+<div id="appStatusBar">
+  <span>9:41</span>
+  <span><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+</div>
+<!-- Navigation bar -->
+<div id="appNavBar">
+  <a href="../../任务/填报主页/app_task_inspect_home.html" data-app-inspect-back style="color:#165DFF; text-decoration:none; font-size:14px;"><i class="fa-solid fa-chevron-left"></i> 返回</a>
+  <span style="flex:1; text-align:center; font-size:16px; font-weight:600;">回弹强度</span>
+  <span style="width:40px;"></span>
+</div>
+
+<!-- Content area -->
+<div id="appEmbedContent">
+
+  <!-- 测点1 -->
+  <div style="background:#fff; border-radius:12px; padding:16px; margin-bottom:12px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <span style="font-size:15px; font-weight:600; color:#1D2129;">测点 1</span>
+      <span style="font-size:12px; color:#86909C;">编号: P-001</span>
+    </div>
+    <div style="margin-bottom:12px;">
+      <label class="form-label">回弹值（共10次）</label>
+      <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:6px;">
+        <input type="number" class="rb-input" value="38">
+        <input type="number" class="rb-input" value="42">
+        <input type="number" class="rb-input" value="40">
+        <input type="number" class="rb-input" value="36">
+        <input type="number" class="rb-input" value="41">
+        <input type="number" class="rb-input" value="39">
+        <input type="number" class="rb-input" value="43">
+        <input type="number" class="rb-input" value="37">
+        <input type="number" class="rb-input" value="40">
+        <input type="number" class="rb-input" value="38">
+      </div>
+    </div>
+    <div style="display:flex; gap:12px; margin-bottom:8px;">
+      <div style="flex:1;">
+        <label class="form-label">碳化深度（mm）</label>
+        <input type="number" class="rb-input" value="2.5" style="height:40px; border-radius:12px;">
+      </div>
+      <div style="flex:1;">
+        <label class="form-label">强度推定值</label>
+        <div style="height:40px; background:#F7F8FA; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:600; color:#165DFF;">32.5 MPa</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 测点2 -->
+  <div style="background:#fff; border-radius:12px; padding:16px; margin-bottom:12px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <span style="font-size:15px; font-weight:600; color:#1D2129;">测点 2</span>
+      <span style="font-size:12px; color:#86909C;">编号: P-002</span>
+    </div>
+    <div style="margin-bottom:12px;">
+      <label class="form-label">回弹值（共10次）</label>
+      <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:6px;">
+        <input type="number" class="rb-input" value="35">
+        <input type="number" class="rb-input" value="37">
+        <input type="number" class="rb-input" value="39">
+        <input type="number" class="rb-input" value="36">
+        <input type="number" class="rb-input" value="38">
+        <input type="number" class="rb-input" value="34">
+        <input type="number" class="rb-input" value="40">
+        <input type="number" class="rb-input" value="37">
+        <input type="number" class="rb-input" value="36">
+        <input type="number" class="rb-input" value="35">
+      </div>
+    </div>
+    <div style="display:flex; gap:12px; margin-bottom:8px;">
+      <div style="flex:1;">
+        <label class="form-label">碳化深度（mm）</label>
+        <input type="number" class="rb-input" value="3.0" style="height:40px; border-radius:12px;">
+      </div>
+      <div style="flex:1;">
+        <label class="form-label">强度推定值</label>
+        <div style="height:40px; background:#F7F8FA; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:600; color:#165DFF;">28.8 MPa</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 测点3 -->
+  <div style="background:#fff; border-radius:12px; padding:16px; margin-bottom:12px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <span style="font-size:15px; font-weight:600; color:#1D2129;">测点 3</span>
+      <span style="font-size:12px; color:#86909C;">编号: P-003</span>
+    </div>
+    <div style="margin-bottom:12px;">
+      <label class="form-label">回弹值（共10次）</label>
+      <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:6px;">
+        <input type="number" class="rb-input" value="41">
+        <input type="number" class="rb-input" value="43">
+        <input type="number" class="rb-input" value="40">
+        <input type="number" class="rb-input" value="42">
+        <input type="number" class="rb-input" value="44">
+        <input type="number" class="rb-input" value="39">
+        <input type="number" class="rb-input" value="41">
+        <input type="number" class="rb-input" value="43">
+        <input type="number" class="rb-input" value="42">
+        <input type="number" class="rb-input" value="40">
+      </div>
+    </div>
+    <div style="display:flex; gap:12px; margin-bottom:8px;">
+      <div style="flex:1;">
+        <label class="form-label">碳化深度（mm）</label>
+        <input type="number" class="rb-input" value="2.0" style="height:40px; border-radius:12px;">
+      </div>
+      <div style="flex:1;">
+        <label class="form-label">强度推定值</label>
+        <div style="height:40px; background:#F7F8FA; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:600; color:#165DFF;">35.2 MPa</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 测点4 -->
+  <div style="background:#fff; border-radius:12px; padding:16px; margin-bottom:12px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <span style="font-size:15px; font-weight:600; color:#1D2129;">测点 4</span>
+      <span style="font-size:12px; color:#86909C;">编号: P-004</span>
+    </div>
+    <div style="margin-bottom:12px;">
+      <label class="form-label">回弹值（共10次）</label>
+      <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:6px;">
+        <input type="number" class="rb-input" placeholder="">
+        <input type="number" class="rb-input" placeholder="">
+        <input type="number" class="rb-input" placeholder="">
+        <input type="number" class="rb-input" placeholder="">
+        <input type="number" class="rb-input" placeholder="">
+        <input type="number" class="rb-input" placeholder="">
+        <input type="number" class="rb-input" placeholder="">
+        <input type="number" class="rb-input" placeholder="">
+        <input type="number" class="rb-input" placeholder="">
+        <input type="number" class="rb-input" placeholder="">
+      </div>
+    </div>
+    <div style="display:flex; gap:12px;">
+      <div style="flex:1;">
+        <label class="form-label">碳化深度（mm）</label>
+        <input type="number" class="rb-input" placeholder="—" style="height:40px; border-radius:12px;">
+      </div>
+      <div style="flex:1;">
+        <label class="form-label">强度推定值</label>
+        <div style="height:40px; background:#F7F8FA; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:14px; color:#C9CDD4;">待计算</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 测点5 -->
+  <div style="background:#fff; border-radius:12px; padding:16px; margin-bottom:12px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <span style="font-size:15px; font-weight:600; color:#1D2129;">测点 5</span>
+      <span style="font-size:12px; color:#86909C;">编号: P-005</span>
+    </div>
+    <div style="margin-bottom:12px;">
+      <label class="form-label">回弹值（共10次）</label>
+      <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:6px;">
+        <input type="number" class="rb-input" placeholder="">
+        <input type="number" class="rb-input" placeholder="">
+        <input type="number" class="rb-input" placeholder="">
+        <input type="number" class="rb-input" placeholder="">
+        <input type="number" class="rb-input" placeholder="">
+        <input type="number" class="rb-input" placeholder="">
+        <input type="number" class="rb-input" placeholder="">
+        <input type="number" class="rb-input" placeholder="">
+        <input type="number" class="rb-input" placeholder="">
+        <input type="number" class="rb-input" placeholder="">
+      </div>
+    </div>
+    <div style="display:flex; gap:12px;">
+      <div style="flex:1;">
+        <label class="form-label">碳化深度（mm）</label>
+        <input type="number" class="rb-input" placeholder="—" style="height:40px; border-radius:12px;">
+      </div>
+      <div style="flex:1;">
+        <label class="form-label">强度推定值</label>
+        <div style="height:40px; background:#F7F8FA; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:14px; color:#C9CDD4;">待计算</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Bottom button -->
+<div data-app-flow-footer style="position:fixed; bottom:0; left:0; right:0; padding:12px 16px; background:#fff; border-top:1px solid #E5E6EB;">
+  <a href="../../检测/接地/app_inspect_ground.html" style="display:block; width:100%; height:44px; background:#165DFF; color:#fff; border-radius:8px; font-size:16px; font-weight:600; text-decoration:none; text-align:center; line-height:44px; box-sizing:border-box;">下一步</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<!-- iPad-TASK_START_WIZARD v2.1 landscape -->
+<html lang="zh-CN" class="ipad-task-html">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>开启检测任务</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/app-frame.css">
+<link rel="stylesheet" href="../../../../assets/ipad-tokens.css">
+<link rel="stylesheet" href="../../../../assets/ipad-frame.css">
+<link rel="stylesheet" href="../../../../assets/ipad-layout.css">
+<link rel="stylesheet" href="../../../../assets/ipad-visual.css">
+<link rel="stylesheet" href="../../../../assets/ipad-embed.css">
+<link rel="stylesheet" href="../../../../assets/ipad-task-shell.css">
+<script src="../../../../assets/ipad-adapt.js" defer></script>
+</head>
+<body class="ipad-adapt ipad-task-page">
+
+<div class="header-fixed">
+  <div class="status-bar" aria-hidden="true">
+    <span>9:41</span>
+    <span class="status-icons" aria-hidden="true">
+      <i class="fa-solid fa-signal"></i>
+      <i class="fa-solid fa-wifi"></i>
+      <i class="fa-solid fa-battery-full"></i>
+    </span>
+  </div>
+  <div class="top">
+    <div class="top-row">
+      <a class="top-back" id="wizBack" href="../../工单/详情/ipad_order_detail.html"><i class="fa-solid fa-chevron-left"></i></a>
+      <h1 class="top-title">开启检测任务</h1>
+    </div>
+  </div>
+</div>
+
+<main class="scroll-main">
+  <div class="wizard-wrap">
+    <div id="p1" class="panel on">
+      <div class="wizard-card">
+        <div class="step-h">
+          <span class="step-num">1</span>
+          <div class="step-title">选择塔型</div>
+        </div>
+        <select id="towerType" class="wizard-field">
+          <option value="">请选择</option>
+          <option value="single" selected>单管塔</option>
+          <option value="angle">角钢塔</option>
+          <option value="guyed">拉线杆</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="p2" class="panel">
+      <div class="wizard-card">
+        <div class="step-h">
+          <span class="step-num">2</span>
+          <div class="step-title">塔段数量</div>
+        </div>
+        <input type="number" id="segN" class="wizard-field" value="6" min="1" max="12">
+      </div>
+    </div>
+
+    <div id="p3" class="panel">
+      <div class="wizard-card">
+        <div class="step-h">
+          <span class="step-num">3</span>
+          <div class="step-title">检测任务模板</div>
+        </div>
+        <label class="wizard-tpl">
+          <input type="radio" name="tpl" checked style="margin-top:3px">
+          <div>
+            <div class="tpl-name">存量单管塔原始记录包</div>
+            <div class="tpl-meta">PKG_STOCK_SINGLE_PIPE_20260509 · v1.2 已发布</div>
+          </div>
+        </label>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="task-footer">
+  <button type="button" class="btn-primary" id="btnPrimary">下一步</button>
+</div>
+
+<script>
+(function () {
+  var orderId = '';
+  try { orderId = (new URLSearchParams(location.search).get('order') || '').trim().toUpperCase(); } catch (e) {}
+  if (!orderId) orderId = 'DD20260506001';
+  var back = document.getElementById('wizBack');
+  if (back) back.href = '../../工单/详情/ipad_order_detail.html?order=' + encodeURIComponent(orderId);
+
+  var step = 1;
+  var btn = document.getElementById('btnPrimary');
+  function showPanel() {
+    for (var i = 1; i <= 3; i++) {
+      document.getElementById('p' + i).classList.toggle('on', i === step);
+    }
+    if (step === 1) {
+      btn.textContent = '下一步';
+      btn.disabled = !document.getElementById('towerType').value;
+    } else if (step === 2) {
+      btn.textContent = '下一步';
+      var n = parseInt(document.getElementById('segN').value, 10);
+      btn.disabled = !n || n < 1;
+    } else {
+      btn.textContent = '进入填报主页';
+      btn.disabled = false;
+    }
+  }
+  document.getElementById('towerType').addEventListener('change', function () {
+    if (step === 1) showPanel();
+  });
+  document.getElementById('segN').addEventListener('input', function () {
+    if (step === 2) showPanel();
+  });
+  btn.addEventListener('click', function () {
+    if (btn.disabled) return;
+    if (step < 3) {
+      step++;
+      showPanel();
+      return;
+    }
+    try { sessionStorage.setItem('tower_app_active_inspect_order', orderId); } catch (e2) {}
+    location.href = '../填报主页/ipad_task_inspect_home.html?order=' + encodeURIComponent(orderId);
+  });
+  showPanel();
+})();
+</script>
+</body>
+</html>

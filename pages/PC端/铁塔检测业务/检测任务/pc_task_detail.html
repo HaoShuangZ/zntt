@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>任务详情</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .detail-tabs { display:flex; gap:4px; border-bottom:1px solid var(--border); margin-bottom:16px; flex-wrap:wrap; }
+  .detail-tabs button {
+    padding:10px 18px; font-size:14px; border:none; background:transparent; color:var(--text-2);
+    cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; font-family:inherit;
+    display:inline-flex; align-items:center; gap:6px;
+  }
+  .detail-tabs button:hover { color:var(--primary); }
+  .detail-tabs button.active { color:var(--primary); font-weight:600; border-bottom-color:var(--primary); }
+  .detail-tabs .tab-badge {
+    display:inline-flex; align-items:center; justify-content:center;
+    min-width:18px; height:18px; padding:0 6px; border-radius:9px;
+    background:#FFECE8; color:#F53F3F; font-size:11px; font-weight:600; line-height:1;
+  }
+  .detail-tabs button.active .tab-badge { background:#E8F3FF; color:var(--primary); }
+  .tab-panel { display:none; }
+  .tab-panel.active { display:block; }
+  .kv-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 20px; }
+  .kv-grid.kv-3 { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  @media (max-width:1100px) { .kv-grid.kv-3 { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  .kv-item b { display:block;font-size:12px;color:var(--text-3);margin-bottom:4px;font-weight:500; }
+  .kv-item span { color:var(--text-1);font-size:13px; }
+  .log-type { display:inline-block; padding:2px 8px; border-radius:4px; font-size:12px; font-weight:600; }
+  .log-type--urge { background:#FFF7E8; color:#FF7D00; }
+  .log-type--transfer { background:#E8F3FF; color:#165DFF; }
+  .log-type--reject { background:#FFECE8; color:#F53F3F; }
+  .empty-hint { font-size:13px; color:var(--text-3); margin:0; line-height:1.6; }
+  .card + .card { margin-top: 14px; }
+  .card-head-row { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+  /* 检测数据内嵌区：直接平铺录入页 */
+  #panel-data { margin: -4px -2px 0; }
+  .data-embed-wrap {
+    border:1px solid var(--border); border-radius:6px; overflow:hidden;
+    background:#fff; height:calc(100vh - 220px); min-height:520px; display:flex; flex-direction:column;
+  }
+  .data-embed-frame { flex:1; width:100%; border:none; background:#fff; min-height:0; display:block; }
+  .data-embed-empty {
+    flex:1; display:flex; align-items:center; justify-content:center;
+    padding:36px 20px; background:#fff; text-align:center;
+  }
+  .data-embed-empty .ee-inner { max-width:420px; color:var(--text-2); font-size:13px; line-height:1.7; }
+  .data-embed-empty .ee-icon { font-size:32px; color:#C9CDD4; margin-bottom:12px; }
+</style>
+</head>
+<body>
+<div id="page-content">
+
+  <div style="margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+    <a href="pc_task_list.html" id="linkBackList" class="btn btn-default btn-sm"><i class="fa-solid fa-arrow-left"></i> 返回检测任务</a>
+    <a href="#" id="linkDataEntry" class="btn btn-primary btn-sm"><i class="fa-solid fa-pen-to-square"></i> 录入数据</a>
+  </div>
+
+  <div class="card">
+    <div class="card-header card-head-row">
+      <div class="card-title" id="pageTitle">任务详情</div>
+    </div>
+    <div class="card-body">
+
+      <div class="detail-tabs" id="detailTabs" role="tablist">
+        <button type="button" class="active" data-tab="overview" role="tab"><i class="fa-solid fa-circle-info"></i> 基础信息</button>
+        <button type="button" data-tab="data" role="tab"><i class="fa-solid fa-database"></i> 检测数据</button>
+      </div>
+
+      <div id="panel-overview" class="tab-panel active" role="tabpanel">
+        <div class="card" style="box-shadow:none;border:1px solid var(--border);margin-bottom:14px">
+          <div class="card-header"><div class="card-title" style="font-size:14px">检测任务</div></div>
+          <div class="card-body"><div class="kv-grid kv-3" id="taskKv"></div></div>
+        </div>
+
+        <div class="card" style="box-shadow:none;border:1px solid var(--border);margin-bottom:14px">
+          <div class="card-header card-head-row">
+            <div class="card-title" style="font-size:14px">关联订单</div>
+            <a href="#" id="linkOrderDetail" class="btn btn-text btn-sm" rel="noopener">查看订单详情 <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+          </div>
+          <div class="card-body"><div class="kv-grid kv-3" id="orderKv"></div></div>
+        </div>
+
+        <div class="card" style="box-shadow:none;border:1px solid var(--border)">
+          <div class="card-header"><div class="card-title" style="font-size:14px">拒绝 / 催办 / 转派记录</div></div>
+          <div class="card-body" id="collabLogsWrap"></div>
+        </div>
+      </div>
+
+      <div id="panel-data" class="tab-panel" role="tabpanel">
+        <div class="data-embed-wrap" id="dataEmbedWrap">
+          <iframe id="dataEmbedFrame" class="data-embed-frame" title="检测数据（只读）" src="about:blank" loading="lazy"></iframe>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'task_list', breadcrumb:['检测管理','检测任务','任务详情']};</script>
+<script>
+(function () {
+  var ORDER_DETAIL_BASE = '../../合同部管理/订单管理/pc_order_detail.html';
+  var DATA_ENTRY = '../检测数据录入/pc_task_data.html';
+
+  var TASK_DETAIL = {
+    RW202606001: {
+      title: 'RW202606001 · 滨江01#塔安全鉴定',
+      taskName: '滨江01#塔安全鉴定',
+      site: '滨江枢纽站 / TT-BJ-001',
+      province: '浙江',
+      city: '杭州',
+      inspectType: '安全性鉴定',
+      unit: '浙江中能工程检测有限公司',
+      status: '待指派',
+      person: '—',
+      auditStatus: '—', auditNode: '—', auditor: '—', auditAt: '—',
+      dispatchAt: '2026-05-10',
+      review: false,
+      dataVersion: '—',
+      template: 'PKG_STOCK_SINGLE_PIPE_20260509 v1.2',
+      order: {
+        code: 'ZJHBJ20260506001',
+        name: '滨江基站安全性鉴定',
+        customer: '中国移动通信集团浙江有限公司',
+        project: '杭州移动铁塔工程',
+        orderStatus: '待派',
+        deadline: '2026-06-30',
+        dispatchTime: '2026-05-06 09:20'
+      },
+      collaborationLogs: [
+        { time: '2026-05-10 09:18', type: '催办', operator: '合同部-王敏', content: '业主希望本周内完成检测人员指派。' }
+      ],
+      latestEntry: null
+    },
+    RW202606002: {
+      title: 'RW202606002 · 余杭12#塔抗震鉴定',
+      taskName: '余杭12#塔抗震鉴定',
+      site: '余杭12#站点 / TT-YH-001',
+      province: '浙江',
+      city: '杭州',
+      inspectType: '抗震鉴定',
+      unit: '浙江中能工程检测有限公司',
+      status: '待检测',
+      person: '李明',
+      auditStatus: '未提交', auditNode: '—', auditor: '—', auditAt: '—',
+      dispatchAt: '2026-05-09',
+      review: false,
+      dataVersion: '—',
+      template: 'PKG_STOCK_SINGLE_PIPE_20260509 v1.2',
+      order: {
+        code: 'ZJHYH20260503001',
+        name: '余杭区铁塔安全检',
+        customer: '中国移动通信集团浙江有限公司',
+        project: '余杭5G升级项目',
+        orderStatus: '待派',
+        deadline: '2026-05-14',
+        dispatchTime: '2026-05-03 10:00'
+      },
+      collaborationLogs: [
+        { time: '2026-05-09 14:00', type: '转派', operator: '检测部-刘伟', content: '自王强转派至李明；交接：余杭 12# 现场钥匙在门卫处，需先做进场登记。' },
+        { time: '2026-05-09 10:30', type: '催办', operator: '合同部-陈丽', content: '要求 5 月 12 日前进场并完成首日踏勘与全貌照片。' },
+        { time: '2026-05-08 16:45', type: '拒绝', operator: '王强', content: '原因：与既有外业档期冲突暂无法承接；已与主管沟通改由李明承接本单。' }
+      ],
+      latestEntry: {
+        savedAt: '2026-05-09 18:42',
+        versionLabel: '草稿',
+        dataEntryHash: '#tower-spec',
+        items: [
+          ['场地相对高度（m）', '2.5'],
+          ['单管塔底径（mm）', '1280'],
+          ['基础外观描述', '基础外观完好，无开裂、露筋。'],
+          ['沉降是否均匀', '是'],
+          ['接地电阻（Ω）', '待测'],
+          ['塔体总高（m）', '—']
+        ]
+      }
+    },
+    RW202606003: {
+      title: 'RW202606003 · 西湖角钢塔复检',
+      taskName: '西湖角钢塔复检',
+      site: '西湖文化广场 / TT-XH-002',
+      province: '浙江',
+      city: '杭州',
+      inspectType: '可靠性鉴定',
+      unit: '浙江中能工程检测有限公司',
+      status: '检测中',
+      person: '王强',
+      auditStatus: '未提交', auditNode: '—', auditor: '—', auditAt: '—',
+      dispatchAt: '2026-05-08',
+      review: false,
+      dataVersion: '—',
+      template: 'PKG_STOCK_ANGLE_LATTICE_20260511 v1.0',
+      order: {
+        code: 'ZJHXH20260502001',
+        name: '西湖文化广场铁塔复检',
+        customer: '杭州市地铁集团有限责任公司',
+        project: '西湖区通信设施维护',
+        orderStatus: '已派',
+        deadline: '2026-05-22',
+        dispatchTime: '2026-05-02 14:30'
+      },
+      collaborationLogs: [
+        { time: '2026-05-08 11:00', type: '催办', operator: '合同部-李娜', content: '请按周计划完成角钢塔复检外业，并同步上传关键部位照片。' },
+        { time: '2026-05-07 09:15', type: '转派', operator: '检测部-周敏', content: '协助人员由张华调整为李亮，仅负责辅测与记录。' }
+      ],
+      latestEntry: {
+        savedAt: '2026-05-09 11:28',
+        versionLabel: '草稿',
+        dataEntryHash: '#seg-1',
+        items: [
+          ['第1段检测结果', '合格'],
+          ['法兰螺栓抽检', '符合'],
+          ['主材锈蚀', '抽检未见超标'],
+          ['平台护栏高度结论', '合规'],
+          ['天线数量（副）', '6']
+        ]
+      }
+    },
+    RW202606004: {
+      title: 'RW202606004 · 萧山单管塔常规检',
+      taskName: '萧山单管塔常规检',
+      site: '萧山08#站点 / TT-XS-001',
+      province: '浙江',
+      city: '杭州',
+      inspectType: '常规检测',
+      unit: '浙江中能工程检测有限公司',
+      status: '已检测',
+      person: '张华',
+      auditStatus: '待审核', auditNode: '技术部主管', auditor: '—', auditAt: '—',
+      dispatchAt: '2026-05-06',
+      review: true,
+      dataVersion: 'V2（PC 修订）',
+      template: 'PKG_STOCK_SINGLE_PIPE_20260509 v1.2',
+      order: {
+        code: 'ZJHXS20260502001',
+        name: '萧山机场基站鉴定',
+        customer: '萧山通信保障项目组',
+        project: '萧山通信保障项目',
+        orderStatus: '已驳',
+        deadline: '2026-05-25',
+        dispatchTime: '2026-05-02 11:00'
+      },
+      collaborationLogs: [
+        { time: '2026-05-06 08:50', type: '催办', operator: '合同部-张伟', content: '请尽快完成数据提交，报告编制排期已锁定。' },
+        { time: '2026-05-03 14:22', type: '拒绝', operator: '张华', content: '订单侧驳回派单：现场塔体维护中不具备登高条件（与订单拒绝记录一致，可至订单详情查看）。' },
+        { time: '2026-05-02 16:40', type: '拒绝', operator: '张华', content: '拒绝接单：当日航班管制区域与站点冲突，无法进场。' },
+        { time: '2026-05-10 16:05', type: '转派', operator: '检测部-刘伟', content: '内业校核由李娜协助张华完成报告引用字段核对。' }
+      ],
+      latestEntry: {
+        savedAt: '2026-05-07 09:05',
+        versionLabel: 'V1 提交快照',
+        dataEntryHash: '#tower-spec',
+        items: [
+          ['塔体总高（m）', '42.5'],
+          ['垂直度结论', '满足'],
+          ['垂直度实测偏差（mm）', '10'],
+          ['接地电阻（Ω）', '0.82'],
+          ['防腐涂层外观', '良好'],
+          ['焊缝抽检记录', '主焊缝抽检未见裂纹。']
+        ]
+      }
+    },
+    RW202606006: {
+      title: 'RW202606006 · 临安铁塔定期检',
+      taskName: '临安铁塔定期检',
+      site: '临安03#站点 / TT-LA-003',
+      province: '浙江',
+      city: '杭州',
+      inspectType: '定期检测',
+      unit: '浙江中能工程检测有限公司',
+      status: '已检测',
+      person: '李明',
+      auditStatus: '审核中', auditNode: '技术部主管', auditor: '—', auditAt: '—',
+      dispatchAt: '2026-05-07',
+      review: true,
+      dataVersion: 'V2',
+      template: 'PKG_STOCK_SINGLE_PIPE_20260509 v1.2',
+      order: {
+        code: 'ZJLA20260507001',
+        name: '临安定期检测订单',
+        customer: '中国移动通信集团浙江有限公司',
+        project: '临安维护项目',
+        orderStatus: '已派',
+        deadline: '2026-05-20',
+        dispatchTime: '2026-05-07 08:00'
+      },
+      collaborationLogs: [],
+      latestEntry: {
+        savedAt: '2026-05-09 10:05',
+        versionLabel: 'V2 提交快照',
+        dataEntryHash: '#tower-spec',
+        items: [
+          ['塔体总高（m）', '36.2'],
+          ['外观结论', '局部涂层剥落需跟踪'],
+          ['接地电阻（Ω）', '1.1']
+        ]
+      }
+    },
+    RW202606005: {
+      title: 'RW202606005 · 建德山区塔检',
+      taskName: '建德山区塔检',
+      site: '建德08#站点',
+      province: '浙江',
+      city: '杭州',
+      inspectType: '安全性鉴定',
+      unit: '华东某外协检测有限公司',
+      status: '检毕',
+      person: '赵六',
+      auditStatus: '已通过', auditNode: '已通过', auditor: '周敏', auditAt: '2026-04-29 17:05',
+      dispatchAt: '2026-04-28',
+      review: true,
+      dataVersion: 'V3（检毕有效版）',
+      template: 'PKG_STOCK_SINGLE_PIPE_20260509 v1.2',
+      order: {
+        code: 'ZJJD20260508001',
+        name: '建德山区单站检测',
+        customer: '山区覆盖补强项目组',
+        project: '山区覆盖补强工程',
+        orderStatus: '已完',
+        deadline: '2026-05-05',
+        dispatchTime: '2026-04-20 08:40'
+      },
+      collaborationLogs: [
+        { time: '2026-04-29 07:30', type: '催办', operator: '合同部-王敏', content: '山区路况复杂，请确认仪器与人员到位时间。' },
+        { time: '2026-04-28 17:10', type: '转派', operator: '外协管理员-孙涛', content: '现场主测由钱七调整为赵六（持证登高）。' }
+      ],
+      latestEntry: {
+        savedAt: '2026-04-29 09:12',
+        versionLabel: 'V3 检毕快照',
+        dataEntryHash: '#tower-spec',
+        items: [
+          ['塔体总高（m）', '38.0'],
+          ['接地电阻（Ω）', '6.2（平原）'],
+          ['基础外观描述', '良好，排水通畅'],
+          ['检毕说明', '数据已锁定，报告编制已引用本版。']
+        ]
+      }
+    }
+  };
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function logTypeClass(type) {
+    if (type === '催办') return 'log-type log-type--urge';
+    if (type === '转派') return 'log-type log-type--transfer';
+    if (type === '拒绝') return 'log-type log-type--reject';
+    return 'log-type';
+  }
+
+  function renderKv(el, rows) {
+    el.innerHTML = rows.map(function (r) {
+      return '<div class="kv-item"><b>' + esc(r[0]) + '</b><span>' + esc(r[1]) + '</span></div>';
+    }).join('');
+  }
+
+  var params = new URLSearchParams(location.search);
+  var taskId = (params.get('id') || '').trim() || 'RW202606002';
+  var d = TASK_DETAIL[taskId] || TASK_DETAIL.RW202606002;
+
+  document.getElementById('pageTitle').textContent = d.title;
+
+  var dataEntryHash = (d.latestEntry && d.latestEntry.dataEntryHash) || '#tower-spec';
+  var dataEntryHref = DATA_ENTRY + '?task=' + encodeURIComponent(taskId) + dataEntryHash;
+  // 内嵌锁定模式：embed=1 去掉录入页自身的侧栏/顶栏，lock=1 把全部输入锁定为只读
+  var dataEntryEmbedHref = DATA_ENTRY + '?task=' + encodeURIComponent(taskId) + '&embed=1&lock=1' + dataEntryHash;
+  var orderHref = ORDER_DETAIL_BASE + '?code=' + encodeURIComponent(d.order.code);
+
+  document.getElementById('linkDataEntry').href = dataEntryHref;
+  document.getElementById('linkOrderDetail').href = orderHref;
+
+  renderKv(document.getElementById('taskKv'), [
+    ['任务编号', taskId],
+    ['任务名称', d.taskName],
+    ['任务状态', d.status],
+    ['检测人员', d.person],
+    ['派单时间', d.dispatchAt],
+    ['省/市', d.province + ' / ' + d.city],
+    ['站点/铁塔', d.site],
+    ['检测类型', d.inspectType],
+    ['检测单位', d.unit],
+    ['模板快照', d.template],
+    ['当前数据版本', d.dataVersion]
+  ]);
+
+  var fromAudit = params.get('from') === 'audit';
+  var backList = document.getElementById('linkBackList');
+  if (backList) {
+    backList.href = fromAudit ? 'pc_task_list.html?tab=audit' : 'pc_task_list.html';
+    if (fromAudit) backList.innerHTML = '<i class="fa-solid fa-arrow-left"></i> 返回待我审核';
+  }
+  renderKv(document.getElementById('orderKv'), [
+    ['订单编码', d.order.code],
+    ['订单名称', d.order.name],
+    ['客户/委托方', d.order.customer],
+    ['关联工程', d.order.project],
+    ['订单状态', d.order.orderStatus],
+    ['订单派单时间', d.order.dispatchTime],
+    ['要求完成日期', d.order.deadline]
+  ]);
+
+  var logsEl = document.getElementById('collabLogsWrap');
+  if (!d.collaborationLogs || !d.collaborationLogs.length) {
+    logsEl.innerHTML = '<p class="empty-hint">暂无拒绝、催办或转派记录。</p>';
+  } else {
+    var sorted = d.collaborationLogs.slice().sort(function (a, b) {
+      return String(b.time).localeCompare(String(a.time), 'zh-CN');
+    });
+    var thead = '<thead><tr><th style="width:160px">时间</th><th style="width:100px">类型</th><th style="width:120px">操作人</th><th>说明</th></tr></thead>';
+    var body = sorted.map(function (row) {
+      return '<tr><td>' + esc(row.time) + '</td><td><span class="' + logTypeClass(row.type) + '">' + esc(row.type) + '</span></td><td>' + esc(row.operator) + '</td><td>' + esc(row.content) + '</td></tr>';
+    }).join('');
+    logsEl.innerHTML = '<div style="overflow-x:auto"><table class="data-table">' + thead + '<tbody>' + body + '</tbody></table></div>';
+  }
+
+  // 「检测数据」页签：内嵌录入页（懒加载，首次切到该 tab 时再加载；始终展示录入界面，锁定不可编辑）
+  var dataEmbedFrame = document.getElementById('dataEmbedFrame');
+  var dataEmbedLoaded = false;
+
+  function ensureDataEmbed() {
+    if (dataEmbedLoaded) return;
+    dataEmbedFrame.src = dataEntryEmbedHref;
+    dataEmbedLoaded = true;
+  }
+
+  function activateTab(tab) {
+    document.querySelectorAll('.detail-tabs button').forEach(function (b) {
+      b.classList.toggle('active', b.getAttribute('data-tab') === tab);
+    });
+    document.querySelectorAll('.tab-panel').forEach(function (p) {
+      p.classList.toggle('active', p.id === 'panel-' + tab);
+    });
+    if (tab === 'data') ensureDataEmbed();
+  }
+
+  document.querySelectorAll('.detail-tabs button').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      activateTab(this.getAttribute('data-tab'));
+    });
+  });
+
+  // URL ?tab=data 直达
+  var urlTab = params.get('tab');
+  if (urlTab && ['overview', 'data'].indexOf(urlTab) !== -1) {
+    activateTab(urlTab);
+  }
+})();
+</script>
+</body>
+</html>

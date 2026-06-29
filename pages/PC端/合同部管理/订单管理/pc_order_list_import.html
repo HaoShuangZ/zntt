@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>导入订单 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+
+  <div class="page-header">
+    <div class="page-title">导入订单</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">导入订单</div>
+    </div>
+    <div class="card-body">
+
+      <!-- 上传区域 -->
+      <div style="border:2px dashed var(--border);border-radius:8px;padding:48px 20px;text-align:center;margin-bottom:24px;cursor:pointer;transition:border-color 0.2s" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">
+        <i class="fa-solid fa-cloud-arrow-up" style="font-size:40px;color:var(--text-4);margin-bottom:12px;display:block"></i>
+        <p style="font-size:14px;color:var(--text-2);margin-bottom:8px">点击或拖拽Excel文件到此</p>
+        <p style="font-size:12px;color:var(--text-3)">支持 .xlsx / .xls 格式</p>
+      </div>
+
+      <!-- 下载模板 -->
+      <div style="margin-bottom:20px">
+        <a href="#" style="color:var(--primary);font-size:13px;text-decoration:none;display:inline-flex;align-items:center;gap:4px">
+          <i class="fa-solid fa-download"></i> 下载导入模板
+        </a>
+      </div>
+
+      <!-- 导入规则 -->
+      <div style="background:#F7F8FA;border-radius:6px;padding:16px;margin-bottom:24px">
+        <div style="font-size:13px;font-weight:500;color:var(--text-1);margin-bottom:8px">导入说明</div>
+        <ul style="font-size:12px;color:var(--text-3);list-style:disc;padding-left:20px;line-height:2">
+          <li>支持 .xlsx / .xls 格式文件</li>
+          <li>单次最多导入 1000 条数</li>
+          <li>必填字段：订单名称、铁塔编号、检测类</li>
+          <li>铁塔编号需与系统中已有铁塔匹配</li>
+          <li>重复的订单编号将自动跳过</li>
+        </ul>
+      </div>
+
+      <!-- 预览区域 -->
+      <div style="border:1px solid var(--border);border-radius:6px;min-height:160px;display:flex;align-items:center;justify-content:center">
+        <div class="empty-state" style="padding:30px">
+          <i class="fa-solid fa-table" style="font-size:36px;color:var(--text-4);margin-bottom:8px;display:block"></i>
+          <p style="font-size:13px;color:var(--text-4)">上传文件后在此预览数</p>
+        </div>
+      </div>
+
+    </div>
+    <div class="form-footer">
+      <a href="pc_order_list.html" class="btn btn-default">返回</a>
+      <button class="btn btn-primary" disabled style="opacity:0.5;cursor:not-allowed"><i class="fa-solid fa-file-import"></i> 确认导入</button>
+    </div>
+  </div>
+
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'order_list', breadcrumb:['营销管理','订单管理','导入订单']};</script>
+</body>
+</html>
+
+

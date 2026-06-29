@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>出入库台账 -  通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .modal-mask {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+  }
+  .modal-mask.open { display: flex; }
+  .modal-dialog {
+    width: min(980px, 96vw);
+    max-height: 90vh;
+    overflow: auto;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.2);
+  }
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .modal-close {
+    border: none;
+    background: transparent;
+    color: var(--text-3);
+    font-size: 18px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<div id="page-content">
+  <div class="page-header">
+    <h1 class="page-title">出入库台账</h1>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <input class="form-input" placeholder="设备名称/单据编号">
+          <select class="form-select">
+            <option>全部类型</option>
+            <option>出库</option>
+            <option>入库</option>
+          </select>
+          <select class="form-select">
+            <option>全部人员</option>
+            <option>李明</option>
+            <option>王强</option>
+            <option>张华</option>
+          </select>
+          <input class="form-input" type="date" style="width:150px">
+          <span style="color:#999"></span>
+          <input class="form-input" type="date" style="width:150px">
+          <button class="btn btn-primary">查询</button>
+          <button class="btn btn-default">重置</button>
+        </div>
+        </div>
+
+      <div style="font-size:12px;color:var(--warning);margin-bottom:12px"><i class="fa-solid fa-circle-info"></i> 台账记录不可删除，仅供查询和导出</div>
+
+      
+      <div class="pc-table-actions">
+        <button class="btn btn-default"><i class="fa-solid fa-file-export"></i> 导出</button>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>单据编号</th>
+            <th>单据类型</th>
+            <th>设备编号</th>
+            <th>设备名称</th>
+            <th>借用途归还</th>
+            <th>日期</th>
+            <th>设备状况</th>
+            <th class="col-action">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>CK20260508-0001</td>
+            <td><span class="tag tag-orange">出库</span></td>
+            <td>SB-CL-202601-0001</td>
+            <td>超声波测厚仪</td>
+            <td>李明</td>
+            <td>2026-05-08</td>
+            <td>—</td>
+            <td class="col-action"><a class="btn-text" data-ledger-view data-bill="CK20260508-0001" data-type="出库" data-device="SB-CL-202601-0001 / 超声波测厚仪" data-person="李明" data-date="2026-05-08"><i class="fa-solid fa-eye"></i> 查看</a></td>
+          </tr>
+          <tr>
+            <td>CK20260505-0001</td>
+            <td><span class="tag tag-orange">出库</span></td>
+            <td>SB-CL-202601-0002</td>
+            <td>钢筋锈蚀</td>
+            <td>李明</td>
+            <td>2026-05-05</td>
+            <td>—</td>
+            <td class="col-action"><a class="btn-text" data-ledger-view data-bill="CK20260505-0001" data-type="出库" data-device="SB-CL-202601-0002 / 钢筋锈蚀" data-person="李明" data-date="2026-05-05"><i class="fa-solid fa-eye"></i> 查看</a></td>
+          </tr>
+          <tr>
+            <td>RK20260507-0001</td>
+            <td><span class="tag tag-green">入库</span></td>
+            <td>SB-QY-202602-0001</td>
+            <td>回弹</td>
+            <td>李明</td>
+            <td>2026-05-07</td>
+            <td>完好</td>
+            <td class="col-action"><a class="btn-text" data-ledger-view data-bill="RK20260507-0001" data-type="入库" data-device="SB-QY-202602-0001 / 回弹" data-person="李明" data-date="2026-05-07"><i class="fa-solid fa-eye"></i> 查看</a></td>
+          </tr>
+          <tr>
+            <td>CK20260503-0002</td>
+            <td><span class="tag tag-orange">出库</span></td>
+            <td>SB-SY-202601-0001</td>
+            <td>全站</td>
+            <td>王强</td>
+            <td>2026-05-03</td>
+            <td>—</td>
+            <td class="col-action"><a class="btn-text" data-ledger-view data-bill="CK20260503-0002" data-type="出库" data-device="SB-SY-202601-0001 / 全站" data-person="王强" data-date="2026-05-03"><i class="fa-solid fa-eye"></i> 查看</a></td>
+          </tr>
+          <tr>
+            <td>RK20260506-0001</td>
+            <td><span class="tag tag-green">入库</span></td>
+            <td>SB-CL-202603-0001</td>
+            <td>接地电阻测试</td>
+            <td>张华</td>
+            <td>2026-05-06</td>
+            <td>完好</td>
+            <td class="col-action"><a class="btn-text" data-ledger-view data-bill="RK20260506-0001" data-type="入库" data-device="SB-CL-202603-0001 / 接地电阻测试" data-person="张华" data-date="2026-05-06"><i class="fa-solid fa-eye"></i> 查看</a></td>
+          </tr>
+          <tr>
+            <td>CK20260501-0003</td>
+            <td><span class="tag tag-orange">出库</span></td>
+            <td>SB-CL-202604-0001</td>
+            <td>裂缝测宽</td>
+            <td>张华</td>
+            <td>2026-05-01</td>
+            <td>—</td>
+            <td class="col-action"><a class="btn-text" data-ledger-view data-bill="CK20260501-0003" data-type="出库" data-device="SB-CL-202604-0001 / 裂缝测宽" data-person="张华" data-date="2026-05-01"><i class="fa-solid fa-eye"></i> 查看</a></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <span>共 156 条</span>
+        <div class="pagination-btns">
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <button class="page-btn">4</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-mask" id="ledger-detail-modal">
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <div class="card-title">出入库详情</div>
+      <button class="modal-close" id="ledger-detail-close" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="card-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <span class="form-label">单据编号</span>
+          <input class="form-input" id="detail-bill" readonly>
+        </div>
+        <div class="form-group">
+          <span class="form-label">单据类型</span>
+          <input class="form-input" id="detail-type" readonly>
+        </div>
+        <div class="form-group">
+          <span class="form-label">借用/归还人</span>
+          <input class="form-input" id="detail-person" readonly>
+        </div>
+        <div class="form-group">
+          <span class="form-label">日期</span>
+          <input class="form-input" id="detail-date" readonly>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:12px;">
+        <div class="card-header"><span class="card-title">设备明细</span></div>
+        <div class="card-body">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>设备信息</th>
+                <th>处理状态</th>
+                <th>备注</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td id="detail-device"></td>
+                <td id="detail-status">已登记</td>
+                <td>—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="form-footer">
+        <button class="btn btn-default" id="ledger-detail-cancel">关闭</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'', breadcrumb:['仪器设备管理','出入库台账（历史）']};</script>
+<script>
+  (function () {
+    function getModal() { return document.getElementById('ledger-detail-modal'); }
+    function openModal() {
+      const modal = getModal();
+      if (modal) modal.classList.add('open');
+    }
+    function closeModal() {
+      const modal = getModal();
+      if (modal) modal.classList.remove('open');
+    }
+
+    document.addEventListener('click', function (e) {
+      const target = e.target;
+      if (!(target instanceof Element)) return;
+
+      const viewBtn = target.closest('[data-ledger-view]');
+      if (viewBtn) {
+        document.getElementById('detail-bill').value = viewBtn.getAttribute('data-bill') || '';
+        document.getElementById('detail-type').value = viewBtn.getAttribute('data-type') || '';
+        document.getElementById('detail-person').value = viewBtn.getAttribute('data-person') || '';
+        document.getElementById('detail-date').value = viewBtn.getAttribute('data-date') || '';
+        document.getElementById('detail-device').textContent = viewBtn.getAttribute('data-device') || '';
+        document.getElementById('detail-status').textContent = (viewBtn.getAttribute('data-type') === '入库') ? '已入库' : '已出库';
+        openModal();
+        return;
+      }
+
+      if (target.closest('#ledger-detail-close') || target.closest('#ledger-detail-cancel')) {
+        closeModal();
+        return;
+      }
+
+      const modal = getModal();
+      if (modal && target === modal) closeModal();
+    });
+  })();
+</script>
+</body>
+</html>
+
+

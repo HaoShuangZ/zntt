@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>操作日志</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">操作日志</div>
+      <span style="font-size:12px;color:var(--text-3);"><i class="fa-solid fa-circle-info"></i> 日志不可删除</span>
+    </div>
+    <div class="card-body">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <input type="text" class="form-input" placeholder="搜索操作人/内容">
+          <select class="form-select">
+            <option value="">全部操作类型</option>
+            <option>新增</option>
+            <option>编辑</option>
+            <option>删除</option>
+            <option>查看</option>
+            <option>登录</option>
+          </select>
+          <input type="date" class="form-input" style="width:150px" value="2026-05-01">
+          <span style="color:var(--text-4)"></span>
+          <input type="date" class="form-input" style="width:150px" value="2026-05-08">
+          <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> 查询</button>
+          <button class="btn btn-default">重置</button>
+        </div>
+      </div>
+
+      <div class="pc-table-actions">
+        <button class="btn btn-default"><i class="fa-solid fa-file-export"></i> 导出</button>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>操作时间</th>
+            <th>操作</th>
+            <th>操作类型</th>
+            <th>操作模块</th>
+            <th>操作内容</th>
+            <th>IP地址</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2026-05-08 09:15</td>
+            <td>张伟</td>
+            <td><span class="tag tag-blue">新增</span></td>
+            <td>订单管理</td>
+            <td>新增订单 DD202605006</td>
+            <td>192.168.1.100</td>
+          </tr>
+          <tr>
+            <td>2026-05-08 09:02</td>
+            <td>李明</td>
+            <td><span class="tag tag-green">编辑</span></td>
+            <td>检测数据录入</td>
+            <td>修改任务 RW202605001 第3段检测数据</td>
+            <td>192.168.1.105</td>
+          </tr>
+          <tr>
+            <td>2026-05-08 08:55</td>
+            <td>王强</td>
+            <td><span class="tag tag-gray">查看</span></td>
+            <td>报告审核</td>
+            <td>查看报告 BG202605003</td>
+            <td>192.168.1.108</td>
+          </tr>
+          <tr>
+            <td>2026-05-08 08:30</td>
+            <td>admin</td>
+            <td><span class="tag tag-orange">登录</span></td>
+            <td>系统登录</td>
+            <td>管理员登录系</td>
+            <td>192.168.1.1</td>
+          </tr>
+          <tr>
+            <td>2026-05-07 17:45</td>
+            <td>赵六</td>
+            <td><span class="tag tag-red">删除</span></td>
+            <td>设备管理</td>
+            <td>删除天线 TX008（测试数据）</td>
+            <td>192.168.1.112</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <span>共 1,286 条记录</span>
+        <div class="pagination-btns">
+          <button class="page-btn"><i class="fa-solid fa-chevron-left"></i></button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <button class="page-btn">...</button>
+          <button class="page-btn">258</button>
+          <button class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'system_logs', breadcrumb:['系统管理','操作日志']};</script>
+</body>
+</html>
+

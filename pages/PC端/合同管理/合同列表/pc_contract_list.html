@@ -1,0 +1,102 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>对上合同 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+  <div class="page-header">
+    <div class="page-title">对上合同</div>
+  </div>
+  <div class="card" style="margin-bottom:16px;border:1px solid #E8E8E8">
+    <div class="card-body" style="padding:10px 14px;font-size:12px;color:var(--text-2)">
+      收款提醒到期后仅推送<strong>消息中心</strong>（不进待办），模板在 <a href="../../消息模板配置/消息模板管理/pc_message_template_list.html" class="btn-text" style="padding:0">消息模板</a>；合同审批在<strong>基础平台</strong>办理。
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <input type="text" class="form-input" placeholder="合同名称/客户" style="width:200px">
+          <select class="form-select"><option>全部类型</option><option>自有</option><option>分包</option></select>
+          <select class="form-select"><option>全部状态</option><option>履行中</option><option>已结束</option><option>待生效</option></select>
+          <select class="form-select" title="审批状态"><option>全部审批状态</option><option>未提交</option><option>审核中</option><option>已通过</option><option>已驳回</option></select>
+          <button type="button" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> 查询</button>
+        </div>
+      </div>
+
+      <div class="pc-table-actions">
+        <a href="../合同编辑/pc_contract_detail.html?mode=create" class="btn btn-primary"><i class="fa-solid fa-file-circle-plus"></i> 新增对上合同</a>
+        <a href="../对下合同/pc_contract_downstream_detail.html?mode=create" class="btn btn-default"><i class="fa-solid fa-file-contract"></i> 新增对下合同</a>
+        <a href="../对下合同/pc_contract_downstream_list.html" class="btn btn-default"><i class="fa-solid fa-list"></i> 对下合同列表</a>
+        <button type="button" class="btn btn-default"><i class="fa-solid fa-file-export"></i> 导出</button>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width:140px">合同编号</th>
+            <th>合同名称</th>
+            <th>所属客户</th>
+            <th style="width:90px">类型</th>
+            <th style="width:110px">金额(含税)</th>
+            <th style="width:200px">起止日期</th>
+            <th style="width:80px">状态</th>
+            <th style="width:140px">审批（平台）</th>
+            <th style="width:130px">收款进度</th>
+            <th class="col-action" style="width:240px">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-code="HT2026-0512" data-name="杭州移动 2026 年度铁塔检测框架">
+            <td>HT2026-0512</td>
+            <td>杭州移动 2026 年度铁塔检测框架</td>
+            <td>中国移动通信集团浙江有限公司</td>
+            <td><span class="tag tag-blue">自有</span></td>
+            <td>¥ 2,860,000</td>
+            <td>2026-01-01 ~ 2026-12-31</td>
+            <td><span class="tag tag-green">履行中</span></td>
+            <td><span class="tag tag-green">已通过</span> · 合同部终审</td>
+            <td>120万 / 286万 (42%)</td>
+            <td class="col-action">
+              <a href="../合同编辑/pc_contract_detail.html?code=HT2026-0512" class="btn-text">详情</a>
+              <a href="../合同编辑/pc_contract_detail.html?code=HT2026-0512&mode=edit" class="btn-text">编辑</a>
+              <a href="../合同收款/pc_contract_receipt.html?contractCode=HT2026-0512" class="btn-text">收款</a>
+              <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+            </td>
+          </tr>
+          <tr data-code="HT2026-0428" data-name="城西改造专项检测分包">
+            <td>HT2026-0428</td>
+            <td>城西改造专项检测分包</td>
+            <td>浙江某建设集团有限公司</td>
+            <td><span class="tag tag-orange">分包</span></td>
+            <td>¥ 480,000</td>
+            <td>2026-04-01 ~ 2026-09-30</td>
+            <td><span class="tag tag-green">履行中</span></td>
+            <td><span class="tag tag-blue">审核中</span> · 法务审核</td>
+            <td>16万 / 48万 (33%)</td>
+            <td class="col-action">
+              <a href="../合同编辑/pc_contract_detail.html?code=HT2026-0428" class="btn-text">详情</a>
+              <a href="../../工作台/流程中心/pc_workflow_approve.html?bizType=contract_up&bizId=HT2026-0428" class="btn-text" style="color:var(--primary)">审批(平台)</a>
+              <a href="../合同编辑/pc_contract_detail.html?code=HT2026-0428&mode=edit" class="btn-text">编辑</a>
+              <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pagination">
+        <span>共 24 条</span>
+        <div class="pagination-btns"><button type="button" class="page-btn active">1</button><button type="button" class="page-btn">2</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = { active: 'contract_list', breadcrumb: ['合同管理', '对上合同'] };</script>
+</body>
+</html>

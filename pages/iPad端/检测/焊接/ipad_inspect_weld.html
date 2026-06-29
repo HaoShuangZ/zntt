@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<!-- iPad-INSPECT_WELD v2.0 landscape -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>焊接检测</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/app-frame.css">
+<link rel="stylesheet" href="../../../../assets/app-embed.css">
+<link rel="stylesheet" href="../../../../assets/app-inspect-layout.css">
+<link rel="stylesheet" href="../../../../assets/ipad-tokens.css">
+<link rel="stylesheet" href="../../../../assets/ipad-frame.css">
+<link rel="stylesheet" href="../../../../assets/ipad-layout.css">
+<link rel="stylesheet" href="../../../../assets/ipad-visual.css">
+<link rel="stylesheet" href="../../../../assets/ipad-inspect-layout.css">
+<link rel="stylesheet" href="../../../../assets/ipad-embed.css">
+<script src="../../../../assets/ipad-adapt.js" defer></script>
+<script src="../../../../assets/app-embed.js" defer></script>
+<script src="../../../../assets/app-inspect-back.js" defer></script>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; background: #f2f3f5; margin: 0; }
+.banner { background: #e8f3ff; border: 1px solid #bedaff; border-radius: 12px; padding: 10px 12px; margin-bottom: 12px; font-size: 12px; color: #4e5969; }
+.card { background: #fff; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06); }
+.card.fail { border: 1px solid #ffccc7; background: linear-gradient(180deg, #fff5f5 0%, #fff 40%); }
+.card-title { font-size: 15px; font-weight: 600; color: #1d2129; margin: 0 0 12px; }
+.form-label { font-size: 13px; color: #86909c; margin-bottom: 6px; display: block; }
+.form-input { width: 100%; height: 44px; border: 1px solid #e5e6eb; border-radius: 12px; padding: 0 14px; font-size: 15px; box-sizing: border-box; }
+.toggle-row { display: flex; gap: 8px; margin-bottom: 14px; }
+.toggle-btn { flex: 1; height: 40px; border-radius: 8px; border: 1px solid #e5e6eb; background: #fff; color: #4e5969; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.toggle-btn.on-pass { border-color: #00b42a; background: #e8ffea; color: #00b42a; }
+.toggle-btn.on-fail { border-color: #f53f3f; background: #ffece8; color: #f53f3f; }
+.photo-add { width: 72px; height: 72px; border: 2px dashed #e5e6eb; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f7f8fa; cursor: pointer; }
+</style>
+</head>
+<body class="inspect-app-layout ipad-adapt" data-inspect-module-id="weld" data-inspect-module-name="焊接">
+<div id="appStatusBar">
+  <span>9:41</span>
+  <span><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+</div>
+<div id="appNavBar">
+  <a href="../../任务/填报主页/ipad_task_inspect_home.html" data-app-inspect-back style="color:#165DFF; text-decoration:none; font-size:14px;"><i class="fa-solid fa-chevron-left"></i> 返回</a>
+  <span style="flex:1; text-align:center; font-size:16px; font-weight:600;">焊接检测</span>
+  <span style="width:40px;"></span>
+</div>
+
+<div id="appEmbedContent">
+  <div class="banner"><i class="fa-solid fa-clipboard-check" style="color:#165dff;margin-right:6px;"></i>焊缝抽检记录表 · 已完成 2/3 项</div>
+
+  <div class="card" data-weld-card data-val="1">
+    <h3 class="card-title">1. 法兰对接焊缝</h3>
+    <label class="form-label">检测结果</label>
+    <div class="toggle-row" data-weld-toggle>
+      <button type="button" class="toggle-btn on-pass" data-val="1">合格</button>
+      <button type="button" class="toggle-btn" data-val="0">不合格</button>
+    </div>
+    <label class="form-label" for="weldRemark1">备注</label>
+    <input id="weldRemark1" type="text" class="form-input" placeholder="备注（选填）">
+  </div>
+
+  <div class="card fail" data-weld-card data-val="0">
+    <h3 class="card-title">2. 加劲板角焊缝</h3>
+    <label class="form-label">检测结果</label>
+    <div class="toggle-row" data-weld-toggle>
+      <button type="button" class="toggle-btn" data-val="1">合格</button>
+      <button type="button" class="toggle-btn on-fail" data-val="0">不合格</button>
+    </div>
+    <label class="form-label" for="weldRemark2">备注</label>
+    <input id="weldRemark2" type="text" class="form-input" value="东侧角焊缝咬边约 1mm，需返修">
+    <label class="form-label" style="margin-top:12px;">不合格拍照</label>
+    <div class="photo-add" id="btnWeldPhoto" role="button" tabindex="0">
+      <i class="fa-solid fa-camera" style="font-size:18px;color:#c9cdd4;"></i>
+      <span style="font-size:10px;color:#c9cdd4;margin-top:2px;">拍照</span>
+    </div>
+  </div>
+
+  <div class="card" data-weld-card data-val="1">
+    <h3 class="card-title">3. 横隔板对接焊缝</h3>
+    <label class="form-label">检测结果</label>
+    <div class="toggle-row" data-weld-toggle>
+      <button type="button" class="toggle-btn on-pass" data-val="1">合格</button>
+      <button type="button" class="toggle-btn" data-val="0">不合格</button>
+    </div>
+    <label class="form-label" for="weldRemark3">备注</label>
+    <input id="weldRemark3" type="text" class="form-input" placeholder="备注（选填）">
+  </div>
+</div>
+
+<script>
+(function () {
+  document.querySelectorAll('[data-weld-toggle]').forEach(function (row) {
+    var card = row.closest('[data-weld-card]');
+    row.querySelectorAll('.toggle-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var val = btn.getAttribute('data-val');
+        row.querySelectorAll('.toggle-btn').forEach(function (b) {
+          b.classList.remove('on-pass', 'on-fail');
+        });
+        if (val === '1') btn.classList.add('on-pass');
+        else btn.classList.add('on-fail');
+        if (card) {
+          card.setAttribute('data-val', val);
+          card.classList.toggle('fail', val === '0');
+        }
+      });
+    });
+  });
+  var btnPhoto = document.getElementById('btnWeldPhoto');
+  if (btnPhoto) {
+    btnPhoto.addEventListener('click', function () {
+      alert('拍照：记录焊缝现场照片（原型演示）。');
+    });
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>登录</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/app-frame.css">
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; background: #F2F3F5; margin: 0; }
+</style>
+</head>
+<body>
+<!-- Status bar -->
+<div style="height:44px; display:flex; align-items:center; justify-content:space-between; padding:0 16px; background:#fff;">
+  <span style="font-size:14px; font-weight:600;">9:41</span>
+  <span style="font-size:12px;"><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+</div>
+
+<!-- Content area -->
+<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:calc(100vh - 44px); padding:0 32px; background:linear-gradient(180deg, #fff 0%, #F2F3F5 100%);">
+  <!-- Logo -->
+  <div style="text-align:center; margin-bottom:48px;">
+    <div style="width:72px; height:72px; background:linear-gradient(135deg, #165DFF 0%, #4080FF 100%); border-radius:20px; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
+      <i class="fa-solid fa-tower-broadcast" style="font-size:32px; color:#fff;"></i>
+    </div>
+    <h1 style="font-size:22px; font-weight:700; color:#1D2129; margin:0 0 4px;">通信铁塔检测系统</h1>
+    <p style="font-size:13px; color:#86909C; margin:0;">专业 · 高效 · 智能</p>
+  </div>
+
+  <!-- Form -->
+  <div style="width:100%; max-width:320px;">
+    <div style="margin-bottom:16px;">
+      <div style="position:relative;">
+        <i class="fa-solid fa-user" style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:#C9CDD4; font-size:14px;"></i>
+        <input type="text" placeholder="请输入账号" value="admin" style="width:100%; height:44px; border:1px solid #E5E6EB; border-radius:12px; padding:0 14px 0 38px; font-size:15px; outline:none; box-sizing:border-box; background:#fff;" onfocus="this.style.borderColor='#165DFF'" onblur="this.style.borderColor='#E5E6EB'">
+      </div>
+    </div>
+    <div style="margin-bottom:24px;">
+      <div style="position:relative;">
+        <i class="fa-solid fa-lock" style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:#C9CDD4; font-size:14px;"></i>
+        <input type="password" placeholder="请输入密码" value="••••••" style="width:100%; height:44px; border:1px solid #E5E6EB; border-radius:12px; padding:0 14px 0 38px; font-size:15px; outline:none; box-sizing:border-box; background:#fff;" onfocus="this.style.borderColor='#165DFF'" onblur="this.style.borderColor='#E5E6EB'">
+      </div>
+    </div>
+    <a href="../../工作台/首页/app_workbench_index.html" style="display:block; width:100%; height:44px; background:#165DFF; color:#fff; border:none; border-radius:8px; font-size:16px; font-weight:600; cursor:pointer; text-decoration:none; text-align:center; line-height:44px; box-sizing:border-box;">登录</a>
+    <div style="display:flex; justify-content:space-between; margin-top:16px;">
+      <a href="#" style="font-size:13px; color:#86909C; text-decoration:none;">忘记密码？</a>
+      <a href="#" style="font-size:13px; color:#165DFF; text-decoration:none;">联系管理员</a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div style="position:absolute; bottom:40px; text-align:center;">
+    <p style="font-size:12px; color:#C9CDD4; margin:0;">浙江中能工程检测有限公司</p>
+  </div>
+</div>
+</body>
+</html>

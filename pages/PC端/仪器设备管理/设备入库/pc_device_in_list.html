@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>设备入库列表 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">设备入库列表</div>
+    </div>
+    <div class="card-body">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <input type="text" class="form-input" placeholder="搜索入库单号/归还人">
+          <select class="form-select">
+            <option value="">全部状态</option>
+            <option>待确认</option>
+            <option>已入库</option>
+          </select>
+          <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> 查询</button>
+          <button class="btn btn-default">重置</button>
+        </div>
+      </div>
+
+      <div class="pc-table-actions">
+        <a href="pc_device_in.html" class="btn btn-primary"><i class="fa-solid fa-plus"></i> 新增入库</a>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>入库单号</th>
+            <th>关联出库单</th>
+            <th>归还人</th>
+            <th>入库日期</th>
+            <th>设备数量</th>
+            <th>状态</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>RK20260508-0001</td>
+            <td>CK20260505-0001</td>
+            <td>李明</td>
+            <td>2026-05-08</td>
+            <td>3</td>
+            <td><span class="tag tag-orange">待确认</span></td>
+            <td class="col-action">
+              <a href="pc_device_in.html" class="btn btn-text">办理</a>
+              <button class="btn btn-text">查看</button>
+            </td>
+          </tr>
+          <tr>
+            <td>RK20260507-0002</td>
+            <td>CK20260503-0002</td>
+            <td>王强</td>
+            <td>2026-05-07</td>
+            <td>2</td>
+            <td><span class="tag tag-green">已入库</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">查看</button>
+            </td>
+          </tr>
+          <tr>
+            <td>RK20260506-0003</td>
+            <td>CK20260501-0003</td>
+            <td>赵刚</td>
+            <td>2026-05-06</td>
+            <td>4</td>
+            <td><span class="tag tag-green">已入库</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">查看</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <span>共 3 条记录</span>
+        <div class="pagination-btns">
+          <button class="page-btn"><i class="fa-solid fa-chevron-left"></i></button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'', breadcrumb:['仪器设备管理','设备入库（历史）','入库列表']};</script>
+</body>
+</html>

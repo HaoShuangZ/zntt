@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>对上合同详情 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+.contract-sec{font-size:14px;font-weight:600;margin:14px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.sub-table{width:100%;font-size:13px;border-collapse:collapse;margin-bottom:8px}
+.sub-table th,.sub-table td{border:1px solid var(--border);padding:6px 8px;vertical-align:middle}
+.sub-table th{background:#F7F8FA;font-weight:500;text-align:left}
+.sub-table input.form-input{width:100%;min-width:0;box-sizing:border-box}
+.sub-table .cell-readonly{background:#F7F8FA;color:var(--text-2);font-size:12px}
+.btn-row-del{color:var(--danger);border:none;background:transparent;cursor:pointer;font-size:12px}
+.fund-bar{display:flex;flex-wrap:wrap;gap:20px 32px;padding:12px 14px;background:#FFFBF5;border:1px solid #FFE4BA;border-radius:6px;margin-bottom:16px;font-size:13px}
+.fund-bar strong{color:var(--text-1)}
+.detail-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:16px}
+.detail-tabs .tab{padding:10px 16px;font-size:13px;color:var(--text-2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.detail-tabs .tab.on{color:var(--primary);font-weight:600;border-bottom-color:var(--primary)}
+.tab-panel{display:none}
+.tab-panel.on{display:block}
+.field-hint{font-size:12px;color:var(--text-3);margin:4px 0 0}
+.attach-list{margin:6px 0 0;padding:0;list-style:none;font-size:12px}
+.view-only .form-input,.view-only .form-select,.view-only .form-textarea{background:#F7F8FA;pointer-events:none}
+</style>
+</head>
+<body>
+<div id="page-content">
+  <div class="page-header">
+    <div class="page-title" id="pageTitle">对上合同详情</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <a href="../合同列表/pc_contract_list.html" class="btn btn-default"><i class="fa-solid fa-arrow-left"></i> 返回列表</a>
+      <span id="hdrActions"></span>
+      <span id="bizActions" style="display:inline-flex;flex-wrap:wrap;gap:8px"></span>
+    </div>
+  </div>
+
+  <div class="fund-bar" id="fundBar"></div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="detail-tabs" id="tabBar">
+        <button type="button" class="tab on" data-tab="basic">基础信息</button>
+        <button type="button" class="tab" data-tab="price">单价明细</button>
+        <button type="button" class="tab" data-tab="remind">收款提醒</button>
+        <button type="button" class="tab" data-tab="flow">收款流水</button>
+        <button type="button" class="tab" data-tab="attach">附件与备注</button>
+        <button type="button" class="tab" data-tab="relate">关联</button>
+      </div>
+
+      <div class="tab-panel on" id="panel-basic">
+        <div class="form-grid form-grid-3" id="basicForm">
+          <div class="form-group"><label class="form-label">合同编号</label><input type="text" class="form-input" id="cCode" readonly style="width:100%;background:#F7F8FA"></div>
+          <div class="form-group"><label class="form-label">合同状态</label><select class="form-select" id="cStatus" style="width:100%"><option>履行中</option><option>已结束</option><option>待生效</option></select></div>
+          <div class="form-group full"><label class="form-label">合同名称</label><input type="text" class="form-input" id="cName" style="width:100%"></div>
+          <div class="form-group full"><label class="form-label">所属客户</label><select class="form-select" id="cCustomer" style="width:100%"><option value="">请选择</option><option value="中国移动通信集团浙江有限公司">中国移动通信集团浙江有限公司</option><option value="浙江某建设集团有限公司">浙江某建设集团有限公司</option><option value="其他客户">其他客户</option></select></div>
+          <div class="form-group"><label class="form-label">合同金额(含税)</label><input type="number" class="form-input" id="cAmtTax" style="width:100%"></div>
+          <div class="form-group"><label class="form-label">合同金额(不含税)</label><input type="number" class="form-input" id="cAmtNoTax" style="width:100%"></div>
+          <div class="form-group"><label class="form-label">合同类型</label><select class="form-select" id="cType" style="width:100%"><option value="自有">自有</option><option value="分包">分包</option></select></div>
+          <div class="form-group" id="cSubWrap" style="display:none"><label class="form-label">分包比例(%)</label><input type="number" class="form-input" id="cSubRate" style="width:100%"></div>
+          <div class="form-group"><label class="form-label">合同起始</label><input type="date" class="form-input" id="cDateStart" style="width:100%"></div>
+          <div class="form-group"><label class="form-label">合同截止</label><input type="date" class="form-input" id="cDateEnd" style="width:100%"></div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="panel-price">
+        <table class="sub-table"><thead><tr><th style="width:44px">操作</th><th>名称</th><th>含税单价</th><th>不含税单价</th><th>数量</th><th>含税合计</th><th>不含税合计</th></tr></thead><tbody id="priceRows"></tbody></table>
+        <button type="button" class="btn btn-default btn-sm edit-only" id="btnAddPriceRow"><i class="fa-solid fa-plus"></i> 增加一行</button>
+      </div>
+
+      <div class="tab-panel" id="panel-remind">
+        <p class="contract-sec" style="margin-top:0">收款提醒 · 到期发送消息（模板：对上合同-收款提醒）</p>
+        <table class="sub-table"><thead><tr><th style="width:44px" class="edit-only">操作</th><th>阶段</th><th>提醒时间</th></tr></thead><tbody id="recvRemRows"></tbody></table>
+        <button type="button" class="btn btn-default btn-sm edit-only" id="btnAddRecvRem" style="margin-bottom:14px">+ 收款提醒行</button>
+      </div>
+
+      <div class="tab-panel" id="panel-flow">
+        <p class="contract-sec" style="margin-top:0">对上收款</p>
+        <p style="font-size:12px;color:var(--text-3);margin:-6px 0 10px">登记记录累计计入消息模板「当前累计收款金额」</p>
+      <table class="data-table"><thead><tr><th>收款单号</th><th>日期</th><th>金额</th><th>方式</th><th>阶段</th></tr></thead><tbody id="receiptTbody"></tbody></table>
+        <a href="../合同收款/pc_contract_receipt.html" class="btn btn-primary btn-sm" id="btnAddReceipt" style="margin:12px 0 20px"><i class="fa-solid fa-plus"></i> 登记对上收款</a>
+
+        <p class="contract-sec">对下付款</p>
+        <p style="font-size:12px;color:var(--text-3);margin:-6px 0 10px">关联本对上合同下的对下合同付款记录，累计计入「当前累计付款金额」及顶部「累计付款(对下)」</p>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>付款单号</th>
+              <th>对下合同</th>
+              <th>检测单位</th>
+              <th>日期</th>
+              <th>金额</th>
+              <th>方式</th>
+            </tr>
+          </thead>
+          <tbody id="paymentTbody"></tbody>
+        </table>
+        <a href="../合同付款/pc_contract_payment.html" class="btn btn-default btn-sm" id="btnAddPayment" style="margin-top:12px"><i class="fa-solid fa-plus"></i> 登记对下付款</a>
+      </div>
+
+      <div class="tab-panel" id="panel-attach">
+        <div class="form-group"><label class="form-label">合同附件</label><input type="file" class="form-input edit-only" id="cAttachment" multiple><ul class="attach-list" id="cAttachmentList"></ul></div>
+        <div class="form-group" style="margin-top:12px"><label class="form-label">备注</label><textarea class="form-textarea" id="cRemark" rows="4" style="width:100%"></textarea></div>
+      </div>
+
+      <div class="tab-panel" id="panel-relate">
+        <p class="contract-sec" style="margin-top:0">对下合同</p>
+        <table class="data-table"><thead><tr><th>编码</th><th>名称</th><th>检测单位</th><th>金额</th><th>操作</th></tr></thead><tbody id="downTbody"></tbody></table>
+        <p class="contract-sec">关联工程</p>
+        <table class="data-table"><thead><tr><th>工程编号</th><th>工程名称</th><th>状态</th><th>操作</th></tr></thead><tbody id="projTbody"></tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-footer edit-only" id="formFooter" style="margin-top:16px">
+    <a href="../合同列表/pc_contract_list.html" class="btn btn-default">取消</a>
+    <button type="button" class="btn btn-primary" id="btnSave"><i class="fa-solid fa-check"></i> 保存</button>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script src="pc_contract_detail.js"></script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>操作记录</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../assets/app-frame.css">
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; background: #F2F3F5; margin: 0; padding-bottom: 24px; }
+.nav-bar { height: 44px; display: flex; align-items: center; padding: 0 12px; background: #fff; border-bottom: 1px solid #E5E6EB; position: sticky; top: 0; z-index: 10; }
+.item { background: #fff; margin: 0 16px 10px; padding: 14px 16px; border-radius: 12px; border: 1px solid #E5E6EB; display: flex; justify-content: space-between; align-items: center; }
+.time { font-size: 12px; color: #86909C; font-family: ui-monospace, monospace; }
+.menu { font-size: 15px; font-weight: 600; color: #1D2129; }
+.empty { text-align: center; padding: 48px 24px; color: #86909C; font-size: 14px; }
+</style>
+<script src="../../../assets/app-menu-access-log.js"></script>
+</head>
+<body>
+<div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:#165DFF;">
+  <span style="font-size:14px;font-weight:600;color:#fff;">9:41</span>
+  <span style="font-size:12px;color:#fff;"><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+</div>
+<div class="nav-bar">
+  <a href="首页/app_profile_index.html" style="color:#165DFF;text-decoration:none;font-size:14px;"><i class="fa-solid fa-chevron-left"></i></a>
+  <span style="flex:1;text-align:center;font-size:16px;font-weight:600;">操作记录</span>
+  <span style="width:28px;"></span>
+</div>
+<div id="list"></div>
+
+<script>
+(function () {
+  var KEY = 'tower_app_menu_access_log';
+  var wrap = document.getElementById('list');
+  var rows = [];
+  try {
+    rows = JSON.parse(sessionStorage.getItem(KEY) || '[]');
+  } catch (e) {}
+  if (!rows.length) {
+    wrap.innerHTML = '<div class="empty">暂无访问记录<br><span style="font-size:12px;">切换底部「工作台 / 检测 / 我的」或进入订单、流程中心后将在此显示。</span></div>';
+    return;
+  }
+  function fmt(ts) {
+    var d = new Date(ts);
+    if (isNaN(d.getTime())) return '—';
+    var p = function (n) { return n < 10 ? '0' + n : '' + n; };
+    return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+  }
+  wrap.innerHTML = rows.map(function (r) {
+    var m = String(r.menu || '—').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+    return '<div class="item"><span class="menu">' + m + '</span><span class="time">' + fmt(r.t) + '</span></div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

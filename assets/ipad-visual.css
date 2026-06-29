@@ -1,0 +1,239 @@
+/**
+ * iPad 视觉与交互增强 · v2.0
+ * 结构/业务不变，仅排布、比例、阴影、字号与占位优化
+ */
+/* —— 全局基础（需配合 ipad-tokens.css） —— */
+body.ipad-adapt {
+  font-family: var(--ipad-font);
+  font-size: var(--ipad-fs-body);
+  line-height: var(--ipad-lh-body);
+  color: var(--ipad-text-1);
+  background: var(--ipad-bg-page);
+  -webkit-font-smoothing: antialiased;
+  text-size-adjust: 100%;
+}
+
+body.ipad-adapt img,
+body.ipad-adapt video {
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+body.ipad-adapt * {
+  box-sizing: border-box;
+}
+
+/* 禁止无约束拉伸 */
+body.ipad-adapt [style*="width:390"],
+body.ipad-adapt [style*="width: 390"] {
+  width: auto !important;
+  max-width: 100% !important;
+}
+
+/* 图标：仅 Tab / 模块卡片图标微调 */
+body.ipad-adapt .ipad-global-tabbar i,
+body.ipad-adapt .mod .ic i {
+  font-size: calc(1em * var(--ipad-scale, 1.12));
+}
+
+/* 卡片 / 模块统一阴影与圆角 */
+body.ipad-adapt .mod,
+body.ipad-adapt .step-card,
+body.ipad-adapt .order-card,
+body.ipad-adapt .order-card-inner,
+body.ipad-adapt .step,
+body.ipad-adapt .msg,
+body.ipad-adapt .seg-form-card {
+  box-shadow: var(--ipad-shadow-card) !important;
+  border-radius: var(--ipad-radius-lg) !important;
+}
+
+/* 占位：矩形 + 文字，替代生硬块 */
+body.ipad-adapt .ph-box,
+body.ipad-adapt .photo-slot,
+body.ipad-adapt [class*="upload-slot"]:empty,
+body.ipad-adapt .img-ph {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  min-height: 80px;
+  aspect-ratio: 4 / 3;
+  max-width: 100%;
+  background: #f7f8fa !important;
+  border: 1px dashed var(--ipad-border) !important;
+  border-radius: var(--ipad-radius-md) !important;
+  color: var(--ipad-text-3) !important;
+  font-size: var(--ipad-fs-caption) !important;
+  box-shadow: none !important;
+}
+body.ipad-adapt .ph-box:empty::after,
+body.ipad-adapt .img-ph:empty::after {
+  content: "图片区域";
+}
+
+/* 按钮：最小触控区（药丸开关除外，由 ipad-inspect-basic 单独定尺寸） */
+body.ipad-adapt button:not(.ios-switch),
+body.ipad-adapt .btn,
+body.ipad-adapt .btn-next,
+body.ipad-adapt .top-actions button,
+body.ipad-adapt .top-actions .top-act {
+  min-height: var(--ipad-touch-min);
+}
+
+/* 内容区居中 + 最大宽度 */
+body.ipad-adapt .scroll-main,
+body.ipad-adapt #appEmbedContent,
+body.ipad-adapt #panel-list,
+body.ipad-adapt .step-wrap {
+  max-width: var(--ipad-content-max);
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+body.ipad-adapt .scroll-main {
+  padding: var(--ipad-space-2) var(--ipad-space-2) var(--ipad-space-3) !important;
+}
+
+/* 检测填报主页 · 模块网格（防窄列竖排「假乱码」） */
+body.ipad-adapt .grid2 {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)) !important;
+  gap: var(--ipad-space-1) !important;
+  align-items: stretch;
+}
+/* Shell 嵌入 iframe 较窄：最多两列，保证说明可读 */
+html.task-embed body.ipad-adapt .grid2,
+html.ipad-embed body.ipad-adapt .grid2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+@media (min-width: 1200px) {
+  html:not(.ipad-embed):not(.task-embed) body.ipad-adapt .grid2 {
+    grid-template-columns: repeat(3, minmax(260px, 1fr)) !important;
+  }
+}
+body.ipad-adapt .mod {
+  padding: var(--ipad-space-1) var(--ipad-space-1) 12px !important;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+}
+body.ipad-adapt .mod .t {
+  font-size: var(--ipad-fs-sub) !important;
+  line-height: var(--ipad-lh-tight) !important;
+  width: 100%;
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
+  white-space: normal !important;
+}
+body.ipad-adapt .mod .s {
+  font-size: var(--ipad-fs-caption) !important;
+  line-height: 1.45 !important;
+  color: var(--ipad-text-2, #4e5969) !important;
+  width: 100%;
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
+  white-space: normal !important;
+  letter-spacing: normal !important;
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  margin-top: 6px !important;
+}
+body.ipad-adapt .mod .ic {
+  flex-shrink: 0;
+}
+body.ipad-adapt .mod-done-badge {
+  z-index: 2;
+}
+body.ipad-adapt .mod .ic {
+  width: calc(36px * var(--ipad-scale)) !important;
+  height: calc(36px * var(--ipad-scale)) !important;
+  font-size: calc(15px * var(--ipad-scale)) !important;
+}
+body.ipad-adapt .sec-title {
+  font-size: var(--ipad-fs-sub) !important;
+  margin: var(--ipad-space-2) 0 var(--ipad-space-1) !important;
+}
+
+/* 向导 / 分步 */
+body.ipad-adapt .scroll-main .panel {
+  max-width: 640px;
+  margin: 0 auto;
+}
+body.ipad-adapt .step-wrap {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: var(--ipad-space-1) !important;
+  padding: var(--ipad-space-2) var(--ipad-space-2) 100px !important;
+}
+body.ipad-adapt .step-wrap > p {
+  grid-column: 1 / -1;
+}
+body.ipad-adapt .step {
+  margin-bottom: 0 !important;
+}
+
+/* 顶栏操作区：横屏舒展 */
+body.ipad-adapt .top-actions {
+  flex-wrap: wrap !important;
+  gap: var(--ipad-space-1) !important;
+}
+body.ipad-adapt .top-actions button,
+body.ipad-adapt .top-actions .top-act {
+  font-size: var(--ipad-fs-caption) !important;
+  padding: 8px 12px !important;
+}
+
+/* 弹窗居中 · 平板比例（检测填报分享弹窗除外，与 APP 底栏 action sheet 一致） */
+body.ipad-adapt .mask,
+body.ipad-adapt .export-sheet-mask,
+body.ipad-adapt .order-switch-mask {
+  align-items: center !important;
+  justify-content: center !important;
+  padding: var(--ipad-space-2) !important;
+}
+body.ipad-adapt.ipad-task-home .export-sheet-mask {
+  align-items: flex-end !important;
+  justify-content: center !important;
+  padding: 0 !important;
+}
+body.ipad-adapt .sheet,
+body.ipad-adapt .export-sheet,
+body.ipad-adapt .order-switch-sheet {
+  width: min(520px, 92vw) !important;
+  max-width: 520px !important;
+  max-height: min(72vh, 560px) !important;
+  border-radius: var(--ipad-radius-lg) !important;
+  box-shadow: var(--ipad-shadow-float) !important;
+  margin: 0 auto !important;
+}
+body.ipad-adapt.ipad-task-home .export-sheet {
+  width: 100% !important;
+  max-width: 100% !important;
+  max-height: none !important;
+  border-radius: 16px 16px 0 0 !important;
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.12) !important;
+  margin: 0 !important;
+}
+
+/* 竖屏辅布局 */
+@media (orientation: portrait) and (max-width: 900px) {
+  body.ipad-adapt .grid2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  body.ipad-adapt .step-wrap {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* 嵌入模式：不重复侧栏 */
+html.ipad-embed body.ipad-adapt .scroll-main {
+  max-width: none;
+  padding: var(--ipad-space-1) !important;
+}

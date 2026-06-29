@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>任务模板 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+.mod-icon {
+  width:36px; height:36px; border-radius:6px; background:#F2F3F5;
+  display:inline-flex; align-items:center; justify-content:center;
+  color:var(--text-3); font-size:14px;
+}
+.mod-modal-mask {
+  position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:3000;
+  display:none; align-items:center; justify-content:center; padding:20px;
+}
+.mod-modal-mask.open { display:flex; }
+.mod-modal-dialog {
+  background:#fff; border-radius:8px; width:min(480px,96vw);
+  max-height:88vh; overflow:auto; box-shadow:0 12px 48px rgba(0,0,0,.18);
+}
+.mod-modal-head {
+  padding:14px 18px; border-bottom:1px solid var(--border);
+  display:flex; justify-content:space-between; align-items:center;
+}
+.mod-modal-head h3 { margin:0; font-size:16px; font-weight:600; color:var(--text-1); }
+.mod-modal-close { border:none; background:transparent; cursor:pointer; color:var(--text-3); font-size:16px; }
+.mod-modal-body { padding:18px 20px; }
+.mod-modal-foot {
+  padding:12px 18px; border-top:1px solid var(--border);
+  display:flex; justify-content:flex-end; gap:8px;
+}
+.mod-code-readonly {
+  background:#F7F8FA; color:var(--text-2); cursor:not-allowed;
+}
+.icon-pick-row { display:flex; align-items:center; gap:12px; margin-top:6px; }
+.icon-pick-preview {
+  width:48px; height:48px; border-radius:8px; background:#F2F3F5;
+  display:flex; align-items:center; justify-content:center;
+  font-size:20px; color:var(--primary); flex-shrink:0;
+}
+.icon-pick-grid {
+  display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;
+}
+.icon-pick-btn {
+  width:40px; height:40px; border:1px solid var(--border); border-radius:6px;
+  background:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  font-size:16px; color:var(--text-2); transition:all .12s;
+}
+.icon-pick-btn:hover { border-color:var(--primary); color:var(--primary); }
+.icon-pick-btn.active { border-color:var(--primary); background:var(--primary-light); color:var(--primary); }
+
+/* 表单设计器全屏层（图2，点击「配置」打开） */
+.fd-layer {
+  display: none;
+  position: fixed;
+  top: 56px;
+  left: 220px;
+  right: 0;
+  bottom: 0;
+  z-index: 2800;
+  background: #f0f2f5;
+  flex-direction: column;
+}
+.fd-layer.open { display: flex; }
+.fd-top {
+  height: 52px;
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.fd-top-back {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--text-2);
+  padding: 6px 8px;
+  border-radius: 6px;
+}
+.fd-top-back:hover { background: #f2f3f5; color: var(--text-1); }
+.fd-top-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.fd-top-title .fd-meta { font-size: 12px; font-weight: 400; color: var(--text-3); }
+#fdBtnSave { margin-left: auto; }
+.fd-body { flex: 1; display: flex; min-height: 0; overflow: hidden; }
+.fd-palette {
+  width: 260px;
+  background: #fff;
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  flex-shrink: 0;
+  padding: 12px 10px;
+}
+.fd-palette .pg-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-3);
+  margin: 8px 6px 6px;
+}
+.fd-comp {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  margin: 4px;
+  font-size: 12px;
+  background: #fafbfc;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: grab;
+}
+.fd-canvas-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: #e8eaed;
+  padding: 12px;
+}
+.fd-canvas-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: var(--text-3);
+}
+.fd-canvas-toolbar .view-toggle button {
+  border: 1px solid var(--border);
+  background: #fff;
+  padding: 4px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.fd-canvas-toolbar .view-toggle button.active {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.fd-canvas {
+  flex: 1;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.08);
+  overflow-y: auto;
+  padding: 24px 32px;
+  max-width: 720px;
+  margin: 0 auto;
+  width: 100%;
+}
+.fd-field { margin-bottom: 20px; padding: 12px; border: 1px dashed transparent; border-radius: 4px; }
+.fd-field:hover { border-color: #c9cdd4; background: #fafbfc; }
+.fd-field label { display: block; font-size: 13px; margin-bottom: 8px; }
+.fd-field label .req { color: #f53f3f; }
+.fd-field .fd-inp {
+  width: 100%;
+  max-width: 400px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0 10px;
+  font-size: 13px;
+}
+.fd-field .fd-hint { font-size: 12px; color: var(--text-3); margin-top: 4px; }
+.fd-props {
+  width: 280px;
+  background: #fff;
+  border-left: 1px solid var(--border);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+.fd-props-tabs { display: flex; border-bottom: 1px solid var(--border); }
+.fd-props-tabs button {
+  flex: 1;
+  border: none;
+  background: none;
+  padding: 12px;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--text-2);
+}
+.fd-props-tabs button.active {
+  color: var(--primary);
+  font-weight: 500;
+  box-shadow: inset 0 -2px 0 var(--primary);
+}
+.fd-props-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  font-size: 13px;
+  color: var(--text-3);
+  text-align: center;
+  line-height: 1.6;
+}
+</style>
+</head>
+<body>
+<div id="page-content">
+  <div class="card" style="margin-bottom:12px;border:1px solid #CFE1FF;background:#F7FAFF">
+    <div class="card-body" style="padding:10px 16px;font-size:13px;display:flex;flex-wrap:wrap;gap:12px;align-items:center">
+      <a href="pc_inspect_template_list.html" class="btn btn-default btn-sm"><i class="fa-solid fa-arrow-left"></i> 返回检测模板</a>
+      <span style="color:var(--text-3)">|</span>
+      <span>模板编号：<strong id="metaTpl">—</strong></span>
+      <span>版本：<strong id="metaVer">—</strong></span>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">任务模板</div>
+    </div>
+    <div class="card-body">
+      <div class="pc-table-actions">
+        <button type="button" class="btn btn-primary" id="btnAddMod"><i class="fa-solid fa-plus"></i> 新增</button>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width:52px">序号</th>
+            <th>模块编号</th>
+            <th>模块名称</th>
+            <th style="width:100px">模块IOCN</th>
+            <th>模块概述</th>
+            <th style="width:150px">创建时间</th>
+            <th style="width:72px">创建人</th>
+            <th class="col-action" style="width:200px">操作</th>
+          </tr>
+        </thead>
+        <tbody id="modTbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="mod-modal-mask" id="modModal" aria-hidden="true">
+  <div class="mod-modal-dialog" role="dialog" aria-labelledby="modModalTitle">
+    <div class="mod-modal-head">
+      <h3 id="modModalTitle">新增模块</h3>
+      <button type="button" class="mod-modal-close" id="modModalClose" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="mod-modal-body">
+      <div class="form-grid" style="grid-template-columns:1fr">
+        <div class="form-group">
+          <span class="form-label">模块编号</span>
+          <input type="text" class="form-input mod-code-readonly" id="modFormCode" readonly style="width:100%" placeholder="保存时自动生成">
+          <p style="font-size:12px;color:var(--text-3);margin:6px 0 0">由系统根据检测模板自动生成，不可编辑</p>
+        </div>
+        <div class="form-group">
+          <span class="form-label">模块名称<span class="required">*</span></span>
+          <input type="text" class="form-input" id="modFormName" placeholder="请输入模块名称" style="width:100%">
+        </div>
+        <div class="form-group">
+          <span class="form-label">模块概述</span>
+          <textarea class="form-textarea" id="modFormSummary" placeholder="请输入模块概述" style="width:100%;min-height:72px"></textarea>
+        </div>
+        <div class="form-group">
+          <span class="form-label">模块 ICON<span class="required">*</span></span>
+          <div class="icon-pick-row">
+            <div class="icon-pick-preview" id="modIconPreview"><i class="fa-solid fa-cube"></i></div>
+            <span style="font-size:12px;color:var(--text-3)">点击下方图标选择</span>
+          </div>
+          <div class="icon-pick-grid" id="modIconGrid"></div>
+        </div>
+      </div>
+    </div>
+    <div class="mod-modal-foot">
+      <button type="button" class="btn btn-default" id="modModalCancel">取消</button>
+      <button type="button" class="btn btn-primary" id="modModalSave">保存</button>
+    </div>
+  </div>
+  </div>
+
+  <div class="fd-layer" id="formDesignerLayer" aria-hidden="true">
+    <header class="fd-top">
+      <button type="button" class="fd-top-back" id="fdBtnBack" title="返回任务模板"><i class="fa-solid fa-arrow-left"></i></button>
+      <div class="fd-top-title">
+        <span id="fdTitle">模块配置</span>
+        <span class="fd-meta" id="fdMeta"></span>
+      </div>
+      <button type="button" class="btn btn-primary" id="fdBtnSave">保存</button>
+    </header>
+    <div class="fd-body">
+      <aside class="fd-palette">
+        <div class="pg-title">布局</div>
+        <div>
+          <span class="fd-comp"><i class="fa-solid fa-table-columns"></i> 分栏布局</span>
+          <span class="fd-comp"><i class="fa-solid fa-folder"></i> 多标签页</span>
+        </div>
+        <div class="pg-title">基础组件</div>
+        <div>
+          <span class="fd-comp"><i class="fa-solid fa-i-cursor"></i> 单行文本</span>
+          <span class="fd-comp"><i class="fa-solid fa-hashtag"></i> 数字</span>
+          <span class="fd-comp"><i class="fa-solid fa-circle-dot"></i> 单选</span>
+          <span class="fd-comp"><i class="fa-solid fa-calendar"></i> 日期/时间</span>
+          <span class="fd-comp"><i class="fa-solid fa-paperclip"></i> 上传附件</span>
+          <span class="fd-comp"><i class="fa-solid fa-image"></i> 上传图片</span>
+        </div>
+        <div class="pg-title">扩展组件</div>
+        <div>
+          <span class="fd-comp"><i class="fa-solid fa-table"></i> 明细表</span>
+          <span class="fd-comp"><i class="fa-solid fa-barcode"></i> 自动编码</span>
+        </div>
+      </aside>
+      <div class="fd-canvas-wrap">
+        <div class="fd-canvas-toolbar">
+          <div class="view-toggle">
+            <button type="button" class="active">电脑</button>
+            <button type="button">手机</button>
+          </div>
+        </div>
+        <div class="fd-canvas">
+          <div class="fd-field">
+            <label>自动编码</label>
+            <input class="fd-inp" readonly placeholder="提交后自动生成">
+          </div>
+          <div class="fd-field">
+            <label><span class="req">*</span>检测项名称</label>
+            <input class="fd-inp" placeholder="请输入">
+          </div>
+          <div class="fd-field">
+            <label><span class="req">*</span>检测数值</label>
+            <input class="fd-inp" type="number" placeholder="0">
+            <div class="fd-hint">单位、阈值由字段属性配置</div>
+          </div>
+          <div class="fd-field">
+            <label>上传附件</label>
+            <button type="button" class="btn btn-default btn-sm"><i class="fa-solid fa-upload"></i> 上传文件</button>
+          </div>
+        </div>
+      </div>
+      <aside class="fd-props">
+        <div class="fd-props-tabs">
+          <button type="button" class="active">字段属性</button>
+          <button type="button">表单属性</button>
+        </div>
+        <div class="fd-props-empty">点击选择字段来设置属性</div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<script src="../../../../assets/shared-layout.js"></script>
+<script>
+window.__layoutConfig = {
+  active: 'inspect_template_list',
+  breadcrumb: ['模板配置', '检测模板', '任务模板']
+};
+
+window.__prototypePageInit = function initInspectTemplateTaskPage() {
+  var p = new URLSearchParams(location.search);
+  var tpl = p.get('tpl') || 'GD001001-001';
+  var ver = p.get('ver') || 'V9';
+  var codePrefix = tpl.replace(/-(\d+)$/, '') || 'GD001001';
+  var creator = '郑飞';
+
+  var ICON_OPTIONS = [
+    'fa-cube', 'fa-building', 'fa-anchor', 'fa-layer-group',
+    'fa-tower-broadcast', 'fa-bolt', 'fa-link', 'fa-camera',
+    'fa-ruler-combined', 'fa-wrench', 'fa-mountain', 'fa-cloud'
+  ];
+
+  var modules = [
+    { id: 'm1', code: 'GD001001-001', name: '基础', icon: 'fa-cube', summary: '基本介绍', createdAt: '2012-08-09 12:00:00' },
+    { id: 'm2', code: 'GD001001-002', name: '整体', icon: 'fa-building', summary: '基本介绍', createdAt: '2012-08-09 12:00:00' },
+    { id: 'm3', code: 'GD001001-003', name: '地锚', icon: 'fa-anchor', summary: '基本介绍', createdAt: '2012-08-09 12:00:00' },
+    { id: 'm4', code: 'GD001001-004', name: '塔段', icon: 'fa-layer-group', summary: '基本介绍', createdAt: '2012-08-09 12:00:00' }
+  ];
+
+  var modalMode = 'add';
+  var editingId = null;
+  var selectedIcon = 'fa-cube';
+  var bound = false;
+
+  var metaTpl = document.getElementById('metaTpl');
+  var metaVer = document.getElementById('metaVer');
+  if (metaTpl) metaTpl.textContent = tpl;
+  if (metaVer) metaVer.textContent = ver;
+
+  function nowText() {
+    var d = new Date();
+    var pad = function (n) { return String(n).padStart(2, '0'); };
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' +
+      pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+  }
+
+  function nextModuleCode() {
+    var max = 0;
+    modules.forEach(function (m) {
+      var match = (m.code || '').match(/-(\d+)$/);
+      if (match) max = Math.max(max, parseInt(match[1], 10));
+    });
+    return codePrefix + '-' + String(max + 1).padStart(3, '0');
+  }
+
+  function iconHtml(icon) {
+    return '<span class="mod-icon"><i class="fa-solid ' + icon + '"></i></span>';
+  }
+
+  function renderTable() {
+    document.getElementById('modTbody').innerHTML = modules.map(function (m, i) {
+      return '<tr data-id="' + m.id + '">' +
+        '<td>' + (i + 1) + '</td>' +
+        '<td class="cell-code">' + m.code + '</td>' +
+        '<td class="cell-name">' + m.name + '</td>' +
+        '<td class="cell-icon">' + iconHtml(m.icon) + '</td>' +
+        '<td class="cell-summary">' + m.summary + '</td>' +
+        '<td style="font-size:12px;white-space:nowrap">' + m.createdAt + '</td>' +
+        '<td>' + creator + '</td>' +
+        '<td class="col-action">' +
+        '<button type="button" class="btn-text btn-mod-edit">编辑</button> ' +
+        '<button type="button" class="btn-text btn-mod-config">配置</button> ' +
+        '<button type="button" class="btn-text btn-mod-delete" style="color:var(--danger)">删除</button>' +
+        '</td></tr>';
+    }).join('');
+  }
+
+  function buildIconGrid() {
+    var grid = document.getElementById('modIconGrid');
+    grid.innerHTML = ICON_OPTIONS.map(function (ic) {
+      return '<button type="button" class="icon-pick-btn' + (ic === selectedIcon ? ' active' : '') + '" data-icon="' + ic + '" title="' + ic + '">' +
+        '<i class="fa-solid ' + ic + '"></i></button>';
+    }).join('');
+  }
+
+  function setSelectedIcon(icon) {
+    selectedIcon = icon;
+    document.getElementById('modIconPreview').innerHTML = '<i class="fa-solid ' + icon + '"></i>';
+    document.querySelectorAll('.icon-pick-btn').forEach(function (btn) {
+      btn.classList.toggle('active', btn.getAttribute('data-icon') === icon);
+    });
+  }
+
+  function openModal(mode, id) {
+    var mask = document.getElementById('modModal');
+    if (!mask) return;
+    modalMode = mode;
+    editingId = id || null;
+    var title = document.getElementById('modModalTitle');
+    var codeEl = document.getElementById('modFormCode');
+    var nameEl = document.getElementById('modFormName');
+    var summaryEl = document.getElementById('modFormSummary');
+    if (!title || !codeEl || !nameEl || !summaryEl) return;
+
+    if (mode === 'add') {
+      title.textContent = '新增模块';
+      codeEl.value = nextModuleCode();
+      codeEl.placeholder = '';
+      nameEl.value = '';
+      summaryEl.value = '';
+      setSelectedIcon('fa-cube');
+    } else {
+      var row = modules.find(function (m) { return m.id === id; });
+      if (!row) return;
+      title.textContent = '编辑模块';
+      codeEl.value = row.code;
+      nameEl.value = row.name;
+      summaryEl.value = row.summary;
+      setSelectedIcon(row.icon || 'fa-cube');
+    }
+    buildIconGrid();
+    setSelectedIcon(selectedIcon);
+    mask.classList.add('open');
+    mask.setAttribute('aria-hidden', 'false');
+    nameEl.focus();
+  }
+
+  function closeModal() {
+    var mask = document.getElementById('modModal');
+    if (!mask) return;
+    mask.classList.remove('open');
+    mask.setAttribute('aria-hidden', 'true');
+    editingId = null;
+  }
+
+  function openDesigner(moduleCode, moduleName) {
+    var layer = document.getElementById('formDesignerLayer');
+    if (!layer) return;
+    var titleEl = document.getElementById('fdTitle');
+    var metaEl = document.getElementById('fdMeta');
+    if (titleEl) titleEl.textContent = moduleName || '模块配置';
+    if (metaEl) metaEl.textContent = tpl + ' · ' + ver + ' · ' + (moduleCode || '');
+    layer.classList.add('open');
+    layer.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDesigner() {
+    var layer = document.getElementById('formDesignerLayer');
+    if (!layer) return;
+    layer.classList.remove('open');
+    layer.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  function saveModal() {
+    var name = (document.getElementById('modFormName').value || '').trim();
+    var summary = (document.getElementById('modFormSummary').value || '').trim() || '基本介绍';
+    var code = document.getElementById('modFormCode').value.trim();
+    if (!name) {
+      alert('请填写模块名称');
+      document.getElementById('modFormName').focus();
+      return;
+    }
+    if (!selectedIcon) {
+      alert('请选择模块 ICON');
+      return;
+    }
+    if (modalMode === 'add') {
+      modules.push({
+        id: 'm' + Date.now(),
+        code: code || nextModuleCode(),
+        name: name,
+        icon: selectedIcon,
+        summary: summary,
+        createdAt: nowText()
+      });
+    } else {
+      var row = modules.find(function (m) { return m.id === editingId; });
+      if (row) {
+        row.name = name;
+        row.summary = summary;
+        row.icon = selectedIcon;
+      }
+    }
+    renderTable();
+    closeModal();
+  }
+
+  function bindEvents() {
+    if (bound) return;
+    bound = true;
+
+    var btnAdd = document.getElementById('btnAddMod');
+    var iconGrid = document.getElementById('modIconGrid');
+    var modClose = document.getElementById('modModalClose');
+    var modCancel = document.getElementById('modModalCancel');
+    var modSave = document.getElementById('modModalSave');
+    var modMask = document.getElementById('modModal');
+    var tbody = document.getElementById('modTbody');
+
+    if (btnAdd) btnAdd.addEventListener('click', function () { openModal('add'); });
+    if (iconGrid) {
+      iconGrid.addEventListener('click', function (e) {
+        var btn = e.target.closest('.icon-pick-btn');
+        if (!btn) return;
+        setSelectedIcon(btn.getAttribute('data-icon'));
+      });
+    }
+    if (modClose) modClose.addEventListener('click', closeModal);
+    if (modCancel) modCancel.addEventListener('click', closeModal);
+    if (modSave) modSave.addEventListener('click', saveModal);
+    if (modMask) {
+      modMask.addEventListener('click', function (e) {
+        if (e.target === modMask) closeModal();
+      });
+    }
+    var fdBack = document.getElementById('fdBtnBack');
+    var fdSave = document.getElementById('fdBtnSave');
+    if (fdBack) fdBack.addEventListener('click', closeDesigner);
+    if (fdSave) {
+      fdSave.addEventListener('click', function () {
+        alert('模块字段配置已保存（原型）');
+        closeDesigner();
+      });
+    }
+    if (tbody) {
+      tbody.addEventListener('click', function (e) {
+        var t = e.target;
+        if (!(t instanceof Element)) return;
+        var tr = t.closest('tr');
+        if (!tr) return;
+        var id = tr.getAttribute('data-id');
+        if (t.closest('.btn-mod-edit')) openModal('edit', id);
+        if (t.closest('.btn-mod-config')) {
+          var row = modules.find(function (m) { return m.id === id; });
+          if (row) openDesigner(row.code, row.name);
+          return;
+        }
+        if (t.closest('.btn-mod-delete')) {
+          var row = modules.find(function (m) { return m.id === id; });
+          if (!row) return;
+          if (!confirm('确定删除模块「' + row.name + '」？')) return;
+          modules = modules.filter(function (m) { return m.id !== id; });
+          renderTable();
+        }
+      });
+    }
+  }
+
+  buildIconGrid();
+  renderTable();
+  bindEvents();
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>通信铁塔检测系统 · APP端</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script>
+tailwind.config = { theme: { extend: { colors: { brand: '#165DFF', brandLight: '#E8F3FF' } } } };
+</script>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", Roboto, sans-serif; }
+.phone-shell {
+  width:390px; height:844px; border-radius:48px; border:8px solid #1D2129;
+  box-shadow:0 0 0 2px #86909C, 0 20px 60px rgba(0,0,0,0.15); overflow:hidden; background:#000;
+  position:relative; flex-shrink:0;
+}
+.phone-shell::before {
+  content:''; position:absolute; top:12px; left:50%; transform:translateX(-50%);
+  width:120px; height:32px; background:#1D2129; border-radius:20px; z-index:10;
+}
+.phone-shell iframe { width:100%; height:100%; border:0; border-radius:40px; }
+.nav-link { display:block; padding:8px 14px; border-radius:8px; font-size:13px; color:#1D2129; text-decoration:none; transition:all 0.15s; cursor:pointer; }
+.nav-link:hover { background:#E8F3FF; color:#165DFF; }
+.nav-link.active { background:#165DFF; color:#fff; }
+.nav-group-title { font-size:11px; font-weight:600; color:#86909C; text-transform:uppercase; letter-spacing:0.05em; padding:12px 14px 4px; }
+</style>
+</head>
+<body style="background:#F2F3F5; min-height:100vh;">
+
+<div style="max-width:1200px; margin:0 auto; padding:40px 24px;">
+
+  <!-- Header -->
+  <header style="margin-bottom:32px;">
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+      <div style="width:40px; height:40px; background:linear-gradient(135deg, #165DFF 0%, #4080FF 100%); border-radius:12px; display:flex; align-items:center; justify-content:center;">
+        <i class="fa-solid fa-tower-broadcast" style="font-size:18px; color:#fff;"></i>
+      </div>
+      <div>
+        <h1 style="font-size:22px; font-weight:700; color:#1D2129; margin:0;">通信铁塔检测系统</h1>
+        <p style="font-size:13px; color:#86909C; margin:0;">移动端 APP · iPhone 16</p>
+      </div>
+    </div>
+    <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:10px;">
+      <a href="index.html" style="display:inline-flex; align-items:center; gap:6px; padding:6px 16px; background:#fff; border:1px solid #E5E6EB; color:#165DFF; border-radius:8px; font-size:13px; font-weight:500; text-decoration:none;">
+        <i class="fa-solid fa-desktop"></i> 查看PC端
+      </a>
+      <a href="ipad-index.html" style="display:inline-flex; align-items:center; gap:6px; padding:6px 16px; background:#fff; border:1px solid #E5E6EB; color:#165DFF; border-radius:8px; font-size:13px; font-weight:500; text-decoration:none;">
+        <i class="fa-solid fa-tablet-screen-button"></i> 查看iPad端
+      </a>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <div style="display:flex; gap:32px; align-items:flex-start;">
+
+    <!-- iPhone shell -->
+    <div class="phone-shell">
+      <iframe id="phoneFrame" src="pages/APP端/工作台/首页/app_workbench_index.html" title="移动端预览"></iframe>
+    </div>
+
+    <!-- Navigation panel -->
+    <div style="flex:1; min-width:0; background:#fff; border-radius:16px; border:1px solid #E5E6EB; box-shadow:0 1px 4px rgba(0,0,0,0.04); max-height:844px; overflow-y:auto;">
+
+      <div style="padding:16px 14px 8px; border-bottom:1px solid #F2F3F5;">
+        <div style="font-size:15px; font-weight:600; color:#1D2129; margin-bottom:4px;">页面导航</div>
+        <div style="font-size:12px; color:#86909C;">点击切换 iPhone 中的预览页面</div>
+      </div>
+
+      <!-- 登录 -->
+      <div class="nav-group-title">登录</div>
+      <div style="padding:0 8px;">
+        <a class="nav-link" onclick="loadPage('账号/登录/app_login.html', this)"><i class="fa-solid fa-right-to-bracket" style="width:20px; color:#C9CDD4;"></i> 登录页</a>
+      </div>
+
+      <!-- 工作台 -->
+      <div class="nav-group-title">工作台</div>
+      <div style="padding:0 8px;">
+        <a class="nav-link active" onclick="loadPage('工作台/首页/app_workbench_index.html', this)"><i class="fa-solid fa-house" style="width:20px; color:#C9CDD4;"></i> 工作台首页</a>
+      </div>
+
+      <!-- 检测任务 -->
+      <div class="nav-group-title">检测任务</div>
+      <div style="padding:0 8px;">
+        <a class="nav-link" onclick="loadPage('任务/开启检测任务/app_task_start_wizard.html', this)"><i class="fa-solid fa-play" style="width:20px; color:#C9CDD4;"></i> 开启检测任务（向导）</a>
+        <a class="nav-link" onclick="loadPage('任务/填报主页/app_task_inspect_home.html', this)"><i class="fa-solid fa-table-cells-large" style="width:20px; color:#C9CDD4;"></i> 检测填报主页（大模块）</a>
+        <a class="nav-link" onclick="loadPage('任务/备忘录/app_task_memo.html', this)"><i class="fa-solid fa-note-sticky" style="width:20px; color:#C9CDD4;"></i> 备忘录（语音转写）</a>
+        <a class="nav-link" onclick="loadPage('任务/详情/app_task_detail.html', this)"><i class="fa-solid fa-list-check" style="width:20px; color:#C9CDD4;"></i> 模板包分步（技术视图）</a>
+      </div>
+
+      <!-- 订单 -->
+      <div class="nav-group-title">订单管理</div>
+      <div style="padding:0 8px;">
+        <a class="nav-link" onclick="loadPage('工作台/首页/app_workbench_index.html#orders', this)"><i class="fa-solid fa-file-lines" style="width:20px; color:#C9CDD4;"></i> 工作台（工单列表）</a>
+        <a class="nav-link" onclick="loadPage('工作台/首页/app_message_center.html', this)"><i class="fa-regular fa-bell" style="width:20px; color:#C9CDD4;"></i> 消息中心</a>
+        <a class="nav-link" onclick="loadPage('工单/列表/app_order_map.html', this)"><i class="fa-solid fa-map-location-dot" style="width:20px; color:#C9CDD4;"></i> 订单地图</a>
+        <a class="nav-link" onclick="loadPage('工单/列表/app_order_create.html', this)"><i class="fa-solid fa-plus" style="width:20px; color:#C9CDD4;"></i> 添加订单</a>
+        <a class="nav-link" onclick="loadPage('工单/详情/app_order_detail.html', this)"><i class="fa-solid fa-file-circle-info" style="width:20px; color:#C9CDD4;"></i> 订单详情</a>
+      </div>
+
+      <!-- 检测流程 -->
+      <div class="nav-group-title">检测流程</div>
+      <div style="padding:0 8px;">
+        <a class="nav-link" onclick="loadPage('检测/app_inspect_shell.html', this)"><i class="fa-solid fa-table-columns" style="width:20px; color:#C9CDD4;"></i> 检测工作台</a>
+        <a class="nav-link" onclick="loadPage('检测/总览/app_inspect_index.html', this)"><i class="fa-solid fa-grip" style="width:20px; color:#C9CDD4;"></i> 检测九宫格（旧版）</a>
+        <a class="nav-link" onclick="loadPage('检测/塔体/app_inspect_tower.html', this)"><i class="fa-solid fa-tower-broadcast" style="width:20px; color:#C9CDD4;"></i> 铁塔信息</a>
+        <a class="nav-link" onclick="loadPage('检测/地基/app_inspect_foundation.html', this)"><i class="fa-solid fa-monument" style="width:20px; color:#C9CDD4;"></i> 基础及地锚</a>
+        <a class="nav-link" onclick="loadPage('检测/结构图/app_inspect_diagram.html', this)"><i class="fa-solid fa-diagram-project" style="width:20px; color:#C9CDD4;"></i> 结构简图</a>
+        <a class="nav-link" onclick="loadPage('检测/分段/app_inspect_segment.html', this)"><i class="fa-solid fa-layer-group" style="width:20px; color:#C9CDD4;"></i> 塔段检测</a>
+        <a class="nav-link" onclick="loadPage('检测/平台/app_inspect_platform.html', this)"><i class="fa-solid fa-satellite-dish" style="width:20px; color:#C9CDD4;"></i> 平台/天线/避雷针</a>
+        <a class="nav-link" onclick="loadPage('检测/馈线/app_inspect_feed.html', this)"><i class="fa-solid fa-ethernet" style="width:20px; color:#C9CDD4;"></i> 馈线检测</a>
+        <a class="nav-link" onclick="loadPage('检测/回弹/app_inspect_rebound.html', this)"><i class="fa-solid fa-hammer" style="width:20px; color:#C9CDD4;"></i> 回弹强度</a>
+        <a class="nav-link" onclick="loadPage('检测/接地/app_inspect_ground.html', this)"><i class="fa-solid fa-bolt" style="width:20px; color:#C9CDD4;"></i> 接地电阻</a>
+        <a class="nav-link" onclick="loadPage('检测/垂直度/app_inspect_vertical.html', this)"><i class="fa-solid fa-ruler-vertical" style="width:20px; color:#C9CDD4;"></i> 垂直度</a>
+        <a class="nav-link" onclick="loadPage('检测/备注/app_inspect_note.html', this)"><i class="fa-solid fa-note-sticky" style="width:20px; color:#C9CDD4;"></i> 快捷手记</a>
+      </div>
+
+      <!-- 其他 -->
+      <div class="nav-group-title">其他功能</div>
+      <div style="padding:0 8px 16px;">
+        <a class="nav-link" onclick="loadPage('检测/校验/app_inspect_validate.html', this)"><i class="fa-solid fa-check-double" style="width:20px; color:#C9CDD4;"></i> 数据校验</a>
+        <a class="nav-link" onclick="loadPage('系统/同步/app_sync_index.html', this)"><i class="fa-solid fa-cloud-arrow-up" style="width:20px; color:#C9CDD4;"></i> 数据同步</a>
+        <a class="nav-link" onclick="loadPage('个人中心/首页/app_profile_index.html', this)"><i class="fa-solid fa-user" style="width:20px; color:#C9CDD4;"></i> 我的</a>
+        <a class="nav-link" onclick="loadPage('个人中心/app_profile_orders.html', this)"><i class="fa-solid fa-file-invoice" style="width:20px; color:#C9CDD4;"></i> 订单管理（APP）</a>
+        <a class="nav-link" onclick="loadPage('个人中心/app_profile_order_create.html', this)"><i class="fa-solid fa-plus" style="width:20px; color:#C9CDD4;"></i> 新增订单（APP）</a>
+        <a class="nav-link" onclick="loadPage('个人中心/app_profile_flow.html', this)"><i class="fa-solid fa-diagram-project" style="width:20px; color:#C9CDD4;"></i> 流程中心（APP）</a>
+        <a class="nav-link" onclick="loadPage('个人中心/app_profile_ops_log.html', this)"><i class="fa-solid fa-clock-rotate-left" style="width:20px; color:#C9CDD4;"></i> 操作记录（APP）</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer style="text-align:center; margin-top:40px; padding:24px 0;">
+    <p style="font-size:12px; color:#C9CDD4; margin:0;">浙江中能工程检测有限公司 · 通信铁塔检测系统</p>
+  </footer>
+
+</div>
+
+<script>
+function loadPage(page, el) {
+  document.getElementById('phoneFrame').src = 'pages/APP端/' + page;
+  document.querySelectorAll('.nav-link').forEach(function(a) { a.classList.remove('active'); });
+  if (el) el.classList.add('active');
+}
+</script>
+</body>
+</html>

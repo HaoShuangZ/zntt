@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>塔段检测</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/app-frame.css">
+<link rel="stylesheet" href="../../../../assets/app-embed.css">
+<link rel="stylesheet" href="../../../../assets/app-inspect-layout.css">
+<script src="../../../../assets/app-embed.js" defer></script>
+<script src="../../../../assets/app-inspect-back.js" defer></script>
+<style>
+.form-label { font-size:13px; color:#86909C; margin-bottom:6px; display:block; }
+.form-input { width:100%; height:44px; border:1px solid #E5E6EB; border-radius:12px; padding:0 14px; font-size:15px; outline:none; box-sizing:border-box; background:#fff; }
+.seg-tab-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #fff;
+  border-bottom: 1px solid #E5E6EB;
+  box-sizing: border-box;
+}
+.seg-tab-scroll {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.seg-tab-scroll::-webkit-scrollbar { display: none; }
+.seg-tab-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px 8px 14px;
+  border-radius: 16px;
+  font-size: 13px;
+  white-space: nowrap;
+  cursor: pointer;
+  flex-shrink: 0;
+  border: none;
+  font-family: inherit;
+  background: #F2F3F5;
+  color: #4E5969;
+  -webkit-tap-highlight-color: transparent;
+}
+.seg-tab-item.active {
+  background: #165DFF;
+  color: #fff;
+  font-weight: 600;
+}
+.seg-tab-item .seg-tab-del {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-left: 2px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+.seg-tab-item:not(.active) .seg-tab-del {
+  background: rgba(0,0,0,0.06);
+  color: #86909C;
+}
+.seg-tab-item.active .seg-tab-del {
+  background: rgba(255,255,255,0.25);
+  color: #fff;
+}
+.seg-tab-add {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px dashed #BEDAFF;
+  background: #E8F3FF;
+  color: #165DFF;
+  font-size: 16px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.seg-tab-add:active { opacity: 0.85; }
+.seg-form-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.seg-form-title { font-size: 15px; font-weight: 600; color: #1D2129; margin-bottom: 14px; }
+.toggle-pair { display: flex; gap: 8px; }
+.toggle-opt {
+  flex: 1;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid #E5E6EB;
+  background: #fff;
+  color: #4E5969;
+  font-size: 13px;
+  text-align: center;
+  line-height: 40px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.toggle-opt.on-pass {
+  border-color: #00B42A;
+  background: #E8FFEA;
+  color: #00B42A;
+  font-weight: 600;
+}
+.toggle-opt.on-fail {
+  border-color: #F53F3F;
+  background: #FFF1F0;
+  color: #F53F3F;
+  font-weight: 600;
+}
+.mask { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:200; align-items:center; justify-content:center; padding:24px; box-sizing:border-box; }
+.mask.show { display:flex; }
+.seg-del-dialog {
+  width: 100%;
+  max-width: 320px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 20px 18px 16px;
+  box-sizing: border-box;
+}
+.seg-del-dialog h3 { margin: 0 0 8px; font-size: 17px; font-weight: 600; color: #1D2129; text-align: center; }
+.seg-del-dialog p { margin: 0 0 20px; font-size: 14px; color: #4E5969; line-height: 1.5; text-align: center; }
+.seg-del-actions { display: flex; gap: 10px; }
+.seg-del-actions button {
+  flex: 1;
+  height: 44px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.seg-del-cancel { background: #F2F3F5; color: #4E5969; }
+.seg-del-ok { background: #F53F3F; color: #fff; }
+</style>
+</head>
+<body class="inspect-app-layout inspect-embed-pad-116">
+<div id="appStatusBar">
+  <span>9:41</span>
+  <span><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+</div>
+<div id="appNavBar">
+  <a href="../../任务/填报主页/app_task_inspect_home.html" data-app-inspect-back style="color:#165DFF; text-decoration:none; font-size:14px;"><i class="fa-solid fa-chevron-left"></i> 返回</a>
+  <span style="flex:1; text-align:center; font-size:16px; font-weight:600;">塔段检测</span>
+  <span style="width:40px;"></span>
+</div>
+
+<div id="appSegmentTabBar" class="seg-tab-bar">
+  <div id="segTabScroll" class="seg-tab-scroll" role="tablist" aria-label="塔段选择"></div>
+  <button type="button" id="btnAddSegment" class="seg-tab-add" aria-label="添加塔段" title="添加塔段">
+    <i class="fa-solid fa-plus" aria-hidden="true"></i>
+  </button>
+</div>
+
+<div id="appEmbedContent">
+  <div id="segmentFormHost"></div>
+</div>
+
+<div data-app-flow-footer style="position:fixed; bottom:0; left:0; right:0; padding:12px 16px; background:#fff; border-top:1px solid #E5E6EB;">
+  <a href="../../检测/平台/app_inspect_platform.html" style="display:block; width:100%; height:44px; background:#165DFF; color:#fff; border-radius:8px; font-size:16px; font-weight:600; text-decoration:none; text-align:center; line-height:44px; box-sizing:border-box;">下一步</a>
+</div>
+
+<div id="segDeleteMask" class="mask" role="dialog" aria-modal="true" aria-labelledby="segDelTitle">
+  <div class="seg-del-dialog">
+    <h3 id="segDelTitle">删除塔段</h3>
+    <p id="segDelMsg">确定删除「第1段」？删除后该段已填数据将无法恢复。</p>
+    <div class="seg-del-actions">
+      <button type="button" class="seg-del-cancel" id="segDelCancel">取消</button>
+      <button type="button" class="seg-del-ok" id="segDelOk">删除</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var MAX_SEGMENTS = 20;
+  var pendingDeleteIndex = -1;
+
+  function defaultSegment(i) {
+    return {
+      thickness: i === 0 ? '8.5' : '',
+      corrosion: i === 0 ? '轻微锈蚀' : '无锈蚀',
+      flangeGap: i === 0 ? '0.5' : '',
+      boltLoose: false,
+      resultPass: true,
+      remark: i === 0 ? '第1段整体状况良好，轻微表面锈蚀。' : ''
+    };
+  }
+
+  var segments = [0, 1, 2, 3, 4].map(function (i) { return defaultSegment(i); });
+  var activeIndex = 0;
+
+  var tabScroll = document.getElementById('segTabScroll');
+  var formHost = document.getElementById('segmentFormHost');
+  var delMask = document.getElementById('segDeleteMask');
+  var delMsg = document.getElementById('segDelMsg');
+
+  function segmentLabel(i) {
+    return '第' + (i + 1) + '段';
+  }
+
+  function readFormIntoSegment() {
+    var s = segments[activeIndex];
+    if (!s) return;
+    var el = formHost;
+    var t = el.querySelector('[data-f="thickness"]');
+    var c = el.querySelector('[data-f="corrosion"]');
+    var f = el.querySelector('[data-f="flangeGap"]');
+    var r = el.querySelector('[data-f="remark"]');
+    if (t) s.thickness = t.value;
+    if (c) s.corrosion = c.value;
+    if (f) s.flangeGap = f.value;
+    if (r) s.remark = r.value;
+    var bolt = el.querySelector('[data-f="boltLoose"]');
+    s.boltLoose = bolt && bolt.getAttribute('data-val') === '1';
+    var res = el.querySelector('[data-f="resultPass"]');
+    s.resultPass = !(res && res.getAttribute('data-val') === '0');
+  }
+
+  function bindToggles(root) {
+    root.querySelectorAll('[data-toggle]').forEach(function (group) {
+      var field = group.getAttribute('data-toggle');
+      group.querySelectorAll('.toggle-opt').forEach(function (opt) {
+        opt.addEventListener('click', function (e) {
+          e.stopPropagation();
+          var val = opt.getAttribute('data-val');
+          group.querySelectorAll('.toggle-opt').forEach(function (o) {
+            o.classList.remove('on-pass', 'on-fail');
+          });
+          if (field === 'boltLoose') {
+            group.setAttribute('data-val', val);
+            if (val === '0') opt.classList.add('on-pass');
+            else opt.classList.add('on-fail');
+          } else {
+            group.setAttribute('data-val', val);
+            if (val === '1') opt.classList.add('on-pass');
+            else opt.classList.add('on-fail');
+          }
+        });
+      });
+    });
+  }
+
+  function renderForm() {
+    var s = segments[activeIndex];
+    if (!s) return;
+    var title = segmentLabel(activeIndex) + '检测数据';
+    var bolt0 = s.boltLoose ? '' : ' on-pass';
+    var bolt1 = s.boltLoose ? ' on-fail' : '';
+    var res1 = s.resultPass ? ' on-pass' : '';
+    var res0 = s.resultPass ? '' : ' on-fail';
+    formHost.innerHTML =
+      '<div class="seg-form-card">' +
+      '<div class="seg-form-title">' + title + '</div>' +
+      '<div style="margin-bottom:14px;"><label class="form-label">壁厚（mm）</label>' +
+      '<input type="number" class="form-input" data-f="thickness" value="' + escapeAttr(s.thickness) + '" placeholder="请输入壁厚"></div>' +
+      '<div style="margin-bottom:14px;"><label class="form-label">锈蚀程度</label>' +
+      '<select class="form-input" data-f="corrosion" style="appearance:auto;">' +
+      optionHtml('无锈蚀', s.corrosion) + optionHtml('轻微锈蚀', s.corrosion) +
+      optionHtml('中度锈蚀', s.corrosion) + optionHtml('严重锈蚀', s.corrosion) +
+      '</select></div>' +
+      '<div style="margin-bottom:14px;"><label class="form-label">法兰间隙（mm）</label>' +
+      '<input type="number" class="form-input" data-f="flangeGap" value="' + escapeAttr(s.flangeGap) + '" placeholder="请输入法兰间隙"></div>' +
+      '<div style="margin-bottom:14px;"><label class="form-label">螺栓松动</label>' +
+      '<div class="toggle-pair" data-toggle="boltLoose" data-f="boltLoose" data-val="' + (s.boltLoose ? '1' : '0') + '">' +
+      '<div class="toggle-opt' + bolt0 + '" data-val="0">无松动</div>' +
+      '<div class="toggle-opt' + bolt1 + '" data-val="1">有松动</div></div></div>' +
+      '<div style="margin-bottom:14px;"><label class="form-label">检测结果</label>' +
+      '<div class="toggle-pair" data-toggle="resultPass" data-f="resultPass" data-val="' + (s.resultPass ? '1' : '0') + '">' +
+      '<div class="toggle-opt' + res1 + '" data-val="1">合格</div>' +
+      '<div class="toggle-opt' + res0 + '" data-val="0">不合格</div></div></div>' +
+      '<div style="margin-bottom:14px;"><label class="form-label">拍照记录</label>' +
+      '<div style="display:flex; gap:8px;">' +
+      '<div style="width:72px;height:72px;border:2px dashed #E5E6EB;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#F7F8FA;cursor:pointer;">' +
+      '<i class="fa-solid fa-camera" style="font-size:18px;color:#C9CDD4;"></i>' +
+      '<span style="font-size:10px;color:#C9CDD4;margin-top:2px;">拍照</span></div></div></div>' +
+      '<div><label class="form-label">备注</label>' +
+      '<textarea data-f="remark" style="width:100%;height:68px;border:1px solid #E5E6EB;border-radius:12px;padding:10px 14px;font-size:14px;outline:none;box-sizing:border-box;background:#fff;resize:none;font-family:inherit;" placeholder="请输入备注信息">' +
+      escapeHtml(s.remark) + '</textarea></div></div>';
+    bindToggles(formHost);
+  }
+
+  function escapeAttr(v) {
+    return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+  }
+  function escapeHtml(v) {
+    return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  function optionHtml(label, selected) {
+    var sel = label === selected ? ' selected' : '';
+    return '<option' + sel + '>' + escapeHtml(label) + '</option>';
+  }
+
+  function renderTabs() {
+    tabScroll.innerHTML = '';
+    segments.forEach(function (_, i) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'seg-tab-item' + (i === activeIndex ? ' active' : '');
+      btn.setAttribute('role', 'tab');
+      btn.setAttribute('aria-selected', i === activeIndex ? 'true' : 'false');
+      btn.setAttribute('data-index', String(i));
+      var label = document.createElement('span');
+      label.textContent = segmentLabel(i);
+      btn.appendChild(label);
+      if (segments.length > 1) {
+        var del = document.createElement('button');
+        del.type = 'button';
+        del.className = 'seg-tab-del';
+        del.setAttribute('aria-label', '删除' + segmentLabel(i));
+        del.innerHTML = '<i class="fa-solid fa-xmark" aria-hidden="true"></i>';
+        del.addEventListener('click', function (e) {
+          e.stopPropagation();
+          openDeleteConfirm(i);
+        });
+        btn.appendChild(del);
+      }
+      btn.addEventListener('click', function () {
+        if (activeIndex === i) return;
+        readFormIntoSegment();
+        activeIndex = i;
+        renderTabs();
+        renderForm();
+        scrollTabIntoView(i);
+      });
+      tabScroll.appendChild(btn);
+    });
+    document.getElementById('btnAddSegment').disabled = segments.length >= MAX_SEGMENTS;
+    document.getElementById('btnAddSegment').style.opacity = segments.length >= MAX_SEGMENTS ? '0.45' : '1';
+  }
+
+  function scrollTabIntoView(i) {
+    var tab = tabScroll.querySelector('[data-index="' + i + '"]');
+    if (tab && tab.scrollIntoView) {
+      tab.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
+    }
+  }
+
+  function openDeleteConfirm(i) {
+    pendingDeleteIndex = i;
+    delMsg.textContent = '确定删除「' + segmentLabel(i) + '」？删除后该段已填数据将无法恢复。';
+    delMask.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDeleteConfirm() {
+    delMask.classList.remove('show');
+    document.body.style.overflow = '';
+    pendingDeleteIndex = -1;
+  }
+
+  function deleteSegment(i) {
+    if (segments.length <= 1 || i < 0 || i >= segments.length) return;
+    readFormIntoSegment();
+    segments.splice(i, 1);
+    if (activeIndex === i) {
+      activeIndex = Math.min(i, segments.length - 1);
+    } else if (activeIndex > i) {
+      activeIndex--;
+    }
+    renderTabs();
+    renderForm();
+    scrollTabIntoView(activeIndex);
+  }
+
+  function addSegment() {
+    if (segments.length >= MAX_SEGMENTS) return;
+    readFormIntoSegment();
+    segments.push(defaultSegment(segments.length));
+    activeIndex = segments.length - 1;
+    renderTabs();
+    renderForm();
+    scrollTabIntoView(activeIndex);
+  }
+
+  document.getElementById('btnAddSegment').addEventListener('click', addSegment);
+  document.getElementById('segDelCancel').addEventListener('click', closeDeleteConfirm);
+  document.getElementById('segDelOk').addEventListener('click', function () {
+    var i = pendingDeleteIndex;
+    closeDeleteConfirm();
+    deleteSegment(i);
+  });
+  delMask.addEventListener('click', function (e) {
+    if (e.target === delMask) closeDeleteConfirm();
+  });
+
+  renderTabs();
+  renderForm();
+})();
+</script>
+</body>
+</html>

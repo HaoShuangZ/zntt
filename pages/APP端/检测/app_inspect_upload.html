@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>上传数据</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../assets/app-frame.css">
+<link rel="stylesheet" href="../../../assets/app-embed.css">
+<link rel="stylesheet" href="../../../assets/app-inspect-layout.css">
+<script src="../../../assets/app-embed.js" defer></script>
+<script src="../../../assets/app-inspect-back.js" defer></script>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; background: #F2F3F5; margin: 0; }
+</style>
+</head>
+<body class="inspect-app-layout inspect-embed-pad-upload">
+<div id="appStatusBar">
+  <span>9:41</span>
+  <span><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+</div>
+<div id="appNavBar">
+  <a href="../任务/填报主页/app_task_inspect_home.html" data-app-inspect-back style="color:#165DFF; text-decoration:none; font-size:14px;"><i class="fa-solid fa-chevron-left"></i> 返回</a>
+  <span style="flex:1; text-align:center; font-size:16px; font-weight:600;">上传数据</span>
+  <span style="width:40px;"></span>
+</div>
+<div id="appEmbedContent">
+  <div style="background:#fff; border-radius:12px; padding:16px; margin-bottom:12px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+    <p style="font-size:14px; color:#4E5969; line-height:1.6; margin:0 0 12px;">
+      将本订单现场检测的<strong>已校验数据</strong>提交至服务端，供 PC 端报告编制使用。提交前请确认已在「数据校验」中处理完阻塞项。
+    </p>
+  </div>
+  <button type="button" id="btnSubmit" style="width:100%; height:48px; background:#165DFF; color:#fff; border:none; border-radius:10px; font-size:16px; font-weight:600; cursor:pointer;">
+    <i class="fa-solid fa-cloud-arrow-up" style="margin-right:8px;"></i>确认提交本订单检测数据
+  </button>
+  <p id="okHint" style="display:none; margin-top:16px; text-align:center; font-size:14px; color:#00B42A;">已提交，可返回继续编辑或同步。</p>
+</div>
+<script>
+document.getElementById('btnSubmit').addEventListener('click', function () {
+  document.getElementById('okHint').style.display = 'block';
+});
+</script>
+</body>
+</html>

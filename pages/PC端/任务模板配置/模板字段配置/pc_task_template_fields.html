@@ -1,0 +1,210 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>模板字段配置已整合</title>
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content" style="padding:24px;">
+  <div class="card">
+    <div class="card-header"><div class="card-title">页面目录已更新</div></div>
+    <div class="card-body">
+      <p style="margin-bottom:12px;color:var(--text-2);">“模板字段配置”已整合到“任务模板管理”页面中。</p>
+      <a class="btn btn-primary" href="../任务模板管理/pc_task_template_list.html">前往任务模板管理</a>
+    </div>
+  </div>
+</div>
+<script>location.replace('../任务模板管理/pc_task_template_list.html');</script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>模板字段配置</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+.panel-left { width: 30%; min-width: 240px; border-right: 1px solid var(--border); padding-right: 20px; }
+.panel-right { width: 70%; padding-left: 20px; }
+.tree-item { padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 13px; color: var(--text-2); transition: all 0.15s; }
+.tree-item:hover { background: var(--primary-light); color: var(--primary); }
+.tree-item.active { background: var(--primary-light); color: var(--primary); font-weight: 500; }
+.tree-child { padding-left: 24px; }
+</style>
+</head>
+<body>
+<div id="page-content">
+
+  <div style="margin-bottom:16px;">
+    <a href="../任务模板管理/pc_task_template_list.html" class="btn btn-default btn-sm"><i class="fa-solid fa-arrow-left"></i> 返回列表</a>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">模板字段配置 - 单管塔安全性检测模板</div>
+    </div>
+    <div class="card-body" style="display:flex; min-height:520px;">
+
+      <!-- 左侧：检测项列表 -->
+      <div class="panel-left">
+        <div style="font-size:14px;font-weight:600;color:var(--text-1);margin-bottom:12px;">检测项列表</div>
+        <div>
+          <div class="tree-item active">铁塔外观检测</div>
+          <div class="tree-item">基础状况检测</div>
+          <div class="tree-child">
+            <div class="tree-item">基础裂缝检测</div>
+            <div class="tree-item">地锚检测</div>
+          </div>
+          <div class="tree-item">塔段检测</div>
+          <div class="tree-item">塔身垂直度检测</div>
+          <div class="tree-item">防腐层检测</div>
+          <div class="tree-item">螺栓紧固检测</div>
+          <div class="tree-item">焊接质量检测</div>
+        </div>
+      </div>
+
+      <!-- 右侧：字段配置 -->
+      <div class="panel-right">
+        <div style="font-size:14px;font-weight:600;color:var(--text-1);margin-bottom:4px;">铁塔外观检测</div>
+        <div style="font-size:12px;color:var(--text-3);margin-bottom:16px;">配置该检测项下的数据采集字段</div>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>字段名称</th>
+              <th>字段编码</th>
+              <th>字段类型</th>
+              <th style="width:70px">是否必填</th>
+              <th>默认</th>
+              <th>校验规则</th>
+              <th style="width:60px">排序</th>
+              <th style="width:60px">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="text" class="form-input" style="width:100%" value="外观状况描述"></td>
+              <td><input type="text" class="form-input" style="width:100%;background:#f7f8fa" value="WG-001" readonly></td>
+              <td>
+                <select class="form-select" style="width:100%">
+                  <option selected>文本</option>
+                  <option>数字</option>
+                  <option>单选</option>
+                  <option>多选</option>
+                  <option>日期</option>
+                  <option>图片</option>
+                  <option>坐标</option>
+                </select>
+              </td>
+              <td style="text-align:center"><input type="checkbox" checked></td>
+              <td><input type="text" class="form-input" style="width:100%" placeholder="默认值"></td>
+              <td><input type="text" class="form-input" style="width:100%" placeholder="默认值"></td>
+              <td><input type="number" class="form-input" style="width:100%" value="1"></td>
+              <td class="col-action"><button class="btn btn-text" style="color:var(--danger)">删除</button></td>
+            </tr>
+            <tr>
+              <td><input type="text" class="form-input" style="width:100%" value="锈蚀程度"></td>
+              <td><input type="text" class="form-input" style="width:100%;background:#f7f8fa" value="WG-002" readonly></td>
+              <td>
+                <select class="form-select" style="width:100%">
+                  <option>文本</option>
+                  <option>数字</option>
+                  <option selected>单选</option>
+                  <option>多选</option>
+                  <option>日期</option>
+                  <option>图片</option>
+                  <option>坐标</option>
+                </select>
+              </td>
+              <td style="text-align:center"><input type="checkbox" checked></td>
+              <td><input type="text" class="form-input" style="width:100%" value="无锈蚀"></td>
+              <td><input type="text" class="form-input" style="width:100%" placeholder="默认值"></td>
+              <td><input type="number" class="form-input" style="width:100%" value="2"></td>
+              <td class="col-action"><button class="btn btn-text" style="color:var(--danger)">删除</button></td>
+            </tr>
+            <tr>
+              <td><input type="text" class="form-input" style="width:100%" value="锈蚀面积(%)"></td>
+              <td><input type="text" class="form-input" style="width:100%;background:#f7f8fa" value="WG-003" readonly></td>
+              <td>
+                <select class="form-select" style="width:100%">
+                  <option>文本</option>
+                  <option selected>数字</option>
+                  <option>单选</option>
+                  <option>多选</option>
+                  <option>日期</option>
+                  <option>图片</option>
+                  <option>坐标</option>
+                </select>
+              </td>
+              <td style="text-align:center"><input type="checkbox"></td>
+              <td><input type="text" class="form-input" style="width:100%" value="0"></td>
+              <td><input type="text" class="form-input" style="width:100%" value="0~100"></td>
+              <td><input type="number" class="form-input" style="width:100%" value="3"></td>
+              <td class="col-action"><button class="btn btn-text" style="color:var(--danger)">删除</button></td>
+            </tr>
+            <tr>
+              <td><input type="text" class="form-input" style="width:100%" value="现场照片"></td>
+              <td><input type="text" class="form-input" style="width:100%;background:#f7f8fa" value="WG-004" readonly></td>
+              <td>
+                <select class="form-select" style="width:100%">
+                  <option>文本</option>
+                  <option>数字</option>
+                  <option>单选</option>
+                  <option>多选</option>
+                  <option>日期</option>
+                  <option selected>图片</option>
+                  <option>坐标</option>
+                </select>
+              </td>
+              <td style="text-align:center"><input type="checkbox" checked></td>
+              <td><input type="text" class="form-input" style="width:100%" placeholder="默认值"></td>
+              <td><input type="text" class="form-input" style="width:100%" value="至少2张"></td>
+              <td><input type="number" class="form-input" style="width:100%" value="4"></td>
+              <td class="col-action"><button class="btn btn-text" style="color:var(--danger)">删除</button></td>
+            </tr>
+            <tr>
+              <td><input type="text" class="form-input" style="width:100%" value="检测位置坐标"></td>
+              <td><input type="text" class="form-input" style="width:100%;background:#f7f8fa" value="WG-005" readonly></td>
+              <td>
+                <select class="form-select" style="width:100%">
+                  <option>文本</option>
+                  <option>数字</option>
+                  <option>单选</option>
+                  <option>多选</option>
+                  <option>日期</option>
+                  <option>图片</option>
+                  <option selected>坐标</option>
+                </select>
+              </td>
+              <td style="text-align:center"><input type="checkbox"></td>
+              <td><input type="text" class="form-input" style="width:100%" placeholder="默认值"></td>
+              <td><input type="text" class="form-input" style="width:100%" placeholder="默认值"></td>
+              <td><input type="number" class="form-input" style="width:100%" value="5"></td>
+              <td class="col-action"><button class="btn btn-text" style="color:var(--danger)">删除</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="padding:12px 0;">
+          <button class="btn btn-default"><i class="fa-solid fa-plus"></i> 添加字段</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="form-footer">
+    <button class="btn btn-primary">保存</button>
+  </div>
+
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'task_template_fields', breadcrumb:['模板配置','模板字段配置']};</script>
+</body>
+</html>
+
+

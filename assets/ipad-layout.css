@@ -1,0 +1,160 @@
+/**
+ * iPad 横屏 · 页面级布局重构 v2.0
+ */
+body.ipad-adapt {
+  background: var(--ipad-bg-page, #f2f3f5);
+}
+
+/* 工作台：工单双列 */
+body.ipad-adapt #listArea {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ipad-space-1, 10px);
+  align-content: start;
+  padding: 0 var(--ipad-space-1, 10px);
+  max-width: var(--ipad-content-max, 1180px);
+  margin: 0 auto;
+}
+body.ipad-adapt #listArea .order-card {
+  margin: 0;
+}
+@media (min-width: 1100px) {
+  body.ipad-adapt #listArea {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* 检测模块网格（旧 class） */
+body.ipad-adapt .mod-grid,
+body.ipad-adapt #appEmbedContent > .grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--ipad-space-1, 10px);
+}
+
+/* 表单双列 */
+body.ipad-adapt .basic-grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ipad-space-1, 10px);
+}
+body.ipad-adapt .basic-addr-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--ipad-space-1, 10px);
+}
+@media (min-width: 900px) {
+  body.ipad-adapt #segmentFormHost .seg-form-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: var(--ipad-space-2, 20px);
+    row-gap: 0;
+  }
+  body.ipad-adapt #segmentFormHost .seg-form-title {
+    grid-column: 1 / -1;
+  }
+}
+
+/* 地图：左表右图（iPad 横屏） */
+body.ipad-adapt.app-order-map-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+body.ipad-adapt.app-order-map-page .app-map-scroll {
+  display: grid;
+  grid-template-columns: minmax(340px, 38%) 1fr;
+  grid-template-areas: "list map";
+  align-items: stretch;
+  overflow: hidden;
+  flex: 1;
+  min-height: 0;
+}
+body.ipad-adapt.app-order-map-page .app-map-list {
+  grid-area: list;
+}
+body.ipad-adapt.app-order-map-page .map-wrap {
+  grid-area: map;
+}
+body.ipad-adapt.app-order-map-page .map-wrap {
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  position: relative;
+}
+body.ipad-adapt.app-order-map-page .app-map-list {
+  overflow-y: auto;
+  padding: var(--ipad-space-1, 10px) var(--ipad-space-2, 20px) var(--ipad-space-3, 30px) !important;
+  min-height: 0;
+}
+
+/* 消息列表 */
+body.ipad-adapt .msg {
+  max-width: var(--ipad-read-col, 480px);
+}
+
+/* 检测 shell */
+body.ipad-adapt .shell-main {
+  flex: 1;
+  min-width: 0;
+}
+body.ipad-adapt .shell-nav {
+  width: 148px !important;
+  flex-shrink: 0;
+  padding: var(--ipad-space-1, 10px) 0 !important;
+}
+body.ipad-adapt .shell-nav .nav-item {
+  font-size: var(--ipad-fs-caption, 11px) !important;
+  padding: 10px !important;
+  min-height: var(--ipad-touch-min, 44px);
+}
+body.ipad-adapt .shell-actions button {
+  min-height: 36px;
+  font-size: 10px !important;
+}
+body.ipad-adapt #iframeHost {
+  min-width: 0;
+}
+
+/* shell 内嵌底栏 Tab → 隐藏（由侧栏承担） */
+body.ipad-adapt.ipad-shell-page > div[style*="border-top"]:last-of-type {
+  display: none;
+}
+
+/* 登录 */
+body.ipad-adapt.ipad-login-page #appEmbedContent,
+body.ipad-adapt.ipad-login-page > div:not(.ipad-global-tabbar) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ipad-space-3, 30px);
+}
+body.ipad-adapt.ipad-login-page .login-card,
+body.ipad-adapt.ipad-login-page form {
+  max-width: 440px;
+  width: 100%;
+  box-shadow: var(--ipad-shadow-card, 0 0 5px rgba(0, 0, 0, 0.3));
+}
+
+/* 流程底栏 */
+body.ipad-adapt [data-app-flow-footer] {
+  left: 0 !important;
+  width: 100% !important;
+  padding: var(--ipad-space-1, 10px) var(--ipad-space-2, 20px) !important;
+}
+
+/* 备忘录 / 语音页：左右分栏预留 */
+body.ipad-adapt.ipad-memo-page .scroll-main,
+body.ipad-adapt.ipad-memo-page main {
+  max-width: var(--ipad-content-max, 1180px);
+}
+
+/* 固定底栏不遮挡 */
+body.ipad-adapt .fixb {
+  left: 0;
+  width: 100%;
+  padding: var(--ipad-space-1, 10px) var(--ipad-space-2, 20px) calc(var(--ipad-space-2, 20px) + env(safe-area-inset-bottom, 0px)) !important;
+  box-sizing: border-box;
+}
+body.ipad-adapt.ipad-has-tabbar .fixb {
+  padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px) + var(--ipad-space-2, 20px)) !important;
+}

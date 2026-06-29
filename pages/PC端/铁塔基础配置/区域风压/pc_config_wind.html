@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>区域风压</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .wind-table-wrap { border: 1px solid var(--border); border-radius: 4px; overflow: auto; }
+  .wind-table { min-width: 1250px; }
+  .wind-table thead th,
+  .wind-table tbody td { padding: 8px 10px; }
+  .wind-table thead tr.filter-row th { background: #fff; padding: 6px 10px; border-bottom: 1px solid var(--border); }
+  .wind-table .filter-input,
+  .wind-table .filter-select {
+    width: 100%;
+    height: 28px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 0 8px;
+    font-size: 12px;
+    color: var(--text-2);
+    background: #fff;
+    outline: none;
+  }
+  .wind-table .filter-input:focus,
+  .wind-table .filter-select:focus { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-light); }
+  .tree-cell { white-space: nowrap; }
+  .tree-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    margin-right: 6px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--text-3);
+    font-size: 10px;
+    background: #fff;
+  }
+  .tree-indent-1 { padding-left: 24px !important; }
+  .tree-indent-2 { padding-left: 44px !important; }
+  .link-text { color: var(--primary); text-decoration: none; }
+  .link-text:hover { color: var(--primary-hover); }
+  .cell-control {
+    width: 100%;
+    height: 28px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    font-size: 12px;
+    color: var(--text-2);
+    padding: 0 8px;
+    background: #fff;
+    outline: none;
+  }
+  .cell-control:focus { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-light); }
+  .col-icon-actions { white-space: nowrap; }
+  .icon-action {
+    width: 24px;
+    height: 24px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: #fff;
+    color: var(--primary);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 4px;
+  }
+  .icon-action.icon-del { color: #f53f3f; }
+  .icon-action:last-child { margin-right: 0; }
+</style>
+</head>
+<body>
+<div id="page-content">
+
+  <div class="card" style="margin-bottom:16px;border-left:4px solid var(--primary)">
+    <div class="card-body" style="padding:12px 16px;font-size:13px;color:var(--text-2)">
+      现行菜单：<strong>基础数据 → 区域风压</strong>（省市区风压，与站点匹配自动带出）。
+      <a href="../../基础数据/区域风压/pc_data_wind.html" class="btn btn-primary btn-sm" style="margin-left:10px">前往</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">区域风压配置</div>
+    </div>
+    <div class="card-body">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <input type="text" class="form-input" placeholder="区域编码/名称">
+          <select class="form-select">
+            <option value="">区域类型</option>
+            <option>根</option>
+            <option>区域</option>
+            <option>城市</option>
+          </select>
+          <button class="btn btn-primary">查询</button>
+          <button class="btn btn-default">重置</button>
+        </div>
+      </div>
+
+      <div class="wind-table-wrap">
+      <div class="pc-table-actions">
+        <a class="btn btn-primary" href="pc_config_wind_create.html"><i class="fa-solid fa-plus"></i> 新增区域</a>
+      </div>
+      <table class="data-table wind-table">
+          <thead>
+            <tr>
+              <th>区域编码</th>
+              <th>名称</th>
+              <th>父区域编码</th>
+              <th>父区域路径</th>
+              <th>区域类型</th>
+              <th>风压</th>
+              <th>排序</th>
+              <th>描述</th>
+              <th>操作</th>
+            </tr>
+            <tr class="filter-row">
+              <th><input class="filter-input" placeholder="支持模糊过滤"></th>
+              <th><input class="filter-input" placeholder="支持模糊过滤"></th>
+              <th></th>
+              <th></th>
+              <th>
+                <select class="filter-select">
+                  <option>请选择</option>
+                  <option>根</option>
+                  <option>区域</option>
+                  <option>城市</option>
+                </select>
+              </th>
+              <th><input class="filter-input" placeholder="0.00"></th>
+              <th><input class="filter-input" placeholder="0"></th>
+              <th><input class="filter-input" placeholder="支持模糊过滤"></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="tree-cell"><span class="tree-toggle"><i class="fa-solid fa-minus"></i></span>000000</td>
+              <td><a class="link-text" href="javascript:void(0)">中国</a></td>
+              <td></td>
+              <td>/</td>
+              <td>根</td>
+              <td>0.00</td>
+              <td>0</td>
+              <td></td>
+              <td class="col-icon-actions">
+                <a class="icon-action" href="pc_config_wind_create.html?parentCode=000000&parentName=%E4%B8%AD%E5%9B%BD&parentPath=%2F000000%2F"><i class="fa-solid fa-plus"></i></a>
+                <button class="icon-action"><i class="fa-regular fa-pen-to-square"></i></button>
+              </td>
+            </tr>
+            <tr>
+              <td class="tree-cell tree-indent-1"><span class="tree-toggle"><i class="fa-solid fa-plus"></i></span>000001</td>
+              <td><a class="link-text" href="javascript:void(0)">北京</a></td>
+              <td>000000</td>
+              <td>/000000/</td>
+              <td>区域</td>
+              <td>0.00</td>
+              <td>10</td>
+              <td></td>
+              <td class="col-icon-actions">
+                <a class="icon-action" href="pc_config_wind_create.html?parentCode=000001&parentName=%E5%8C%97%E4%BA%AC&parentPath=%2F000000%2F000001%2F"><i class="fa-solid fa-plus"></i></a>
+                <button class="icon-action"><i class="fa-regular fa-pen-to-square"></i></button>
+                <button class="icon-action icon-del"><i class="fa-regular fa-trash-can"></i></button>
+              </td>
+            </tr>
+            <tr style="background:#e8f7ff;">
+              <td class="tree-cell tree-indent-1"><span class="tree-toggle"><i class="fa-solid fa-minus"></i></span>000011</td>
+              <td><a class="link-text" href="javascript:void(0)">浙江</a></td>
+              <td>000000</td>
+              <td>/000000/</td>
+              <td>区域</td>
+              <td>0.00</td>
+              <td>110</td>
+              <td></td>
+              <td class="col-icon-actions">
+                <a class="icon-action" href="pc_config_wind_create.html?parentCode=000011&parentName=%E6%B5%99%E6%B1%9F&parentPath=%2F000000%2F000011%2F"><i class="fa-solid fa-plus"></i></a>
+                <button class="icon-action"><i class="fa-regular fa-pen-to-square"></i></button>
+                <button class="icon-action icon-del"><i class="fa-regular fa-trash-can"></i></button>
+              </td>
+            </tr>
+            <tr>
+              <td class="tree-cell tree-indent-2">011001</td>
+              <td><a class="link-text" href="javascript:void(0)">杭州市</a></td>
+              <td>000011</td>
+              <td>/000000/000011/</td>
+              <td>
+                <select class="cell-control">
+                  <option>城市</option>
+                  <option>区域</option>
+                </select>
+              </td>
+              <td><input type="number" class="cell-control" value="0.30" step="0.01"></td>
+              <td><input type="number" class="cell-control" value="10" step="1"></td>
+              <td></td>
+              <td class="col-icon-actions">
+                <a class="icon-action" href="pc_config_wind_create.html?parentCode=011001&parentName=%E6%9D%AD%E5%B7%9E%E5%B8%82&parentPath=%2F000000%2F000011%2F011001%2F"><i class="fa-solid fa-plus"></i></a>
+                <button class="icon-action"><i class="fa-regular fa-pen-to-square"></i></button>
+                <button class="icon-action icon-del"><i class="fa-regular fa-trash-can"></i></button>
+              </td>
+            </tr>
+            <tr>
+              <td class="tree-cell tree-indent-2">011002</td>
+              <td><a class="link-text" href="javascript:void(0)">临安区天目山</a></td>
+              <td>000011</td>
+              <td>/000000/000011/</td>
+              <td>
+                <select class="cell-control">
+                  <option>城市</option>
+                  <option>区域</option>
+                </select>
+              </td>
+              <td><input type="number" class="cell-control" value="0.55" step="0.01"></td>
+              <td><input type="number" class="cell-control" value="20" step="1"></td>
+              <td></td>
+              <td class="col-icon-actions">
+                <a class="icon-action" href="pc_config_wind_create.html?parentCode=011002&parentName=%E4%B8%B4%E5%AE%89%E5%8C%BA%E5%A4%A9%E7%9B%AE%E5%B1%B1&parentPath=%2F000000%2F000011%2F011002%2F"><i class="fa-solid fa-plus"></i></a>
+                <button class="icon-action"><i class="fa-regular fa-pen-to-square"></i></button>
+                <button class="icon-action icon-del"><i class="fa-regular fa-trash-can"></i></button>
+              </td>
+            </tr>
+            <tr>
+              <td class="tree-cell tree-indent-2">011003</td>
+              <td><a class="link-text" href="javascript:void(0)">平湖县乍浦</a></td>
+              <td>000011</td>
+              <td>/000000/000011/</td>
+              <td>
+                <select class="cell-control">
+                  <option>城市</option>
+                  <option>区域</option>
+                </select>
+              </td>
+              <td><input type="number" class="cell-control" value="0.35" step="0.01"></td>
+              <td><input type="number" class="cell-control" value="30" step="1"></td>
+              <td></td>
+              <td class="col-icon-actions">
+                <a class="icon-action" href="pc_config_wind_create.html?parentCode=011003&parentName=%E5%B9%B3%E6%B9%96%E5%8E%BF%E4%B9%8D%E6%B5%A6&parentPath=%2F000000%2F000011%2F011003%2F"><i class="fa-solid fa-plus"></i></a>
+                <button class="icon-action"><i class="fa-regular fa-pen-to-square"></i></button>
+                <button class="icon-action icon-del"><i class="fa-regular fa-trash-can"></i></button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination">
+        <span>共 620 条记录</span>
+        <div class="pagination-btns">
+          <button class="page-btn"><i class="fa-solid fa-chevron-left"></i></button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'config_wind', breadcrumb:['铁塔基础配置','区域风压']};</script>
+</body>
+</html>
+
+

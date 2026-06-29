@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<!-- iPad-DETECT_ENTRY v2.0 landscape -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>检测</title>
+<script src="../../../assets/app-menu-access-log.js"></script>
+<script>
+try { if (typeof __logMenuAccess === 'function') __logMenuAccess('检测'); } catch (e) {}
+</script>
+<script>
+(function () {
+  var KEY = 'tower_app_active_inspect_order';
+  var FALLBACK = 'DD20260506001';
+  var id = '';
+  try { id = (sessionStorage.getItem(KEY) || '').trim().toUpperCase(); } catch (e) {}
+  if (!id) id = FALLBACK;
+  location.replace('../任务/填报主页/ipad_task_inspect_home.html?order=' + encodeURIComponent(id));
+})();
+</script>
+</head>
+<body class="ipad-adapt" style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;background:#F2F3F5;color:#86909C;padding:24px;text-align:center;font-size:14px;">正在进入检测任务…</body>
+</html>

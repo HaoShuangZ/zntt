@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<!-- iPad-INSPECT_FOUNDATION v2.0 landscape -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>基础及地锚</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/app-frame.css">
+<link rel="stylesheet" href="../../../../assets/app-embed.css">
+<link rel="stylesheet" href="../../../../assets/app-inspect-layout.css">
+<link rel="stylesheet" href="../../../../assets/ipad-tokens.css">
+<link rel="stylesheet" href="../../../../assets/ipad-frame.css">
+<link rel="stylesheet" href="../../../../assets/ipad-layout.css">
+<link rel="stylesheet" href="../../../../assets/ipad-visual.css">
+<link rel="stylesheet" href="../../../../assets/ipad-inspect-layout.css">
+<link rel="stylesheet" href="../../../../assets/ipad-embed.css">
+<script src="../../../../assets/ipad-adapt.js" defer></script>
+<script src="../../../../assets/app-embed.js" defer></script>
+<script src="../../../../assets/app-inspect-back.js" defer></script>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; background: #F2F3F5; margin: 0; }
+.check-card { background:#fff; border-radius:12px; padding:14px; margin-bottom:10px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.check-card.fail { border-left:3px solid #F53F3F; }
+.toggle-wrap { display:flex; gap:8px; }
+.toggle-btn { flex:1; height:32px; border-radius:8px; border:1px solid #E5E6EB; background:#fff; font-size:13px; text-align:center; line-height:32px; cursor:pointer; color:#4E5969; }
+.toggle-btn.active-pass { background:#E8FFEA; color:#00B42A; border-color:#00B42A; font-weight:600; }
+.toggle-btn.active-fail { background:#FFF1F0; color:#F53F3F; border-color:#F53F3F; font-weight:600; }
+</style>
+</head>
+<body class="inspect-app-layout inspect-embed-pad-116 ipad-adapt">
+<!-- Status bar -->
+<div id="appStatusBar">
+  <span>9:41</span>
+  <span><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+</div>
+<!-- Navigation bar -->
+<div id="appNavBar">
+  <a href="../../任务/填报主页/ipad_task_inspect_home.html" data-app-inspect-back style="color:#165DFF; text-decoration:none; font-size:14px;"><i class="fa-solid fa-chevron-left"></i> 返回</a>
+  <span style="flex:1; text-align:center; font-size:16px; font-weight:600;">基础及地锚</span>
+  <span style="width:40px;"></span>
+</div>
+
+<!-- Content area -->
+<div id="appEmbedContent">
+
+  <!-- Progress -->
+  <div style="background:#E8F3FF; border-radius:8px; padding:10px 14px; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+    <i class="fa-solid fa-circle-info" style="color:#165DFF;"></i>
+    <span style="font-size:13px; color:#165DFF;">已完成 10/12 项检查</span>
+  </div>
+
+  <!-- Check items -->
+  <div class="check-card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <span style="font-size:14px; font-weight:600; color:#1D2129;">1. 基础外观</span>
+    </div>
+    <div class="toggle-wrap" style="margin-bottom:8px;">
+      <div class="toggle-btn active-pass">合格</div>
+      <div class="toggle-btn">不合格</div>
+    </div>
+    <input type="text" placeholder="备注（选填）" style="width:100%; height:36px; border:1px solid #E5E6EB; border-radius:8px; padding:0 12px; font-size:13px; outline:none; box-sizing:border-box;">
+  </div>
+
+  <div class="check-card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <span style="font-size:14px; font-weight:600; color:#1D2129;">2. 基础裂缝</span>
+    </div>
+    <div class="toggle-wrap" style="margin-bottom:8px;">
+      <div class="toggle-btn active-pass">合格</div>
+      <div class="toggle-btn">不合格</div>
+    </div>
+    <input type="text" placeholder="备注（选填）" style="width:100%; height:36px; border:1px solid #E5E6EB; border-radius:8px; padding:0 12px; font-size:13px; outline:none; box-sizing:border-box;">
+  </div>
+
+  <div class="check-card fail">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <span style="font-size:14px; font-weight:600; color:#1D2129;">3. 基础沉降</span>
+    </div>
+    <div class="toggle-wrap" style="margin-bottom:8px;">
+      <div class="toggle-btn">合格</div>
+      <div class="toggle-btn active-fail">不合格</div>
+    </div>
+    <input type="text" value="东侧轻微沉降约5mm" style="width:100%; height:36px; border:1px solid #E5E6EB; border-radius:8px; padding:0 12px; font-size:13px; outline:none; box-sizing:border-box; margin-bottom:8px;">
+    <div style="display:flex; align-items:center; gap:8px; padding:8px; background:#FFF1F0; border-radius:8px;">
+      <i class="fa-solid fa-camera" style="color:#F53F3F;"></i>
+      <span style="font-size:12px; color:#F53F3F;">请拍照记录不合格项</span>
+      <div style="margin-left:auto; width:36px; height:36px; border:1px dashed #F53F3F; border-radius:6px; display:flex; align-items:center; justify-content:center;">
+        <i class="fa-solid fa-plus" style="color:#F53F3F; font-size:12px;"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <span style="font-size:14px; font-weight:600; color:#1D2129;">4. 基础积水</span>
+    </div>
+    <div class="toggle-wrap" style="margin-bottom:8px;">
+      <div class="toggle-btn active-pass">合格</div>
+      <div class="toggle-btn">不合格</div>
+    </div>
+    <input type="text" placeholder="备注（选填）" style="width:100%; height:36px; border:1px solid #E5E6EB; border-radius:8px; padding:0 12px; font-size:13px; outline:none; box-sizing:border-box;">
+  </div>
+
+  <div class="check-card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <span style="font-size:14px; font-weight:600; color:#1D2129;">5. 地锚完整性</span>
+    </div>
+    <div class="toggle-wrap" style="margin-bottom:8px;">
+      <div class="toggle-btn active-pass">合格</div>
+      <div class="toggle-btn">不合格</div>
+    </div>
+    <input type="text" placeholder="备注（选填）" style="width:100%; height:36px; border:1px solid #E5E6EB; border-radius:8px; padding:0 12px; font-size:13px; outline:none; box-sizing:border-box;">
+  </div>
+
+  <div class="check-card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <span style="font-size:14px; font-weight:600; color:#1D2129;">6. 地锚拉线</span>
+    </div>
+    <div class="toggle-wrap" style="margin-bottom:8px;">
+      <div class="toggle-btn active-pass">合格</div>
+      <div class="toggle-btn">不合格</div>
+    </div>
+    <input type="text" placeholder="备注（选填）" style="width:100%; height:36px; border:1px solid #E5E6EB; border-radius:8px; padding:0 12px; font-size:13px; outline:none; box-sizing:border-box;">
+  </div>
+
+  <div class="check-card fail">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <span style="font-size:14px; font-weight:600; color:#1D2129;">7. 接地装置</span>
+    </div>
+    <div class="toggle-wrap" style="margin-bottom:8px;">
+      <div class="toggle-btn">合格</div>
+      <div class="toggle-btn active-fail">不合格</div>
+    </div>
+    <input type="text" value="接地线锈蚀严重" style="width:100%; height:36px; border:1px solid #E5E6EB; border-radius:8px; padding:0 12px; font-size:13px; outline:none; box-sizing:border-box; margin-bottom:8px;">
+    <div style="display:flex; align-items:center; gap:8px; padding:8px; background:#FFF1F0; border-radius:8px;">
+      <i class="fa-solid fa-camera" style="color:#F53F3F;"></i>
+      <span style="font-size:12px; color:#F53F3F;">请拍照记录不合格项</span>
+      <div style="margin-left:auto; width:36px; height:36px; border:1px dashed #F53F3F; border-radius:6px; display:flex; align-items:center; justify-content:center;">
+        <i class="fa-solid fa-plus" style="color:#F53F3F; font-size:12px;"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <span style="font-size:14px; font-weight:600; color:#1D2129;">8. 防雷设施</span>
+    </div>
+    <div class="toggle-wrap" style="margin-bottom:8px;">
+      <div class="toggle-btn active-pass">合格</div>
+      <div class="toggle-btn">不合格</div>
+    </div>
+    <input type="text" placeholder="备注（选填）" style="width:100%; height:36px; border:1px solid #E5E6EB; border-radius:8px; padding:0 12px; font-size:13px; outline:none; box-sizing:border-box;">
+  </div>
+
+  <div class="check-card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <span style="font-size:14px; font-weight:600; color:#1D2129;">9. 基础螺栓</span>
+    </div>
+    <div class="toggle-wrap" style="margin-bottom:8px;">
+      <div class="toggle-btn active-pass">合格</div>
+      <div class="toggle-btn">不合格</div>
+    </div>
+    <input type="text" placeholder="备注（选填）" style="width:100%; height:36px; border:1px solid #E5E6EB; border-radius:8px; padding:0 12px; font-size:13px; outline:none; box-sizing:border-box;">
+  </div>
+
+  <div class="check-card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <span style="font-size:14px; font-weight:600; color:#1D2129;">10. 基础混凝土</span>
+    </div>
+    <div class="toggle-wrap" style="margin-bottom:8px;">
+      <div class="toggle-btn active-pass">合格</div>
+      <div class="toggle-btn">不合格</div>
+    </div>
+    <input type="text" placeholder="备注（选填）" style="width:100%; height:36px; border:1px solid #E5E6EB; border-radius:8px; padding:0 12px; font-size:13px; outline:none; box-sizing:border-box;">
+  </div>
+
+  <div class="check-card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <span style="font-size:14px; font-weight:600; color:#1D2129;">11. 基础防腐</span>
+    </div>
+    <div class="toggle-wrap" style="margin-bottom:8px;">
+      <div class="toggle-btn active-pass">合格</div>
+      <div class="toggle-btn">不合格</div>
+    </div>
+    <input type="text" placeholder="备注（选填）" style="width:100%; height:36px; border:1px solid #E5E6EB; border-radius:8px; padding:0 12px; font-size:13px; outline:none; box-sizing:border-box;">
+  </div>
+
+  <div class="check-card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <span style="font-size:14px; font-weight:600; color:#1D2129;">12. 地面排水</span>
+    </div>
+    <div class="toggle-wrap" style="margin-bottom:8px;">
+      <div class="toggle-btn active-pass">合格</div>
+      <div class="toggle-btn">不合格</div>
+    </div>
+    <input type="text" placeholder="备注（选填）" style="width:100%; height:36px; border:1px solid #E5E6EB; border-radius:8px; padding:0 12px; font-size:13px; outline:none; box-sizing:border-box;">
+  </div>
+
+</div>
+
+<!-- Bottom button -->
+<div class="ipad-flow-footer" data-app-flow-footer style="position:fixed; bottom:0; left:0; right:0; padding:12px 16px; background:#fff; border-top:1px solid #E5E6EB;">
+  <a href="../../检测/结构图/ipad_inspect_diagram.html" style="display:block; width:100%; height:44px; background:#165DFF; color:#fff; border-radius:8px; font-size:16px; font-weight:600; text-decoration:none; text-align:center; line-height:44px; box-sizing:border-box;">下一步</a>
+</div>
+</body>
+</html>

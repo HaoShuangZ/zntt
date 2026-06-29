@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新增客户 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .form-section-title { font-size:14px; font-weight:600; color:var(--text-1); margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--border); }
+  .sub-toolbar { margin-bottom:10px; }
+  .contact-table-wrap, .org-tree-wrap { border:1px solid var(--border); border-radius:8px; overflow:hidden; margin-bottom:8px; }
+  .mini-table { width:100%; border-collapse:collapse; font-size:13px; }
+  .mini-table th { background:#F7F8FA; text-align:left; padding:8px 10px; border-bottom:1px solid var(--border); font-weight:500; }
+  .mini-table td { padding:8px 10px; border-bottom:1px solid var(--border); vertical-align:middle; }
+  .mini-table tr:last-child td { border-bottom:none; }
+  .mini-table input.form-input { width:100%; min-width:0; box-sizing:border-box; }
+  .org-tree { padding:10px 12px; background:#FAFBFC; font-size:13px; }
+  .tree-node { margin:6px 0; }
+  .tree-node-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:6px; }
+  .tree-node-row .form-input { flex:1; min-width:160px; max-width:420px; }
+  .tree-children { margin-left:20px; padding-left:12px; border-left:2px solid var(--border); margin-top:6px; }
+  .tree-depth-tag { font-size:11px; color:var(--text-3); white-space:nowrap; }
+  .btn-text-danger { color:var(--danger); border:none; background:transparent; cursor:pointer; font-size:12px; }
+  .btn-text-danger:hover { text-decoration:underline; }
+  .hint { font-size:12px; color:var(--text-3); margin:0 0 10px; line-height:1.5; }
+</style>
+</head>
+<body>
+<div id="page-content">
+  <div class="page-header">
+    <div style="display:flex;align-items:center;gap:12px">
+      <a href="pc_customer_list.html" class="btn btn-default btn-sm"><i class="fa-solid fa-arrow-left"></i> 返回列表</a>
+      <h1 class="page-title">新增客户</h1>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <!-- 基础信息 -->
+      <div class="form-section">
+        <div class="form-section-title">基础信息</div>
+        <p class="hint">客户地址采用标准行政区划选择「省 / 市」，详细地址请手工填写门牌、园区、楼层等。</p>
+        <div class="form-grid form-grid-3">
+          <div class="form-group">
+            <span class="form-label">客户编码</span>
+            <input class="form-input" id="custCode" readonly style="background:#F7F8FA" value="KH-20260513-0001">
+          </div>
+          <div class="form-group full">
+            <span class="form-label">客户全称<span class="required">*</span></span>
+            <input class="form-input" style="width:100%" placeholder="与营业执照或签约主体一致的全称">
+          </div>
+          <div class="form-group">
+            <span class="form-label">客户简称<span class="required">*</span></span>
+            <input class="form-input" style="width:100%" placeholder="列表、下拉中展示的简称">
+          </div>
+          <div class="form-group">
+            <span class="form-label">客户类型<span class="required">*</span></span>
+            <select class="form-select" style="width:100%">
+              <option value="">请选择</option>
+              <option>运营商</option>
+              <option>集团客户</option>
+              <option>政府及事业单位</option>
+              <option>一般企业</option>
+              <option>其他</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <span class="form-label">省（标准区划）<span class="required">*</span></span>
+            <select class="form-select" id="addrProvince" style="width:100%"></select>
+          </div>
+          <div class="form-group">
+            <span class="form-label">市（标准区划）<span class="required">*</span></span>
+            <select class="form-select" id="addrCity" style="width:100%"></select>
+          </div>
+          <div class="form-group full">
+            <span class="form-label">详细地址<span class="required">*</span></span>
+            <input type="text" class="form-input" style="width:100%" placeholder="街道、门牌号、园区楼栋楼层等（不含省市区）">
+          </div>
+        </div>
+      </div>
+
+      <!-- 联系人 -->
+      <div class="form-section">
+        <div class="form-section-title">联系人</div>
+        <p class="hint">可维护多个联系人；至少保留一行。</p>
+        <div class="contact-table-wrap">
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th style="width:22%">姓名<span class="required">*</span></th>
+                <th style="width:22%">职位</th>
+                <th style="width:28%">联系电话<span class="required">*</span></th>
+                <th style="width:120px">操作</th>
+              </tr>
+            </thead>
+            <tbody id="contactRows"></tbody>
+          </table>
+        </div>
+        <div class="sub-toolbar">
+          <button type="button" class="btn btn-default btn-sm" id="btnAddContact"><i class="fa-solid fa-plus"></i> 增加一行</button>
+        </div>
+      </div>
+
+      <!-- 客户架构（最多三级） -->
+      <div class="form-section">
+        <div class="form-section-title">客户架构</div>
+        <p class="hint">自定义树形组织，最多三级。示例：<strong>浙江省移动</strong> → <strong>杭州移动</strong> → <strong>运营部</strong>。可添加多个根节点，每个节点下可添加子级（不超过 3 级）。</p>
+        <div class="org-tree-wrap">
+          <div class="org-tree" id="orgTreeRoot"></div>
+        </div>
+        <button type="button" class="btn btn-default btn-sm" id="btnAddRootOrg"><i class="fa-solid fa-plus"></i> 添加根节点</button>
+      </div>
+
+      <!-- 开票信息 -->
+      <div class="form-section">
+        <div class="form-section-title">开票信息</div>
+        <div class="form-grid form-grid-3">
+          <div class="form-group full">
+            <span class="form-label">开户名称</span>
+            <input class="form-input" style="width:100%" placeholder="默认与客户全称一致，可改">
+          </div>
+          <div class="form-group">
+            <span class="form-label">银行账户</span>
+            <input class="form-input" style="width:100%" placeholder="对公银行账号">
+          </div>
+          <div class="form-group">
+            <span class="form-label">开户银行</span>
+            <input class="form-input" style="width:100%" placeholder="如：中国工商银行杭州高新支行">
+          </div>
+          <div class="form-group full">
+            <span class="form-label">开户地址</span>
+            <input class="form-input" style="width:100%" placeholder="银行开户许可证上的开户地址">
+          </div>
+          <div class="form-group">
+            <span class="form-label">统一社会信用代码 / 税号</span>
+            <input class="form-input" style="width:100%" placeholder="纳税人识别号">
+          </div>
+          <div class="form-group">
+            <span class="form-label">开票电话</span>
+            <input class="form-input" style="width:100%" placeholder="可选">
+          </div>
+        </div>
+      </div>
+
+      <!-- 资质（保留简要） -->
+      <div class="form-section">
+        <div class="form-section-title">资质附件（可选）</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <span class="form-label">单位 LOGO</span>
+            <div style="width:200px;height:80px;border:1px dashed var(--border);border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:var(--text-3)">
+              <i class="fa-solid fa-camera" style="font-size:20px;margin-bottom:4px"></i>
+              <span style="font-size:12px">点击上传</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">营业执照</span>
+            <div style="width:200px;height:80px;border:1px dashed var(--border);border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:var(--text-3)">
+              <i class="fa-solid fa-file-image" style="font-size:20px;margin-bottom:4px"></i>
+              <span style="font-size:12px">点击上传</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-footer">
+        <button type="button" class="btn btn-primary">保存</button>
+        <button type="button" class="btn btn-default" onclick="location.href='pc_customer_list.html'">取消</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = { active: 'customer_list', breadcrumb: ['营销管理', '客户管理', '新增客户'] };</script>
+<script>
+(function () {
+  var REGION = {
+    '浙江省': ['杭州市', '宁波市', '温州市', '嘉兴市', '湖州市', '绍兴市', '金华市', '衢州市', '舟山市', '台州市', '丽水市'],
+    '江苏省': ['南京市', '无锡市', '徐州市', '常州市', '苏州市', '南通市', '连云港市', '淮安市', '盐城市', '扬州市', '镇江市', '泰州市', '宿迁市'],
+    '上海市': ['上海市'],
+    '北京市': ['北京市'],
+    '广东省': ['广州市', '深圳市', '珠海市', '佛山市', '东莞市', '中山市', '惠州市', '江门市', '肇庆市'],
+    '山东省': ['济南市', '青岛市', '烟台市', '潍坊市', '临沂市'],
+    '四川省': ['成都市', '绵阳市', '德阳市', '宜宾市']
+  };
+
+  function fillProvinceCity() {
+    var prov = document.getElementById('addrProvince');
+    var city = document.getElementById('addrCity');
+    if (!prov || !city) return;
+    prov.innerHTML = '<option value="">请选择省</option>';
+    Object.keys(REGION).sort().forEach(function (p) {
+      var o = document.createElement('option');
+      o.value = p;
+      o.textContent = p;
+      prov.appendChild(o);
+    });
+    function refillCities() {
+      var p = prov.value;
+      city.innerHTML = '<option value="">请选择市</option>';
+      if (!p || !REGION[p]) return;
+      REGION[p].forEach(function (c) {
+        var o = document.createElement('option');
+        o.value = c;
+        o.textContent = c;
+        city.appendChild(o);
+      });
+    }
+    prov.addEventListener('change', refillCities);
+    refillCities();
+  }
+
+  function addContactRow() {
+    var tbody = document.getElementById('contactRows');
+    if (!tbody) return;
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td><input type="text" class="form-input" placeholder="姓名"></td>' +
+      '<td><input type="text" class="form-input" placeholder="如：部门经理"></td>' +
+      '<td><input type="text" class="form-input" placeholder="手机或固话"></td>' +
+      '<td><button type="button" class="btn-text-danger btn-del-contact">删除</button></td>';
+    tr.querySelector('.btn-del-contact').addEventListener('click', function () {
+      if (tbody.querySelectorAll('tr').length <= 1) {
+        alert('至少保留一行联系人');
+        return;
+      }
+      tr.remove();
+    });
+    tbody.appendChild(tr);
+  }
+
+  function createOrgNode(depth) {
+    var wrap = document.createElement('div');
+    wrap.className = 'tree-node';
+    wrap.dataset.depth = String(depth);
+
+    var row = document.createElement('div');
+    row.className = 'tree-node-row';
+
+    var tag = document.createElement('span');
+    tag.className = 'tree-depth-tag';
+    tag.textContent = depth === 1 ? '一级' : depth === 2 ? '二级' : '三级';
+
+    var inp = document.createElement('input');
+    inp.type = 'text';
+    inp.className = 'form-input';
+    inp.placeholder = depth === 1 ? '如：浙江省移动' : depth === 2 ? '如：杭州移动' : '如：运营部';
+
+    var btnChild = document.createElement('button');
+    btnChild.type = 'button';
+    btnChild.className = 'btn btn-default btn-sm';
+    btnChild.innerHTML = '<i class="fa-solid fa-plus"></i> 子级';
+    if (depth >= 3) {
+      btnChild.disabled = true;
+      btnChild.title = '已达最大三级';
+    }
+
+    var btnDel = document.createElement('button');
+    btnDel.type = 'button';
+    btnDel.className = 'btn-text-danger';
+    btnDel.textContent = '删除节点';
+
+    var children = document.createElement('div');
+    children.className = 'tree-children';
+
+    btnChild.addEventListener('click', function () {
+      if (depth >= 3) return;
+      children.appendChild(createOrgNode(depth + 1));
+    });
+
+    btnDel.addEventListener('click', function () {
+      wrap.remove();
+    });
+
+    row.appendChild(tag);
+    row.appendChild(inp);
+    row.appendChild(btnChild);
+    row.appendChild(btnDel);
+    wrap.appendChild(row);
+    wrap.appendChild(children);
+    return wrap;
+  }
+
+  window.addEventListener('DOMContentLoaded', function () {
+    fillProvinceCity();
+    addContactRow();
+
+    var btnAddC = document.getElementById('btnAddContact');
+    if (btnAddC) btnAddC.addEventListener('click', addContactRow);
+
+    var treeRoot = document.getElementById('orgTreeRoot');
+    var btnRoot = document.getElementById('btnAddRootOrg');
+    if (treeRoot && btnRoot) {
+      treeRoot.appendChild(createOrgNode(1));
+      btnRoot.addEventListener('click', function () {
+        treeRoot.appendChild(createOrgNode(1));
+      });
+    }
+  });
+})();
+</script>
+</body>
+</html>

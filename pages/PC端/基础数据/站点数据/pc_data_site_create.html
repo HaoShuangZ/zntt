@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新增站点 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+  <div class="page-header">
+    <div style="display:flex;align-items:center;gap:12px">
+      <a href="pc_data_site.html" class="btn btn-default btn-sm"><i class="fa-solid fa-arrow-left"></i> 返回列表</a>
+      <h1 class="page-title">新增站点</h1>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <p style="font-size:12px;color:var(--text-3);margin:0 0 16px">站址编码由系统生成，站点在系统内全局唯一。</p>
+      <div class="form-section">
+        <div class="form-section-title">站点主档</div>
+        <div class="form-grid form-grid-3">
+          <div class="form-group">
+            <span class="form-label">站址编码</span>
+            <input class="form-input" readonly style="background:#F7F8FA" value="ZD 20260513 0006">
+          </div>
+          <div class="form-group full">
+            <span class="form-label">站点名称<span class="required">*</span></span>
+            <input class="form-input" style="width:100%" placeholder="请输入站点名称">
+          </div>
+          <div class="form-group full">
+            <span class="form-label">所属区域<span class="required">*</span></span>
+            <div style="display:flex;gap:12px;flex-wrap:wrap">
+              <select class="form-select" id="siteRegionProv" style="flex:1;min-width:160px"></select>
+              <select class="form-select" id="siteRegionCity" style="flex:1;min-width:160px"></select>
+            </div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">经度</span>
+            <input class="form-input" placeholder="如 120.2134">
+          </div>
+          <div class="form-group">
+            <span class="form-label">纬度</span>
+            <input class="form-input" placeholder="如 30.2088">
+          </div>
+          <div class="form-group">
+            <span class="form-label">状态</span>
+            <select class="form-select" style="width:100%">
+              <option>启用</option>
+              <option>停用</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <span class="form-label">备注</span>
+            <textarea class="form-textarea" rows="2" placeholder="可选"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="form-footer">
+        <button type="button" class="btn btn-primary">保存</button>
+        <button type="button" class="btn btn-default" onclick="location.href='pc_data_site.html'">取消</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = { active: 'data_site', breadcrumb: ['基础数据', '站点管理', '新增站点'] };</script>
+<script>
+(function () {
+  var REGION = {
+    '浙江省': ['杭州市', '宁波市', '温州市', '嘉兴市', '湖州市', '绍兴市', '金华市', '衢州市', '舟山市', '台州市', '丽水市'],
+    '江苏省': ['南京市', '无锡市', '徐州市', '常州市', '苏州市', '南通市', '连云港市', '淮安市', '盐城市', '扬州市', '镇江市', '泰州市', '宿迁市'],
+    '上海市': ['上海市'],
+    '北京市': ['北京市'],
+    '广东省': ['广州市', '深圳市', '珠海市', '佛山市', '东莞市', '中山市', '惠州市', '江门市', '肇庆市'],
+    '山东省': ['济南市', '青岛市', '烟台市', '潍坊市', '临沂市'],
+    '四川省': ['成都市', '绵阳市', '德阳市', '宜宾市']
+  };
+
+  function bindRegionCascader() {
+    var prov = document.getElementById('siteRegionProv');
+    var city = document.getElementById('siteRegionCity');
+    if (!prov || !city) return;
+    prov.innerHTML = '<option value="">请选择省</option>';
+    Object.keys(REGION).sort().forEach(function (p) {
+      var o = document.createElement('option');
+      o.value = p;
+      o.textContent = p;
+      prov.appendChild(o);
+    });
+    function refillCities() {
+      var p = prov.value;
+      city.innerHTML = '<option value="">请选择市</option>';
+      if (!p || !REGION[p]) return;
+      REGION[p].forEach(function (c) {
+        var o = document.createElement('option');
+        o.value = c;
+        o.textContent = c;
+        city.appendChild(o);
+      });
+    }
+    prov.addEventListener('change', refillCities);
+    refillCities();
+  }
+
+  window.addEventListener('DOMContentLoaded', bindRegionCascader);
+})();
+</script>
+</body>
+</html>

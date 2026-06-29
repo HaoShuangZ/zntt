@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>标准规范 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .std-modal-mask { position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:2000; display:none; align-items:center; justify-content:center; padding:20px; }
+  .std-modal-mask.open { display:flex; }
+  .std-modal-dialog { background:#fff; border-radius:8px; width:min(480px,96vw); max-height:88vh; overflow:auto; box-shadow:0 12px 48px rgba(0,0,0,.18); }
+  .std-modal-head { padding:14px 18px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+  .std-modal-head h3 { margin:0; font-size:16px; font-weight:600; color:var(--text-1); }
+  .std-modal-close { border:none; background:transparent; cursor:pointer; color:var(--text-3); padding:4px 8px; font-size:16px; line-height:1; }
+  .std-modal-close:hover { color:var(--text-1); }
+  .std-modal-body { padding:18px 20px; }
+  .std-modal-foot { padding:12px 18px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:8px; }
+</style>
+</head>
+<body>
+<div id="page-content">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">标准规范</div>
+    </div>
+    <div class="card-body">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <input type="text" class="form-input" placeholder="编码/名称">
+          <button type="button" class="btn btn-primary">查询</button>
+          <button type="button" class="btn btn-default">重置</button>
+        </div>
+      </div>
+
+      <div class="pc-table-actions">
+        <button type="button" class="btn btn-primary" id="btnStandardAdd"><i class="fa-solid fa-plus"></i> 新增</button>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>编码</th>
+            <th>名称</th>
+            <th>启用状态</th>
+            <th class="col-action" style="width:260px">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-code="GB/T 51338-2018" data-name="通信铁塔及桅杆结构安全检测技术规范" data-status="1">
+            <td>GB/T 51338-2018</td>
+            <td>通信铁塔及桅杆结构安全检测技术规范</td>
+            <td class="std-status-cell"><span class="tag tag-green">启用</span></td>
+            <td class="col-action">
+              <button type="button" class="btn btn-text btn-std-detail">详情</button>
+              <button type="button" class="btn btn-text btn-std-edit">编辑</button>
+              <button type="button" class="btn btn-text btn-std-toggle" style="color:var(--warning)">禁用</button>
+              <button type="button" class="btn btn-text btn-std-delete" style="color:var(--danger)">删除</button>
+            </td>
+          </tr>
+          <tr data-code="YD/T 5132-2019" data-name="通信铁塔工程技术规范" data-status="0">
+            <td>YD/T 5132-2019</td>
+            <td>通信铁塔工程技术规范</td>
+            <td class="std-status-cell"><span class="tag tag-gray">停用</span></td>
+            <td class="col-action">
+              <button type="button" class="btn btn-text btn-std-detail">详情</button>
+              <button type="button" class="btn btn-text btn-std-edit">编辑</button>
+              <button type="button" class="btn btn-text btn-std-toggle" style="color:var(--success)">启用</button>
+              <button type="button" class="btn btn-text btn-std-delete" style="color:var(--danger)">删除</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pagination">
+        <span>共 2 条记录</span>
+        <div class="pagination-btns"><button type="button" class="page-btn active">1</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="std-modal-mask" id="standardModal" aria-hidden="true">
+    <div class="std-modal-dialog" role="dialog" aria-labelledby="standardModalTitle">
+      <div class="std-modal-head">
+        <h3 id="standardModalTitle">新增标准规范</h3>
+        <button type="button" class="std-modal-close" id="standardModalClose" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="std-modal-body">
+        <div class="form-grid" style="grid-template-columns:1fr">
+          <div class="form-group">
+            <span class="form-label">编码<span class="required">*</span></span>
+            <input type="text" class="form-input" id="standardFormCode" placeholder="如 GB/T xxxx-xxxx" style="width:100%">
+          </div>
+          <div class="form-group">
+            <span class="form-label">名称<span class="required">*</span></span>
+            <input type="text" class="form-input" id="standardFormName" placeholder="请输入标准名称" style="width:100%">
+          </div>
+          <div class="form-group">
+            <span class="form-label">启用状态</span>
+            <select class="form-select" id="standardFormStatus" style="width:100%">
+              <option value="1" selected>启用</option>
+              <option value="0">停用</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="std-modal-foot">
+        <button type="button" class="btn btn-default" id="standardModalCancel">关闭</button>
+        <button type="button" class="btn btn-primary" id="standardModalSave">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = { active: 'data_standard', breadcrumb: ['基础数据', '标准规范'] };</script>
+<script>
+(function () {
+  var modalMode = 'add';
+  var editingRow = null;
+
+  function getModal() { return document.getElementById('standardModal'); }
+  function fields() {
+    return {
+      code: document.getElementById('standardFormCode'),
+      name: document.getElementById('standardFormName'),
+      status: document.getElementById('standardFormStatus')
+    };
+  }
+  function setFormReadonly(readonly) {
+    var f = fields();
+    [f.code, f.name, f.status].forEach(function (el) {
+      if (!el) return;
+      if (readonly) {
+        el.setAttribute('readonly', 'readonly');
+        if (el.tagName === 'SELECT') el.disabled = true;
+        el.style.background = '#F7F8FA';
+        el.style.pointerEvents = 'none';
+      } else {
+        el.removeAttribute('readonly');
+        el.disabled = false;
+        el.style.background = '';
+        el.style.pointerEvents = '';
+      }
+    });
+  }
+  function openModal(mode, row) {
+    var m = getModal();
+    if (!m) return;
+    modalMode = mode;
+    editingRow = row || null;
+    var f = fields();
+    var saveBtn = document.getElementById('standardModalSave');
+    if (mode === 'add') {
+      f.code.value = '';
+      f.name.value = '';
+      f.status.value = '1';
+      document.getElementById('standardModalTitle').textContent = '新增标准规范';
+      setFormReadonly(false);
+      if (saveBtn) saveBtn.style.display = '';
+    } else if (mode === 'detail' && row) {
+      f.code.value = row.dataset.code || '';
+      f.name.value = row.dataset.name || '';
+      f.status.value = row.dataset.status === '1' ? '1' : '0';
+      document.getElementById('standardModalTitle').textContent = '标准规范详情';
+      setFormReadonly(true);
+      if (saveBtn) saveBtn.style.display = 'none';
+    } else if (mode === 'edit' && row) {
+      f.code.value = row.dataset.code || '';
+      f.name.value = row.dataset.name || '';
+      f.status.value = row.dataset.status === '1' ? '1' : '0';
+      document.getElementById('standardModalTitle').textContent = '编辑标准规范';
+      f.code.setAttribute('readonly', 'readonly');
+      f.code.style.background = '#F7F8FA';
+      f.name.removeAttribute('readonly');
+      f.name.style.background = '';
+      f.name.style.pointerEvents = '';
+      f.status.disabled = false;
+      f.status.style.background = '';
+      f.status.style.pointerEvents = '';
+      if (saveBtn) saveBtn.style.display = '';
+    }
+    m.classList.add('open');
+    m.setAttribute('aria-hidden', 'false');
+  }
+  function closeModal() {
+    var m = getModal();
+    if (!m) return;
+    m.classList.remove('open');
+    m.setAttribute('aria-hidden', 'true');
+    setFormReadonly(false);
+    var f = fields();
+    if (f.code) f.code.removeAttribute('readonly');
+    editingRow = null;
+  }
+  function renderStatusCell(row, enabled) {
+    var cell = row.querySelector('.std-status-cell');
+    var toggle = row.querySelector('.btn-std-toggle');
+    row.dataset.status = enabled ? '1' : '0';
+    if (cell) {
+      cell.innerHTML = enabled
+        ? '<span class="tag tag-green">启用</span>'
+        : '<span class="tag tag-gray">停用</span>';
+    }
+    if (toggle) {
+      toggle.textContent = enabled ? '禁用' : '启用';
+      toggle.style.color = enabled ? 'var(--warning)' : 'var(--success)';
+    }
+  }
+  window.addEventListener('DOMContentLoaded', function () {
+    var btn = document.getElementById('btnStandardAdd');
+    if (btn) btn.addEventListener('click', function () { openModal('add'); });
+    ['standardModalClose', 'standardModalCancel'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.addEventListener('click', closeModal);
+    });
+    var save = document.getElementById('standardModalSave');
+    if (save) save.addEventListener('click', function () {
+      var f = fields();
+      var code = f.code.value.trim();
+      var name = f.name.value.trim();
+      if (!code || !name) {
+        alert('请填写编码与名称');
+        return;
+      }
+      if (modalMode === 'edit' && editingRow) {
+        editingRow.dataset.name = name;
+        editingRow.dataset.status = f.status.value;
+        editingRow.cells[0].textContent = code;
+        editingRow.cells[1].textContent = name;
+        renderStatusCell(editingRow, f.status.value === '1');
+        alert('已保存（原型）');
+      } else {
+        alert('将保存标准规范「' + code + ' / ' + name + '」');
+      }
+      closeModal();
+    });
+    var mask = getModal();
+    if (mask) mask.addEventListener('click', function (e) { if (e.target === mask) closeModal(); });
+
+    document.querySelector('tbody').addEventListener('click', function (e) {
+      var row = e.target.closest('tr[data-code]');
+      if (!row) return;
+      if (e.target.closest('.btn-std-detail')) openModal('detail', row);
+      if (e.target.closest('.btn-std-edit')) openModal('edit', row);
+      if (e.target.closest('.btn-std-toggle')) {
+        var enabled = row.dataset.status !== '1';
+        renderStatusCell(row, enabled);
+        alert((enabled ? '已启用' : '已停用') + '：' + row.dataset.code);
+      }
+      if (e.target.closest('.btn-std-delete')) {
+        var label = (row.dataset.code || '') + (row.dataset.name ? ' / ' + row.dataset.name : '');
+        if (confirm('确定要删除「' + label + '」吗？删除后不可恢复。')) alert('已删除（原型）');
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>

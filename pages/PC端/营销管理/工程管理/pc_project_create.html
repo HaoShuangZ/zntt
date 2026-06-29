@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新增工程 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .modal-mask { position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:2000; display:none; align-items:center; justify-content:center; padding:20px; }
+  .modal-mask.open { display:flex; }
+  .modal-dialog { background:#fff; border-radius:8px; width:min(800px,96vw); max-height:88vh; overflow:auto; box-shadow:0 12px 48px rgba(0,0,0,.18); }
+  .modal-head { padding:14px 18px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+  .modal-head h3 { margin:0; font-size:16px; font-weight:600; color:var(--text-1); }
+  .modal-body { padding:16px 18px; }
+  .modal-foot { padding:12px 18px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:8px; }
+  .modal-close { border:none; background:transparent; color:var(--text-3); cursor:pointer; font-size:18px; }
+  .pick-row { cursor:pointer; }
+  .pick-row:hover, .pick-row.on { background:#f3f7ff; }
+  .hint { font-size:12px;color:var(--text-3);margin:-6px 0 12px;line-height:1.55; }
+</style>
+</head>
+<body>
+<div id="page-content">
+  <div class="page-header">
+    <div style="display:flex;align-items:center;gap:12px">
+      <a href="pc_project_list.html" class="btn btn-default btn-sm"><i class="fa-solid fa-arrow-left"></i> 返回列表</a>
+      <h1 class="page-title">新增工程</h1>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="form-section">
+        <div class="form-section-title">工程主档</div>
+        <p class="hint">关联合同在<strong>合同管理</strong>中维护；选定后自动带出签约客户主体与含税金额。<strong>工程客户</strong>为客户管理中「客户架构」下的子单位/部门。</p>
+        <div class="form-grid form-grid-3">
+          <div class="form-group">
+            <span class="form-label">工程编码</span>
+            <input class="form-input" id="projCode" readonly style="background:#F7F8FA" value="GC-20260513-0001">
+          </div>
+          <div class="form-group full">
+            <span class="form-label">工程名称<span class="required">*</span></span>
+            <input class="form-input" id="projName" style="width:100%" placeholder="请输入工程名称">
+          </div>
+          <div class="form-group">
+            <span class="form-label">检测类型<span class="required">*</span></span>
+            <select class="form-select" id="inspectType" style="width:100%">
+              <option>安全性鉴定</option>
+              <option>可靠性鉴定</option>
+              <option>存量铁塔原始记录</option>
+              <option>年度巡检</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <span class="form-label">关联合同<span class="required">*</span></span>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <input type="text" class="form-input" id="projContractShow" readonly style="flex:1;min-width:200px;background:#F7F8FA" placeholder="请点击选择合同">
+              <input type="hidden" id="projContractCode" value="">
+              <button type="button" class="btn btn-primary btn-sm" id="btnPickContract"><i class="fa-solid fa-file-contract"></i> 选择合同</button>
+              <a href="../../合同管理/合同列表/pc_contract_list.html" class="btn btn-default btn-sm" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i> 对上合同</a>
+            </div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">合同所属客户（只读）</span>
+            <input class="form-input" id="projCustomer" readonly style="width:100%;background:#F7F8FA" placeholder="选择合同后自动带出">
+          </div>
+          <div class="form-group">
+            <span class="form-label">合同含税金额（只读）</span>
+            <input class="form-input" id="projContractAmt" readonly style="width:100%;background:#F7F8FA" placeholder="¥ 自动带出">
+          </div>
+          <div class="form-group full">
+            <span class="form-label">工程客户<span class="required">*</span></span>
+            <select class="form-select" id="projOrgUnit" style="width:100%" disabled>
+              <option value="">请先选择关联合同</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">备注</div>
+        <div class="form-grid">
+          <div class="form-group full">
+            <textarea class="form-textarea" rows="3" placeholder="备注"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-footer">
+        <button type="button" class="btn btn-primary">保存</button>
+        <button type="button" class="btn btn-default" onclick="location.href='pc_project_list.html'">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 选择合同弹窗（须在 #page-content 内） -->
+  <div class="modal-mask" id="contractPickMask" role="dialog" aria-modal="true" aria-labelledby="pickTitle">
+    <div class="modal-dialog">
+      <div class="modal-head">
+        <h3 id="pickTitle">选择关联合同</h3>
+        <button type="button" class="modal-close" id="pickBtnX" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="hint" style="margin-top:0">数据来自合同板块已录入合同。单击一行高亮后点「确定」，或双击一行快速选定。</p>
+        <div class="toolbar" style="margin-bottom:10px">
+          <input type="text" class="form-input" id="pickSearch" placeholder="筛选合同编号/名称" style="width:240px">
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width:130px">合同编号</th>
+              <th>合同名称</th>
+              <th>所属客户</th>
+              <th style="width:120px">金额(含税)</th>
+            </tr>
+          </thead>
+          <tbody id="pickTableBody"></tbody>
+        </table>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-default" id="pickBtnCancel">取消</button>
+        <button type="button" class="btn btn-primary" id="pickBtnOk"><i class="fa-solid fa-check"></i> 确定</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = { active: 'project_list', breadcrumb: ['营销管理', '工程管理', '新增工程'] };</script>
+<script>
+(function () {
+  /** 示例数据（units 模拟客户管理中的组织树节点） */
+  var CONTRACTS = [
+    {
+      code: 'HT2026-0512',
+      name: '杭州移动 2026 年度铁塔检测框架',
+      customer: '中国移动通信集团浙江有限公司',
+      amt: 2860000,
+      units: [
+        '浙江省移动（一级）',
+        '杭州移动 — 网络部',
+        '杭州移动 — 运维中心',
+        '宁波移动 — 工程部',
+        '温州移动 — 计划建设部'
+      ]
+    },
+    {
+      code: 'HT2026-0428',
+      name: '城西改造专项检测分包',
+      customer: '浙江某建设集团有限公司',
+      amt: 480000,
+      units: ['集团本部', '杭州分公司 — 项目部', '杭州分公司 — 成本中心', '城西项目组（虚拟）']
+    },
+    {
+      code: 'HT2026-0310',
+      name: '嘉兴铁塔抽检服务合同',
+      customer: '中国铁塔股份有限公司嘉兴市分公司',
+      amt: 128000,
+      units: ['嘉兴市分公司', '南湖区域中心', '秀洲区域中心']
+    }
+  ];
+
+  var selectedIdx = -1;
+  var fmtMoney = function (n) {
+    return '¥ ' + Number(n).toLocaleString('zh-CN', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  };
+
+  function renderPickTable(filter) {
+    var tb = document.getElementById('pickTableBody');
+    if (!tb) return;
+    var f = (filter || '').trim().toLowerCase();
+    tb.innerHTML = '';
+    CONTRACTS.forEach(function (c, idx) {
+      if (f && c.code.toLowerCase().indexOf(f) < 0 && c.name.toLowerCase().indexOf(f) < 0 && c.customer.toLowerCase().indexOf(f) < 0) return;
+      var tr = document.createElement('tr');
+      tr.className = 'pick-row';
+      tr.dataset.idx = String(idx);
+      tr.innerHTML =
+        '<td>' + c.code + '</td>' +
+        '<td>' + c.name + '</td>' +
+        '<td>' + c.customer + '</td>' +
+        '<td>' + fmtMoney(c.amt) + '</td>';
+      tr.addEventListener('click', function () {
+        tb.querySelectorAll('.pick-row').forEach(function (r) { r.classList.remove('on'); });
+        tr.classList.add('on');
+        selectedIdx = idx;
+      });
+      tr.addEventListener('dblclick', function () {
+        selectedIdx = idx;
+        applyContract();
+        closePick();
+      });
+      tb.appendChild(tr);
+    });
+  }
+
+  function applyContract() {
+    if (selectedIdx < 0 || selectedIdx >= CONTRACTS.length) {
+      alert('请先单击选择一条合同');
+      return false;
+    }
+    var c = CONTRACTS[selectedIdx];
+    document.getElementById('projContractCode').value = c.code;
+    document.getElementById('projContractShow').value = c.code + ' · ' + c.name;
+    document.getElementById('projCustomer').value = c.customer;
+    document.getElementById('projContractAmt').value = fmtMoney(c.amt);
+    var sel = document.getElementById('projOrgUnit');
+    sel.innerHTML = '<option value="">请选择工程客户（子单位/部门）</option>';
+    c.units.forEach(function (u) {
+      var o = document.createElement('option');
+      o.value = u;
+      o.textContent = u;
+      sel.appendChild(o);
+    });
+    sel.disabled = false;
+    return true;
+  }
+
+  function openPick() {
+    document.getElementById('contractPickMask').classList.add('open');
+    selectedIdx = -1;
+    document.getElementById('pickSearch').value = '';
+    renderPickTable('');
+  }
+  function closePick() {
+    document.getElementById('contractPickMask').classList.remove('open');
+  }
+
+  window.addEventListener('DOMContentLoaded', function () {
+    var preCode = '';
+    try { preCode = (new URLSearchParams(location.search).get('contractCode') || '').trim(); } catch (e) {}
+    if (preCode) {
+      for (var i = 0; i < CONTRACTS.length; i++) {
+        if (CONTRACTS[i].code === preCode) {
+          selectedIdx = i;
+          applyContract();
+          break;
+        }
+      }
+    }
+
+    var mask = document.getElementById('contractPickMask');
+    var btnPick = document.getElementById('btnPickContract');
+    if (btnPick) btnPick.addEventListener('click', openPick);
+    document.getElementById('pickBtnX').addEventListener('click', closePick);
+    document.getElementById('pickBtnCancel').addEventListener('click', closePick);
+    mask.addEventListener('click', function (e) { if (e.target === mask) closePick(); });
+    document.getElementById('pickBtnOk').addEventListener('click', function () {
+      if (applyContract()) closePick();
+    });
+    document.getElementById('pickSearch').addEventListener('input', function () {
+      renderPickTable(this.value);
+    });
+  });
+})();
+</script>
+</body>
+</html>

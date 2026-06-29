@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>铁塔信息</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/app-frame.css">
+<link rel="stylesheet" href="../../../../assets/app-embed.css">
+<link rel="stylesheet" href="../../../../assets/app-inspect-layout.css">
+<script src="../../../../assets/app-embed.js" defer></script>
+<script src="../../../../assets/app-inspect-back.js" defer></script>
+<style>
+.form-label { font-size:13px; color:#86909C; margin-bottom:6px; display:block; }
+.form-input { width:100%; height:44px; border:1px solid #E5E6EB; border-radius:12px; padding:0 14px; font-size:15px; outline:none; box-sizing:border-box; background:#fff; }
+.form-input:focus { border-color:#165DFF; }
+
+/* 基础信息单页（无 Tab） */
+.basic-hint {
+  font-size: 12px; color: #86909C; line-height: 1.55; margin: 0 0 12px;
+}
+.basic-card {
+  background: #fff; border-radius: 12px; padding: 14px 16px 16px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06); border: 1px solid rgba(229, 230, 235, 0.9);
+  margin-bottom: 12px;
+}
+.basic-card-title {
+  font-size: 15px; font-weight: 600; color: #1D2129; margin: 0 0 4px;
+}
+.basic-card-sub {
+  font-size: 12px; color: #86909C; margin: 0 0 14px; line-height: 1.45;
+}
+.basic-field { margin-bottom: 14px; }
+.basic-field:last-child { margin-bottom: 0; }
+.basic-label {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; color: #4E5969; font-weight: 500; margin-bottom: 8px;
+}
+.basic-label i {
+  width: 16px; text-align: center; color: #165DFF; font-size: 14px; flex-shrink: 0;
+}
+.basic-grid-2 {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.basic-addr-3 {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;
+}
+.basic-check-row {
+  display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center;
+  font-size: 13px; color: #1D2129;
+}
+.basic-check-row label {
+  display: inline-flex; align-items: center; gap: 6px; cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.basic-check-row input[type="checkbox"] { width: 16px; height: 16px; accent-color: #165DFF; flex-shrink: 0; }
+.form-textarea {
+  width: 100%; min-height: 76px; border: 1px solid #E5E6EB; border-radius: 12px;
+  padding: 10px 14px; font-size: 15px; outline: none; box-sizing: border-box;
+  background: #fff; resize: vertical; font-family: inherit;
+}
+.form-textarea:focus { border-color: #165DFF; }
+@media (max-width: 380px) {
+  .basic-grid-2 { grid-template-columns: 1fr; }
+  .basic-addr-3 { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body class="inspect-app-layout">
+<div id="appStatusBar">
+  <span>9:41</span>
+  <span><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+</div>
+<div id="appNavBar">
+  <a href="../../任务/填报主页/app_task_inspect_home.html" data-app-inspect-back style="color:#165DFF; text-decoration:none; font-size:14px;"><i class="fa-solid fa-chevron-left"></i> 返回</a>
+  <span style="flex:1; text-align:center; font-size:16px; font-weight:600;">铁塔信息</span>
+  <span style="width:40px;"></span>
+</div>
+
+<div id="appEmbedContent">
+
+      <div class="basic-field">
+        <label class="basic-label" for="basicSiteName"><i class="fa-solid fa-tower-broadcast" aria-hidden="true"></i>基站名称</label>
+        <input id="basicSiteName" type="text" class="form-input" value="滨江基站01" placeholder="请输入基站名称" autocomplete="off">
+      </div>
+      <div class="basic-field">
+        <label class="basic-label" for="basicBuiltAt"><i class="fa-regular fa-calendar" aria-hidden="true"></i>建设时间</label>
+        <input id="basicBuiltAt" type="text" class="form-input" value="2020-06" placeholder="如 2020-06 或具体日期">
+      </div>
+      <div class="basic-field">
+        <span class="basic-label"><i class="fa-solid fa-crosshairs" aria-hidden="true"></i>经纬度</span>
+        <div class="basic-grid-2">
+          <div>
+            <label class="form-label" for="basicLng" style="font-size:12px;margin-bottom:4px;">经度</label>
+            <input id="basicLng" type="text" class="form-input" inputmode="decimal" value="120.2126" placeholder="经度">
+          </div>
+          <div>
+            <label class="form-label" for="basicLat" style="font-size:12px;margin-bottom:4px;">纬度</label>
+            <input id="basicLat" type="text" class="form-input" inputmode="decimal" value="30.2084" placeholder="纬度">
+          </div>
+        </div>
+      </div>
+      <div class="basic-field">
+        <span class="basic-label"><i class="fa-solid fa-map-location-dot" aria-hidden="true"></i>地址（省 / 市 / 县或区）</span>
+        <div class="basic-addr-3">
+          <input type="text" class="form-input" value="浙江省" placeholder="省" aria-label="省">
+          <input type="text" class="form-input" value="杭州市" placeholder="市" aria-label="市">
+          <input type="text" class="form-input" value="滨江区" placeholder="县（区）" aria-label="县（区）">
+        </div>
+      </div>
+      <div class="basic-field">
+        <label class="basic-label" for="basicSiteCode"><i class="fa-solid fa-barcode" aria-hidden="true"></i>站址编码</label>
+        <input id="basicSiteCode" type="text" class="form-input" value="TT-HZ-BJ-001" placeholder="站点唯一编码" autocomplete="off">
+      </div>
+      <div class="basic-field">
+        <span class="basic-label"><i class="fa-solid fa-cubes" aria-hidden="true"></i>塔型（可多选）</span>
+        <div class="basic-check-row">
+          <label><input type="checkbox" name="towerType">落地支撑杆</label>
+          <label><input type="checkbox" name="towerType">楼面支撑杆</label>
+          <label><input type="checkbox" name="towerType" checked>落地角钢塔</label>
+          <label><input type="checkbox" name="towerType">楼面角钢塔</label>
+          <label><input type="checkbox" name="towerType">落地三管塔</label>
+        </div>
+        <label class="form-label" for="basicTowerOther" style="margin-top:10px;font-size:12px;">其它塔型说明</label>
+        <input id="basicTowerOther" type="text" class="form-input" placeholder="其它请填写（可选）">
+      </div>
+      <div class="basic-field">
+        <label class="basic-label" for="basicFullAddr"><i class="fa-solid fa-road" aria-hidden="true"></i>省、市、县（区）、乡（镇、街道）、村（路）及附着物名称</label>
+        <textarea id="basicFullAddr" class="form-textarea" placeholder="自行政区划逐级填写至村（路），并填写附着物（建筑物/构筑物）名称">浙江省杭州市滨江区长河街道江南大道288号 · 附着：商务楼宇屋面通信设施</textarea>
+      </div>
+      <div class="basic-field">
+        <span class="basic-label"><i class="fa-solid fa-bolt" aria-hidden="true"></i>避雷针类型（可多选）</span>
+        <div class="basic-check-row">
+          <label><input type="checkbox" name="lightning" checked>顶置避雷针</label>
+          <label><input type="checkbox" name="lightning">侧置避雷针</label>
+          <label><input type="checkbox" name="lightning">避雷塔避雷针</label>
+          <label><input type="checkbox" name="lightning">增高架避雷针</label>
+        </div>
+      </div>
+    </div>
+</div>
+
+<div data-app-flow-footer style="position:fixed; bottom:0; left:0; right:0; padding:12px 16px; background:#fff; border-top:1px solid #E5E6EB;">
+  <a href="../../检测/地基/app_inspect_foundation.html" style="display:block; width:100%; height:44px; background:#165DFF; color:#fff; border-radius:8px; font-size:16px; font-weight:600; text-decoration:none; text-align:center; line-height:44px; box-sizing:border-box;">下一步</a>
+</div>
+
+</body>
+</html>

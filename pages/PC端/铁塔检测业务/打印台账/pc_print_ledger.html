@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>打印台账</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">打印台账</div>
+      <span style="font-size:12px;color:var(--text-3);"><i class="fa-solid fa-circle-info"></i> 台账记录不可删除</span>
+    </div>
+    <div class="card-body">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <input type="text" class="form-input" placeholder="搜索打印编号/报告名称">
+          <select class="form-select">
+            <option value="">全部状态</option>
+            <option>待审无</option>
+            <option>已打无</option>
+            <option>已拒无</option>
+          </select>
+          <input type="date" class="form-input" style="width:150px" value="2026-04-01">
+          <span style="color:var(--text-4)"></span>
+          <input type="date" class="form-input" style="width:150px" value="2026-05-08">
+          <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> 查询</button>
+          <button class="btn btn-default">重置</button>
+        </div>
+      </div>
+
+      <div class="pc-table-actions">
+        <button class="btn btn-default"><i class="fa-solid fa-file-export"></i> 导出</button>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>打印编号</th>
+            <th>报告名称</th>
+            <th>报告编号</th>
+            <th>申请</th>
+            <th>打印份数</th>
+            <th>打印用</th>
+            <th>打印时间</th>
+            <th>状态</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>DY202605001</td>
+            <td>滨江01#单管塔检测报告</td>
+            <td>BG202605003</td>
+            <td>张华</td>
+            <td>3</td>
+            <td><span class="tag tag-blue">客户交付</span></td>
+            <td>2026-05-08 11:00</td>
+            <td><span class="tag tag-green">已打印</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">查看详情</button>
+            </td>
+          </tr>
+          <tr>
+            <td>DY202605002</td>
+            <td>西湖01#三管塔检测报告</td>
+            <td>BG202604012</td>
+            <td>李明</td>
+            <td>2</td>
+            <td><span class="tag tag-green">档案归档</span></td>
+            <td>2026-05-07 15:30</td>
+            <td><span class="tag tag-green">已打印</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">查看详情</button>
+            </td>
+          </tr>
+          <tr>
+            <td>DY202605003</td>
+            <td>余杭01#四管塔检测报告</td>
+            <td>BG202604008</td>
+            <td>赵六</td>
+            <td>2</td>
+            <td><span class="tag tag-blue">客户交付</span></td>
+            <td>—</td>
+            <td><span class="tag tag-orange">待审核</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">查看详情</button>
+            </td>
+          </tr>
+          <tr>
+            <td>DY202605004</td>
+            <td>萧山01#单管塔检测报告</td>
+            <td>BG202604015</td>
+            <td>王强</td>
+            <td>1</td>
+            <td><span class="tag tag-gray">其他</span></td>
+            <td>—</td>
+            <td><span class="tag tag-red">已拒绝</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">查看详情</button>
+            </td>
+          </tr>
+          <tr>
+            <td>DY202605005</td>
+            <td>拱墅01#角钢塔检测报告</td>
+            <td>BG202604020</td>
+            <td>张华</td>
+            <td>4</td>
+            <td><span class="tag tag-blue">客户交付</span></td>
+            <td>2026-05-06 09:00</td>
+            <td><span class="tag tag-green">已打印</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">查看详情</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <span>共 5 条记录</span>
+        <div class="pagination-btns">
+          <button class="page-btn"><i class="fa-solid fa-chevron-left"></i></button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'report_generate', breadcrumb:['检测管理','报告编制','打印台账']};</script>
+</body>
+</html>
+

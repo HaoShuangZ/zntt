@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>快捷手记</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/app-frame.css">
+<link rel="stylesheet" href="../../../../assets/app-embed.css">
+<link rel="stylesheet" href="../../../../assets/app-inspect-layout.css">
+<script src="../../../../assets/app-embed.js" defer></script>
+<script src="../../../../assets/app-inspect-back.js" defer></script>
+<style>
+body.app-note-page {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+  background: #f2f3f5;
+  margin: 0;
+}
+body.app-note-page #appEmbedContent.note-page-stack {
+  padding: 0 0 16px;
+  box-sizing: border-box;
+}
+body.app-note-page .note-tabs {
+  display: flex;
+  background: #fff;
+  border-bottom: 1px solid #e5e6eb;
+  flex-shrink: 0;
+}
+body.app-note-page .note-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 8px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: #86909c;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+body.app-note-page .note-tab.is-active {
+  color: #165dff;
+  border-bottom-color: #165dff;
+  font-weight: 600;
+}
+body.app-note-page .note-tab i {
+  font-size: 14px;
+}
+body.app-note-page .note-panel {
+  display: none;
+  padding: 12px 16px 0;
+  box-sizing: border-box;
+}
+body.app-note-page .note-panel.is-active {
+  display: block;
+}
+body.app-note-page .note-voice-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  text-align: center;
+}
+body.app-note-page .note-voice-btn {
+  width: 80px;
+  height: 80px;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #165dff 0%, #4080ff 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(22, 93, 255, 0.3);
+  font-size: 32px;
+}
+body.app-note-page .note-voice-btn.is-recording {
+  background: linear-gradient(135deg, #f53f3f 0%, #ff7875 100%);
+  box-shadow: 0 4px 16px rgba(245, 63, 63, 0.35);
+}
+body.app-note-page .note-timer {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1d2129;
+  margin-bottom: 4px;
+}
+body.app-note-page .note-voice-hint {
+  margin: 0;
+  font-size: 13px;
+  color: #86909c;
+}
+body.app-note-page .note-trans-wrap {
+  margin-top: 20px;
+  padding: 12px;
+  background: #f7f8fa;
+  border-radius: 8px;
+  text-align: left;
+}
+body.app-note-page .note-trans-label {
+  font-size: 12px;
+  color: #c9cdd4;
+  margin-bottom: 6px;
+}
+body.app-note-page .note-trans-body {
+  font-size: 14px;
+  color: #86909c;
+  line-height: 1.6;
+}
+body.app-note-page .note-history-title {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1d2129;
+}
+body.app-note-page .note-history-item {
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  list-style: none;
+}
+body.app-note-page .note-history-item-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+body.app-note-page .note-history-type {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1d2129;
+}
+body.app-note-page .note-history-type--voice i {
+  color: #165dff;
+  margin-right: 4px;
+}
+body.app-note-page .note-history-type--photo i {
+  color: #ff7d00;
+  margin-right: 4px;
+}
+body.app-note-page .note-history-time {
+  font-size: 11px;
+  color: #c9cdd4;
+}
+body.app-note-page .note-history-text {
+  margin: 0;
+  font-size: 13px;
+  color: #4e5969;
+  line-height: 1.5;
+}
+body.app-note-page .note-history-meta {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+  color: #86909c;
+}
+body.app-note-page .note-photo-capture {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 12px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ff7d00 0%, #ffb65d 100%);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 4px 12px rgba(255, 125, 0, 0.28);
+}
+body.app-note-page .note-photo-hint {
+  display: block;
+  margin: -4px 0 12px;
+  font-size: 12px;
+  color: #86909c;
+  text-align: center;
+}
+body.app-note-page .note-photo-thumbs {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+body.app-note-page .note-photo-thumb {
+  width: 48px;
+  height: 48px;
+  background: #f2f3f5;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #c9cdd4;
+}
+body.app-note-page .note-history-list {
+  margin: 0;
+  padding: 0;
+}
+</style>
+</head>
+<body class="inspect-app-layout inspect-embed-pad-note app-note-page" data-inspect-no-memo-toolbar="1" data-inspect-no-photo-recognize="1">
+<div id="appStatusBar">
+  <span>9:41</span>
+  <span><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+</div>
+<div id="appNavBar">
+  <a href="../../任务/填报主页/app_task_inspect_home.html" data-app-inspect-back style="color:#165DFF; text-decoration:none; font-size:14px;"><i class="fa-solid fa-chevron-left"></i> 返回</a>
+  <span style="flex:1; text-align:center; font-size:16px; font-weight:600;">快捷手记</span>
+  <span style="width:40px;"></span>
+</div>
+
+<div id="appEmbedContent" class="note-page-stack">
+
+  <div class="note-tabs" role="tablist" aria-label="记录方式">
+    <button type="button" class="note-tab is-active" role="tab" aria-selected="true" data-note-tab="voice">
+      <i class="fa-solid fa-microphone" aria-hidden="true"></i>语音记录
+    </button>
+    <button type="button" class="note-tab" role="tab" aria-selected="false" data-note-tab="photo">
+      <i class="fa-solid fa-camera" aria-hidden="true"></i>拍照记录
+    </button>
+  </div>
+
+  <section class="note-panel note-panel--voice is-active" id="notePanelVoice" role="tabpanel" aria-label="语音记录">
+    <div class="note-voice-card">
+      <button type="button" class="note-voice-btn" id="btnNoteRecord" aria-label="开始录音">
+        <i class="fa-solid fa-microphone" aria-hidden="true"></i>
+      </button>
+      <div class="note-timer" id="noteTimer">00:00</div>
+      <p class="note-voice-hint" id="noteRecordHint">点击开始录音</p>
+      <div class="note-trans-wrap">
+        <div class="note-trans-label">语音转文字预览</div>
+        <div class="note-trans-body" id="noteTransBody">录音后将自动转换为文字…</div>
+      </div>
+    </div>
+
+    <h2 class="note-history-title">历史记录</h2>
+    <ul class="note-history-list">
+      <li class="note-history-item">
+        <div class="note-history-item-head">
+          <span class="note-history-type note-history-type--voice"><i class="fa-solid fa-microphone" aria-hidden="true"></i>语音记录</span>
+          <time class="note-history-time">2026-05-08 09:15</time>
+        </div>
+        <p class="note-history-text">基础东侧发现约5mm沉降，需要重点关注。接地装置锈蚀比较严重，建议更换。</p>
+        <span class="note-history-meta"><i class="fa-solid fa-clock" aria-hidden="true"></i> 时长 0:32</span>
+      </li>
+    </ul>
+  </section>
+
+  <section class="note-panel note-panel--photo" id="notePanelPhoto" role="tabpanel" aria-label="拍照记录" hidden>
+    <button type="button" class="note-photo-capture" id="btnNotePhoto">
+      <i class="fa-solid fa-camera" aria-hidden="true"></i>拍照记录
+    </button>
+    <span class="note-photo-hint">照片归入本任务备忘，提交前可在校验页核对</span>
+
+    <h2 class="note-history-title">拍照历史</h2>
+    <ul class="note-history-list">
+      <li class="note-history-item">
+        <div class="note-history-item-head">
+          <span class="note-history-type note-history-type--photo"><i class="fa-solid fa-camera" aria-hidden="true"></i>拍照记录</span>
+          <time class="note-history-time">2026-05-08 09:08</time>
+        </div>
+        <p class="note-history-text">基础裂缝及沉降部位拍照</p>
+        <div class="note-photo-thumbs">
+          <span class="note-photo-thumb" aria-hidden="true"><i class="fa-solid fa-image"></i></span>
+          <span class="note-photo-thumb" aria-hidden="true"><i class="fa-solid fa-image"></i></span>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+</div>
+
+<script>
+(function () {
+  var tabs = document.querySelectorAll('.note-tab[data-note-tab]');
+  var panels = {
+    voice: document.getElementById('notePanelVoice'),
+    photo: document.getElementById('notePanelPhoto')
+  };
+
+  function selectTab(tab) {
+    var key = tab.getAttribute('data-note-tab');
+    tabs.forEach(function (t) {
+      var on = t === tab;
+      t.classList.toggle('is-active', on);
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    Object.keys(panels).forEach(function (k) {
+      if (!panels[k]) return;
+      var show = k === key;
+      panels[k].classList.toggle('is-active', show);
+      panels[k].hidden = !show;
+    });
+  }
+
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      selectTab(tab);
+    });
+  });
+
+  var recording = false;
+  var btnRecord = document.getElementById('btnNoteRecord');
+  var hint = document.getElementById('noteRecordHint');
+  var timerEl = document.getElementById('noteTimer');
+  var transBody = document.getElementById('noteTransBody');
+  if (btnRecord) {
+    btnRecord.addEventListener('click', function () {
+      recording = !recording;
+      btnRecord.classList.toggle('is-recording', recording);
+      if (hint) hint.textContent = recording ? '点击结束录音' : '点击开始录音';
+      if (recording) {
+        if (timerEl) timerEl.textContent = '00:12';
+        if (transBody) transBody.textContent = '基础东侧发现约 5mm 沉降，需要重点关注…';
+      } else {
+        if (timerEl) timerEl.textContent = '00:00';
+        if (transBody) transBody.textContent = '录音后将自动转换为文字…';
+      }
+    });
+  }
+
+  var btnPhoto = document.getElementById('btnNotePhoto');
+  if (btnPhoto) {
+    btnPhoto.addEventListener('click', function () {
+      alert('拍照：记录现场照片（原型演示）。');
+    });
+  }
+})();
+</script>
+</body>
+</html>

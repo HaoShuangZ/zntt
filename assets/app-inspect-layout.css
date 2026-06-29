@@ -1,0 +1,107 @@
+/**
+ * 检测任务子页：统一顶栏（状态栏 + 标题栏）与滚动区域。
+ * 页面 body 增加 class="inspect-app-layout"；可选 inspect-embed-pad-116 / inspect-embed-pad-note / inspect-embed-pad-upload 控制底部留白。
+ * 已接入：铁塔信息、上传铁塔照片、基础及地锚、结构简图、塔段检测、平台/天线/避雷针、馈线、接地、回弹、垂直度、数据校验、快捷手记、上传数据。
+ * 需放在 app-embed.css 之后。?embed=1 时顶栏由 app-embed.css 隐藏，本文件仍保证主区域 flex 滚动。
+ */
+body.inspect-app-layout {
+  margin: 0;
+  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+  background: #f2f3f5;
+  box-sizing: border-box;
+}
+
+html.app-embed body.inspect-app-layout {
+  height: 100%;
+  min-height: 0;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+html.app-embed.ipad-embed body.inspect-app-layout,
+html.task-embed body.inspect-app-layout {
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+}
+
+html.app-embed.ipad-embed #appEmbedContent,
+html.task-embed body.inspect-app-layout #appEmbedContent {
+  flex: 1 1 0;
+  min-height: 0;
+  height: 0;
+  max-height: 100%;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+
+#appStatusBar {
+  flex-shrink: 0;
+  box-sizing: border-box;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background: linear-gradient(135deg, #165dff 0%, #4080ff 100%);
+  color: #fff;
+}
+
+#appStatusBar > span:first-child {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+#appStatusBar > span:last-child {
+  font-size: 12px;
+  opacity: 0.95;
+}
+
+#appStatusBar i {
+  color: inherit;
+}
+
+#appNavBar {
+  flex-shrink: 0;
+  box-sizing: border-box;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  background: #fff;
+  border-bottom: 1px solid #e5e6eb;
+}
+
+#appSegmentTabBar {
+  flex-shrink: 0;
+}
+
+#appEmbedContent {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  box-sizing: border-box;
+  padding: 12px 16px;
+  padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px));
+}
+
+body.inspect-embed-pad-116 #appEmbedContent {
+  padding-bottom: calc(116px + env(safe-area-inset-bottom, 0px));
+}
+
+body.inspect-embed-pad-note #appEmbedContent {
+  padding: 0;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+}
+
+body.inspect-embed-pad-upload #appEmbedContent {
+  padding: 16px;
+  padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+}

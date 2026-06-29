@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>消息模板 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+  <div class="card">
+    <div class="card-header"><div class="card-title">消息模板</div></div>
+    <div class="card-body">
+      <p style="font-size:12px;color:var(--text-3);margin:0 0 12px;line-height:1.5">
+        <i class="fa-solid fa-circle-info"></i>
+        「对上合同-收款提醒」「对下合同-付款提醒」需在编辑页配置<strong>消息接收人员</strong>，到期后仅向已配置人员推送至消息中心（不进待办）。
+      </p>
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <input type="text" class="form-input" placeholder="模板名称/场景" style="width:200px">
+          <select class="form-select">
+            <option value="">全部场景</option>
+            <option>对上合同-收款提醒</option>
+            <option>对下合同-付款提醒</option>
+            <option>任务催办</option>
+            <option>任务转派</option>
+            <option>任务截止提醒</option>
+          </select>
+          <select class="form-select">
+            <option value="">全部状态</option>
+            <option>启用</option>
+            <option>停用</option>
+          </select>
+          <button type="button" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> 查询</button>
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width:200px">场景</th>
+            <th>模板名称</th>
+            <th style="width:120px">触发配置</th>
+            <th style="width:200px">消息接收人员</th>
+            <th style="width:88px">状态</th>
+            <th style="width:100px">更新人</th>
+            <th style="width:160px">更新时间</th>
+            <th class="col-action" style="width:140px">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="tag tag-blue">对上合同-收款提醒</span></td>
+            <td>对上收款提醒-默认</td>
+            <td>按提醒行时间</td>
+            <td><span class="tag tag-blue" title="仅以下人员可收到">王敏、张伟、陈静</span></td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td>王敏</td>
+            <td>2026-05-08 11:20</td>
+            <td class="col-action">
+              <a href="pc_message_template_edit.html?scene=CONTRACT_UP_RECEIPT_REMIND" class="btn-text">编辑</a>
+              <button type="button" class="btn-text js-preview" data-key="CONTRACT_UP_RECEIPT_REMIND">预览</button>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-purple">对下合同-付款提醒</span></td>
+            <td>对下付款提醒-默认</td>
+            <td>按提醒行时间</td>
+            <td><span class="tag tag-blue" title="仅以下人员可收到">刘洋、李娜、张伟</span></td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td>刘洋</td>
+            <td>2026-05-10 09:05</td>
+            <td class="col-action">
+              <a href="pc_message_template_edit.html?scene=CONTRACT_DOWN_PAYMENT_REMIND" class="btn-text">编辑</a>
+              <button type="button" class="btn-text js-preview" data-key="CONTRACT_DOWN_PAYMENT_REMIND">预览</button>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-green">任务催办</span></td>
+            <td>任务催办-默认</td>
+            <td>发起催办时</td>
+            <td><span style="font-size:12px;color:var(--text-3)">按业务对象</span></td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td>李娜</td>
+            <td>2026-05-12 14:00</td>
+            <td class="col-action">
+              <a href="pc_message_template_edit.html?scene=TASK_URGE" class="btn-text">编辑</a>
+              <button type="button" class="btn-text js-preview" data-key="TASK_URGE">预览</button>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-blue">任务转派</span></td>
+            <td>任务转派-默认</td>
+            <td>转派成功时</td>
+            <td><span style="font-size:12px;color:var(--text-3)">按业务对象</span></td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td>李娜</td>
+            <td>2026-05-13 09:15</td>
+            <td class="col-action">
+              <a href="pc_message_template_edit.html?scene=TASK_REASSIGN" class="btn-text">编辑</a>
+              <button type="button" class="btn-text js-preview" data-key="TASK_REASSIGN">预览</button>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-red">任务截止提醒</span></td>
+            <td>任务截止提醒-默认</td>
+            <td>截止前 3 天</td>
+            <td><span style="font-size:12px;color:var(--text-3)">按任务检测人</span></td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td>李娜</td>
+            <td>2026-05-12 14:30</td>
+            <td class="col-action">
+              <a href="pc_message_template_edit.html?scene=TASK_DEADLINE_REMIND" class="btn-text">编辑</a>
+              <button type="button" class="btn-text js-preview" data-key="TASK_DEADLINE_REMIND">预览</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>
+window.__layoutConfig = { active: 'message_template_list', breadcrumb: ['模板配置', '消息模板'] };
+var PREVIEW = {
+  CONTRACT_UP_RECEIPT_REMIND: '【收款提醒】杭州移动2026框架 · 首付款 将于 2026-02-01 到期',
+  CONTRACT_DOWN_PAYMENT_REMIND: '【对下付款提醒】单站检测外协服务包',
+  TASK_URGE: '【任务催办】任务 RW-2026-0521 · 余杭站点角钢塔巡检\n\n任务编号 RW-2026-0521，任务名称「余杭站点角钢塔巡检」，请尽快处理。',
+  TASK_REASSIGN: '【任务转派】RW-2026-0521 · 余杭站点角钢塔巡检\n\n任务已转派给您。前检测人员：张三。',
+  TASK_DEADLINE_REMIND: '【截止提醒】任务 RW-2026-0521 · 余杭站点角钢塔巡检\n\n截止日期 2026-05-25，距截止还有 3 天，请抓紧完成。'
+};
+document.querySelectorAll('.js-preview').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var k = btn.getAttribute('data-key');
+    alert('【预览】\n\n' + (PREVIEW[k] || ''));
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>报告样式配置</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+.range-wrap { display: flex; align-items: center; gap: 12px; }
+.range-wrap input[type="range"] { flex: 1; accent-color: var(--primary); }
+.range-val { min-width: 36px; text-align: center; font-size: 13px; color: var(--text-2); }
+.upload-area {
+  width: 120px; height: 40px; border: 1px dashed var(--border); border-radius: 4px;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  font-size: 12px; color: var(--text-3); transition: border-color 0.2s;
+}
+.upload-area:hover { border-color: var(--primary); color: var(--primary); }
+</style>
+</head>
+<body>
+<div id="page-content">
+
+  <div id="tpl-back-bar" style="margin-bottom:16px;">
+    <a href="../报告模板管理/pc_report_template_list.html" class="btn btn-default btn-sm"><i class="fa-solid fa-arrow-left"></i> 返回列表</a>
+  </div>
+
+  <!-- 页面设置 -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-header">
+      <div class="card-title">页面设置</div>
+    </div>
+    <div class="card-body">
+      <div class="form-grid form-grid-3">
+        <div class="form-group">
+          <label class="form-label">纸张大小</label>
+          <select class="form-select" style="width:100%">
+            <option selected>A4</option>
+            <option>A3</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">页面方向</label>
+          <select class="form-select" style="width:100%">
+            <option selected>纵向</option>
+            <option>横向</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">上边距（mm</label>
+          <input type="number" class="form-input" style="width:100%" value="25">
+        </div>
+        <div class="form-group">
+          <label class="form-label">下边距（mm</label>
+          <input type="number" class="form-input" style="width:100%" value="25">
+        </div>
+        <div class="form-group">
+          <label class="form-label">左边距（mm</label>
+          <input type="number" class="form-input" style="width:100%" value="30">
+        </div>
+        <div class="form-group">
+          <label class="form-label">右边距（mm</label>
+          <input type="number" class="form-input" style="width:100%" value="25">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 页眉页脚 -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-header">
+      <div class="card-title">页眉页脚</div>
+    </div>
+    <div class="card-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">页眉内容</label>
+          <input type="text" class="form-input" style="width:100%" value="通信铁塔安全检测报告">
+        </div>
+        <div class="form-group">
+          <label class="form-label">页眉LOGO</label>
+          <div class="upload-area"><i class="fa-solid fa-upload" style="margin-right:4px"></i> 上传LOGO</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">页脚内容</label>
+          <input type="text" class="form-input" style="width:100%" value="XX检测技术有限公司">
+        </div>
+        <div class="form-group">
+          <label class="form-label">页码格式</label>
+          <select class="form-select" style="width:100%">
+            <option>第X无</option>
+            <option selected>第X页，共Y页</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 水印设置 -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-header">
+      <div class="card-title">水印设置</div>
+    </div>
+    <div class="card-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">水印类型</label>
+          <select class="form-select" style="width:100%">
+            <option>是</option>
+            <option selected>文字水印</option>
+            <option>图片水印</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">水印内容</label>
+          <input type="text" class="form-input" style="width:100%" value="XX检测技术有限公司">
+        </div>
+        <div class="form-group">
+          <label class="form-label">水印透明</label>
+          <div class="range-wrap">
+            <input type="range" min="0" max="100" value="15">
+            <span class="range-val">15%</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">水印旋转角度（°）</label>
+          <input type="number" class="form-input" style="width:100%" value="-30">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 签章位置 -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-header">
+      <div class="card-title">签章位置</div>
+    </div>
+    <div class="card-body">
+      <div class="form-grid form-grid-3">
+        <div class="form-group">
+          <label class="form-label">编制人签名位</label>
+          <select class="form-select" style="width:100%">
+            <option>检测结论下无</option>
+            <option selected>签字无</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">审核人签名位</label>
+          <select class="form-select" style="width:100%">
+            <option>检测结论下无</option>
+            <option selected>签字无</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">签发人签名位</label>
+          <select class="form-select" style="width:100%">
+            <option>检测结论下无</option>
+            <option selected>签字无</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 字体设置 -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-header">
+      <div class="card-title">字体设置</div>
+    </div>
+    <div class="card-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">正文字体</label>
+          <select class="form-select" style="width:100%">
+            <option selected>宋体</option>
+            <option>黑体</option>
+            <option>仿宋</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">正文字号</label>
+          <select class="form-select" style="width:100%">
+            <option selected>12pt</option>
+            <option>14pt</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">标题字体</label>
+          <select class="form-select" style="width:100%">
+            <option>宋体</option>
+            <option selected>黑体</option>
+            <option>仿宋</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">标题字号</label>
+          <select class="form-select" style="width:100%">
+            <option>12pt</option>
+            <option selected>14pt</option>
+            <option>16pt</option>
+            <option>18pt</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-footer">
+    <button class="btn btn-default">预览效果</button>
+    <button class="btn btn-primary">保存</button>
+  </div>
+
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>
+(function () {
+  var embed = location.search.indexOf('embed=1') >= 0;
+  window.__layoutConfig = embed
+    ? { skipLayout: true }
+    : { active: 'report_template_list', breadcrumb: ['模板配置', '报告模板管理', '样式配置'] };
+  if (embed) {
+    var bar = document.getElementById('tpl-back-bar');
+    if (bar) bar.style.display = 'none';
+  }
+})();
+</script>
+</body>
+</html>
+
+

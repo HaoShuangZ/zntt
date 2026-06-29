@@ -1,0 +1,96 @@
+/**
+ * iPad 平板端 · 框架 / 导航 / 弹层
+ * v2.0 · 1024×768 基准横屏
+ */
+/* 预览外壳 */
+.ipad-shell {
+  width: var(--ipad-shell-w, 1024px);
+  height: var(--ipad-shell-h, 768px);
+  max-width: calc(100vw - 48px);
+  max-height: calc(100vh - 120px);
+  aspect-ratio: 4 / 3;
+  border-radius: 20px;
+  border: 8px solid #1d2129;
+  box-shadow: 0 0 0 2px #86909c, var(--ipad-shadow-float, 0 0 5px rgba(0, 0, 0, 0.3));
+  overflow: hidden;
+  background: #000;
+  position: relative;
+  flex-shrink: 0;
+}
+.ipad-shell::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -3px;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 48px;
+  background: #2e2e2e;
+  border-radius: 2px 0 0 2px;
+  z-index: 20;
+}
+.ipad-shell iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 12px;
+  background: var(--ipad-bg-page, #f2f3f5);
+}
+
+/* 页面内状态栏 / 导航 */
+body.ipad-adapt #appStatusBar,
+body.ipad-adapt .app-map-status {
+  flex-shrink: 0;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background: linear-gradient(135deg, var(--ipad-brand, #165dff) 0%, var(--ipad-brand-light, #4080ff) 100%);
+  color: #fff;
+  box-sizing: border-box;
+}
+body.ipad-adapt #appNavBar,
+body.ipad-adapt .app-map-nav {
+  flex-shrink: 0;
+  background: #fff;
+  border-bottom: 1px solid var(--ipad-border, #e5e6eb);
+}
+
+/* 主流程底部工作栏 → 见 ipad-main-tabbar.css */
+
+/* 弹窗 / 浮层 */
+body.ipad-adapt .mask {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 300;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ipad-space-2, 20px);
+}
+body.ipad-adapt .mask.show {
+  display: flex;
+}
+body.ipad-adapt .sheet {
+  width: min(520px, 92vw);
+  max-height: min(72vh, 560px);
+  background: #fff;
+  border-radius: var(--ipad-radius-lg, 12px);
+  padding: var(--ipad-space-2, 20px);
+  box-sizing: border-box;
+  box-shadow: var(--ipad-shadow-float, 0 0 5px rgba(0, 0, 0, 0.3));
+  overflow-y: auto;
+}
+
+body.ipad-adapt .tag-f {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: var(--ipad-fs-caption, 11px);
+}
+body.ipad-adapt .seg-tab,
+body.ipad-adapt .seg {
+  font-size: var(--ipad-fs-body, 14px);
+}
+

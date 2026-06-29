@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="ipad-profile-html">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>操作记录</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../assets/app-frame.css">
+<link rel="stylesheet" href="../../../assets/ipad-tokens.css">
+<link rel="stylesheet" href="../../../assets/ipad-frame.css">
+<link rel="stylesheet" href="../../../assets/ipad-layout.css">
+<link rel="stylesheet" href="../../../assets/ipad-visual.css">
+<link rel="stylesheet" href="../../../assets/ipad-embed.css">
+<link rel="stylesheet" href="../../../assets/ipad-profile-shell.css">
+<script src="../../../assets/ipad-adapt.js" defer></script>
+</head>
+<body class="ipad-adapt ipad-profile-page">
+<div class="page-status" aria-hidden="true"><span>9:41</span><span class="icons"><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span></div>
+<div class="page-nav">
+  <a class="nav-back" href="首页/ipad_profile_index.html"><i class="fa-solid fa-chevron-left"></i> 返回</a>
+  <h1 class="nav-title">操作记录</h1>
+  <span class="nav-spacer" aria-hidden="true"></span>
+</div>
+<main class="sub-scroll"><div class="sub-inner"><div id="list"></div></div></main>
+<script src="../../../assets/app-menu-access-log.js"></script>
+<script>
+(function(){
+  var KEY='tower_app_menu_access_log';
+  var wrap=document.getElementById('list');
+  var rows=[];try{rows=JSON.parse(sessionStorage.getItem(KEY)||'[]');}catch(e){}
+  if(!rows.length){wrap.innerHTML='<div class="log-empty">暂无访问记录<br><span style="font-size:12px">切换底部「工作台 / 检测 / 我的」或进入订单、流程中心后将在此显示。</span></div>';return;}
+  function fmt(ts){var d=new Date(ts);if(isNaN(d.getTime()))return'—';var p=function(n){return n<10?'0'+n:''+n;};return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());}
+  wrap.innerHTML='<div class="log-table">'+rows.map(function(r){
+    var m=String(r.menu||'—').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+    return '<div class="log-row"><span class="log-menu">'+m+'</span><span class="log-time">'+fmt(r.t)+'</span></div>';
+  }).join('')+'</div>';
+})();
+</script></body></html>

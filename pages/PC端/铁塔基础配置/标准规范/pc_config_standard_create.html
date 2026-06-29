@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新增标准规范 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-1);
+    margin-bottom: 12px;
+    padding-left: 10px;
+    border-left: 3px solid var(--primary);
+  }
+  .form-section {
+    padding: 12px 0 4px;
+  }
+  .version-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .version-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+    background: #fff;
+  }
+  .version-card.active {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(22, 93, 255, 0.1);
+  }
+  .version-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .version-badge {
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #e8f3ff;
+    color: var(--primary);
+  }
+  .manage-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .manage-table th,
+  .manage-table td {
+    border: 1px solid var(--border);
+    padding: 8px;
+    text-align: left;
+  }
+  .manage-table thead th {
+    background: #f7f8fa;
+  }
+</style>
+</head>
+<body>
+<div id="page-content">
+  <div class="page-header">
+    <div style="display:flex;align-items:center;gap:12px">
+      <a href="pc_config_standard.html" class="btn btn-default btn-sm"><i class="fa-solid fa-arrow-left"></i> 返回列表</a>
+      <h1 class="page-title">新增标准规范管理</h1>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="form-section">
+        <div class="section-title">基础信息</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <span class="form-label">编码 <span class="required">*</span></span>
+            <input class="form-input" placeholder="请输入编码">
+          </div>
+          <div class="form-group">
+            <span class="form-label">类型</span>
+            <select class="form-select" style="width:100%">
+              <option value="">请选择</option>
+              <option>国标</option>
+              <option>行标</option>
+              <option>企标</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <span class="form-label">创建人</span>
+            <select class="form-select" style="width:100%">
+              <option value="">请选择</option>
+              <option>张伟</option>
+              <option>李明</option>
+              <option>王强</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <span class="form-label">创建时间</span>
+            <input class="form-input" type="date">
+          </div>
+
+          <div class="form-group">
+            <span class="form-label">修改人</span>
+            <select class="form-select" style="width:100%">
+              <option value="">请选择</option>
+              <option>张伟</option>
+              <option>李明</option>
+              <option>王强</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <span class="form-label">修改时间</span>
+            <input class="form-input" type="date">
+          </div>
+
+          <div class="form-group" style="grid-column:1/-1">
+            <span class="form-label">备注</span>
+            <textarea class="form-textarea" placeholder="请输入备注"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-title">版本信息（多版本存储）</div>
+        <div class="version-toolbar">
+          <span style="font-size:12px;color:var(--text-3)">支持新增多个版本，并设置当前生效版本</span>
+          <button class="btn btn-primary btn-sm" id="add-version-btn"><i class="fa-solid fa-plus"></i> 增加版本</button>
+        </div>
+        <div id="version-list"></div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-title">版本管理</div>
+        <table class="manage-table">
+          <thead>
+            <tr>
+              <th>版本序号</th>
+              <th>版本号</th>
+              <th>标准规范编号</th>
+              <th>标准规范名称</th>
+              <th>生效状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="version-manage-body"></tbody>
+        </table>
+      </div>
+
+      <div class="form-footer">
+        <button class="btn btn-primary">保存</button>
+        <button class="btn btn-default" onclick="location.href='pc_config_standard.html'">取消</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'config_standard', breadcrumb:['铁塔基础配置','标准规范','新增标准规范']};</script>
+<script>
+  (function () {
+    const versionList = document.getElementById('version-list');
+    const manageBody = document.getElementById('version-manage-body');
+    const addBtn = document.getElementById('add-version-btn');
+
+    let seq = 1;
+    let versions = [
+      { id: Date.now(), seq: 1, versionNo: 'V1.0', code: '', name: '', active: true },
+    ];
+
+    function escapeHtml(text) {
+      return String(text || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function renderVersionCards() {
+      versionList.innerHTML = versions.map(function (v) {
+        const status = v.active ? '<span class="version-badge">当前生效</span>' : '<span class="version-badge" style="background:#f2f3f5;color:#4e5969">历史版本</span>';
+        return `
+          <div class="version-card ${v.active ? 'active' : ''}" data-id="${v.id}">
+            <div class="version-card-header">
+              <strong style="font-size:13px;color:var(--text-1)">版本 ${v.seq}</strong>
+              ${status}
+            </div>
+            <div class="form-grid">
+              <div class="form-group">
+                <span class="form-label">版本号 <span class="required">*</span></span>
+                <input class="form-input" data-field="versionNo" value="${escapeHtml(v.versionNo)}" placeholder="例如：V1.0">
+              </div>
+              <div class="form-group">
+                <span class="form-label">标准规范编号 <span class="required">*</span></span>
+                <input class="form-input" data-field="code" value="${escapeHtml(v.code)}" placeholder="请输入标准规范编号">
+              </div>
+              <div class="form-group" style="grid-column:1/-1">
+                <span class="form-label">标准规范名称 <span class="required">*</span></span>
+                <input class="form-input" data-field="name" value="${escapeHtml(v.name)}" placeholder="请输入标准规范名称">
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderManageTable() {
+      manageBody.innerHTML = versions.map(function (v) {
+        return `
+          <tr data-id="${v.id}">
+            <td>版本 ${v.seq}</td>
+            <td>${escapeHtml(v.versionNo) || '—'}</td>
+            <td>${escapeHtml(v.code) || '—'}</td>
+            <td>${escapeHtml(v.name) || '—'}</td>
+            <td>${v.active ? '<span class="tag tag-green">生效中</span>' : '<span class="tag tag-gray">未生效</span>'}</td>
+            <td>
+              <button class="btn btn-text" data-action="set-active">设为生效</button>
+              <button class="btn btn-text" style="color:var(--danger)" data-action="delete">删除</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function refresh() {
+      versions = versions.map(function (v, idx) { return Object.assign({}, v, { seq: idx + 1 }); });
+      renderVersionCards();
+      renderManageTable();
+    }
+
+    if (addBtn) {
+      addBtn.addEventListener('click', function () {
+        seq += 1;
+        versions.push({ id: Date.now() + seq, seq: seq, versionNo: 'V' + seq + '.0', code: '', name: '', active: false });
+        refresh();
+      });
+    }
+
+    document.addEventListener('input', function (e) {
+      const target = e.target;
+      if (!(target instanceof Element)) return;
+      const field = target.getAttribute('data-field');
+      const card = target.closest('.version-card');
+      if (!field || !card) return;
+      const id = Number(card.getAttribute('data-id'));
+      const item = versions.find(function (v) { return v.id === id; });
+      if (!item) return;
+      item[field] = target.value;
+      renderManageTable();
+    });
+
+    document.addEventListener('click', function (e) {
+      const target = e.target;
+      if (!(target instanceof Element)) return;
+      const btn = target.closest('[data-action]');
+      if (!btn) return;
+      const row = btn.closest('tr[data-id]');
+      if (!row) return;
+      const id = Number(row.getAttribute('data-id'));
+      const action = btn.getAttribute('data-action');
+
+      if (action === 'set-active') {
+        versions = versions.map(function (v) { return Object.assign({}, v, { active: v.id === id }); });
+        refresh();
+      }
+      if (action === 'delete') {
+        if (versions.length === 1) return;
+        const deletingActive = versions.find(function (v) { return v.id === id && v.active; });
+        versions = versions.filter(function (v) { return v.id !== id; });
+        if (deletingActive && versions.length) versions[0].active = true;
+        refresh();
+      }
+    });
+
+    refresh();
+  })();
+</script>
+</body>
+</html>

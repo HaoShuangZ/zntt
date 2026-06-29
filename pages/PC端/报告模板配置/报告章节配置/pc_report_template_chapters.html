@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>报告章节配置</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+.panel-left { width: 30%; min-width: 220px; border-right: 1px solid var(--border); padding-right: 20px; }
+.panel-right { width: 70%; padding-left: 20px; }
+.tree-item { padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 13px; color: var(--text-2); transition: all 0.15s; }
+.tree-item:hover { background: var(--primary-light); color: var(--primary); }
+.tree-item.active { background: var(--primary-light); color: var(--primary); font-weight: 500; }
+.content-editor {
+  width: 100%; min-height: 280px; padding: 16px; border: 1px solid var(--border); border-radius: 4px;
+  font-family: 'Courier New', Consolas, monospace; font-size: 13px; line-height: 1.8;
+  color: var(--text-1); resize: vertical; outline: none;
+}
+.content-editor:focus { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-light); }
+</style>
+</head>
+<body>
+<div id="page-content">
+
+  <div id="tpl-back-bar" style="margin-bottom:16px;">
+    <a href="../报告模板管理/pc_report_template_list.html" class="btn btn-default btn-sm"><i class="fa-solid fa-arrow-left"></i> 返回列表</a>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title" id="chapters-page-title">报告章节配置 - 角钢塔安全检测报告模</div>
+    </div>
+    <div class="card-body" style="display:flex; min-height:540px;">
+
+      <!-- 左侧：章节列表 -->
+      <div class="panel-left">
+        <div style="font-size:14px;font-weight:600;color:var(--text-1);margin-bottom:12px;">章节列表</div>
+        <div>
+          <div class="tree-item">封面</div>
+          <div class="tree-item">目录</div>
+          <div class="tree-item active">检测依据</div>
+          <div class="tree-item">检测设备</div>
+          <div class="tree-item">铁塔概况</div>
+          <div class="tree-item">检测结果</div>
+          <div class="tree-item">不合格项分析</div>
+          <div class="tree-item">检测结论</div>
+          <div class="tree-item">签字区</div>
+        </div>
+      </div>
+
+      <!-- 右侧：章节编辑 -->
+      <div class="panel-right">
+        <div style="font-size:14px;font-weight:600;color:var(--text-1);margin-bottom:16px;">章节编辑</div>
+
+        <div class="form-grid" style="margin-bottom:20px;">
+          <div class="form-group">
+            <label class="form-label">章节名称</label>
+            <input type="text" class="form-input" style="width:100%" value="检测依据">
+          </div>
+          <div class="form-group">
+            <label class="form-label">章节编码</label>
+            <input type="text" class="form-input" style="width:100%;background:#f7f8fa" value="CH-003" readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-label">排序</label>
+            <input type="number" class="form-input" style="width:100%" value="3">
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:20px;">
+          <label class="form-label">内容模板</label>
+          <textarea class="content-editor">三、检测依据
+本次检测依据以下标准和规范进行：
+1. {{检测类型}}相关技术标准：
+   - GB/T 51338-2018《通信铁塔及桅杆结构安全检测技术规程》   - YD/T 5132-2019《通信铁塔工程技术规范》   - GB 50135-2019《高耸结构设计标准》
+2. 委托方提供的技术资料：
+   - 铁塔设计图纸及计算书
+   - 铁塔竣工验收报告
+   - 历次检测报告
+3. 检测合同：
+   - 委托单位：{{委托单位}}
+   - 工程名称：{{工程名称}}
+   - 检测日期：{{检测日期}}</textarea>
+        </div>
+
+        <div class="form-group">
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2);cursor:pointer;">
+            <input type="checkbox">
+            条件显示：仅在检测结论为不合格时显示此章节          </label>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="form-footer">
+    <button class="btn btn-primary">保存</button>
+  </div>
+
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>
+(function () {
+  var embed = location.search.indexOf('embed=1') >= 0;
+  window.__layoutConfig = embed
+    ? { skipLayout: true }
+    : { active: 'report_template_list', breadcrumb: ['模板配置', '报告模板管理', '章节配置'] };
+  if (embed) {
+    var bar = document.getElementById('tpl-back-bar');
+    if (bar) bar.style.display = 'none';
+    var params = new URLSearchParams(location.search);
+    var tpl = params.get('tpl') || '';
+    var nm = params.get('name') || '';
+    try { if (nm) nm = decodeURIComponent(nm); } catch (e) {}
+    var el = document.getElementById('chapters-page-title');
+    if (el && (tpl || nm)) el.textContent = '报告章节配置' + (nm ? ' - ' + nm : (tpl ? ' - ' + tpl : ''));
+  }
+})();
+</script>
+</body>
+</html>
+
+

@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>报告编制</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .two-col { display:flex; gap:20px; min-height:calc(100vh - 180px); }
+  .left-panel { width:25%; flex-shrink:0; }
+  .right-panel { flex:1; min-width:0; }
+  .tree-nav { list-style:none; padding:0; margin:0; }
+  .tree-nav li { padding:10px 16px; font-size:13px; color:var(--text-2); cursor:pointer; border-left:3px solid transparent; transition:all .2s; }
+  .tree-nav li:hover { background:var(--primary-bg); color:var(--primary); }
+  .tree-nav li.active { background:var(--primary-bg); color:var(--primary); border-left-color:var(--primary); font-weight:500; }
+  .alert-bar { background:#FFFBE6; border:1px solid #FFE58F; border-radius:4px; padding:10px 16px; font-size:13px; color:#D4760A; margin-bottom:20px; display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+  .readonly-field { background:#F7F8FA; border:1px solid var(--border); border-radius:4px; padding:6px 12px; font-size:13px; color:var(--text-2); min-height:32px; display:flex; align-items:center; }
+  .section-title { font-size:14px; font-weight:600; color:var(--text-1); margin-bottom:12px; padding-left:10px; border-left:3px solid var(--primary); }
+  .group-card { border:1px solid var(--border); border-radius:8px; padding:14px; margin-bottom:14px; }
+  .item-table th, .item-table td { border:1px solid #E5E6EB; padding:8px; font-size:12px; vertical-align:top; }
+  .item-table th { background:#F7F8FA; font-weight:600; color:var(--text-2); }
+  .item-table input, .item-table select, .item-table textarea { width:100%; border:1px solid #D0D3D9; border-radius:4px; padding:4px 6px; font-size:12px; min-height:30px; }
+  .item-table textarea { min-height:54px; }
+  .upload-list { font-size:12px; color:var(--text-3); display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+  .upload-item { background:#F2F3F5; border:1px solid #E5E6EB; border-radius:12px; padding:2px 8px; }
+  .err { font-size:12px; color:var(--danger); min-height:18px; line-height:18px; }
+  .signature-area { border:1px dashed var(--border); border-radius:4px; padding:16px; text-align:center; color:var(--text-4); font-size:13px; min-height:80px; display:flex; align-items:center; justify-content:center; }
+</style>
+</head>
+<body>
+<div id="page-content">
+  <div class="card" style="margin-bottom:16px;border:1px solid #bfdbfe;background:#eff6ff;">
+    <div class="card-body" style="padding:10px 16px;font-size:13px;color:#1e3a8a;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+      <span><i class="fa-solid fa-book"></i> 报告数据来自检测任务<strong>检毕通过后的自动复制</strong>，与任务主数据分离；<strong>保存草稿</strong>后状态为「编制中」；<strong>发起报告审核</strong>后进入「已编制」并按流程抄送（详见详情页）。</span>
+      <span id="auto-save-tip" style="font-size:12px;color:#1d4ed8;">自动保存：未开始</span>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="left-panel">
+      <div class="card" style="position:sticky;top:20px;">
+        <div class="card-header"><div class="card-title">报告结构</div></div>
+        <div class="card-body" style="padding:0;">
+          <ul class="tree-nav">
+            <li>封面</li>
+            <li>目录</li>
+            <li>一、报告基本信息</li>
+            <li>二、铁塔基础信息</li>
+            <li class="active">三、检测项目数据</li>
+            <li>四、附件</li>
+            <li>五、检测结论与签字</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-panel">
+      <div class="card">
+        <div class="card-header"><div class="card-title">编辑区域</div></div>
+        <div class="card-body">
+          <div class="alert-bar">
+            <span><i class="fa-solid fa-circle-info"></i> 灰色字段来自任务副本自动填充；保存草稿不改变「已编制」审核中的数据。发起报告审核后请在<strong>报告详情</strong>处理主管审核、抄送及加签。</span>
+          </div>
+
+          <div class="group-card">
+            <div class="section-title">1. 报告基本信息（自动预填充）</div>
+            <div class="form-grid form-grid-3">
+              <div class="form-group"><label class="form-label">报告编号</label><div class="readonly-field" id="reportNoView"></div></div>
+              <div class="form-group"><label class="form-label">铁塔编号</label><div class="readonly-field" id="towerCodeView"></div></div>
+              <div class="form-group"><label class="form-label">合同编号</label><div class="readonly-field" id="contractNoView"></div></div>
+              <div class="form-group"><label class="form-label">检测任务编号</label><div class="readonly-field" id="taskNoView"></div></div>
+              <div class="form-group"><label class="form-label">检测人员</label><div class="readonly-field" id="inspectorView"></div></div>
+              <div class="form-group"><label class="form-label">检测日期</label><div class="readonly-field" id="inspectDateView"></div></div>
+            </div>
+          </div>
+
+          <div class="group-card">
+            <div class="section-title">2. 铁塔基础信息区</div>
+            <div class="form-grid form-grid-3">
+              <div class="form-group">
+                <label class="form-label">铁塔地址 <span class="required">*</span></label>
+                <input id="towerAddress" class="form-input" placeholder="请输入铁塔地址">
+                <div class="err" id="towerAddressErr"></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">铁塔类型 <span class="required">*</span></label>
+                <select id="towerType" class="form-select">
+                  <option value="">请选择</option>
+                  <option>角钢塔</option>
+                  <option>三管塔</option>
+                  <option>四管塔</option>
+                  <option>单管塔</option>
+                </select>
+                <div class="err" id="towerTypeErr"></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">建设年代</label>
+                <input id="buildYear" class="form-input" placeholder="例如 2016">
+                <div class="err"></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">产权单位</label>
+                <input id="ownerUnit" class="form-input" placeholder="请输入产权单位">
+                <div class="err"></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">维护单位</label>
+                <input id="maintainUnit" class="form-input" placeholder="请输入维护单位">
+                <div class="err"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="group-card">
+            <div class="section-title">3. 检测项目数据录入区</div>
+            <table class="item-table" style="width:100%;border-collapse:collapse;">
+              <thead>
+                <tr>
+                  <th style="width:120px;">检测分类</th>
+                  <th style="width:190px;">检测内容</th>
+                  <th style="width:120px;">标准值</th>
+                  <th style="width:140px;">实测值</th>
+                  <th style="width:100px;">检测结果</th>
+                  <th>备注</th>
+                </tr>
+              </thead>
+              <tbody id="item-body"></tbody>
+            </table>
+          </div>
+
+          <div class="group-card">
+            <div class="section-title">4. 附件上传区</div>
+            <div class="form-grid form-grid-3">
+              <div class="form-group">
+                <label class="form-label">现场照片</label>
+                <input id="photos" type="file" class="form-input" multiple>
+                <div class="upload-list" id="photosList"></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">检测原始记录</label>
+                <input id="records" type="file" class="form-input" multiple>
+                <div class="upload-list" id="recordsList"></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">签字扫描件</label>
+                <input id="signFiles" type="file" class="form-input" multiple>
+                <div class="upload-list" id="signFilesList"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="group-card">
+            <div class="section-title">5. 检测结论与签字区</div>
+            <div class="form-grid">
+              <div class="form-group full">
+                <label class="form-label">检测结论 <span class="required">*</span></label>
+                <textarea id="conclusion" class="form-textarea" placeholder="请输入检测结论"></textarea>
+                <div class="err" id="conclusionErr"></div>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:20px;">
+              <div>
+                <div style="font-size:13px;color:var(--text-2);margin-bottom:8px;text-align:center;">检测人员签字（必填）</div>
+                <div class="signature-area"><input id="inspectorSign" class="form-input" placeholder="请输入签字姓名"></div>
+                <div class="err" id="inspectorSignErr"></div>
+              </div>
+              <div>
+                <div style="font-size:13px;color:var(--text-2);margin-bottom:8px;text-align:center;">审核人员签字</div>
+                <div class="signature-area"><input id="auditorSign" class="form-input" placeholder="审核时填写"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-footer">
+            <a href="report-list.html" class="btn btn-default">返回列表</a>
+            <button class="btn btn-default" id="btn-save-draft">保存草稿</button>
+            <button class="btn btn-primary" id="btn-submit-review">发起报告审核</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'report_generate', breadcrumb:['检测管理','报告编制','报告编辑']};</script>
+<script>
+  (function () {
+    const REPORT_KEY = 'tower_reports';
+    const TASK_KEY = 'tower_tasks';
+    const params = new URLSearchParams(window.location.search);
+    const reportId = params.get('reportId') || '';
+    const taskId = params.get('taskId') || '';
+    let currentReport = null;
+
+    const itemTemplates = [
+      { category:'塔体结构检测', content:'主材截面/壁厚', standard:'符合设计图纸' },
+      { category:'基础检测', content:'基础沉降与裂缝', standard:'沉降均匀，无裂缝' },
+      { category:'防腐检测', content:'构件镀锌层厚度', standard:'>= 86um' },
+      { category:'接地电阻检测', content:'接地电阻值', standard:'<= 10Ω' },
+      { category:'附属设施检测', content:'平台/抱杆/馈线固定', standard:'无松动、无锈蚀' }
+    ];
+
+    function nowText() {
+      const d = new Date();
+      const p = function (n) { return String(n).padStart(2, '0'); };
+      return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+    }
+    function migrateReportRow(r) {
+      var s = r.status;
+      if (s === '草稿') { r.status = '编制中'; }
+      else if (s === '待审核') { r.status = '已编制'; if (!r.auditStep) r.auditStep = '待技术部门主管审核'; }
+      else if (s === '已通过') { r.status = '已出报告'; }
+      else if (s === '已驳回') { r.status = '编制中'; }
+      return r;
+    }
+
+    function loadReportsMigrate() {
+      var list;
+      try { list = JSON.parse(localStorage.getItem(REPORT_KEY) || '[]'); } catch (e) { list = []; }
+      var needSave = false;
+      list = list.map(function (r) {
+        var old = r.status;
+        migrateReportRow(r);
+        if (r.status !== old) needSave = true;
+        return r;
+      });
+      if (needSave) localStorage.setItem(REPORT_KEY, JSON.stringify(list));
+      return list;
+    }
+    function saveReports(list) { localStorage.setItem(REPORT_KEY, JSON.stringify(list)); }
+    function loadTasks() {
+      try { return JSON.parse(localStorage.getItem(TASK_KEY) || '[]'); } catch (e) { return []; }
+    }
+    function saveTasks(list) { localStorage.setItem(TASK_KEY, JSON.stringify(list)); }
+    function toReportNo() { return 'BG' + Date.now().toString().slice(-10); }
+
+    function defaultTask(taskNo) {
+      const tasks = loadTasks();
+      const t = tasks.find(function (x) { return x.id === taskNo; });
+      return t || {
+        id: taskNo || 'RW202605005',
+        towerCode: 'TT-XS-001',
+        towerName: '萧山01#塔',
+        contractNo: 'HT2026-005',
+        inspector: '李明',
+        inspectType: '常规检测',
+        inspectDate: '2026-05-09',
+        status: '已完成'
+      };
+    }
+
+    function renderItems(items) {
+      const rows = (items && items.length ? items : itemTemplates.map(function (t) {
+        return { category:t.category, content:t.content, standard:t.standard, actual:'', result:'', remark:'' };
+      }));
+      document.getElementById('item-body').innerHTML = rows.map(function (row, idx) {
+        return '<tr>' +
+          '<td>' + row.category + '</td>' +
+          '<td>' + row.content + '</td>' +
+          '<td>' + row.standard + '</td>' +
+          '<td><input data-row="' + idx + '" data-field="actual" value="' + (row.actual || '') + '" placeholder="请输入实测值"></td>' +
+          '<td><select data-row="' + idx + '" data-field="result"><option value="">请选择</option><option ' + (row.result === '合格' ? 'selected' : '') + '>合格</option><option ' + (row.result === '不合格' ? 'selected' : '') + '>不合格</option></select></td>' +
+          '<td><textarea data-row="' + idx + '" data-field="remark">' + (row.remark || '') + '</textarea></td>' +
+          '</tr>';
+      }).join('');
+    }
+
+    function setText(id, text) { document.getElementById(id).textContent = text || '-'; }
+    function setValue(id, text) { document.getElementById(id).value = text || ''; }
+    function getValue(id) { return (document.getElementById(id).value || '').trim(); }
+    function clearErr() {
+      ['towerAddressErr','towerTypeErr','conclusionErr','inspectorSignErr'].forEach(function (id) {
+        document.getElementById(id).textContent = '';
+      });
+    }
+    function setErr(id, text) { document.getElementById(id).textContent = text || ''; }
+
+    function collectItems() {
+      const rows = {};
+      document.querySelectorAll('#item-body [data-row]').forEach(function (el) {
+        const idx = Number(el.getAttribute('data-row'));
+        const field = el.getAttribute('data-field');
+        rows[idx] = rows[idx] || {
+          category: itemTemplates[idx].category,
+          content: itemTemplates[idx].content,
+          standard: itemTemplates[idx].standard
+        };
+        rows[idx][field] = el.value || '';
+      });
+      return Object.keys(rows).map(function (k) { return rows[k]; });
+    }
+
+    function names(id) {
+      return Array.from(document.getElementById(id).files || []).map(function (f) { return f.name; });
+    }
+
+    function validate() {
+      clearErr();
+      let ok = true;
+      if (!getValue('towerAddress')) { setErr('towerAddressErr', '请填写铁塔地址'); ok = false; }
+      if (!getValue('towerType')) { setErr('towerTypeErr', '请选择铁塔类型'); ok = false; }
+      if (!getValue('conclusion')) { setErr('conclusionErr', '请填写检测结论'); ok = false; }
+      if (!getValue('inspectorSign')) { setErr('inspectorSignErr', '请填写检测人员签字'); ok = false; }
+      const itemOk = collectItems().every(function (it) { return (it.actual || '').trim() && (it.result || '').trim(); });
+      if (!itemOk) {
+        alert('检测项目中存在未填写的实测值或检测结果');
+        ok = false;
+      }
+      return ok;
+    }
+
+    function upsertReport(mode, silent) {
+      const reports = loadReportsMigrate();
+      const base = currentReport || {};
+      const prevStatus = base.status || '';
+
+      if (!silent && (prevStatus === '已编制' || prevStatus === '已出报告')) {
+        alert('当前报告已发起审核或已出具，请从详情页查看。');
+        return null;
+      }
+      if (silent && (prevStatus === '已编制' || prevStatus === '已出报告')) {
+        return currentReport;
+      }
+
+      var nextStatus;
+      if (mode === 'submit') {
+        nextStatus = '已编制';
+      } else {
+        nextStatus = '编制中';
+      }
+
+      var clearDeclare = mode === 'draft' && prevStatus === '待编制';
+      const report = {
+        id: base.id || ('R' + Date.now()),
+        reportNo: base.reportNo || toReportNo(),
+        towerCode: base.towerCode || '',
+        towerName: base.towerName || '',
+        contractNo: base.contractNo || '',
+        taskId: base.taskId || taskId || '',
+        inspector: base.inspector || '',
+        inspectType: base.inspectType || '',
+        inspectDate: base.inspectDate || '',
+        submitTime: nowText(),
+        status: nextStatus,
+        rejectReason: mode === 'submit' ? '' : (base.rejectReason || ''),
+        auditStep: mode === 'submit' ? '待技术部门主管审核' : '',
+        auditStatus: mode === 'submit' ? '审核中' : (nextStatus === '编制中' ? '未提交' : (base.auditStatus || '未涉及')),
+        auditNode: mode === 'submit' ? '待技术部门主管审核' : (nextStatus === '编制中' ? '未发起审核' : (base.auditNode || '—')),
+        auditor: mode === 'submit' ? '—' : (base.auditor || '—'),
+        auditAt: mode === 'submit' ? '—' : (base.auditAt || '—'),
+        declareFailed: clearDeclare ? false : !!base.declareFailed,
+        declareFailReason: clearDeclare ? '' : (base.declareFailReason || ''),
+        extraSign: !!base.extraSign,
+        sourceNote: base.sourceNote || '',
+        towerAddress: getValue('towerAddress'),
+        towerType: getValue('towerType'),
+        buildYear: getValue('buildYear'),
+        ownerUnit: getValue('ownerUnit'),
+        maintainUnit: getValue('maintainUnit'),
+        items: collectItems(),
+        attachments: { photos: names('photos'), records: names('records'), signFiles: names('signFiles') },
+        conclusion: getValue('conclusion'),
+        inspectorSign: getValue('inspectorSign'),
+        auditorSign: getValue('auditorSign')
+      };
+      const idx = reports.findIndex(function (r) { return r.id === report.id; });
+      if (idx >= 0) reports[idx] = report; else reports.unshift(report);
+      saveReports(reports);
+      currentReport = report;
+
+      if (mode === 'submit' && report.taskId) {
+        const tasks = loadTasks();
+        const tIdx = tasks.findIndex(function (t) { return t.id === report.taskId; });
+        if (tIdx >= 0) {
+          tasks[tIdx].reportSyncNote = '报告审核中';
+          tasks[tIdx].updatedAt = nowText();
+          saveTasks(tasks);
+        }
+      }
+      if (!silent) {
+        alert(mode === 'submit' ? '已发起报告审核，状态为「已编制」，请在详情页继续主管审核与抄送流程。' : '草稿已保存，状态为「编制中」。');
+      }
+      return report;
+    }
+
+    function bindUpload(inputId, listId) {
+      const input = document.getElementById(inputId);
+      const list = document.getElementById(listId);
+      input.addEventListener('change', function () {
+        list.innerHTML = Array.from(input.files || []).map(function (f) { return '<span class="upload-item">' + f.name + '</span>'; }).join('');
+      });
+    }
+
+    function fillByReport(report) {
+      setText('reportNoView', report.reportNo);
+      setText('towerCodeView', report.towerCode);
+      setText('contractNoView', report.contractNo);
+      setText('taskNoView', report.taskId);
+      setText('inspectorView', report.inspector);
+      setText('inspectDateView', report.inspectDate);
+      setValue('towerAddress', report.towerAddress);
+      setValue('towerType', report.towerType);
+      setValue('buildYear', report.buildYear);
+      setValue('ownerUnit', report.ownerUnit);
+      setValue('maintainUnit', report.maintainUnit);
+      setValue('conclusion', report.conclusion);
+      setValue('inspectorSign', report.inspectorSign);
+      setValue('auditorSign', report.auditorSign);
+      renderItems(report.items);
+    }
+
+    function fillByTask(t) {
+      currentReport = {
+        id: '',
+        reportNo: toReportNo(),
+        towerCode: t.towerCode,
+        towerName: t.towerName || '',
+        contractNo: t.contractNo || '',
+        taskId: t.id,
+        inspector: t.inspector || '',
+        inspectType: t.inspectType || '',
+        inspectDate: t.inspectDate || '',
+        rejectReason: '',
+        status: '待编制',
+        auditStep: '',
+        declareFailed: false,
+        declareFailReason: '',
+        extraSign: false,
+        sourceNote: '任务入口新建'
+      };
+      setText('reportNoView', currentReport.reportNo);
+      setText('towerCodeView', t.towerCode);
+      setText('contractNoView', t.contractNo);
+      setText('taskNoView', t.id);
+      setText('inspectorView', t.inspector);
+      setText('inspectDateView', t.inspectDate);
+      renderItems();
+    }
+
+    function initData() {
+      const reports = loadReportsMigrate();
+      if (reportId) {
+        const report = reports.find(function (r) { return r.id === reportId; });
+        if (report) {
+          if (report.status === '已编制' || report.status === '已出报告') {
+            location.replace('report-detail.html?reportId=' + encodeURIComponent(report.id));
+            return;
+          }
+          currentReport = report;
+          fillByReport(report);
+          return;
+        }
+      }
+      fillByTask(defaultTask(taskId));
+    }
+
+    function bindActions() {
+      bindUpload('photos', 'photosList');
+      bindUpload('records', 'recordsList');
+      bindUpload('signFiles', 'signFilesList');
+
+      document.getElementById('btn-save-draft').addEventListener('click', function () {
+        upsertReport('draft', false);
+      });
+      document.getElementById('btn-submit-review').addEventListener('click', function () {
+        if (!validate()) return;
+        const report = upsertReport('submit', false);
+        if (report) location.href = 'report-detail.html?reportId=' + encodeURIComponent(report.id);
+      });
+      setInterval(function () {
+        if (!currentReport) return;
+        var st = currentReport.status;
+        if (st === '已编制' || st === '已出报告') return;
+        upsertReport('draft', true);
+        document.getElementById('auto-save-tip').textContent = '自动保存：' + nowText();
+      }, 30000);
+    }
+
+    initData();
+    bindActions();
+  })();
+</script>
+</body>
+</html>

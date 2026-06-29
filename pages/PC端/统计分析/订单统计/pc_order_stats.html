@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>订单统计 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+.stat-cards-v2 { margin-bottom:20px; }
+.stat-total-row {
+  display:flex; align-items:stretch; gap:0;
+  background:#F7F8FA; border:1px solid var(--border); border-radius:8px;
+  padding:16px 24px; margin-bottom:12px;
+}
+.stat-total-label {
+  font-size:14px; font-weight:700; color:var(--text-1);
+  display:flex; align-items:center; padding-right:20px;
+  border-right:1px solid var(--border); margin-right:20px; white-space:nowrap;
+}
+.stat-total-metrics { display:flex; gap:32px; flex:1; align-items:center; }
+.stat-total-metric { display:flex; flex-direction:column; align-items:center; gap:4px; }
+.stat-total-metric .stat-metric-key { font-size:12px; color:var(--text-3); }
+.stat-total-metric .stat-metric-val {
+  font-size:24px; font-weight:700; color:var(--text-1); line-height:1.2;
+}
+.stat-modules-row {
+  display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px;
+}
+.stat-module {
+  background:#F7F8FA; border:1px solid var(--border); border-radius:8px;
+  padding:14px 16px;
+}
+.stat-module-title {
+  font-size:13px; font-weight:600; color:var(--text-1);
+  margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid var(--border);
+}
+.stat-module-cards { display:flex; flex-direction:column; gap:0; }
+.sub-card {
+  background:#fff; border:1px solid var(--border); border-radius:6px;
+  padding:12px 14px;
+}
+.sub-label {
+  font-size:12px; font-weight:600; color:var(--text-1);
+  margin-bottom:10px; display:flex; align-items:center; gap:6px;
+}
+.sub-dot {
+  width:8px; height:8px; border-radius:50%; display:inline-block; flex-shrink:0;
+}
+.sub-card .stat-triple { display:flex; gap:8px; }
+.sub-card .stat-metric { flex:1; min-width:0; }
+.sub-card .stat-metric-key { display:block; font-size:11px; color:var(--text-3); margin-bottom:2px; }
+.sub-card .stat-metric-val { display:block; font-size:18px; font-weight:700; color:var(--text-1); line-height:1.2; }
+.stat-module-eng .stat-module-title { color:#165DFF; }
+.stat-module-inv .stat-module-title { color:#722ED1; }
+.stat-module-pay .stat-module-title { color:#14C9C9; }
+.contract-link {
+  border:none; background:none; padding:0; cursor:pointer; text-align:left; color:inherit; font:inherit;
+}
+.contract-link:hover .contract-name { color:var(--primary); }
+.contract-link:hover .contract-code { color:#4080FF; }
+.os-modal-mask {
+  position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:2000;
+  display:none; align-items:center; justify-content:center; padding:20px;
+}
+.os-modal-mask.open { display:flex; }
+.os-modal-dialog {
+  background:#fff; border-radius:8px; width:min(1120px,96vw); max-height:90vh;
+  display:flex; flex-direction:column; box-shadow:0 12px 48px rgba(0,0,0,.18);
+}
+.os-modal-head {
+  padding:14px 18px; border-bottom:1px solid var(--border);
+  display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-shrink:0;
+}
+.os-modal-head h3 { margin:0; font-size:16px; font-weight:600; color:var(--text-1); }
+.os-modal-meta { font-size:12px; color:var(--text-3); margin-top:6px; line-height:1.5; }
+.os-modal-close { border:none; background:transparent; cursor:pointer; color:var(--text-3); padding:4px 8px; font-size:16px; line-height:1; flex-shrink:0; }
+.os-modal-body { padding:16px 18px; overflow:auto; flex:1; }
+.os-modal-foot {
+  padding:12px 18px; border-top:1px solid var(--border);
+  display:flex; justify-content:flex-end; gap:8px; flex-shrink:0;
+}
+.os-table-scroll { overflow-x:auto; border:1px solid var(--border); border-radius:6px; }
+.os-table-scroll .data-table { margin:0; min-width:1100px; }
+.os-table-scroll.stats-main { overflow-x:auto; margin-bottom:0; border-radius:6px; }
+.stats-table-panel {
+  border:1px solid var(--border); border-radius:6px; overflow:hidden; margin-bottom:0;
+}
+.stats-table-panel .stats-main { border:none; }
+#statsTable tfoot td {
+  font-weight:600; color:var(--text-1); vertical-align:middle;
+  border-top:2px solid var(--border); padding:10px 8px; background:#F2F3F5;
+}
+#statsTable tfoot .summary-dim { text-align:left; }
+#statsTable tfoot .summary-num { text-align:center; color:var(--primary); }
+@media (max-width:1280px) { .stat-modules-row { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+@media (max-width:960px) { .stat-modules-row { grid-template-columns:1fr; } }
+@media (max-width:640px) {
+  .stat-total-row { flex-direction:column; gap:12px; }
+  .stat-total-label { border-right:none; margin-right:0; padding-right:0; padding-bottom:8px; border-bottom:1px solid var(--border); }
+  .stat-total-metrics { gap:16px; }
+}
+.stats-filter-panel {
+  background:#F7F8FA; border:1px solid var(--border); border-radius:8px;
+  padding:14px 16px; margin-bottom:16px;
+}
+.stats-filter-top {
+  display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap;
+}
+.stats-filter-block-title {
+  font-size:12px; font-weight:600; color:var(--text-2); margin:0 0 8px; line-height:1.4;
+}
+.stats-filter-date-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.stats-filter-sep { font-size:13px; color:var(--text-3); user-select:none; }
+.stats-filter-actions { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+.stats-filter-cascade {
+  margin-top:12px; padding-top:12px; border-top:1px solid var(--border);
+}
+.stats-cascade-grid {
+  display:grid;
+  grid-template-columns:minmax(180px,1fr) 24px minmax(200px,1.2fr) 24px minmax(180px,1fr);
+  gap:0 4px; align-items:end; max-width:960px;
+}
+@media (max-width:1100px) {
+  .stats-cascade-grid {
+    grid-template-columns:1fr;
+    gap:12px;
+  }
+  .stats-cascade-arrow { display:none; }
+}
+.stats-cascade-field label {
+  display:block; font-size:12px; color:var(--text-3); margin-bottom:6px; line-height:1.4;
+}
+.stats-cascade-arrow {
+  display:flex; align-items:center; justify-content:center;
+  padding-bottom:10px; color:var(--text-4); font-size:12px;
+}
+.search-select-wrap { position:relative; width:100%; }
+.search-select-dropdown { position:absolute; top:calc(100% + 4px); left:0; right:0; z-index:50; background:#fff; border:1px solid var(--border); border-radius:6px; box-shadow:0 6px 18px rgba(0,0,0,.08); max-height:220px; overflow:auto; display:none; }
+.search-select-dropdown.open { display:block; }
+.search-select-item { padding:8px 10px; font-size:13px; cursor:pointer; line-height:1.5; }
+.search-select-item:hover { background:#F2F6FF; }
+.search-select-empty { padding:8px 10px; font-size:12px; color:var(--text-3); }
+.search-select-wrap .form-input { width:100%; }
+.search-select-wrap .form-input:disabled { background:#fff; cursor:not-allowed; color:var(--text-3); }
+</style>
+</head>
+<body>
+<div id="page-content">
+  <div class="card">
+    <div class="card-body">
+      <div class="stats-filter-panel">
+        <div class="stats-filter-top">
+          <div>
+            <p class="stats-filter-block-title">统计日期</p>
+            <div class="stats-filter-date-row">
+              <input type="date" class="form-input" id="statsDateStart" value="2026-01-01" style="width:150px">
+              <span class="stats-filter-sep">至</span>
+              <input type="date" class="form-input" id="statsDateEnd" value="2026-05-28" style="width:150px">
+            </div>
+          </div>
+          <div class="stats-filter-actions">
+            <button type="button" class="btn btn-primary" id="btnStatsSearch"><i class="fa-solid fa-magnifying-glass"></i> 查询</button>
+            <button type="button" class="btn btn-default" id="btnStatsReset"><i class="fa-solid fa-rotate-right"></i> 重置</button>
+            <button type="button" class="btn btn-default" id="btnStatsExport"><i class="fa-solid fa-file-export"></i> 导出</button>
+          </div>
+        </div>
+        <div class="stats-filter-cascade">
+          <p class="stats-filter-block-title">筛选范围 <span style="font-weight:400;color:var(--text-3)">（客户 → 合同 → 工程，支持搜索）</span></p>
+          <div class="stats-cascade-grid">
+            <div class="stats-cascade-field">
+              <label for="filterCustomer">客户</label>
+              <div class="search-select-wrap">
+                <input type="text" class="form-input" id="filterCustomer" placeholder="搜索并选择客户" autocomplete="off">
+                <div class="search-select-dropdown" id="filterCustomerDropdown"></div>
+              </div>
+            </div>
+            <div class="stats-cascade-arrow" aria-hidden="true"><i class="fa-solid fa-angle-right"></i></div>
+            <div class="stats-cascade-field">
+              <label for="filterContract">合同</label>
+              <div class="search-select-wrap">
+                <input type="text" class="form-input" id="filterContract" placeholder="请先选择客户" autocomplete="off" disabled>
+                <div class="search-select-dropdown" id="filterContractDropdown"></div>
+              </div>
+            </div>
+            <div class="stats-cascade-arrow" aria-hidden="true"><i class="fa-solid fa-angle-right"></i></div>
+            <div class="stats-cascade-field">
+              <label for="filterProject">工程</label>
+              <div class="search-select-wrap">
+                <input type="text" class="form-input" id="filterProject" placeholder="请先选择合同" autocomplete="off" disabled>
+                <div class="search-select-dropdown" id="filterProjectDropdown"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-cards-v2">
+        <div class="stat-total-row">
+          <div class="stat-total-label">总数</div>
+          <div class="stat-total-metrics">
+            <div class="stat-total-metric">
+              <span class="stat-metric-key">工程</span>
+              <span class="stat-metric-val">18</span>
+            </div>
+            <div class="stat-total-metric">
+              <span class="stat-metric-key">订单</span>
+              <span class="stat-metric-val">186</span>
+            </div>
+            <div class="stat-total-metric">
+              <span class="stat-metric-key">站址</span>
+              <span class="stat-metric-val">428</span>
+            </div>
+          </div>
+        </div>
+        <div class="stat-modules-row">
+          <div class="stat-module stat-module-eng">
+            <div class="stat-module-title">工程进度</div>
+            <div class="stat-module-cards">
+              <div class="sub-card">
+                <div class="sub-label"><span class="sub-dot" style="background:#165DFF"></span>进行中</div>
+                <div class="stat-triple">
+                  <div class="stat-metric"><span class="stat-metric-key">工程</span><span class="stat-metric-val">7</span></div>
+                  <div class="stat-metric"><span class="stat-metric-key">订单</span><span class="stat-metric-val">58</span></div>
+                  <div class="stat-metric"><span class="stat-metric-key">站址</span><span class="stat-metric-val">136</span></div>
+                </div>
+              </div>
+              <div class="sub-card">
+                <div class="sub-label"><span class="sub-dot" style="background:#00B42A"></span>已完成</div>
+                <div class="stat-triple">
+                  <div class="stat-metric"><span class="stat-metric-key">工程</span><span class="stat-metric-val">6</span></div>
+                  <div class="stat-metric"><span class="stat-metric-key">订单</span><span class="stat-metric-val">92</span></div>
+                  <div class="stat-metric"><span class="stat-metric-key">站址</span><span class="stat-metric-val">218</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="stat-module stat-module-inv">
+            <div class="stat-module-title">开票进度</div>
+            <div class="stat-module-cards">
+              <div class="sub-card">
+                <div class="sub-label"><span class="sub-dot" style="background:#722ED1"></span>已开票</div>
+                <div class="stat-triple">
+                  <div class="stat-metric"><span class="stat-metric-key">工程</span><span class="stat-metric-val">9</span></div>
+                  <div class="stat-metric"><span class="stat-metric-key">订单</span><span class="stat-metric-val">68</span></div>
+                  <div class="stat-metric"><span class="stat-metric-key">站址</span><span class="stat-metric-val">166</span></div>
+                </div>
+              </div>
+              <div class="sub-card">
+                <div class="sub-label"><span class="sub-dot" style="background:#FF7D00"></span>待开票</div>
+                <div class="stat-triple">
+                  <div class="stat-metric"><span class="stat-metric-key">工程</span><span class="stat-metric-val">4</span></div>
+                  <div class="stat-metric"><span class="stat-metric-key">订单</span><span class="stat-metric-val">24</span></div>
+                  <div class="stat-metric"><span class="stat-metric-key">站址</span><span class="stat-metric-val">52</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="stat-module stat-module-pay">
+            <div class="stat-module-title">付款进度</div>
+            <div class="stat-module-cards">
+              <div class="sub-card">
+                <div class="sub-label"><span class="sub-dot" style="background:#14C9C9"></span>已付款</div>
+                <div class="stat-triple">
+                  <div class="stat-metric"><span class="stat-metric-key">工程</span><span class="stat-metric-val">7</span></div>
+                  <div class="stat-metric"><span class="stat-metric-key">订单</span><span class="stat-metric-val">60</span></div>
+                  <div class="stat-metric"><span class="stat-metric-key">站址</span><span class="stat-metric-val">146</span></div>
+                </div>
+              </div>
+              <div class="sub-card">
+                <div class="sub-label"><span class="sub-dot" style="background:#F77234"></span>待付款</div>
+                <div class="stat-triple">
+                  <div class="stat-metric"><span class="stat-metric-key">工程</span><span class="stat-metric-val">6</span></div>
+                  <div class="stat-metric"><span class="stat-metric-key">订单</span><span class="stat-metric-val">32</span></div>
+                  <div class="stat-metric"><span class="stat-metric-key">站址</span><span class="stat-metric-val">70</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p style="font-size:12px;color:var(--text-3);margin:0 0 12px;line-height:1.5">
+        <i class="fa-solid fa-circle-info"></i> 各统计维度均展示<strong>工程、订单、站址</strong>三项指标；按<strong>对上合同</strong>汇总，页面底部合计行按列求和。点击合同名称或「查看详情」可查看明细。站址按订单下站点去重汇总。
+      </p>
+
+      <div class="stats-table-panel">
+      <div class="os-table-scroll stats-main" id="statsTableScrollTop">
+      <table class="data-table" id="statsTable" style="min-width:1760px">
+        <thead>
+          <tr>
+            <th rowspan="2" style="min-width:200px">对上合同</th>
+            <th rowspan="2" style="min-width:160px">关联客户</th>
+            <th colspan="3" style="text-align:center">总数</th>
+            <th colspan="3" style="text-align:center">进行中</th>
+            <th colspan="3" style="text-align:center">已完成</th>
+            <th colspan="3" style="text-align:center">待开票</th>
+            <th colspan="3" style="text-align:center">已开票</th>
+            <th colspan="3" style="text-align:center">待付款</th>
+            <th colspan="3" style="text-align:center">已付款</th>
+            <th rowspan="2" class="col-action" style="width:88px">操作</th>
+          </tr>
+          <tr>
+            <th style="width:56px;text-align:center">工程</th><th style="width:64px;text-align:center">订单</th><th style="width:64px;text-align:center">站址</th>
+            <th style="width:56px;text-align:center">工程</th><th style="width:64px;text-align:center">订单</th><th style="width:64px;text-align:center">站址</th>
+            <th style="width:56px;text-align:center">工程</th><th style="width:64px;text-align:center">订单</th><th style="width:64px;text-align:center">站址</th>
+            <th style="width:56px;text-align:center">工程</th><th style="width:64px;text-align:center">订单</th><th style="width:64px;text-align:center">站址</th>
+            <th style="width:56px;text-align:center">工程</th><th style="width:64px;text-align:center">订单</th><th style="width:64px;text-align:center">站址</th>
+            <th style="width:56px;text-align:center">工程</th><th style="width:64px;text-align:center">订单</th><th style="width:64px;text-align:center">站址</th>
+            <th style="width:56px;text-align:center">工程</th><th style="width:64px;text-align:center">订单</th><th style="width:64px;text-align:center">站址</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-contract="HT2026-0512" data-customer="中国移动通信集团浙江有限公司" data-projects="GC2026-0088,GC2026-0091,GC2026-0103">
+            <td>
+              <button type="button" class="contract-link js-open-detail" data-contract="HT2026-0512" title="点击查看订单站址明细">
+                <div class="contract-code" style="font-size:12px;color:var(--text-3)">HT2026-0512</div>
+                <div class="contract-name">杭州移动 2026 年度铁塔检测框架</div>
+              </button>
+            </td>
+            <td>中国移动通信集团浙江有限公司</td>
+            <td class="js-stat-num" style="text-align:center">12</td><td class="js-stat-num" style="text-align:center">128</td><td class="js-stat-num" style="text-align:center">296</td>
+            <td class="js-stat-num" style="text-align:center">5</td><td class="js-stat-num" style="text-align:center">42</td><td class="js-stat-num" style="text-align:center">98</td>
+            <td class="js-stat-num" style="text-align:center">4</td><td class="js-stat-num" style="text-align:center">64</td><td class="js-stat-num" style="text-align:center">148</td>
+            <td class="js-stat-num" style="text-align:center">3</td><td class="js-stat-num" style="text-align:center">16</td><td class="js-stat-num" style="text-align:center">34</td>
+            <td class="js-stat-num" style="text-align:center">6</td><td class="js-stat-num" style="text-align:center">48</td><td class="js-stat-num" style="text-align:center">112</td>
+            <td class="js-stat-num" style="text-align:center">4</td><td class="js-stat-num" style="text-align:center">22</td><td class="js-stat-num" style="text-align:center">48</td>
+            <td class="js-stat-num" style="text-align:center">5</td><td class="js-stat-num" style="text-align:center">46</td><td class="js-stat-num" style="text-align:center">108</td>
+            <td class="col-action"><button type="button" class="btn-text js-open-detail" data-contract="HT2026-0512">查看详情</button></td>
+          </tr>
+          <tr data-contract="HT2026-0428" data-customer="浙江某建设集团有限公司" data-projects="GC2026-0066">
+            <td>
+              <button type="button" class="contract-link js-open-detail" data-contract="HT2026-0428" title="点击查看订单站址明细">
+                <div class="contract-code" style="font-size:12px;color:var(--text-3)">HT2026-0428</div>
+                <div class="contract-name">城西改造专项检测分包</div>
+              </button>
+            </td>
+            <td>浙江某建设集团有限公司</td>
+            <td class="js-stat-num" style="text-align:center">6</td><td class="js-stat-num" style="text-align:center">58</td><td class="js-stat-num" style="text-align:center">132</td>
+            <td class="js-stat-num" style="text-align:center">2</td><td class="js-stat-num" style="text-align:center">16</td><td class="js-stat-num" style="text-align:center">38</td>
+            <td class="js-stat-num" style="text-align:center">2</td><td class="js-stat-num" style="text-align:center">28</td><td class="js-stat-num" style="text-align:center">70</td>
+            <td class="js-stat-num" style="text-align:center">1</td><td class="js-stat-num" style="text-align:center">8</td><td class="js-stat-num" style="text-align:center">18</td>
+            <td class="js-stat-num" style="text-align:center">3</td><td class="js-stat-num" style="text-align:center">20</td><td class="js-stat-num" style="text-align:center">54</td>
+            <td class="js-stat-num" style="text-align:center">2</td><td class="js-stat-num" style="text-align:center">10</td><td class="js-stat-num" style="text-align:center">22</td>
+            <td class="js-stat-num" style="text-align:center">2</td><td class="js-stat-num" style="text-align:center">14</td><td class="js-stat-num" style="text-align:center">38</td>
+            <td class="col-action"><button type="button" class="btn-text js-open-detail" data-contract="HT2026-0428">查看详情</button></td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr id="statsSummaryRow">
+            <td class="summary-dim" colspan="2" style="min-width:360px"><i class="fa-solid fa-calculator" style="margin-right:6px;color:var(--text-3)"></i>汇总</td>
+          </tr>
+        </tfoot>
+      </table>
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="os-modal-mask" id="detailModal" aria-hidden="true">
+  <div class="os-modal-dialog" role="dialog" aria-labelledby="detailModalTitle">
+    <div class="os-modal-head">
+      <div>
+        <h3 id="detailModalTitle">订单站址明细</h3>
+        <div class="os-modal-meta" id="detailModalMeta"></div>
+      </div>
+      <button type="button" class="os-modal-close" id="detailModalClose" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="os-modal-body">
+      <div class="os-table-scroll">
+        <table class="data-table" id="detailTable">
+          <thead>
+            <tr>
+              <th style="width:130px">订单编码</th>
+              <th style="min-width:140px">订单名称</th>
+              <th style="width:110px">站址编码</th>
+              <th style="min-width:110px">站点名称</th>
+              <th style="min-width:120px">关联工程</th>
+              <th style="min-width:110px">检测单位</th>
+              <th style="width:96px">任务状态</th>
+              <th style="width:88px">开票状态</th>
+              <th style="width:88px">收款状态</th>
+              <th style="width:88px">付款状态</th>
+            </tr>
+          </thead>
+          <tbody id="detailTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="os-modal-foot">
+      <button type="button" class="btn btn-default" id="detailModalOk">关闭</button>
+    </div>
+  </div>
+  </div>
+</div>
+
+<script src="../../../../assets/shared-layout.js"></script>
+<script>
+window.__layoutConfig = { active: 'order_stats', breadcrumb: ['统计分析', '订单统计'] };
+
+var CONTRACT_DETAILS = {
+  'HT2026-0512': {
+    code: 'HT2026-0512',
+    name: '杭州移动 2026 年度铁塔检测框架',
+    customer: '中国移动通信集团浙江有限公司',
+    items: [
+      { orderCode: 'DD202605003', orderName: '拱墅05#三管塔检测', siteCode: 'ZZ-HZ-GS05', siteName: '拱墅05#三管塔站', project: '拱墅区域改造项目', unit: '浙江中能检测', taskStatus: '检测中', invoiceStatus: '待开', receiptStatus: '待收', paymentStatus: '待付' },
+      { orderCode: 'DD202605003', orderName: '拱墅05#三管塔检测', siteCode: 'ZZ-HZ-GS05-02', siteName: '拱墅05#副站', project: '拱墅区域改造项目', unit: '浙江中能检测', taskStatus: '检测中', invoiceStatus: '待开', receiptStatus: '待收', paymentStatus: '待付' },
+      { orderCode: 'DD202605002', orderName: '城西03#角钢塔检测', siteCode: 'ZZ-HZ-CX03', siteName: '城西03#角钢塔站', project: '城西区域改造项目', unit: '杭州铁塔检测中心', taskStatus: '已完成', invoiceStatus: '已开', receiptStatus: '已收', paymentStatus: '已付' },
+      { orderCode: 'DD202605006', orderName: '下沙02#三管塔检测', siteCode: 'ZZ-HZ-XS02', siteName: '下沙02#三管塔站', project: '下沙专项工程', unit: '浙江中能检测', taskStatus: '待派单', invoiceStatus: '待开', receiptStatus: '待收', paymentStatus: '待付' },
+      { orderCode: 'DD202605001', orderName: '滨江基站安全性鉴定', siteCode: 'ZZ-HZ-BJ01', siteName: '滨江江南大道站', project: '滨江通信保障工程', unit: '浙江中能检测', taskStatus: '已完成', invoiceStatus: '已开', receiptStatus: '待收', paymentStatus: '已付' }
+    ]
+  },
+  'HT2026-0428': {
+    code: 'HT2026-0428',
+    name: '城西改造专项检测分包',
+    customer: '浙江某建设集团有限公司',
+    items: [
+      { orderCode: 'ZJHC20260505001', orderName: '城西改造项目检测', siteCode: 'ZZ-HZ-CX03', siteName: '城西03#角钢塔站', project: '城西区域改造项目', unit: '华东某外协检测', taskStatus: '已派单', invoiceStatus: '待开', receiptStatus: '待收', paymentStatus: '待付' },
+      { orderCode: 'ZJHC20260505001', orderName: '城西改造项目检测', siteCode: 'ZZ-HZ-CX04', siteName: '城西04#站点', project: '城西区域改造项目', unit: '华东某外协检测', taskStatus: '检测中', invoiceStatus: '待开', receiptStatus: '待收', paymentStatus: '待付' },
+      { orderCode: 'DD202605009', orderName: '余杭站点角钢塔巡检', siteCode: 'ZZ-HZ-YH09', siteName: '余杭角钢塔站', project: '余杭维护专项', unit: '杭州铁塔检测中心', taskStatus: '已完成', invoiceStatus: '已开', receiptStatus: '已收', paymentStatus: '已付' }
+    ]
+  }
+};
+
+function tagHtml(text, type) {
+  var map = {
+    '检测中': 'tag-blue', '已完成': 'tag-green', '待派单': 'tag-orange', '已派单': 'tag-blue',
+    '待开': 'tag-orange', '已开': 'tag-green',
+    '待收': 'tag-orange', '已收': 'tag-green',
+    '待付': 'tag-orange', '已付': 'tag-green'
+  };
+  return '<span class="tag ' + (map[text] || 'tag-gray') + '">' + text + '</span>';
+}
+
+function renderDetailRows(items) {
+  return items.map(function (r) {
+    return (
+      '<tr>' +
+      '<td>' + r.orderCode + '</td>' +
+      '<td>' + r.orderName + '</td>' +
+      '<td>' + r.siteCode + '</td>' +
+      '<td>' + (r.siteName || '—') + '</td>' +
+      '<td>' + r.project + '</td>' +
+      '<td>' + r.unit + '</td>' +
+      '<td>' + tagHtml(r.taskStatus) + '</td>' +
+      '<td>' + tagHtml(r.invoiceStatus) + '</td>' +
+      '<td>' + tagHtml(r.receiptStatus) + '</td>' +
+      '<td>' + tagHtml(r.paymentStatus || '—') + '</td>' +
+      '</tr>'
+    );
+  }).join('');
+}
+
+function openDetailModal(contractCode) {
+  var data = CONTRACT_DETAILS[contractCode];
+  if (!data) return;
+  document.getElementById('detailModalTitle').textContent = '订单站址明细 · ' + data.code;
+  document.getElementById('detailModalMeta').innerHTML =
+    '<strong>' + data.name + '</strong><br>关联客户：' + data.customer +
+    ' · 共 ' + data.items.length + ' 条站址记录';
+  document.getElementById('detailTableBody').innerHTML = renderDetailRows(data.items);
+  document.getElementById('detailModal').classList.add('open');
+  document.getElementById('detailModal').setAttribute('aria-hidden', 'false');
+}
+
+function closeDetailModal() {
+  document.getElementById('detailModal').classList.remove('open');
+  document.getElementById('detailModal').setAttribute('aria-hidden', 'true');
+}
+
+function renderStatsTableSummary() {
+  var tbody = document.querySelector('#statsTable tbody');
+  var footRow = document.getElementById('statsSummaryRow');
+  if (!tbody || !footRow) return;
+  var dataRows = tbody.querySelectorAll('tr[data-contract]');
+  var colCount = 0;
+  if (dataRows.length) {
+    colCount = dataRows[0].querySelectorAll('.js-stat-num').length;
+  }
+  var sums = [];
+  var i;
+  for (i = 0; i < colCount; i++) sums[i] = 0;
+  dataRows.forEach(function (tr) {
+    if (tr.style.display === 'none') return;
+    var nums = tr.querySelectorAll('.js-stat-num');
+    for (i = 0; i < nums.length; i++) {
+      var n = parseInt(String(nums[i].textContent || '').replace(/,/g, ''), 10);
+      if (!isNaN(n)) sums[i] += n;
+    }
+  });
+  var html = '<td class="summary-dim" colspan="2" style="min-width:360px"><i class="fa-solid fa-calculator" style="margin-right:6px;color:var(--text-3)"></i>汇总</td>';
+  for (i = 0; i < colCount; i++) {
+    var w = (i % 3 === 0) ? '56px' : '64px';
+    html += '<td class="summary-num" style="width:' + w + '">' + sums[i] + '</td>';
+  }
+  html += '<td class="summary-dim" style="text-align:center;color:var(--text-3);width:88px">—</td>';
+  footRow.innerHTML = html;
+}
+
+var FILTER_TREE = [
+  {
+    customer: '中国移动通信集团浙江有限公司',
+    contracts: [
+      {
+        code: 'HT2026-0512',
+        name: '杭州移动 2026 年度铁塔检测框架',
+        projects: [
+          { code: 'GC2026-0088', name: '杭州移动余杭站点包' },
+          { code: 'GC2026-0091', name: '临安整治项目' },
+          { code: 'GC2026-0103', name: '萧山站点复测' }
+        ]
+      }
+    ]
+  },
+  {
+    customer: '浙江某建设集团有限公司',
+    contracts: [
+      {
+        code: 'HT2026-0428',
+        name: '城西改造专项检测分包',
+        projects: [
+          { code: 'GC2026-0066', name: '城西改造专项' }
+        ]
+      }
+    ]
+  }
+];
+
+function initOrderStatsCascade() {
+  var pickCustomer = '';
+  var pickContract = '';
+  var pickProject = '';
+  var filterCustomer = document.getElementById('filterCustomer');
+  var filterContract = document.getElementById('filterContract');
+  var filterProject = document.getElementById('filterProject');
+  var filterCustomerDropdown = document.getElementById('filterCustomerDropdown');
+  var filterContractDropdown = document.getElementById('filterContractDropdown');
+  var filterProjectDropdown = document.getElementById('filterProjectDropdown');
+  if (!filterCustomer) return;
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+  }
+  function closeDropdowns() {
+    [filterCustomerDropdown, filterContractDropdown, filterProjectDropdown].forEach(function (el) {
+      if (el) el.classList.remove('open');
+    });
+  }
+  function getCustomerNode(name) {
+    return FILTER_TREE.filter(function (n) { return n.customer === name; })[0];
+  }
+  function getContractNode(customerName, contractCode) {
+    var node = getCustomerNode(customerName);
+    if (!node) return null;
+    return node.contracts.filter(function (c) { return c.code === contractCode; })[0];
+  }
+  function rowMatches(tr) {
+    var customer = tr.getAttribute('data-customer') || '';
+    var contract = tr.getAttribute('data-contract') || '';
+    var projects = String(tr.getAttribute('data-projects') || '').split(',');
+    if (pickCustomer && customer !== pickCustomer) return false;
+    if (pickContract && contract !== pickContract) return false;
+    if (pickProject && projects.indexOf(pickProject) < 0) return false;
+    return true;
+  }
+  function applyTableFilter() {
+    document.querySelectorAll('#statsTable tbody tr[data-contract]').forEach(function (tr) {
+      tr.style.display = rowMatches(tr) ? '' : 'none';
+    });
+    renderStatsTableSummary();
+  }
+  function renderCustomerDropdown(kw) {
+    var f = String(kw || '').trim().toLowerCase();
+    var list = FILTER_TREE.filter(function (n) {
+      return !f || n.customer.toLowerCase().indexOf(f) >= 0;
+    });
+    filterCustomerDropdown.innerHTML = list.length
+      ? list.map(function (n) {
+        return '<div class="search-select-item" data-customer="' + esc(n.customer) + '">' + esc(n.customer) + '</div>';
+      }).join('')
+      : '<div class="search-select-empty">无匹配客户</div>';
+  }
+  function renderContractDropdown(kw) {
+    if (!pickCustomer) {
+      filterContractDropdown.innerHTML = '<div class="search-select-empty">请先选择客户</div>';
+      return;
+    }
+    var f = String(kw || '').trim().toLowerCase();
+    var list = (getCustomerNode(pickCustomer).contracts || []).filter(function (c) {
+      if (!f) return true;
+      var label = c.code + ' · ' + c.name;
+      return c.code.toLowerCase().indexOf(f) >= 0 || c.name.toLowerCase().indexOf(f) >= 0 || label.toLowerCase().indexOf(f) >= 0;
+    });
+    filterContractDropdown.innerHTML = list.length
+      ? list.map(function (c) {
+        return '<div class="search-select-item" data-contract="' + esc(c.code) + '">' + esc(c.code + ' · ' + c.name) + '</div>';
+      }).join('')
+      : '<div class="search-select-empty">无匹配合同</div>';
+  }
+  function renderProjectDropdown(kw) {
+    if (!pickContract || !pickCustomer) {
+      filterProjectDropdown.innerHTML = '<div class="search-select-empty">请先选择合同</div>';
+      return;
+    }
+    var contract = getContractNode(pickCustomer, pickContract);
+    var f = String(kw || '').trim().toLowerCase();
+    var list = (contract && contract.projects || []).filter(function (p) {
+      if (!f) return true;
+      var label = p.name + '（' + p.code + '）';
+      return p.code.toLowerCase().indexOf(f) >= 0 || p.name.toLowerCase().indexOf(f) >= 0 || label.toLowerCase().indexOf(f) >= 0;
+    });
+    filterProjectDropdown.innerHTML = list.length
+      ? list.map(function (p) {
+        return '<div class="search-select-item" data-project="' + esc(p.code) + '">' + esc(p.name + '（' + p.code + '）') + '</div>';
+      }).join('')
+      : '<div class="search-select-empty">无匹配工程</div>';
+  }
+  function setCustomer(name) {
+    pickCustomer = name || '';
+    pickContract = '';
+    pickProject = '';
+    filterCustomer.value = pickCustomer;
+    filterContract.value = '';
+    filterProject.value = '';
+    filterContract.disabled = !pickCustomer;
+    filterContract.placeholder = pickCustomer ? '搜索合同编号/名称' : '请先选择客户';
+    filterProject.disabled = true;
+    filterProject.placeholder = '请先选择合同';
+    closeDropdowns();
+    applyTableFilter();
+  }
+  function setContract(code, name) {
+    pickContract = code || '';
+    pickProject = '';
+    filterContract.value = code ? (code + ' · ' + name) : '';
+    filterProject.value = '';
+    filterProject.disabled = !pickContract;
+    filterProject.placeholder = pickContract ? '搜索工程名称/编码' : '请先选择合同';
+    closeDropdowns();
+    applyTableFilter();
+  }
+  function setProject(code, name) {
+    pickProject = code || '';
+    filterProject.value = code ? (name + '（' + code + '）') : '';
+    closeDropdowns();
+    applyTableFilter();
+  }
+  function resetCascade() {
+    setCustomer('');
+    renderCustomerDropdown('');
+    renderContractDropdown('');
+    renderProjectDropdown('');
+  }
+
+  filterCustomer.addEventListener('focus', function () {
+    renderCustomerDropdown(filterCustomer.value);
+    filterCustomerDropdown.classList.add('open');
+    filterContractDropdown.classList.remove('open');
+    filterProjectDropdown.classList.remove('open');
+  });
+  filterCustomer.addEventListener('input', function () {
+    if (!String(filterCustomer.value || '').trim()) setCustomer('');
+    else renderCustomerDropdown(filterCustomer.value);
+    filterCustomerDropdown.classList.add('open');
+  });
+  filterCustomer.addEventListener('blur', function () { setTimeout(closeDropdowns, 150); });
+  filterCustomerDropdown.addEventListener('mousedown', function (e) {
+    var item = e.target.closest('.search-select-item');
+    if (!item) return;
+    setCustomer(item.getAttribute('data-customer') || '');
+  });
+
+  filterContract.addEventListener('focus', function () {
+    if (!pickCustomer) return;
+    renderContractDropdown(filterContract.value);
+    filterContractDropdown.classList.add('open');
+    filterCustomerDropdown.classList.remove('open');
+    filterProjectDropdown.classList.remove('open');
+  });
+  filterContract.addEventListener('input', function () {
+    if (!pickCustomer) return;
+    if (!String(filterContract.value || '').trim()) {
+      pickContract = '';
+      pickProject = '';
+      filterProject.disabled = true;
+      filterProject.value = '';
+    }
+    renderContractDropdown(filterContract.value);
+    filterContractDropdown.classList.add('open');
+  });
+  filterContract.addEventListener('blur', function () { setTimeout(closeDropdowns, 150); });
+  filterContractDropdown.addEventListener('mousedown', function (e) {
+    var item = e.target.closest('.search-select-item');
+    if (!item) return;
+    var code = item.getAttribute('data-contract') || '';
+    var c = getContractNode(pickCustomer, code);
+    if (c) setContract(c.code, c.name);
+  });
+
+  filterProject.addEventListener('focus', function () {
+    if (!pickContract) return;
+    renderProjectDropdown(filterProject.value);
+    filterProjectDropdown.classList.add('open');
+    filterCustomerDropdown.classList.remove('open');
+    filterContractDropdown.classList.remove('open');
+  });
+  filterProject.addEventListener('input', function () {
+    if (!pickContract) return;
+    if (!String(filterProject.value || '').trim()) pickProject = '';
+    renderProjectDropdown(filterProject.value);
+    filterProjectDropdown.classList.add('open');
+  });
+  filterProject.addEventListener('blur', function () { setTimeout(closeDropdowns, 150); });
+  filterProjectDropdown.addEventListener('mousedown', function (e) {
+    var item = e.target.closest('.search-select-item');
+    if (!item) return;
+    var code = item.getAttribute('data-project') || '';
+    var c = getContractNode(pickCustomer, pickContract);
+    var p = c && c.projects.filter(function (x) { return x.code === code; })[0];
+    if (p) setProject(p.code, p.name);
+  });
+
+  var btnSearch = document.getElementById('btnStatsSearch');
+  var btnReset = document.getElementById('btnStatsReset');
+  if (btnSearch) btnSearch.addEventListener('click', applyTableFilter);
+  if (btnReset) btnReset.addEventListener('click', function () {
+    resetCascade();
+    var ds = document.getElementById('statsDateStart');
+    var de = document.getElementById('statsDateEnd');
+    if (ds) ds.value = '2026-01-01';
+    if (de) de.value = '2026-05-28';
+    document.querySelectorAll('#statsTable tbody tr[data-contract]').forEach(function (tr) {
+      tr.style.display = '';
+    });
+    renderStatsTableSummary();
+  });
+}
+
+window.__prototypePageInit = function () {
+  initOrderStatsCascade();
+  renderStatsTableSummary();
+  document.querySelectorAll('.js-open-detail').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      openDetailModal(btn.getAttribute('data-contract'));
+    });
+  });
+  document.getElementById('detailModalClose').addEventListener('click', closeDetailModal);
+  document.getElementById('detailModalOk').addEventListener('click', closeDetailModal);
+  document.getElementById('detailModal').addEventListener('click', function (e) {
+    if (e.target === document.getElementById('detailModal')) closeDetailModal();
+  });
+};
+</script>
+</body>
+</html>

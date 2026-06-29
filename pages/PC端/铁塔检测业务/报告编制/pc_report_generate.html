@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>报告编制</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .two-col { display:flex; gap:20px; min-height:calc(100vh - 180px); }
+  .left-panel { width:25%; flex-shrink:0; }
+  .right-panel { flex:1; min-width:0; }
+  .tree-nav { list-style:none; padding:0; }
+  .tree-nav li { padding:10px 16px; font-size:13px; color:var(--text-2); cursor:pointer; border-left:3px solid transparent; transition:all .2s; }
+  .tree-nav li:hover { background:var(--primary-bg); color:var(--primary); }
+  .tree-nav li.active { background:var(--primary-bg); color:var(--primary); border-left-color:var(--primary); font-weight:500; }
+  .alert-bar { background:#FFFBE6; border:1px solid #FFE58F; border-radius:4px; padding:10px 16px; font-size:13px; color:#D4760A; margin-bottom:20px; display:flex; align-items:center; gap:8px; }
+  .readonly-field { background:#F7F8FA; border:1px solid var(--border); border-radius:4px; padding:6px 12px; font-size:13px; color:var(--text-2); height:32px; display:flex; align-items:center; }
+  .signature-area { border:1px dashed var(--border); border-radius:4px; padding:24px; text-align:center; color:var(--text-4); font-size:13px; min-height:100px; display:flex; align-items:center; justify-content:center; }
+  .radio-group { display:flex; gap:20px; align-items:center; }
+  .radio-group label { display:flex; align-items:center; gap:6px; font-size:13px; color:var(--text-2); cursor:pointer; }
+</style>
+</head>
+<body>
+<div id="page-content">
+
+  <div class="card" style="margin-bottom:16px;border:1px solid #bfdbfe;background:#eff6ff;">
+    <div class="card-body" style="padding:10px 16px;font-size:13px;color:#1e3a8a;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+      <div style="flex:1;min-width:220px;line-height:1.6;">
+        <div><i class="fa-solid fa-circle-info"></i> 报告编制数据由检测任务<strong>检毕通过</strong>后<strong>自动复制</strong>；状态「待编制 → 编制中 → 已编制 → 已出报告」，审核含主管、抄送与可选加签（见 <a href="report-list.html" style="color:#1d4ed8;text-decoration:underline;">报告列表</a>）。</div>
+        <div style="margin-top:8px;font-size:12px;color:#334155;">左侧目录与段落样式由「检测模板」中报告子模板章节配置驱动，与本页一对一映射。</div>
+      </div>
+      <a href="../../模板配置/检测模板/pc_inspect_template_list.html" class="btn btn-default btn-sm" style="flex-shrink:0;">检测模板</a>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <!-- Left Panel -->
+    <div class="left-panel">
+      <div class="card" style="position:sticky;top:20px;">
+        <div class="card-header"><div class="card-title">报告结构</div></div>
+        <div class="card-body" style="padding:0;">
+          <ul class="tree-nav">
+            <li>封面</li>
+            <li>目录</li>
+            <li>一、检测依据</li>
+            <li>二、检测设备</li>
+            <li>三、铁塔概况</li>
+            <li class="active">四、检测结果</li>
+            <li>五、不合格项分析</li>
+            <li>六、检测结论</li>
+            <li>七、签字页</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="right-panel">
+      <div class="card">
+        <div class="card-header"><div class="card-title">编辑区域</div></div>
+        <div class="card-body">
+          <div class="alert-bar">
+            <i class="fa-solid fa-circle-info"></i>
+            以下灰色字段自动从基础档案填充，禁止手动修改          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">基本信息（自动填充）</div>
+            <div class="form-grid form-grid-3">
+              <div class="form-group">
+                <label class="form-label">委托单位</label>
+                <div class="readonly-field">杭州移动通信有限公司</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">工程名称</label>
+                <div class="readonly-field">杭州移动铁塔工程</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">铁塔名称</label>
+                <div class="readonly-field">滨江01#单管</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">检测日</label>
+                <div class="readonly-field">2026-05-04</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">鉴定类别</label>
+                <div class="readonly-field">安全性鉴</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">编辑内容</div>
+            <div class="form-grid">
+              <div class="form-group full">
+                <label class="form-label">检测结果描述</label>
+                <textarea class="form-textarea" style="min-height:120px" placeholder="请详细描述检测结果">经检测，滨江01#单管塔共5段，其中第4段发现2颗M24高强螺栓松动，第3段法兰间隙为1.2mm（标准要求≤1.0mm），其余各段检测指标均在正常范围内。塔身整体倾斜率为0.12%，满足规范要求（≤0.2%）。</textarea>
+              </div>
+              <div class="form-group full">
+                <label class="form-label">处理建议</label>
+                <textarea class="form-textarea" placeholder="请输入处理建议">1. 第4段松动螺栓需立即进行紧固处理。2. 第3段法兰间隙偏大，建议增加垫片调整。3. 建议6个月后进行复检。</textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">检测结果<span class="required">*</span></label>
+                <div class="radio-group">
+                  <label><input type="radio" name="conclusion"> 合格</label>
+                  <label><input type="radio" name="conclusion" checked> 不合格</label>
+                </div>
+              </div>
+              <div class="form-group full">
+                <label class="form-label">备注</label>
+                <textarea class="form-textarea" placeholder="请输入备注信息"""""></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">签字区</div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
+              <div>
+                <div style="font-size:13px;color:var(--text-2);margin-bottom:8px;text-align:center;">编制</div>
+                <div class="signature-area"><i class="fa-solid fa-signature" style="font-size:24px;margin-right:8px;"></i> 签名区域</div>
+              </div>
+              <div>
+                <div style="font-size:13px;color:var(--text-2);margin-bottom:8px;text-align:center;">审核</div>
+                <div class="signature-area"><i class="fa-solid fa-signature" style="font-size:24px;margin-right:8px;"></i> 签名区域</div>
+              </div>
+              <div>
+                <div style="font-size:13px;color:var(--text-2);margin-bottom:8px;text-align:center;">签发</div>
+                <div class="signature-area"><i class="fa-solid fa-signature" style="font-size:24px;margin-right:8px;"></i> 签名区域</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-footer">
+            <button class="btn btn-default">保存草稿</button>
+            <a href="pc_report_generate_preview.html" class="btn btn-default">预览报告</a>
+            <button class="btn btn-primary">提交审核</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'report_generate', breadcrumb:['检测管理','报告编制']};</script>
+</body>
+</html>
+

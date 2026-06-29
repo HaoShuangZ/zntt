@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>开启检测任务</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/app-frame.css">
+<style>
+html{background:#165DFF;height:100%}
+html,body{height:100%;overflow:hidden;margin:0}
+body{
+  display:flex;
+  flex-direction:column;
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;
+  background:#F2F3F5;
+}
+.header-fixed{
+  flex-shrink:0;
+  z-index:50;
+  background:#165DFF;
+  color:#fff;
+  box-shadow:0 4px 14px rgba(0,0,0,.08);
+}
+.status-bar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:calc(8px + env(safe-area-inset-top, 0px)) 18px 6px;
+  font-size:14px;
+  font-weight:600;
+  letter-spacing:-0.02em;
+  color:rgba(255,255,255,.95);
+  -webkit-user-select:none;user-select:none;
+}
+.status-bar .status-icons{font-size:12px;opacity:.92;letter-spacing:4px}
+.top{
+  display:flex;
+  align-items:center;
+  padding:4px 12px 10px;
+  font-size:15px;
+  font-weight:600;
+  box-sizing:border-box;
+}
+.top a{color:#fff;opacity:.92;margin-right:10px;text-decoration:none}
+.scroll-main{
+  flex:1;
+  min-height:0;
+  overflow-x:hidden;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  padding:14px 16px 16px;
+  background:#F2F3F5;
+}
+.step-card{background:#fff;border-radius:16px;padding:16px;margin-bottom:12px;border:1px solid #E5E6EB;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.step-h{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.step-num{width:26px;height:26px;border-radius:8px;background:#E8F3FF;color:#165DFF;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-num.done{background:#E8FFEA;color:#00B42A}
+.step-title{font-size:15px;font-weight:600;color:#1D2129}
+.hint{font-size:12px;color:#86909C;line-height:1.55;margin-top:4px}
+.fixb{
+  flex-shrink:0;
+  padding:10px 14px calc(12px + env(safe-area-inset-bottom, 0px));
+  background:#fff;
+  border-top:1px solid #E5E6EB;
+}
+.btn-next{display:block;width:100%;text-align:center;padding:14px;border-radius:14px;background:#165DFF;color:#fff;font-size:15px;font-weight:600;text-decoration:none;border:none;cursor:pointer;font-family:inherit}
+.btn-next:disabled{opacity:.45;cursor:not-allowed}
+.panel{display:none}
+.panel.on{display:block}
+</style>
+</head>
+<body>
+
+<div class="header-fixed">
+  <div class="status-bar" aria-hidden="true">
+    <span>9:41</span>
+    <span class="status-icons" aria-hidden="true">
+      <i class="fa-solid fa-signal"></i>
+      <i class="fa-solid fa-wifi"></i>
+      <i class="fa-solid fa-battery-full"></i>
+    </span>
+  </div>
+  <div class="top">
+    <a id="wizBack" href="../../工单/详情/app_order_detail.html"><i class="fa-solid fa-chevron-left"></i></a>
+    开启检测任务
+  </div>
+</div>
+
+<main class="scroll-main">
+
+  <div id="p1" class="panel on">
+    <div class="step-card">
+      <div class="step-h">
+        <span class="step-num">1</span>
+        <div><div class="step-title">选择塔型</div></div>
+      </div>
+      <select id="towerType" class="form-select" style="width:100%;height:44px;border-radius:10px;border:1px solid #E5E6EB;padding:0 12px;font-size:15px">
+        <option value="">请选择</option>
+        <option value="single" selected>单管塔</option>
+        <option value="angle">角钢塔</option>
+        <option value="guyed">拉线杆</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="p2" class="panel">
+    <div class="step-card">
+      <div class="step-h">
+        <span class="step-num">2</span>
+        <div><div class="step-title">塔段数量</div></div>
+      </div>
+      <input type="number" id="segN" class="form-input" value="6" min="1" max="12" style="width:100%;height:44px;border-radius:10px;border:1px solid #E5E6EB;padding:0 12px;font-size:16px;box-sizing:border-box">
+    </div>
+  </div>
+
+  <div id="p3" class="panel">
+    <div class="step-card">
+      <div class="step-h">
+        <span class="step-num">3</span>
+        <div><div class="step-title">检测任务模板</div></div>
+      </div>
+      <label style="display:flex;align-items:flex-start;gap:10px;padding:12px;border:1px solid #165DFF;border-radius:12px;background:#F5F9FF;cursor:pointer">
+        <input type="radio" name="tpl" checked style="margin-top:3px">
+        <div>
+          <div style="font-size:14px;font-weight:600;color:#1D2129">存量单管塔原始记录包</div>
+          <div style="font-size:12px;color:#86909C;margin-top:4px">PKG_STOCK_SINGLE_PIPE_20260509 · v1.2 已发布</div>
+        </div>
+      </label>
+    </div>
+  </div>
+</main>
+
+<div class="fixb">
+  <button type="button" class="btn-next" id="btnPrimary">下一步</button>
+</div>
+
+<script>
+(function(){
+  var orderId = '';
+  try { orderId = (new URLSearchParams(location.search).get('order') || '').trim().toUpperCase(); } catch (e) {}
+  if (!orderId) orderId = 'DD20260506001';
+  var back = document.getElementById('wizBack');
+  if (back) back.href = '../../工单/详情/app_order_detail.html?order=' + encodeURIComponent(orderId);
+
+  var step = 1;
+  var btn = document.getElementById('btnPrimary');
+  function showPanel() {
+    for (var i = 1; i <= 3; i++) {
+      document.getElementById('p' + i).classList.toggle('on', i === step);
+    }
+    if (step === 1) {
+      btn.textContent = '下一步';
+      btn.disabled = !document.getElementById('towerType').value;
+    } else if (step === 2) {
+      btn.textContent = '下一步';
+      var n = parseInt(document.getElementById('segN').value, 10);
+      btn.disabled = !n || n < 1;
+    } else {
+      btn.textContent = '进入填报主页';
+      btn.disabled = false;
+    }
+  }
+  document.getElementById('towerType').addEventListener('change', function(){ if(step===1) showPanel(); });
+  document.getElementById('segN').addEventListener('input', function(){ if(step===2) showPanel(); });
+  btn.addEventListener('click', function(){
+    if (btn.disabled) return;
+    if (step < 3) { step++; showPanel(); return; }
+    try { sessionStorage.setItem('tower_app_active_inspect_order', orderId); } catch (e) {}
+    location.href = '../填报主页/app_task_inspect_home.html?order=' + encodeURIComponent(orderId);
+  });
+  showPanel();
+})();
+</script>
+</body>
+</html>

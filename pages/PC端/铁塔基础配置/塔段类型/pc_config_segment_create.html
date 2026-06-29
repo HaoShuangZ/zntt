@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新增塔段模板 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-1);
+    margin-bottom: 12px;
+    padding-left: 10px;
+    border-left: 3px solid var(--primary);
+  }
+  .form-section { padding: 12px 0 4px; }
+  .error-text { font-size: 12px; color: var(--danger); min-height: 18px; line-height: 18px; }
+  .save-tip {
+    display: none;
+    margin: 0 20px 16px;
+    padding: 10px 12px;
+    border-radius: 4px;
+    border: 1px solid #b8e7c3;
+    background: #f2fff5;
+    color: #007a1f;
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+<div id="page-content">
+  <div class="page-header">
+    <div style="display:flex;align-items:center;gap:12px">
+      <a href="pc_config_segment.html" class="btn btn-default btn-sm"><i class="fa-solid fa-arrow-left"></i> 返回列表</a>
+      <h1 class="page-title">新增塔段模板</h1>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="form-section">
+        <div class="section-title">模板基础信息</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <span class="form-label">模板编码 <span class="required">*</span></span>
+            <input id="templateCode" class="form-input" placeholder="请输入模板编码，例如：TD04" maxlength="12">
+            <div class="error-text" id="templateCodeError"></div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">模板名称 <span class="required">*</span></span>
+            <input id="templateName" class="form-input" placeholder="请输入模板名称">
+            <div class="error-text" id="templateNameError"></div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">适用塔型 <span class="required">*</span></span>
+            <select id="towerType" class="form-select" style="width:100%">
+              <option value="">请选择</option>
+              <option value="单管">单管</option>
+              <option value="角钢">角钢</option>
+              <option value="三管">三管</option>
+              <option value="四管">四管</option>
+              <option value="通用">通用</option>
+            </select>
+            <div class="error-text" id="towerTypeError"></div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">检测项目数</span>
+            <input id="itemCount" type="number" class="form-input" min="0" step="1" placeholder="请输入检测项目数">
+            <div class="error-text" id="itemCountError"></div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">状态 <span class="required">*</span></span>
+            <select id="status" class="form-select" style="width:100%">
+              <option value="">请选择</option>
+              <option value="启用">启用</option>
+              <option value="停用">停用</option>
+            </select>
+            <div class="error-text" id="statusError"></div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">排序</span>
+            <input id="sortNo" type="number" class="form-input" min="0" step="1" placeholder="请输入排序值">
+            <div class="error-text" id="sortNoError"></div>
+          </div>
+          <div class="form-group full">
+            <span class="form-label">模板说明</span>
+            <textarea id="remark" class="form-textarea" placeholder="请输入模板说明"></textarea>
+            <div class="error-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="save-tip" id="saveTip">保存成功。1.2 秒后返回列表页面。</div>
+    <div class="form-footer">
+      <button class="btn btn-primary" id="saveBtn">保存</button>
+      <button class="btn btn-default" id="saveContinueBtn">保存并继续新增</button>
+      <button class="btn btn-default" id="cancelBtn">取消</button>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'config_segment', breadcrumb:['铁塔基础配置','塔段类型','新增模板']};</script>
+<script>
+  (function () {
+    const templateCodeInput = document.getElementById('templateCode');
+    const templateNameInput = document.getElementById('templateName');
+    const towerTypeInput = document.getElementById('towerType');
+    const itemCountInput = document.getElementById('itemCount');
+    const statusInput = document.getElementById('status');
+    const sortNoInput = document.getElementById('sortNo');
+    const remarkInput = document.getElementById('remark');
+    const saveTip = document.getElementById('saveTip');
+
+    function setError(id, text) {
+      const node = document.getElementById(id);
+      if (node) node.textContent = text || '';
+    }
+
+    function clearErrors() {
+      setError('templateCodeError', '');
+      setError('templateNameError', '');
+      setError('towerTypeError', '');
+      setError('itemCountError', '');
+      setError('statusError', '');
+      setError('sortNoError', '');
+    }
+
+    function validate() {
+      clearErrors();
+      let ok = true;
+      const templateCode = (templateCodeInput.value || '').trim();
+      const templateName = (templateNameInput.value || '').trim();
+      const towerType = (towerTypeInput.value || '').trim();
+      const itemCount = (itemCountInput.value || '').trim();
+      const status = (statusInput.value || '').trim();
+      const sortNo = (sortNoInput.value || '').trim();
+
+      if (!/^[A-Za-z0-9_-]{2,12}$/.test(templateCode)) {
+        setError('templateCodeError', '编码需为2-12位字母/数字/下划线/中划线');
+        ok = false;
+      }
+      if (!templateName) {
+        setError('templateNameError', '请输入模板名称');
+        ok = false;
+      }
+      if (!towerType) {
+        setError('towerTypeError', '请选择适用塔型');
+        ok = false;
+      }
+      if (!status) {
+        setError('statusError', '请选择状态');
+        ok = false;
+      }
+      if (itemCount && !/^\d+$/.test(itemCount)) {
+        setError('itemCountError', '检测项目数需为非负整数');
+        ok = false;
+      }
+      if (sortNo && !/^\d+$/.test(sortNo)) {
+        setError('sortNoError', '排序值需为非负整数');
+        ok = false;
+      }
+      return ok;
+    }
+
+    function resetForm() {
+      templateCodeInput.value = '';
+      templateNameInput.value = '';
+      towerTypeInput.value = '';
+      itemCountInput.value = '';
+      statusInput.value = '';
+      sortNoInput.value = '';
+      remarkInput.value = '';
+      clearErrors();
+      templateCodeInput.focus();
+    }
+
+    function save(continueCreate) {
+      if (!validate()) return;
+      saveTip.style.display = 'block';
+
+      if (continueCreate) {
+        window.setTimeout(function () {
+          saveTip.style.display = 'none';
+          resetForm();
+        }, 1000);
+        return;
+      }
+
+      window.setTimeout(function () {
+        location.href = 'pc_config_segment.html';
+      }, 1200);
+    }
+
+    document.getElementById('saveBtn').addEventListener('click', function () {
+      save(false);
+    });
+    document.getElementById('saveContinueBtn').addEventListener('click', function () {
+      save(true);
+    });
+    document.getElementById('cancelBtn').addEventListener('click', function () {
+      location.href = 'pc_config_segment.html';
+    });
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>任务列表</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="../../../../assets/app-frame.css">
+<style>
+body.app-order-map-page {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+  margin: 0;
+  background: #F2F3F5;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.app-map-status {
+  flex-shrink: 0;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background: linear-gradient(135deg, #165DFF 0%, #4080FF 100%);
+  color: #fff;
+  box-sizing: border-box;
+}
+.app-map-status span:first-child { font-size: 14px; font-weight: 600; }
+.app-map-status span:last-child { font-size: 12px; opacity: 0.95; }
+.app-map-nav {
+  flex-shrink: 0;
+  height: 44px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  column-gap: 8px;
+  padding: 0 16px;
+  background: #fff;
+  border-bottom: 1px solid #E5E6EB;
+  box-sizing: border-box;
+}
+.app-map-nav > a { justify-self: start; color: #165DFF; text-decoration: none; font-size: 14px; }
+.app-map-nav > .app-map-nav-title {
+  grid-column: 2;
+  justify-self: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1D2129;
+  max-width: 56vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.app-map-nav > .app-map-nav-spacer { width: 40px; justify-self: end; }
+.app-map-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+.map-wrap {
+  position: relative;
+  height: 42vh;
+  min-height: 220px;
+  max-height: 52vh;
+  flex-shrink: 0;
+  background: #E5E6EB;
+}
+#tower-map { width: 100%; height: 100%; min-height: 220px; z-index: 1; }
+.tower-map-marker { background: transparent !important; border: none !important; }
+.tower-pin-inner {
+  width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  color: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.22); border: 2px solid #fff;
+  font-size: 14px;
+}
+.user-loc-marker { background: transparent !important; border: none !important; }
+.user-loc-inner {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: #165DFF;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 2px rgba(22, 93, 255, 0.45), 0 2px 12px rgba(0,0,0,0.2);
+  box-sizing: border-box;
+  animation: user-loc-pulse 2s ease-out infinite;
+}
+@keyframes user-loc-pulse {
+  0% { box-shadow: 0 0 0 2px rgba(22, 93, 255, 0.55), 0 2px 12px rgba(0,0,0,0.2); }
+  70% { box-shadow: 0 0 0 14px rgba(22, 93, 255, 0), 0 2px 12px rgba(0,0,0,0.15); }
+  100% { box-shadow: 0 0 0 2px rgba(22, 93, 255, 0.55), 0 2px 12px rgba(0,0,0,0.2); }
+}
+.map-fs-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #1D2129;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.map-fs-btn:active { opacity: 0.88; }
+.app-map-list {
+  padding: 12px 16px calc(24px + env(safe-area-inset-bottom, 0px));
+}
+#mapOrderList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.map-order-wrap {
+  flex-shrink: 0;
+  cursor: default;
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+.map-order-wrap:active { transform: scale(0.998); }
+.map-order-wrap.is-active .map-order-inner {
+  box-shadow: 0 0 0 2px #165DFF, 0 2px 8px rgba(0,0,0,0.06);
+}
+.map-order-inner {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  border: 1px solid rgba(229, 230, 235, 0.9);
+  overflow: hidden;
+}
+.map-order-main {
+  display: block;
+  padding: 12px 14px 12px;
+  text-decoration: none;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+.tag-f { padding: 2px 8px; border-radius: 4px; font-size: 11px; }
+.card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  color: #4E5969;
+  line-height: 1.45;
+}
+.card-meta > div {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+}
+.card-meta .deadline-date {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-variant-numeric: tabular-nums;
+}
+.card-nav-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 14px 10px;
+  border-top: 1px solid #F2F3F5;
+  background: #FAFBFC;
+  font-size: 12px;
+  color: #165DFF;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+}
+.card-nav-row:active { background: #F0F5FF; }
+.card-nav-row .coord-txt {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  letter-spacing: 0.02em;
+  color: #1D2129;
+}
+.card-nav-row .coord-txt i { color: #165DFF; margin-right: 6px; font-size: 11px; }
+.card-nav-row span.hint { flex-shrink: 0; font-size: 11px; color: #86909C; font-weight: 500; }
+.leaflet-popup-content-wrapper { border-radius: 10px; }
+.leaflet-popup-content { margin: 10px 12px; font-size: 13px; line-height: 1.5; }
+.map-fs-layer {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 8000;
+  flex-direction: column;
+  background: #000;
+}
+.map-fs-layer.on { display: flex; }
+.map-fs-head {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px calc(10px + env(safe-area-inset-top, 0px));
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+}
+.map-fs-head span { font-size: 15px; font-weight: 600; }
+.map-fs-close {
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-family: inherit;
+  cursor: pointer;
+}
+.map-fs-body {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+.map-fs-body .map-wrap {
+  height: 100% !important;
+  max-height: none !important;
+  min-height: 0 !important;
+}
+.map-fs-body .map-fs-btn {
+  display: none !important;
+}
+</style>
+</head>
+<body class="app-order-map-page">
+<div class="app-map-status">
+  <span>9:41</span>
+  <span><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+</div>
+<div class="app-map-nav">
+  <a href="../../工作台/首页/app_workbench_index.html#orders"><i class="fa-solid fa-chevron-left"></i> 返回</a>
+  <span class="app-map-nav-title">任务列表</span>
+  <span class="app-map-nav-spacer" aria-hidden="true"></span>
+</div>
+<div class="app-map-scroll" id="appMapScroll">
+  <div class="map-wrap" id="mapWrapHost">
+    <div id="tower-map" role="application" aria-label="铁塔位置地图"></div>
+    <button type="button" class="map-fs-btn" id="btnMapFullscreen" aria-label="全屏查看地图">
+      <i class="fa-solid fa-expand" aria-hidden="true"></i> 全屏地图
+    </button>
+  </div>
+  <div class="app-map-list">
+  <div id="mapOrderList">
+    <div class="map-order-wrap" data-idx="0">
+      <div class="map-order-inner">
+        <a class="map-order-main" href="../详情/app_order_detail.html">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="font-size:12px; color:#86909C; font-family:ui-monospace,monospace;">DD20260506001</span>
+            <span class="tag-f" style="background:#E8F7FF; color:#165DFF;">待检测</span>
+          </div>
+          <div style="font-size:15px; font-weight:600; color:#1D2129; margin-bottom:10px; line-height:1.35; font-family:ui-monospace,monospace;">ZZ-HZ-BJ01</div>
+          <div class="card-meta">
+            <div><i class="fa-regular fa-calendar" style="width:14px;color:#C9CDD4;flex-shrink:0;"></i> 截止日期 <span class="deadline-date">2026-05-15</span></div>
+          </div>
+        </a>
+        <a class="card-nav-row" href="https://uri.amap.com/navigation?to=120.2126,30.2084&amp;mode=car&amp;src=tower-app&amp;callnative=1" target="_blank" rel="noopener noreferrer" title="在高德地图中打开导航">
+          <span class="coord-txt"><i class="fa-solid fa-crosshairs" aria-hidden="true"></i>120.2126，30.2084</span>
+          <span class="hint">地图导航 <i class="fa-solid fa-chevron-right" style="font-size:10px;"></i></span>
+        </a>
+      </div>
+    </div>
+    <div class="map-order-wrap" data-idx="1">
+      <div class="map-order-inner">
+        <a class="map-order-main" href="../详情/app_order_detail.html">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="font-size:12px; color:#86909C; font-family:ui-monospace,monospace;">DD20260507002</span>
+            <span class="tag-f" style="background:#FFF7E8; color:#FF7D00;">检测中</span>
+          </div>
+          <div style="font-size:15px; font-weight:600; color:#1D2129; margin-bottom:10px; line-height:1.35; font-family:ui-monospace,monospace;">ZZ-HZ-CX03</div>
+          <div class="card-meta">
+            <div><i class="fa-regular fa-calendar" style="width:14px;color:#C9CDD4;flex-shrink:0;"></i> 截止日期 <span class="deadline-date">2026-05-18</span></div>
+          </div>
+        </a>
+        <a class="card-nav-row" href="https://uri.amap.com/navigation?to=120.0891,30.2955&amp;mode=car&amp;src=tower-app&amp;callnative=1" target="_blank" rel="noopener noreferrer" title="在高德地图中打开导航">
+          <span class="coord-txt"><i class="fa-solid fa-crosshairs" aria-hidden="true"></i>120.0891，30.2955</span>
+          <span class="hint">地图导航 <i class="fa-solid fa-chevron-right" style="font-size:10px;"></i></span>
+        </a>
+      </div>
+    </div>
+    <div class="map-order-wrap" data-idx="2">
+      <div class="map-order-inner">
+        <a class="map-order-main" href="../详情/app_order_detail.html">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="font-size:12px; color:#86909C; font-family:ui-monospace,monospace;">DD20260508003</span>
+            <span class="tag-f" style="background:#E8FFEA; color:#00B42A;">已检测</span>
+          </div>
+          <div style="font-size:15px; font-weight:600; color:#1D2129; margin-bottom:10px; line-height:1.35; font-family:ui-monospace,monospace;">ZZ-HZ-XS02</div>
+          <div class="card-meta">
+            <div><i class="fa-regular fa-calendar" style="width:14px;color:#C9CDD4;flex-shrink:0;"></i> 截止日期 <span class="deadline-date">2026-05-12</span></div>
+          </div>
+        </a>
+        <a class="card-nav-row" href="https://uri.amap.com/navigation?to=120.1812,30.2318&amp;mode=car&amp;src=tower-app&amp;callnative=1" target="_blank" rel="noopener noreferrer" title="在高德地图中打开导航">
+          <span class="coord-txt"><i class="fa-solid fa-crosshairs" aria-hidden="true"></i>120.1812，30.2318</span>
+          <span class="hint">地图导航 <i class="fa-solid fa-chevron-right" style="font-size:10px;"></i></span>
+        </a>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<div class="map-fs-layer" id="mapFullscreenLayer" aria-hidden="true">
+  <div class="map-fs-head">
+    <span>地图全屏</span>
+    <button type="button" class="map-fs-close" id="btnMapFsClose"><i class="fa-solid fa-compress" style="margin-right:6px;"></i>退出全屏</button>
+  </div>
+  <div class="map-fs-body" id="mapFsBody"></div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function () {
+  var TOWER_POINTS = [
+    { lat: 30.2084, lng: 120.2126, name: '滨江区01#单管塔', towerType: '单管塔', status: '待检测', order: 'DD20260506001', siteCode: 'ZZ-HZ-BJ01', deadline: '2026-05-15', color: '#165DFF', icon: 'fa-clipboard-list' },
+    { lat: 30.2955, lng: 120.0891, name: '城西区03#角钢塔', towerType: '角钢塔', status: '检测中', order: 'DD20260507002', siteCode: 'ZZ-HZ-CX03', deadline: '2026-05-18', color: '#FF7D00', icon: 'fa-screwdriver-wrench' },
+    { lat: 30.2318, lng: 120.1812, name: '萧山区05#三管塔', towerType: '三管塔', status: '已检测', order: 'DD20260508003', siteCode: 'ZZ-HZ-XS02', deadline: '2026-05-12', color: '#00B42A', icon: 'fa-circle-check' }
+  ];
+
+  var DEMO_USER = { lat: 30.2741, lng: 120.1551 };
+
+  function makeDivIcon(p) {
+    return L.divIcon({
+      className: 'tower-map-marker',
+      html: '<div class="tower-pin-inner" style="background:' + p.color + '"><i class="fa-solid ' + p.icon + '"></i></div>',
+      iconSize: [34, 34],
+      iconAnchor: [17, 34],
+      popupAnchor: [0, -30]
+    });
+  }
+
+  var userIcon = L.divIcon({
+    className: 'user-loc-marker',
+    html: '<div class="user-loc-inner" title="我的位置"></div>',
+    iconSize: [22, 22],
+    iconAnchor: [11, 11],
+    popupAnchor: [0, -12]
+  });
+
+  var map = L.map('tower-map', { zoomControl: true, attributionControl: true });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap'
+  }).addTo(map);
+
+  var markers = [];
+  var layers = [];
+  TOWER_POINTS.forEach(function (p, i) {
+    var m = L.marker([p.lat, p.lng], { title: p.siteCode + ' · ' + p.status, icon: makeDivIcon(p) });
+    m.bindPopup(
+      '<strong style="display:block;margin-bottom:4px;font-family:ui-monospace,monospace;">' + p.siteCode + '</strong>' +
+      '<span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;background:' + p.color + '22;color:' + p.color + ';margin-bottom:6px;">' + p.status + '</span><br>' +
+      '<span style="color:#86909C;font-size:12px;">' + p.name + ' · ' + p.towerType + '</span><br>' +
+      '订单 ' + p.order + '<br>站址编码 ' + p.siteCode + '<br>' +
+      '截止 ' + p.deadline + '<br>' +
+      '<a style="font-size:12px;color:#165DFF;margin-top:4px;display:inline-block;" href="https://uri.amap.com/navigation?to=' + p.lng + ',' + p.lat + '&amp;mode=car&amp;src=tower-app&amp;callnative=1" target="_blank" rel="noopener noreferrer">导航：' + p.lng.toFixed(4) + ' ，' + p.lat.toFixed(4) + '</a>'
+    );
+    m.on('click', function () { highlightCard(i); });
+    m.addTo(map);
+    markers.push(m);
+    layers.push(m);
+  });
+
+  var userMarker = null;
+  function addOrMoveUser(lat, lng, label) {
+    if (userMarker) {
+      map.removeLayer(userMarker);
+      userMarker = null;
+    }
+    userMarker = L.marker([lat, lng], { icon: userIcon, zIndexOffset: 1000 });
+    userMarker.bindPopup('<strong>我的位置</strong><br><span style="color:#86909C;font-size:12px;">' + (label || 'GPS 定位') + '</span><br><span style="font-family:ui-monospace;font-size:12px;">' + lng.toFixed(5) + '，' + lat.toFixed(5) + '</span>');
+    userMarker.addTo(map);
+    refitAllBounds();
+  }
+
+  function refitAllBounds() {
+    var g = [];
+    layers.forEach(function (x) { g.push(x); });
+    if (userMarker) g.push(userMarker);
+    if (!g.length) return;
+    var fg = L.featureGroup(g);
+    map.fitBounds(fg.getBounds().pad(0.2));
+    if (map.getZoom() > 13) map.setZoom(13);
+  }
+
+  var group = L.featureGroup(layers);
+  map.fitBounds(group.getBounds().pad(0.22));
+  if (map.getZoom() > 13) map.setZoom(13);
+
+  if (navigator.geolocation && navigator.geolocation.getCurrentPosition) {
+    navigator.geolocation.getCurrentPosition(
+      function (pos) {
+        addOrMoveUser(pos.coords.latitude, pos.coords.longitude, '浏览器定位');
+      },
+      function () {
+        addOrMoveUser(DEMO_USER.lat, DEMO_USER.lng, '演示位置（未授权定位）');
+      },
+      { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 }
+    );
+  } else {
+    addOrMoveUser(DEMO_USER.lat, DEMO_USER.lng, '演示位置');
+  }
+
+  function highlightCard(idx) {
+    document.querySelectorAll('.map-order-wrap').forEach(function (el) {
+      el.classList.toggle('is-active', el.getAttribute('data-idx') === String(idx));
+    });
+    var p = TOWER_POINTS[idx];
+    if (p) map.flyTo([p.lat, p.lng], Math.max(map.getZoom(), 12), { duration: 0.45 });
+    var mk = markers[idx];
+    if (mk) mk.openPopup();
+  }
+
+  document.querySelectorAll('.map-order-wrap').forEach(function (el) {
+    el.addEventListener('click', function (e) {
+      if (e.target.closest('a')) return;
+      var idx = parseInt(el.getAttribute('data-idx'), 10);
+      if (!isNaN(idx)) highlightCard(idx);
+    });
+  });
+
+  var mapWrapHost = document.getElementById('mapWrapHost');
+  var mapFsBody = document.getElementById('mapFsBody');
+  var fsLayer = document.getElementById('mapFullscreenLayer');
+  var btnFs = document.getElementById('btnMapFullscreen');
+  var btnFsClose = document.getElementById('btnMapFsClose');
+
+  function openMapFullscreen() {
+    if (!mapWrapHost || !mapFsBody || !fsLayer) return;
+    mapFsBody.appendChild(mapWrapHost);
+    fsLayer.classList.add('on');
+    fsLayer.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    setTimeout(function () {
+      map.invalidateSize();
+      refitAllBounds();
+    }, 120);
+  }
+
+  function closeMapFullscreen() {
+    if (!mapWrapHost || !fsLayer) return;
+    var scrollEl = document.getElementById('appMapScroll');
+    if (scrollEl && mapWrapHost.parentElement !== scrollEl) {
+      scrollEl.insertBefore(mapWrapHost, scrollEl.firstChild);
+    }
+    fsLayer.classList.remove('on');
+    fsLayer.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    setTimeout(function () {
+      map.invalidateSize();
+      refitAllBounds();
+    }, 120);
+  }
+
+  if (btnFs) btnFs.addEventListener('click', openMapFullscreen);
+  if (btnFsClose) btnFsClose.addEventListener('click', closeMapFullscreen);
+  if (fsLayer) {
+    fsLayer.addEventListener('click', function (e) {
+      if (e.target === fsLayer) closeMapFullscreen();
+    });
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && fsLayer && fsLayer.classList.contains('on')) closeMapFullscreen();
+  });
+
+  setTimeout(function () { map.invalidateSize(); }, 200);
+  window.addEventListener('orientationchange', function () { setTimeout(function () { map.invalidateSize(); }, 300); });
+})();
+</script>
+</body>
+</html>

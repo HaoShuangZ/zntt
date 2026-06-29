@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>规范组 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .sg-modal-mask { position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:2000; display:none; align-items:center; justify-content:center; padding:20px; }
+  .sg-modal-mask.open { display:flex; }
+  .sg-modal-dialog { background:#fff; border-radius:8px; width:min(720px,96vw); max-height:90vh; overflow:auto; box-shadow:0 12px 48px rgba(0,0,0,.18); }
+  .sg-modal-head { padding:14px 18px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+  .sg-modal-head h3 { margin:0; font-size:16px; font-weight:600; color:var(--text-1); }
+  .sg-modal-close { border:none; background:transparent; cursor:pointer; color:var(--text-3); padding:4px 8px; font-size:16px; line-height:1; }
+  .sg-modal-close:hover { color:var(--text-1); }
+  .sg-modal-body { padding:18px 20px; }
+  .sg-modal-foot { padding:12px 18px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:8px; }
+  .sg-transfer { display:flex; gap:12px; align-items:stretch; }
+  .sg-transfer-col { flex:1; min-width:0; border:1px solid var(--border); border-radius:8px; overflow:hidden; display:flex; flex-direction:column; background:#FAFBFC; }
+  .sg-transfer-col-head { padding:8px 12px; background:#F0F2F5; font-size:13px; font-weight:600; color:var(--text-1); border-bottom:1px solid var(--border); }
+  .sg-transfer-list { min-height:168px; max-height:220px; overflow-y:auto; padding:4px 0; background:#fff; }
+  .sg-shuttle-item { padding:8px 12px; cursor:pointer; font-size:12px; border-bottom:1px solid var(--border); }
+  .sg-shuttle-item:last-child { border-bottom:none; }
+  .sg-shuttle-item:hover { background:#F7F8FA; }
+  .sg-shuttle-item.selected { background:var(--primary-bg); box-shadow:inset 0 0 0 1px var(--primary); }
+  .sg-shuttle-code { display:block; font-weight:600; color:var(--text-1); }
+  .sg-shuttle-meta { display:block; color:var(--text-3); margin-top:3px; line-height:1.4; }
+  .sg-transfer-mid { display:flex; flex-direction:column; justify-content:center; gap:8px; padding:0 4px; flex-shrink:0; }
+  .sg-transfer-mid .btn { min-width:44px; padding:6px 10px; }
+  .sg-selected-readonly {
+    border:1px solid var(--border); border-radius:8px; background:#FAFBFC;
+    min-height:72px; max-height:220px; overflow-y:auto; padding:4px 0;
+  }
+  .sg-selected-readonly .sg-shuttle-item { cursor:default; }
+  .sg-selected-readonly.is-empty { padding:14px 12px; font-size:12px; color:var(--text-3); }
+</style>
+</head>
+<body>
+<div id="page-content">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">规范组</div>
+    </div>
+    <div class="card-body">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <select class="form-select" id="filterStdGroupScope" title="数据权限" style="min-width:200px">
+            <option value="self" selected>数据权限：本单位</option>
+            <option value="all">数据权限：全部检测单位</option>
+          </select>
+          <input type="text" class="form-input" id="filterStdGroupKw" placeholder="编码/名称">
+          <button type="button" class="btn btn-primary">查询</button>
+          <button type="button" class="btn btn-default" id="btnStdGroupReset">重置</button>
+        </div>
+      </div>
+
+      <div class="pc-table-actions">
+        <button type="button" class="btn btn-primary" id="btnStdGroupAdd"><i class="fa-solid fa-plus"></i> 新增</button>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>编码</th>
+            <th>名称</th>
+            <th>启用状态</th>
+            <th class="col-action" style="width:260px">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-code="GRP-STD-TOWER-01" data-name="铁塔安全性鉴定常用规范包" data-status="1" data-selected="GB/T 51338-2018,YD/T 5132-2019">
+            <td>GRP-STD-TOWER-01</td>
+            <td>铁塔安全性鉴定常用规范包</td>
+            <td class="sg-status-cell"><span class="tag tag-green">启用</span></td>
+            <td class="col-action">
+              <button type="button" class="btn btn-text btn-sg-detail">详情</button>
+              <button type="button" class="btn btn-text btn-sg-edit">编辑</button>
+              <button type="button" class="btn btn-text btn-sg-toggle" style="color:var(--warning)">禁用</button>
+              <button type="button" class="btn btn-text btn-sg-delete" style="color:var(--danger)">删除</button>
+            </td>
+          </tr>
+          <tr data-code="GRP-STD-TOWER-02" data-name="定期检测规范包" data-status="0" data-selected="GB 50135-2019">
+            <td>GRP-STD-TOWER-02</td>
+            <td>定期检测规范包</td>
+            <td class="sg-status-cell"><span class="tag tag-gray">停用</span></td>
+            <td class="col-action">
+              <button type="button" class="btn btn-text btn-sg-detail">详情</button>
+              <button type="button" class="btn btn-text btn-sg-edit">编辑</button>
+              <button type="button" class="btn btn-text btn-sg-toggle" style="color:var(--success)">启用</button>
+              <button type="button" class="btn btn-text btn-sg-delete" style="color:var(--danger)">删除</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pagination">
+        <span>共 2 条记录</span>
+        <div class="pagination-btns"><button type="button" class="page-btn active">1</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sg-modal-mask" id="stdGroupModal" aria-hidden="true">
+    <div class="sg-modal-dialog" role="dialog" aria-labelledby="stdGroupModalTitle">
+      <div class="sg-modal-head">
+        <h3 id="stdGroupModalTitle">新增规范组</h3>
+        <button type="button" class="sg-modal-close" id="stdGroupModalClose" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="sg-modal-body">
+        <div class="form-grid" style="grid-template-columns:1fr">
+          <div class="form-group">
+            <span class="form-label">编码<span class="required">*</span></span>
+            <input type="text" class="form-input" id="stdGroupFormCode" placeholder="如 GRP-STD-xxx" style="width:100%">
+          </div>
+          <div class="form-group">
+            <span class="form-label">名称<span class="required">*</span></span>
+            <input type="text" class="form-input" id="stdGroupFormName" placeholder="请输入规范组名称" style="width:100%">
+          </div>
+          <div class="form-group full" id="stdGroupStdField">
+            <span class="form-label">检测规范<span class="required" id="stdRequiredMark">*</span></span>
+            <p id="stdShuttleHint" style="font-size:12px;color:var(--text-3);margin:0 0 8px">穿梭器：左侧<strong>待选</strong>，右侧<strong>已选</strong>；单击条目高亮后，用中间按钮移动；选项来自「标准规范」主数据。</p>
+            <div class="sg-transfer-wrap" id="stdTransferWrap">
+              <div class="sg-transfer">
+                <div class="sg-transfer-col">
+                  <div class="sg-transfer-col-head">待选</div>
+                  <div class="sg-transfer-list" id="stdShuttleLeft"></div>
+                </div>
+                <div class="sg-transfer-mid">
+                  <button type="button" class="btn btn-default btn-sm" id="stdShuttleBtnRight" title="将选中项移到已选">&gt;</button>
+                  <button type="button" class="btn btn-default btn-sm" id="stdShuttleBtnAllRight" title="全部移到已选">&gt;&gt;</button>
+                  <button type="button" class="btn btn-default btn-sm" id="stdShuttleBtnLeft" title="将选中项移回待选">&lt;</button>
+                  <button type="button" class="btn btn-default btn-sm" id="stdShuttleBtnAllLeft" title="全部移回待选">&lt;&lt;</button>
+                </div>
+                <div class="sg-transfer-col">
+                  <div class="sg-transfer-col-head">已选</div>
+                  <div class="sg-transfer-list" id="stdShuttleRight"></div>
+                </div>
+              </div>
+            </div>
+            <div id="stdSelectedReadonly" class="sg-selected-readonly" style="display:none" aria-label="已选检测规范"></div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">启用状态</span>
+            <select class="form-select" id="stdGroupFormStatus" style="width:100%">
+              <option value="1" selected>启用</option>
+              <option value="0">停用</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="sg-modal-foot">
+        <button type="button" class="btn btn-default" id="stdGroupModalCancel">关闭</button>
+        <button type="button" class="btn btn-primary" id="stdGroupModalSave">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = { active: 'data_standard_group', breadcrumb: ['基础数据', '规范组'] };</script>
+<script>
+(function () {
+  var STD_MASTER = [
+    { code: 'GB/T 51338-2018', meta: '通信铁塔及桅杆结构安全检测技术规范' },
+    { code: 'YD/T 5132-2019', meta: '通信铁塔工程技术规范' },
+    { code: 'GB 50135-2019', meta: '高耸结构设计标准' },
+    { code: 'YD/T 5131-2005', meta: '移动通信工程钢塔桅结构验收规范' }
+  ];
+
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+  }
+
+  function shuttleItemEl(item) {
+    var d = document.createElement('div');
+    d.className = 'sg-shuttle-item';
+    d.setAttribute('data-code', item.code);
+    d.setAttribute('tabindex', '0');
+    d.innerHTML = '<span class="sg-shuttle-code">' + esc(item.code) + '</span><span class="sg-shuttle-meta">' + esc(item.meta) + '</span>';
+    return d;
+  }
+
+  function resetShuttle(selectedCodes) {
+    var left = document.getElementById('stdShuttleLeft');
+    var right = document.getElementById('stdShuttleRight');
+    if (!left || !right) return;
+    var sel = selectedCodes || [];
+    left.innerHTML = '';
+    right.innerHTML = '';
+    STD_MASTER.forEach(function (item) {
+      var inSel = sel.indexOf(item.code) >= 0;
+      (inSel ? right : left).appendChild(shuttleItemEl(item));
+    });
+  }
+
+  function masterByCode(code) {
+    for (var i = 0; i < STD_MASTER.length; i++) {
+      if (STD_MASTER[i].code === code) return STD_MASTER[i];
+    }
+    return { code: code, meta: '' };
+  }
+
+  function renderSelectedReadonly(codes) {
+    var box = document.getElementById('stdSelectedReadonly');
+    if (!box) return;
+    box.innerHTML = '';
+    if (!codes.length) {
+      box.classList.add('is-empty');
+      box.textContent = '暂无已选标准规范';
+      return;
+    }
+    box.classList.remove('is-empty');
+    codes.forEach(function (code) {
+      box.appendChild(shuttleItemEl(masterByCode(code)));
+    });
+  }
+
+  function setStdFieldView(detail) {
+    var hint = document.getElementById('stdShuttleHint');
+    var wrap = document.getElementById('stdTransferWrap');
+    var readonlyBox = document.getElementById('stdSelectedReadonly');
+    var req = document.getElementById('stdRequiredMark');
+    if (hint) hint.style.display = detail ? 'none' : '';
+    if (wrap) wrap.style.display = detail ? 'none' : '';
+    if (readonlyBox) readonlyBox.style.display = detail ? 'block' : 'none';
+    if (req) req.style.display = detail ? 'none' : '';
+  }
+
+  function bindShuttleListClicks(container) {
+    if (!container || container.dataset.bound) return;
+    container.dataset.bound = '1';
+    container.addEventListener('click', function (e) {
+      var item = e.target.closest('.sg-shuttle-item');
+      if (!item || !container.contains(item)) return;
+      if (e.metaKey || e.ctrlKey) {
+        item.classList.toggle('selected');
+      } else {
+        var others = container.querySelectorAll('.sg-shuttle-item.selected');
+        others.forEach(function (n) { if (n !== item) n.classList.remove('selected'); });
+        item.classList.toggle('selected');
+      }
+    });
+  }
+
+  function moveSelected(from, to) {
+    var sel = from.querySelectorAll('.sg-shuttle-item.selected');
+    if (!sel.length) return;
+    sel.forEach(function (node) {
+      node.classList.remove('selected');
+      to.appendChild(node);
+    });
+  }
+
+  function moveAll(from, to) {
+    from.querySelectorAll('.sg-shuttle-item').forEach(function (node) {
+      node.classList.remove('selected');
+      to.appendChild(node);
+    });
+  }
+
+  var modalMode = 'add';
+  var editingRow = null;
+
+  function getModal() { return document.getElementById('stdGroupModal'); }
+
+  function setFormFieldsReadonly(readonly) {
+    var code = document.getElementById('stdGroupFormCode');
+    var name = document.getElementById('stdGroupFormName');
+    var status = document.getElementById('stdGroupFormStatus');
+    [code, name].forEach(function (el) {
+      if (!el) return;
+      if (readonly) {
+        el.setAttribute('readonly', 'readonly');
+        el.style.background = '#F7F8FA';
+        el.style.pointerEvents = 'none';
+      } else {
+        el.removeAttribute('readonly');
+        el.style.background = '';
+        el.style.pointerEvents = '';
+      }
+    });
+    if (status) {
+      status.disabled = readonly;
+      status.style.background = readonly ? '#F7F8FA' : '';
+      status.style.pointerEvents = readonly ? 'none' : '';
+    }
+    setStdFieldView(false);
+  }
+
+  function openModal(mode, row) {
+    var m = getModal();
+    if (!m) return;
+    modalMode = mode;
+    editingRow = row || null;
+    var saveBtn = document.getElementById('stdGroupModalSave');
+    var codeEl = document.getElementById('stdGroupFormCode');
+    var nameEl = document.getElementById('stdGroupFormName');
+    var statusEl = document.getElementById('stdGroupFormStatus');
+
+    if (mode === 'add') {
+      codeEl.value = '';
+      nameEl.value = '';
+      statusEl.value = '1';
+      resetShuttle([]);
+      setStdFieldView(false);
+      document.getElementById('stdGroupModalTitle').textContent = '新增规范组';
+      setFormFieldsReadonly(false);
+      if (saveBtn) saveBtn.style.display = '';
+    } else if (row) {
+      var selected = (row.dataset.selected || '').split(',').filter(Boolean);
+      codeEl.value = row.dataset.code || '';
+      nameEl.value = row.dataset.name || '';
+      statusEl.value = row.dataset.status === '1' ? '1' : '0';
+      if (mode === 'detail') {
+        document.getElementById('stdGroupModalTitle').textContent = '规范组详情';
+        setFormFieldsReadonly(true);
+        setStdFieldView(true);
+        renderSelectedReadonly(selected);
+        if (saveBtn) saveBtn.style.display = 'none';
+      } else {
+        resetShuttle(selected);
+        setStdFieldView(false);
+        document.getElementById('stdGroupModalTitle').textContent = '编辑规范组';
+        codeEl.setAttribute('readonly', 'readonly');
+        codeEl.style.background = '#F7F8FA';
+        codeEl.style.pointerEvents = 'none';
+        nameEl.removeAttribute('readonly');
+        nameEl.style.background = '';
+        nameEl.style.pointerEvents = '';
+        statusEl.disabled = false;
+        statusEl.style.background = '';
+        statusEl.style.pointerEvents = '';
+        if (saveBtn) saveBtn.style.display = '';
+      }
+    }
+    m.classList.add('open');
+    m.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeModal() {
+    var m = getModal();
+    if (!m) return;
+    m.classList.remove('open');
+    m.setAttribute('aria-hidden', 'true');
+    setFormFieldsReadonly(false);
+    setStdFieldView(false);
+    var readonlyBox = document.getElementById('stdSelectedReadonly');
+    if (readonlyBox) {
+      readonlyBox.innerHTML = '';
+      readonlyBox.classList.remove('is-empty');
+      readonlyBox.style.display = 'none';
+    }
+    var codeEl = document.getElementById('stdGroupFormCode');
+    if (codeEl) codeEl.removeAttribute('readonly');
+    editingRow = null;
+  }
+
+  function renderStatusCell(row, enabled) {
+    var cell = row.querySelector('.sg-status-cell');
+    var toggle = row.querySelector('.btn-sg-toggle');
+    row.dataset.status = enabled ? '1' : '0';
+    if (cell) {
+      cell.innerHTML = enabled
+        ? '<span class="tag tag-green">启用</span>'
+        : '<span class="tag tag-gray">停用</span>';
+    }
+    if (toggle) {
+      toggle.textContent = enabled ? '禁用' : '启用';
+      toggle.style.color = enabled ? 'var(--warning)' : 'var(--success)';
+    }
+  }
+
+  function selectedStdCodes() {
+    var right = document.getElementById('stdShuttleRight');
+    if (!right) return [];
+    var a = [];
+    right.querySelectorAll('.sg-shuttle-item').forEach(function (n) {
+      a.push(n.getAttribute('data-code') || '');
+    });
+    return a;
+  }
+
+  window.addEventListener('DOMContentLoaded', function () {
+    var left = document.getElementById('stdShuttleLeft');
+    var right = document.getElementById('stdShuttleRight');
+    bindShuttleListClicks(left);
+    bindShuttleListClicks(right);
+    resetShuttle();
+
+    var btn = document.getElementById('btnStdGroupAdd');
+    if (btn) btn.addEventListener('click', function () { openModal('add'); });
+    ['stdGroupModalClose', 'stdGroupModalCancel'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.addEventListener('click', closeModal);
+    });
+    var mask = getModal();
+    if (mask) mask.addEventListener('click', function (e) { if (e.target === mask) closeModal(); });
+
+    var r = document.getElementById('stdShuttleBtnRight');
+    if (r) r.addEventListener('click', function () { moveSelected(left, right); });
+    var rr = document.getElementById('stdShuttleBtnAllRight');
+    if (rr) rr.addEventListener('click', function () { moveAll(left, right); });
+    var l = document.getElementById('stdShuttleBtnLeft');
+    if (l) l.addEventListener('click', function () { moveSelected(right, left); });
+    var ll = document.getElementById('stdShuttleBtnAllLeft');
+    if (ll) ll.addEventListener('click', function () { moveAll(right, left); });
+
+    var save = document.getElementById('stdGroupModalSave');
+    if (save) save.addEventListener('click', function () {
+      var code = document.getElementById('stdGroupFormCode').value.trim();
+      var name = document.getElementById('stdGroupFormName').value.trim();
+      var picked = selectedStdCodes();
+      if (!code || !name) {
+        alert('请填写编码与名称');
+        return;
+      }
+      if (!picked.length) {
+        alert('请至少将一条检测规范移到「已选」');
+        return;
+      }
+      if (modalMode === 'edit' && editingRow) {
+        editingRow.dataset.name = name;
+        editingRow.dataset.status = document.getElementById('stdGroupFormStatus').value;
+        editingRow.dataset.selected = picked.join(',');
+        editingRow.cells[1].textContent = name;
+        renderStatusCell(editingRow, editingRow.dataset.status === '1');
+        alert('已保存（原型），已选规范 ' + picked.length + ' 条');
+      } else {
+        alert('将保存规范组「' + code + ' / ' + name + '」，已选规范 ' + picked.length + ' 条：' + picked.join('、'));
+      }
+      closeModal();
+    });
+    document.querySelector('tbody').addEventListener('click', function (e) {
+      var row = e.target.closest('tr[data-code]');
+      if (!row) return;
+      if (e.target.closest('.btn-sg-detail')) openModal('detail', row);
+      if (e.target.closest('.btn-sg-edit')) openModal('edit', row);
+      if (e.target.closest('.btn-sg-toggle')) {
+        var enabled = row.dataset.status !== '1';
+        renderStatusCell(row, enabled);
+        alert((enabled ? '已启用' : '已停用') + '：' + row.dataset.code);
+      }
+      if (e.target.closest('.btn-sg-delete')) {
+        var label = (row.dataset.name || '') + '（' + (row.dataset.code || '') + '）';
+        if (confirm('确定要删除「' + label + '」吗？删除后不可恢复。')) alert('已删除（原型）');
+      }
+    });
+    var rst = document.getElementById('btnStdGroupReset');
+    if (rst) rst.addEventListener('click', function () {
+      var sc = document.getElementById('filterStdGroupScope');
+      if (sc) sc.value = 'self';
+      var kw = document.getElementById('filterStdGroupKw');
+      if (kw) kw.value = '';
+    });
+  });
+})();
+</script>
+</body>
+</html>

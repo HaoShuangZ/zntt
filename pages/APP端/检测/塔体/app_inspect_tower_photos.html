@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>铁塔拍照</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/app-frame.css">
+<link rel="stylesheet" href="../../../../assets/app-embed.css">
+<link rel="stylesheet" href="../../../../assets/app-inspect-layout.css">
+<script src="../../../../assets/app-embed.js" defer></script>
+<script src="../../../../assets/app-inspect-back.js" defer></script>
+<style>
+.photo-task {
+  background: #fff; border-radius: 14px; border: 1px solid #E5E6EB; padding: 12px 14px 14px; margin-bottom: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.04);
+}
+.photo-task-hd { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+.photo-task-title { font-size: 14px; font-weight: 600; color: #1D2129; line-height: 1.35; flex: 1; min-width: 0; }
+.badge-req {
+  flex-shrink: 0; font-size: 10px; font-weight: 700; color: #F53F3F; background: #FFECE8; border: 1px solid #FFCCC7;
+  padding: 2px 7px; border-radius: 6px; line-height: 1.2;
+}
+.badge-opt {
+  flex-shrink: 0; font-size: 10px; font-weight: 600; color: #86909C; background: #F2F3F5; border: 1px solid #E5E6EB;
+  padding: 2px 7px; border-radius: 6px; line-height: 1.2;
+}
+.photo-task-code { font-size: 11px; color: #86909C; font-family: ui-monospace, monospace; margin-bottom: 6px; }
+.photo-task-hint { font-size: 12px; color: #4E5969; line-height: 1.45; margin-bottom: 12px; }
+.photo-actions { display: flex; gap: 8px; }
+.btn-capture {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+  height: 46px; border: none; border-radius: 10px; background: #165DFF; color: #fff;
+  font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-capture:active { opacity: 0.92; }
+.btn-album {
+  flex: 0 0 auto; min-width: 88px; height: 46px; border: 1px solid #E5E6EB; border-radius: 10px; background: #fff;
+  color: #4E5969; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-album:active { background: #F7F8FA; }
+.photo-empty { font-size: 11px; color: #C9CDD4; text-align: right; margin-top: 6px; }
+</style>
+</head>
+<body class="inspect-app-layout" data-inspect-no-photo-recognize="1">
+<div id="appStatusBar">
+  <span>9:41</span>
+  <span><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+</div>
+<div id="appNavBar">
+  <a href="../../任务/填报主页/app_task_inspect_home.html" data-app-inspect-back style="color:#165DFF; text-decoration:none; font-size:14px;"><i class="fa-solid fa-chevron-left"></i> 返回</a>
+  <span style="flex:1; text-align:center; font-size:16px; font-weight:600;">上传铁塔照片</span>
+  <span style="width:40px;"></span>
+</div>
+
+<div id="appEmbedContent">
+  <div class="photo-task" data-field="PH_TOWER_FULL" data-label="塔全貌（远景）">
+    <div class="photo-task-hd">
+      <div class="photo-task-title">塔全貌（远景，含塔身与周边环境）</div>
+      <span class="badge-req">必填</span>
+    </div>
+    <div class="photo-task-code">PH_TOWER_FULL</div>
+    <p class="photo-task-hint">模板要求：水平拍摄，塔体完整入镜；可见站址标识或塔号牌（若现场具备）。</p>
+    <div class="photo-actions">
+      <button type="button" class="btn-capture" aria-label="拍照 塔全貌"><i class="fa-solid fa-camera"></i> 拍照</button>
+      <button type="button" class="btn-album">相册</button>
+    </div>
+    <div class="photo-empty">未拍摄</div>
+  </div>
+
+  <div class="photo-task" data-field="PH_TOWER_TOP" data-label="塔顶与避雷针">
+    <div class="photo-task-hd">
+      <div class="photo-task-title">塔顶与避雷针全貌</div>
+      <span class="badge-req">必填</span>
+    </div>
+    <div class="photo-task-code">PH_TOWER_TOP</div>
+    <p class="photo-task-hint">模板要求：仰拍或登高安全位置拍摄，避雷针与塔头轮廓清晰。</p>
+    <div class="photo-actions">
+      <button type="button" class="btn-capture" aria-label="拍照 塔顶"><i class="fa-solid fa-camera"></i> 拍照</button>
+      <button type="button" class="btn-album">相册</button>
+    </div>
+    <div class="photo-empty">未拍摄</div>
+  </div>
+
+  <div class="photo-task" data-field="PH_TOWER_UPPER" data-label="塔身上部">
+    <div class="photo-task-hd">
+      <div class="photo-task-title">塔身上部（含上段法兰或连接区）</div>
+      <span class="badge-req">必填</span>
+    </div>
+    <div class="photo-task-code">PH_TOWER_UPPER</div>
+    <p class="photo-task-hint">模板要求：与「塔段」上段检测视角一致，便于对照。</p>
+    <div class="photo-actions">
+      <button type="button" class="btn-capture" aria-label="拍照 塔身上部"><i class="fa-solid fa-camera"></i> 拍照</button>
+      <button type="button" class="btn-album">相册</button>
+    </div>
+    <div class="photo-empty">未拍摄</div>
+  </div>
+
+  <div class="photo-task" data-field="PH_TOWER_LOWER" data-label="塔身下部">
+    <div class="photo-task-hd">
+      <div class="photo-task-title">塔身下部至转接段</div>
+      <span class="badge-req">必填</span>
+    </div>
+    <div class="photo-task-code">PH_TOWER_LOWER</div>
+    <p class="photo-task-hint">模板要求：法兰或包钢区清晰；避免强逆光。</p>
+    <div class="photo-actions">
+      <button type="button" class="btn-capture" aria-label="拍照 塔身下部"><i class="fa-solid fa-camera"></i> 拍照</button>
+      <button type="button" class="btn-album">相册</button>
+    </div>
+    <div class="photo-empty">未拍摄</div>
+  </div>
+
+  <div class="photo-task" data-field="PH_FOUNDATION_360" data-label="基础环视">
+    <div class="photo-task-hd">
+      <div class="photo-task-title">基础环视（不少于四面）</div>
+      <span class="badge-req">必填</span>
+    </div>
+    <div class="photo-task-code">PH_FOUNDATION_360</div>
+    <p class="photo-task-hint">模板要求：每面 1 张，混凝土外观、散水、地脚螺栓外露情况可见。</p>
+    <div class="photo-actions">
+      <button type="button" class="btn-capture" aria-label="拍照 基础"><i class="fa-solid fa-camera"></i> 拍照</button>
+      <button type="button" class="btn-album">相册</button>
+    </div>
+    <div class="photo-empty">未拍摄 · 建议至少 4 张</div>
+  </div>
+
+  <div class="photo-task" data-field="PH_NAMEPLATE" data-label="铭牌">
+    <div class="photo-task-hd">
+      <div class="photo-task-title">铭牌 / 资产编码牌</div>
+      <span class="badge-opt">选填</span>
+    </div>
+    <div class="photo-task-code">PH_NAMEPLATE</div>
+    <p class="photo-task-hint">模板配置为选填时展示；必填时标签与校验规则由模板驱动。</p>
+    <div class="photo-actions">
+      <button type="button" class="btn-capture" aria-label="拍照 铭牌"><i class="fa-solid fa-camera"></i> 拍照</button>
+      <button type="button" class="btn-album">相册</button>
+    </div>
+    <div class="photo-empty">未拍摄</div>
+  </div>
+</div>
+
+<div data-app-flow-footer style="position:fixed; bottom:0; left:0; right:0; padding:12px 16px; background:#fff; border-top:1px solid #E5E6EB;">
+  <a href="../../检测/地基/app_inspect_foundation.html" style="display:block; width:100%; height:44px; background:#165DFF; color:#fff; border-radius:8px; font-size:16px; font-weight:600; text-decoration:none; text-align:center; line-height:44px; box-sizing:border-box;">下一步</a>
+</div>
+
+<script>
+(function () {
+  function bind(card) {
+    var field = card.getAttribute('data-field') || '';
+    var label = card.getAttribute('data-label') || '';
+    var cap = card.querySelector('.btn-capture');
+    var alb = card.querySelector('.btn-album');
+    var hint = card.querySelector('.photo-empty');
+    function msg(which) {
+      alert(which + '：将打开系统相机 / 相册。\n已绑定模板字段「' + field + '」· ' + label + '\n保存后写入本检测任务附件，并参与必填校验。');
+      if (hint) { hint.textContent = '已选择（待上传）'; hint.style.color = '#00B42A'; }
+    }
+    if (cap) cap.addEventListener('click', function () { msg('拍照'); });
+    if (alb) alb.addEventListener('click', function () { msg('相册'); });
+  }
+  document.querySelectorAll('.photo-task').forEach(bind);
+})();
+</script>
+</body>
+</html>

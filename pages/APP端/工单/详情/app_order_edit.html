@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>编辑订单</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/app-frame.css">
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; background: #F2F3F5; margin: 0; }
+.fld { margin-bottom:14px; }
+.fld label { display:block; font-size:13px; color:#86909C; margin-bottom:6px; }
+.fld input, .fld select, .fld textarea { width:100%; box-sizing:border-box; padding:10px 12px; border:1px solid #E5E6EB; border-radius:8px; font-size:14px; }
+.req::after { content:" *"; color:#F53F3F; }
+</style>
+</head>
+<body>
+<div style="height:44px; display:flex; align-items:center; justify-content:space-between; padding:0 16px; background:#fff;">
+  <span style="font-size:14px; font-weight:600;">9:41</span>
+  <span style="font-size:12px;"><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+</div>
+<div style="height:44px; display:flex; align-items:center; padding:0 16px; background:#fff; border-bottom:1px solid #E5E6EB;">
+  <a href="app_order_detail.html" style="color:#165DFF; text-decoration:none; font-size:14px;"><i class="fa-solid fa-chevron-left"></i> 返回</a>
+  <span style="flex:1; text-align:center; font-size:16px; font-weight:600;">编辑订单</span>
+  <span style="width:48px;"></span>
+</div>
+<div style="padding:12px 16px 100px;">
+  <div style="background:#fff;border-radius:12px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+    <div class="fld"><label>订单编号</label><input type="text" value="DD20260506001" readonly style="background:#F7F8FA;color:#86909C;"></div>
+    <div class="fld"><label class="req">订单名称</label><input type="text" value="滨江区铁塔年度检测订单"></div>
+    <div class="fld"><label class="req">站址编码</label><input type="text" value="ZZ-HZ-BJ01"></div>
+    <div class="fld"><label class="req">经度</label><input type="text" value="120.2126"></div>
+    <div class="fld"><label class="req">纬度</label><input type="text" value="30.2084"></div>
+    <div class="fld"><label class="req">塔型</label>
+      <select><option>单管塔</option><option>角钢塔</option></select>
+    </div>
+    <div class="fld"><label class="req">联系人</label><input type="text" value="王某某"></div>
+    <div class="fld"><label class="req">联系电话</label><input type="tel" value="13812345678"></div>
+    <div class="fld"><label class="req">发布时间</label><input type="datetime-local" value="2026-05-06T09:00"></div>
+    <div class="fld"><label class="req">所属项目</label><input type="text" value="2026年杭州铁塔年检工程"></div>
+    <div class="fld"><label class="req">省份地市</label><input type="text" value="浙江省杭州市"></div>
+    <div class="fld"><label class="req">检测需求</label><textarea rows="3">年度常规检测，含塔体与基础</textarea></div>
+  </div>
+</div>
+<div style="position:fixed;bottom:0;left:0;right:0;padding:12px 16px;background:#fff;border-top:1px solid #E5E6EB;">
+  <button type="button" id="btnSave" style="display:block;width:100%;height:44px;background:#165DFF;color:#fff;border:none;border-radius:8px;font-size:16px;font-weight:600;">保存修改</button>
+</div>
+<script>
+document.getElementById('btnSave').addEventListener('click', function () {
+  alert('已保存');
+  location.href = 'app_order_detail.html';
+});
+</script>
+</body>
+</html>

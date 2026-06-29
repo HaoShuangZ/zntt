@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>登录日志</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">登录日志</div>
+    </div>
+    <div class="card-body">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <input type="text" class="form-input" placeholder="用户名 / IP">
+          <input type="text" class="form-input" placeholder="开始日期" style="width:140px">
+          <input type="text" class="form-input" placeholder="结束日期" style="width:140px">
+          <select class="form-select">
+            <option value="">全部结果</option>
+            <option>成功</option>
+            <option>失败</option>
+          </select>
+          <button type="button" class="btn btn-primary">查询</button>
+          <button type="button" class="btn btn-default">重置</button>
+        </div>
+      </div>
+
+      <div class="pc-table-actions">
+        <button type="button" class="btn btn-default"><i class="fa-solid fa-download"></i> 导出</button>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>登录时间</th>
+            <th>用户名</th>
+            <th>IP 地址</th>
+            <th>终端 / 浏览器</th>
+            <th>结果</th>
+            <th>说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2026-05-10 08:55:22</td>
+            <td>zhangwei</td>
+            <td>192.168.1.108</td>
+            <td>Windows · Chrome 124</td>
+            <td><span class="tag tag-green">成功</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>2026-05-09 19:12:01</td>
+            <td>li_na</td>
+            <td>10.0.4.56</td>
+            <td>macOS · Safari 17</td>
+            <td><span class="tag tag-green">成功</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>2026-05-09 11:03:44</td>
+            <td>unknown</td>
+            <td>203.0.113.88</td>
+            <td>Android · WebView</td>
+            <td><span class="tag tag-red">失败</span></td>
+            <td>密码错误</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <span>共 2,046 条记录</span>
+        <div class="pagination-btns">
+          <button type="button" class="page-btn"><i class="fa-solid fa-chevron-left"></i></button>
+          <button type="button" class="page-btn active">1</button>
+          <button type="button" class="page-btn">2</button>
+          <button type="button" class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'logs', breadcrumb:['个人中心','登录日志']};</script>
+</body>
+</html>

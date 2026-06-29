@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<!-- iPad-INSPECT_DIAGRAM v2.0 landscape -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>结构简图</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/app-frame.css">
+<link rel="stylesheet" href="../../../../assets/app-embed.css">
+<link rel="stylesheet" href="../../../../assets/app-inspect-layout.css">
+<link rel="stylesheet" href="../../../../assets/ipad-tokens.css">
+<link rel="stylesheet" href="../../../../assets/ipad-frame.css">
+<link rel="stylesheet" href="../../../../assets/ipad-layout.css">
+<link rel="stylesheet" href="../../../../assets/ipad-visual.css">
+<link rel="stylesheet" href="../../../../assets/ipad-inspect-layout.css">
+<link rel="stylesheet" href="../../../../assets/ipad-embed.css">
+<script src="../../../../assets/ipad-adapt.js" defer></script>
+<script src="../../../../assets/app-embed.js" defer></script>
+<script src="../../../../assets/app-inspect-back.js" defer></script>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; background: #F2F3F5; margin: 0; }
+.tower-type { flex:1; text-align:center; padding:12px 8px; border:1px solid #E5E6EB; border-radius:12px; background:#fff; cursor:pointer; }
+.tower-type.active { border-color:#165DFF; background:#E8F3FF; }
+.tower-type i { font-size:24px; display:block; margin-bottom:4px; }
+</style>
+</head>
+<body class="inspect-app-layout inspect-embed-pad-116 ipad-adapt">
+<!-- Status bar -->
+<div id="appStatusBar">
+  <span>9:41</span>
+  <span><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+</div>
+<!-- Navigation bar -->
+<div id="appNavBar">
+  <a href="../../任务/填报主页/ipad_task_inspect_home.html" data-app-inspect-back style="color:#165DFF; text-decoration:none; font-size:14px;"><i class="fa-solid fa-chevron-left"></i> 返回</a>
+  <span style="flex:1; text-align:center; font-size:16px; font-weight:600;">结构简图</span>
+  <span style="width:40px;"></span>
+</div>
+
+<!-- Content area -->
+<div id="appEmbedContent">
+
+  <!-- 选择塔型 -->
+  <div style="background:#fff; border-radius:12px; padding:16px; margin-bottom:12px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+    <div style="font-size:15px; font-weight:600; color:#1D2129; margin-bottom:12px;">选择塔型</div>
+    <div style="display:flex; gap:10px;">
+      <div class="tower-type active">
+        <i class="fa-solid fa-grip-lines-vertical" style="color:#165DFF;"></i>
+        <span style="font-size:12px; color:#165DFF; font-weight:500;">单管塔</span>
+      </div>
+      <div class="tower-type">
+        <i class="fa-solid fa-mountain" style="color:#86909C;"></i>
+        <span style="font-size:12px; color:#86909C;">角钢塔</span>
+      </div>
+      <div class="tower-type">
+        <i class="fa-solid fa-bars" style="color:#86909C;"></i>
+        <span style="font-size:12px; color:#86909C;">三管塔</span>
+      </div>
+      <div class="tower-type">
+        <i class="fa-solid fa-border-all" style="color:#86909C;"></i>
+        <span style="font-size:12px; color:#86909C;">四管塔</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 结构示意图区域 -->
+  <div style="background:#fff; border-radius:12px; padding:16px; margin-bottom:12px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+    <div style="font-size:15px; font-weight:600; color:#1D2129; margin-bottom:12px;">结构示意图</div>
+    <div style="width:100%; height:400px; border:2px dashed #E5E6EB; border-radius:12px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#F7F8FA;">
+      <!-- Simplified tower diagram -->
+      <div style="position:relative; width:60px; height:280px;">
+        <!-- Tower body -->
+        <div style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:20px; height:280px; background:linear-gradient(to top, #C9CDD4 0%, #86909C 100%); border-radius:10px 10px 4px 4px;"></div>
+        <!-- Segment markers -->
+        <div style="position:absolute; bottom:56px; left:0; right:0; border-top:1px dashed #4E5969; font-size:9px; color:#4E5969; text-align:right; padding-right:0;">
+          <span style="position:absolute; right:-30px; top:-8px;">第1段</span>
+        </div>
+        <div style="position:absolute; bottom:112px; left:0; right:0; border-top:1px dashed #4E5969; font-size:9px; color:#4E5969;">
+          <span style="position:absolute; right:-30px; top:-8px;">第2段</span>
+        </div>
+        <div style="position:absolute; bottom:168px; left:0; right:0; border-top:1px dashed #4E5969; font-size:9px; color:#4E5969;">
+          <span style="position:absolute; right:-30px; top:-8px;">第3段</span>
+        </div>
+        <div style="position:absolute; bottom:224px; left:0; right:0; border-top:1px dashed #4E5969; font-size:9px; color:#4E5969;">
+          <span style="position:absolute; right:-30px; top:-8px;">第4段</span>
+        </div>
+        <div style="position:absolute; bottom:270px; left:0; right:0; font-size:9px; color:#4E5969;">
+          <span style="position:absolute; right:-30px; top:-8px;">第5段</span>
+        </div>
+        <!-- Antennas -->
+        <div style="position:absolute; top:10px; left:-20px; width:10px; height:3px; background:#86909C; border-radius:2px;"></div>
+        <div style="position:absolute; top:10px; right:-20px; width:10px; height:3px; background:#86909C; border-radius:2px;"></div>
+        <!-- Lightning rod -->
+        <div style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); width:2px; height:12px; background:#4E5969;"></div>
+      </div>
+      <div style="margin-top:16px; font-size:12px; color:#86909C;">单管塔 · 5段 · 45m</div>
+    </div>
+  </div>
+
+  <!-- 参数设置 -->
+  <div style="background:#fff; border-radius:12px; padding:16px; margin-bottom:12px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+    <div style="font-size:15px; font-weight:600; color:#1D2129; margin-bottom:12px;">参数设置</div>
+    <div style="margin-bottom:14px;">
+      <label style="font-size:13px; color:#86909C; margin-bottom:6px; display:block;">塔段数</label>
+      <input type="number" value="5" style="width:100%; height:44px; border:1px solid #E5E6EB; border-radius:12px; padding:0 14px; font-size:15px; outline:none; box-sizing:border-box; background:#fff;">
+    </div>
+    <button style="width:100%; height:40px; background:#E8F3FF; color:#165DFF; border:1px solid #165DFF; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer;">
+      <i class="fa-solid fa-rotate"></i> 生成简图
+    </button>
+  </div>
+
+</div>
+
+<!-- Bottom button -->
+<div class="ipad-flow-footer" data-app-flow-footer style="position:fixed; bottom:0; left:0; right:0; padding:12px 16px; background:#fff; border-top:1px solid #E5E6EB;">
+  <a href="../../检测/分段/ipad_inspect_segment.html" style="display:block; width:100%; height:44px; background:#165DFF; color:#fff; border-radius:8px; font-size:16px; font-weight:600; text-decoration:none; text-align:center; line-height:44px; box-sizing:border-box;">下一步</a>
+</div>
+</body>
+</html>

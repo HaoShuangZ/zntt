@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>新增订单</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../assets/app-frame.css">
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; background: #F2F3F5; margin: 0; padding-bottom: 100px; }
+.nav-bar { height: 44px; display: flex; align-items: center; padding: 0 12px; background: #fff; border-bottom: 1px solid #E5E6EB; position: sticky; top: 0; z-index: 10; }
+.sec { background: #fff; margin: 12px 16px; border-radius: 12px; padding: 14px; border: 1px solid #E5E6EB; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
+.sec h3 { margin: 0 0 12px; font-size: 15px; font-weight: 600; color: #1D2129; }
+.lbl { font-size: 13px; color: #86909C; margin-bottom: 6px; display: block; }
+.req { color: #F53F3F; }
+.inp { width: 100%; height: 44px; border: 1px solid #E5E6EB; border-radius: 10px; padding: 0 12px; font-size: 15px; box-sizing: border-box; }
+.ta { width: 100%; min-height: 88px; border: 1px solid #E5E6EB; border-radius: 10px; padding: 10px 12px; font-size: 15px; box-sizing: border-box; resize: vertical; }
+.hint { font-size: 11px; color: #86909C; margin-top: 6px; line-height: 1.45; }
+.fixb { position: fixed; left: 0; right: 0; bottom: 0; padding: 12px 16px calc(12px + env(safe-area-inset-bottom,0)); background: #fff; border-top: 1px solid #E5E6EB; display: flex; gap: 10px; }
+.fixb a, .fixb button { flex: 1; text-align: center; padding: 12px; border-radius: 10px; font-size: 15px; font-weight: 600; font-family: inherit; text-decoration: none; border: none; cursor: pointer; }
+.btn-d { background: #fff; color: #4E5969; border: 1px solid #E5E6EB !important; }
+.btn-p { background: #165DFF; color: #fff; }
+.mask { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 100; align-items: flex-end; justify-content: center; }
+.mask.on { display: flex; }
+.sheet { width: 100%; max-height: 70vh; background: #fff; border-radius: 16px 16px 0 0; padding: 16px; box-sizing: border-box; overflow-y: auto; }
+.pick { display: block; width: 100%; text-align: left; padding: 12px; margin-bottom: 8px; border: 1px solid #E5E6EB; border-radius: 10px; background: #fff; font-size: 14px; cursor: pointer; font-family: inherit; }
+.pick:active { background: #F7F8FA; }
+</style>
+</head>
+<body>
+<div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:#165DFF;">
+  <span style="font-size:14px;font-weight:600;color:#fff;">9:41</span>
+  <span style="font-size:12px;color:#fff;"><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+</div>
+<div class="nav-bar">
+  <a href="app_profile_orders.html" style="color:#165DFF;text-decoration:none;font-size:14px;"><i class="fa-solid fa-chevron-left"></i></a>
+  <span style="flex:1;text-align:center;font-size:16px;font-weight:600;">新增订单</span>
+  <span style="width:28px;"></span>
+</div>
+<div class="sec">
+  <h3>基本信息</h3>
+  <label class="lbl">订单名称 <span class="req">*</span></label>
+  <input type="text" class="inp" placeholder="请输入订单名称">
+  <label class="lbl" style="margin-top:12px;">订单编码（系统自动生成）</label>
+  <input type="text" class="inp" style="background:#F7F8FA" readonly placeholder="选填工程并填派单日期后预览">
+  <p class="hint">规则同 PC：有工程时用工程地址拼音缩写 + 派单日期 YYYYMMDD + 3 位流水；未选工程时编码规则以系统为准。</p>
+  <label class="lbl" style="margin-top:12px;">派单日期 <span class="req">*</span></label>
+  <input type="date" class="inp" value="2026-05-14">
+  <label class="lbl" style="margin-top:12px;">截止日期 <span class="req">*</span></label>
+  <input type="date" class="inp" value="2026-06-14">
+</div>
+
+<div class="sec">
+  <h3>关联信息</h3>
+  <label class="lbl">所属工程</label>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <input type="text" id="projDisp" class="inp" style="flex:1;background:#F7F8FA" readonly placeholder="选填，请点击选择工程">
+    <button type="button" id="btnPick" style="flex-shrink:0;height:44px;padding:0 14px;background:#165DFF;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;">选择</button>
+  </div>
+  <p class="hint">非必填：新建时可不选；提交审核前须关联。数据通过检测单位对下合同，关联对上合同下的工程列表（营销管理 · 工程）。关联后自动带出客户简称与「关联合同」回显。</p>
+  <label class="lbl" style="margin-top:12px;">关联合同（只读回显）</label>
+  <input type="text" id="orderContractShow" class="inp" style="background:#F7F8FA" readonly placeholder="选择工程后带出对下合同编号及名称">
+  <label class="lbl" style="margin-top:12px;">客户简称</label>
+  <input type="text" id="custShort" class="inp" style="background:#F7F8FA" readonly placeholder="选择工程后带出">
+</div>
+
+<div class="sec">
+  <h3>站点信息</h3>
+  <p class="hint" style="margin-top:0">站址、经纬度等与现场检测站址相关字段在<strong>订单</strong>维度维护。</p>
+  <label class="lbl">所属省 <span class="req">*</span></label>
+  <select class="inp" id="orderSiteProvince" style="appearance:auto;">
+    <option value="">请选择</option>
+    <option selected>浙江省</option>
+    <option>江苏省</option>
+  </select>
+  <label class="lbl" style="margin-top:12px;">所属市 <span class="req">*</span></label>
+  <select class="inp" id="orderSiteCity" style="appearance:auto;">
+    <option value="">请选择</option>
+    <option selected>杭州市</option>
+    <option>宁波市</option>
+  </select>
+  <label class="lbl" style="margin-top:12px;">站址编码</label>
+  <input type="text" id="orderSiteAddrCode" class="inp" placeholder="请输入站址编码">
+  <label class="lbl" style="margin-top:12px;">经度</label>
+  <input type="text" id="orderSiteLng" class="inp" placeholder="例 120.153576">
+  <label class="lbl" style="margin-top:12px;">纬度</label>
+  <input type="text" id="orderSiteLat" class="inp" placeholder="例 30.287459">
+  <label class="lbl" style="margin-top:12px;">自定义扩展字段（可选）</label>
+  <input type="text" id="orderSiteExt" class="inp" placeholder="按企业字典配置">
+</div>
+
+<div class="sec">
+  <h3>检测要求</h3>
+  <label class="lbl">检测类型 <span class="req">*</span></label>
+  <select class="inp" style="appearance:auto;">
+    <option value="">请选择</option>
+    <option>安全性鉴定</option>
+    <option>可靠性鉴定</option>
+    <option>抗震鉴定</option>
+    <option>年度例行检测</option>
+    <option>专项检测</option>
+  </select>
+  <label class="lbl" style="margin-top:12px;">检测规范组</label>
+  <select class="inp" style="appearance:auto;">
+    <option value="">非必填</option>
+    <option>存量铁塔-单管类附表套件</option>
+    <option>存量铁塔-角钢格构附表套件</option>
+    <option>通用安全性鉴定规范组 A</option>
+  </select>
+  <label class="lbl" style="margin-top:12px;">检测需求说明</label>
+  <textarea class="ta" placeholder="选填：检测范围、现场条件、客户特殊要求等"></textarea>
+</div>
+
+<div class="fixb">
+  <a href="app_profile_orders.html" class="btn-d">取消</a>
+  <button type="button" class="btn-p" id="btnSave">保存</button>
+</div>
+
+<div id="mask" class="mask" role="dialog" aria-modal="true">
+  <div class="sheet">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <span style="font-size:16px;font-weight:600;">选择关联工程</span>
+      <button type="button" id="mClose" style="border:none;background:none;font-size:20px;color:#86909C;">×</button>
+    </div>
+    <input type="text" placeholder="工程名称 / 站址编码" style="width:100%;height:40px;border:1px solid #E5E6EB;border-radius:8px;padding:0 10px;margin-bottom:10px;box-sizing:border-box;">
+    <button type="button" class="pick" data-p="2026年杭州铁塔年检工程|中国铁塔杭州分公司|HT2026-0512 · 杭州移动年度框架|ZZ-HZ-BJ02">2026年杭州铁塔年检工程<br><span style="font-size:12px;color:#86909C;">站址编码：ZZ-HZ-BJ02</span></button>
+    <button type="button" class="pick" data-p="城西区域改造项目|中国铁塔杭州分公司|HT2026-0428 · 城西改造专项|ZZ-HZ-CX03">城西区域改造项目<br><span style="font-size:12px;color:#86909C;">站址编码：ZZ-HZ-CX03</span></button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var mask = document.getElementById('mask');
+  document.getElementById('btnPick').addEventListener('click', function () { mask.classList.add('on'); });
+  document.getElementById('mClose').addEventListener('click', function () { mask.classList.remove('on'); });
+  mask.addEventListener('click', function (e) { if (e.target === mask) mask.classList.remove('on'); });
+  document.querySelectorAll('.pick').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var p = (b.getAttribute('data-p') || '').split('|');
+      document.getElementById('projDisp').value = p[0] || '';
+      document.getElementById('custShort').value = p[1] || '';
+      document.getElementById('orderContractShow').value = p[2] || '';
+      var ac = document.getElementById('orderSiteAddrCode');
+      if (ac && p[3] && !ac.value) ac.value = p[3];
+      mask.classList.remove('on');
+    });
+  });
+  document.getElementById('btnSave').addEventListener('click', function () {
+    alert('已保存订单草稿。');
+    location.href = 'app_profile_orders.html';
+  });
+})();
+</script>
+</body>
+</html>

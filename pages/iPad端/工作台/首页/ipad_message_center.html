@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<!-- iPad-MESSAGE_CENTER v2.0 landscape -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>消息中心</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/app-frame.css">
+<link rel="stylesheet" href="../../../../assets/ipad-tokens.css">
+<link rel="stylesheet" href="../../../../assets/ipad-frame.css">
+<link rel="stylesheet" href="../../../../assets/ipad-layout.css">
+<link rel="stylesheet" href="../../../../assets/ipad-visual.css">
+<link rel="stylesheet" href="../../../../assets/ipad-embed.css">
+<script src="../../../../assets/ipad-adapt.js" defer></script>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; background: #F2F3F5; margin: 0; padding-bottom: 24px; }
+.nav-bar { height: 44px; display: flex; align-items: center; padding: 0 12px; background: #fff; border-bottom: 1px solid #E5E6EB; position: sticky; top: 0; z-index: 10; }
+.tabs { display: flex; background: #fff; border-bottom: 1px solid #E5E6EB; }
+.tab { flex: 1; text-align: center; padding: 12px 0; font-size: 14px; color: #86909C; border: none; background: none; font-family: inherit; cursor: pointer; }
+.tab.on { color: #165DFF; font-weight: 600; border-bottom: 2px solid #165DFF; margin-bottom: -1px; }
+.msg { background: #fff; margin: 10px 16px; padding: 14px; border-radius: 12px; border: 1px solid #E5E6EB; position: relative; }
+.msg.unread { border-left: 4px solid #165DFF; padding-left: 11px; }
+.dot { position: absolute; top: 14px; right: 14px; width: 8px; height: 8px; border-radius: 50%; background: #F53F3F; }
+.t { font-size: 15px; font-weight: 600; color: #1D2129; padding-right: 20px; }
+.meta { font-size: 12px; color: #86909C; margin-top: 6px; }
+.s { font-size: 13px; color: #4E5969; margin-top: 8px; line-height: 1.45; }
+</style>
+</head>
+<body class="ipad-adapt">
+<div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:#165DFF;">
+  <span style="font-size:14px;font-weight:600;color:#fff;">9:41</span>
+  <span style="font-size:12px;color:#fff;"><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+</div>
+<div class="nav-bar">
+  <a href="ipad_workbench_index.html" style="color:#165DFF;text-decoration:none;font-size:14px;"><i class="fa-solid fa-chevron-left"></i></a>
+  <span style="flex:1;text-align:center;font-size:16px;font-weight:600;">消息中心</span>
+  <button type="button" id="btnReadAll" style="border:none;background:none;color:#165DFF;font-size:13px;font-weight:600;">全部已读</button>
+</div>
+<div class="tabs" role="tablist">
+  <button type="button" class="tab on" data-tab="all">全部</button>
+  <button type="button" class="tab" data-tab="unread">未读</button>
+</div>
+<div id="panelAll">
+  <div class="msg unread" data-read="0">
+    <span class="dot" aria-hidden="true"></span>
+    <div class="t">订单导出已完成</div>
+    <div class="meta">系统 · 2026-05-14 09:12</div>
+    <div class="s">您在「工作台」申请的订单 Excel 已生成，请在 PC 端消息中心下载或通过企业微信查收链接。</div>
+  </div>
+  <div class="msg unread" data-read="0">
+    <span class="dot" aria-hidden="true"></span>
+    <div class="t">任务催办提醒</div>
+    <div class="meta">营销部 · 王芳 · 2026-05-13 15:40</div>
+    <div class="s">订单 <strong>ZJHC20260505001</strong> 已被催办，请尽快完成现场检测与数据提交。</div>
+  </div>
+  <div class="msg" data-read="1">
+    <div class="t">检测报告审核通过</div>
+    <div class="meta">技术部 · 2026-05-12 11:05</div>
+    <div class="s">滨江区单管塔年度检测报告 V1 已通过审核，可进入报告编制流程。</div>
+  </div>
+  <div class="msg" data-read="1">
+    <div class="t">派单通知</div>
+    <div class="meta">合同部 · 2026-05-10 08:30</div>
+    <div class="s">新订单 <strong>DD20260508004</strong> 已派至本单位，请在工作台查看待办。</div>
+  </div>
+</div>
+
+<div id="panelUnread" style="display:none;">
+  <div class="msg unread" data-read="0">
+    <span class="dot" aria-hidden="true"></span>
+    <div class="t">订单导出已完成</div>
+    <div class="meta">系统 · 2026-05-14 09:12</div>
+    <div class="s">您在「工作台」申请的订单 Excel 已生成…</div>
+  </div>
+  <div class="msg unread" data-read="0">
+    <span class="dot" aria-hidden="true"></span>
+    <div class="t">任务催办提醒</div>
+    <div class="meta">营销部 · 王芳 · 2026-05-13 15:40</div>
+    <div class="s">订单 ZJHC20260505001 已被催办…</div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var MSG_UNREAD_LS = 'tower_proto_msg_unread_count';
+
+  function stripUnreadVisual() {
+    document.querySelectorAll('#panelAll .msg.unread, #panelUnread .msg.unread').forEach(function (m) {
+      m.classList.remove('unread');
+      var d = m.querySelector('.dot');
+      if (d) d.remove();
+    });
+  }
+
+  function applyStoredUnread() {
+    try {
+      if (localStorage.getItem(MSG_UNREAD_LS) === '0') {
+        stripUnreadVisual();
+      }
+    } catch (e) {}
+  }
+
+  applyStoredUnread();
+
+  var tabs = document.querySelectorAll('.tab');
+  var pa = document.getElementById('panelAll');
+  var pu = document.getElementById('panelUnread');
+  tabs.forEach(function (t) {
+    t.addEventListener('click', function () {
+      tabs.forEach(function (x) { x.classList.remove('on'); });
+      t.classList.add('on');
+      var k = t.getAttribute('data-tab');
+      pa.style.display = k === 'all' ? 'block' : 'none';
+      pu.style.display = k === 'unread' ? 'block' : 'none';
+    });
+  });
+  document.getElementById('btnReadAll').addEventListener('click', function () {
+    stripUnreadVisual();
+    try {
+      localStorage.setItem(MSG_UNREAD_LS, '0');
+    } catch (e2) {}
+    alert('已全部标为已读');
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<!-- iPad-INSPECT_CONNECTION v2.1 landscape -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>连接质量</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/app-frame.css">
+<link rel="stylesheet" href="../../../../assets/app-embed.css">
+<link rel="stylesheet" href="../../../../assets/app-inspect-layout.css">
+<link rel="stylesheet" href="../../../../assets/ipad-tokens.css">
+<link rel="stylesheet" href="../../../../assets/ipad-frame.css">
+<link rel="stylesheet" href="../../../../assets/ipad-layout.css">
+<link rel="stylesheet" href="../../../../assets/ipad-visual.css">
+<link rel="stylesheet" href="../../../../assets/ipad-inspect-layout.css">
+<link rel="stylesheet" href="../../../../assets/ipad-inspect-basic.css">
+<link rel="stylesheet" href="../../../../assets/ipad-embed.css">
+<script src="../../../../assets/ipad-adapt.js" defer></script>
+<script src="../../../../assets/app-embed.js" defer></script>
+<script src="../../../../assets/app-inspect-back.js" defer></script>
+</head>
+<body class="inspect-app-layout ipad-adapt" data-inspect-module-id="connection" data-inspect-module-name="连接质量">
+<div id="appStatusBar">
+  <span>9:41</span>
+  <span><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+</div>
+<div id="appNavBar">
+  <a href="../../任务/填报主页/ipad_task_inspect_home.html" data-app-inspect-back style="color:#165DFF; text-decoration:none; font-size:14px;"><i class="fa-solid fa-chevron-left"></i> 返回</a>
+  <span style="flex:1; text-align:center; font-size:16px; font-weight:600;">连接质量</span>
+  <span style="width:40px;"></span>
+</div>
+
+<div id="appEmbedContent" class="inspect-form-stack">
+
+  <div class="inspect-banner" role="status">
+    <i class="fa-solid fa-link" aria-hidden="true"></i>
+    <span>螺栓扭矩、连接副等模板配置项 · 已完成 3/4 项</span>
+  </div>
+
+  <section class="basic-card weld-check-card">
+    <h3 class="basic-card-title">1. 法兰螺栓扭矩抽检</h3>
+    <div class="basic-grid-2">
+      <div class="basic-field">
+        <label class="basic-label" for="connBoltQty"><i class="fa-solid fa-hashtag" aria-hidden="true"></i>抽检数量（颗）</label>
+        <input id="connBoltQty" type="number" class="form-input" value="12" min="0">
+      </div>
+      <div class="basic-field">
+        <label class="basic-label" for="connTorqueStd"><i class="fa-solid fa-gauge-high" aria-hidden="true"></i>设计扭矩（N·m）</label>
+        <input id="connTorqueStd" type="number" class="form-input" value="280">
+      </div>
+    </div>
+    <div class="basic-field">
+      <label class="basic-label">检测结果</label>
+      <div class="toggle-pair" data-conn-toggle="1" data-val="1">
+        <button type="button" class="toggle-opt on-pass" data-val="1">合格</button>
+        <button type="button" class="toggle-opt" data-val="0">不合格</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="basic-card weld-check-card">
+    <h3 class="basic-card-title">2. 连接副间隙</h3>
+    <div class="basic-grid-2">
+      <div class="basic-field">
+        <label class="basic-label" for="connGapMeas"><i class="fa-solid fa-ruler" aria-hidden="true"></i>实测间隙（mm）</label>
+        <input id="connGapMeas" type="number" class="form-input" value="0.8" step="0.1">
+      </div>
+      <div class="basic-field">
+        <label class="basic-label" for="connGapLimit"><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i>限值（mm）</label>
+        <input id="connGapLimit" type="number" class="form-input" value="1.0" step="0.1">
+      </div>
+    </div>
+    <div class="basic-field">
+      <label class="basic-label">检测结果</label>
+      <div class="toggle-pair" data-conn-toggle="2" data-val="1">
+        <button type="button" class="toggle-opt on-pass" data-val="1">合格</button>
+        <button type="button" class="toggle-opt" data-val="0">不合格</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="basic-card weld-check-card weld-check-fail">
+    <h3 class="basic-card-title">3. 螺栓缺失 / 松动 / 反穿</h3>
+    <div class="basic-grid-2">
+      <div class="basic-field">
+        <label class="basic-label" for="connLooseQty"><i class="fa-solid fa-screwdriver-wrench" aria-hidden="true"></i>松动数量（颗）</label>
+        <input id="connLooseQty" type="number" class="form-input" value="2" min="0">
+      </div>
+      <div class="basic-field">
+        <label class="basic-label" for="connMissingQty"><i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>缺失数量（颗）</label>
+        <input id="connMissingQty" type="number" class="form-input" value="0" min="0">
+      </div>
+    </div>
+    <div class="basic-field">
+      <label class="basic-label">检测结果</label>
+      <div class="toggle-pair" data-conn-toggle="3" data-val="0">
+        <button type="button" class="toggle-opt" data-val="1">合格</button>
+        <button type="button" class="toggle-opt on-fail" data-val="0">不合格</button>
+      </div>
+    </div>
+    <div class="basic-field">
+      <label class="basic-label" for="connRemark3"><i class="fa-solid fa-pen" aria-hidden="true"></i>备注</label>
+      <input id="connRemark3" type="text" class="form-input" value="第4段法兰 M24 螺栓 2 颗松动，需紧固">
+    </div>
+    <div class="basic-field">
+      <label class="basic-label"><i class="fa-solid fa-camera" aria-hidden="true"></i>不合格拍照</label>
+      <div class="photo-row">
+        <div class="photo-thumb-add" role="button" tabindex="0" data-conn-photo>
+          <i class="fa-solid fa-camera" aria-hidden="true"></i>
+          <span>拍照</span>
+        </div>
+        <div class="photo-thumb-done" aria-hidden="true">
+          <i class="fa-solid fa-image"></i>
+          <span>法兰螺栓</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="basic-card weld-check-card">
+    <h3 class="basic-card-title">4. 高强螺栓连接副标识</h3>
+    <div class="basic-field">
+      <label class="basic-label" for="connGrade"><i class="fa-solid fa-certificate" aria-hidden="true"></i>等级 / 批次</label>
+      <input id="connGrade" type="text" class="form-input" value="10.9 级 · 批次 A2026-03">
+    </div>
+    <div class="basic-field">
+      <label class="basic-label">检测结果</label>
+      <div class="toggle-pair" data-conn-toggle="4" data-val="1">
+        <button type="button" class="toggle-opt on-pass" data-val="1">合格</button>
+        <button type="button" class="toggle-opt" data-val="0">不合格</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+(function () {
+  document.querySelectorAll('[data-conn-toggle]').forEach(function (toggle) {
+    toggle.querySelectorAll('.toggle-opt').forEach(function (opt) {
+      opt.addEventListener('click', function () {
+        var val = opt.getAttribute('data-val');
+        toggle.setAttribute('data-val', val);
+        toggle.querySelectorAll('.toggle-opt').forEach(function (o) {
+          o.classList.remove('on-pass', 'on-fail');
+        });
+        if (val === '1') opt.classList.add('on-pass');
+        else opt.classList.add('on-fail');
+        var card = toggle.closest('.weld-check-card');
+        if (card) card.classList.toggle('weld-check-fail', val === '0');
+      });
+    });
+  });
+
+  function openPhoto() {
+    alert('拍照：记录连接部位现场照片（原型演示）。');
+  }
+  document.querySelectorAll('[data-conn-photo]').forEach(function (el) {
+    el.addEventListener('click', openPhoto);
+    el.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openPhoto();
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>

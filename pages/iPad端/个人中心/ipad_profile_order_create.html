@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<!-- iPad-PROFILE_ORDER_CREATE v2.1 landscape -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>新增订单</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../assets/app-frame.css">
+<link rel="stylesheet" href="../../../assets/ipad-tokens.css">
+<link rel="stylesheet" href="../../../assets/ipad-frame.css">
+<link rel="stylesheet" href="../../../assets/ipad-layout.css">
+<link rel="stylesheet" href="../../../assets/ipad-visual.css">
+<link rel="stylesheet" href="../../../assets/ipad-embed.css">
+<script src="../../../assets/ipad-adapt.js" defer></script>
+<style>
+html, body.ipad-order-form-page {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+body.ipad-order-form-page {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--ipad-font, -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif);
+  background: var(--ipad-bg-page, #f2f3f5);
+  color: var(--ipad-text-1, #1d2129);
+}
+.page-status {
+  flex-shrink: 0;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--ipad-space-2, 20px);
+  background: linear-gradient(135deg, var(--ipad-brand, #165dff) 0%, var(--ipad-brand-light, #4080ff) 100%);
+  color: #fff;
+  font-size: var(--ipad-fs-body, 14px);
+  font-weight: 600;
+}
+.page-status .icons { font-size: 12px; opacity: 0.92; letter-spacing: 4px; }
+.page-nav {
+  flex-shrink: 0;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  padding: 0 var(--ipad-space-2, 20px);
+  background: #fff;
+  border-bottom: 1px solid var(--ipad-border, #e5e6eb);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+}
+.page-nav a {
+  color: var(--ipad-brand, #165dff);
+  text-decoration: none;
+  font-size: var(--ipad-fs-body, 14px);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.page-nav .title {
+  flex: 1;
+  text-align: center;
+  font-size: var(--ipad-fs-title, 16px);
+  font-weight: 600;
+}
+.page-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: var(--ipad-space-2, 20px);
+  padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+}
+.form-layout {
+  max-width: var(--ipad-content-max, 1180px);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ipad-space-2, 20px);
+  align-items: start;
+}
+.sec {
+  background: #fff;
+  border-radius: var(--ipad-radius-lg, 12px);
+  padding: var(--ipad-space-2, 20px);
+  border: 1px solid var(--ipad-border, #e5e6eb);
+  box-shadow: var(--ipad-shadow-card, 0 0 5px rgba(0, 0, 0, 0.3));
+  min-width: 0;
+}
+.sec h3 {
+  margin: 0 0 var(--ipad-space-2, 20px);
+  padding-bottom: var(--ipad-space-1, 10px);
+  border-bottom: 1px solid #f2f3f5;
+  font-size: var(--ipad-fs-title, 16px);
+  font-weight: 600;
+  color: var(--ipad-text-1, #1d2129);
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ipad-space-1, 10px) var(--ipad-space-2, 20px);
+}
+.fld { min-width: 0; }
+.fld.span-2 { grid-column: 1 / -1; }
+.lbl {
+  display: block;
+  font-size: var(--ipad-fs-sub, 13px);
+  color: var(--ipad-text-3, #86909c);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+.req { color: var(--ipad-danger, #f53f3f); }
+.inp, .ta {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--ipad-border, #e5e6eb);
+  border-radius: var(--ipad-radius-md, 8px);
+  font-size: var(--ipad-fs-body, 14px);
+  font-family: inherit;
+  color: var(--ipad-text-1, #1d2129);
+  background: #fff;
+  transition: border-color 0.15s;
+}
+.inp {
+  height: 44px;
+  padding: 0 14px;
+}
+.inp:focus, .ta:focus {
+  outline: none;
+  border-color: var(--ipad-brand, #165dff);
+  box-shadow: 0 0 0 2px rgba(22, 93, 255, 0.12);
+}
+.inp[readonly], .inp:disabled {
+  background: #f7f8fa;
+  color: var(--ipad-text-2, #4e5969);
+}
+.ta {
+  min-height: 88px;
+  padding: 10px 14px;
+  resize: vertical;
+  line-height: var(--ipad-lh-body, 1.5);
+}
+.hint {
+  font-size: var(--ipad-fs-caption, 11px);
+  color: var(--ipad-text-3, #86909c);
+  margin: 6px 0 0;
+  line-height: var(--ipad-lh-loose, 1.6);
+}
+.hint strong { color: var(--ipad-text-2, #4e5969); font-weight: 600; }
+.pick-row {
+  display: flex;
+  gap: var(--ipad-space-1, 10px);
+  align-items: stretch;
+}
+.pick-row .inp { flex: 1; min-width: 0; }
+.btn-pick {
+  flex-shrink: 0;
+  height: 44px;
+  padding: 0 16px;
+  background: var(--ipad-brand-bg, #e8f3ff);
+  color: var(--ipad-brand, #165dff);
+  border: 1px solid #bedaff;
+  border-radius: var(--ipad-radius-md, 8px);
+  font-size: var(--ipad-fs-body, 14px);
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s;
+}
+.btn-pick:hover { background: #dce9ff; border-color: var(--ipad-brand, #165dff); }
+.btn-pick:active { opacity: 0.92; }
+/* 底栏：右对齐、固定宽度，避免两枚大按钮铺满底边 */
+body.ipad-order-form-page .fixb {
+  left: 0 !important;
+  width: 100% !important;
+  justify-content: flex-end;
+  padding: 12px var(--ipad-space-2, 20px) calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 -1px 0 var(--ipad-border, #e5e6eb), 0 -4px 16px rgba(0, 0, 0, 0.06);
+}
+body.ipad-order-form-page .fixb-inner {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--ipad-space-1, 10px);
+  width: 100%;
+  max-width: var(--ipad-content-max, 1180px);
+  margin: 0 auto;
+}
+body.ipad-order-form-page .fixb .btn-d,
+body.ipad-order-form-page .fixb .btn-p {
+  flex: 0 0 auto;
+  min-width: 112px;
+  height: 44px;
+  padding: 0 22px;
+  border-radius: var(--ipad-radius-md, 8px);
+  font-size: var(--ipad-fs-body, 14px);
+  font-weight: 600;
+  font-family: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+  line-height: 1;
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+}
+body.ipad-order-form-page .fixb .btn-d {
+  background: #fff;
+  color: var(--ipad-text-2, #4e5969);
+  border: 1px solid var(--ipad-border, #e5e6eb);
+}
+body.ipad-order-form-page .fixb .btn-d:hover {
+  background: #f7f8fa;
+  border-color: #c9cdd4;
+}
+body.ipad-order-form-page .fixb .btn-d:active { transform: scale(0.98); }
+body.ipad-order-form-page .fixb .btn-p {
+  background: var(--ipad-brand, #165dff);
+  color: #fff;
+  border: none;
+  min-width: 128px;
+  box-shadow: 0 2px 6px rgba(22, 93, 255, 0.22);
+}
+body.ipad-order-form-page .fixb .btn-p:hover {
+  background: #4080ff;
+  box-shadow: 0 4px 10px rgba(22, 93, 255, 0.28);
+}
+body.ipad-order-form-page .fixb .btn-p:active { transform: scale(0.98); }
+body.ipad-order-form-page .fixb .btn-d i,
+body.ipad-order-form-page .fixb .btn-p i {
+  font-size: 14px;
+  opacity: 0.9;
+}
+/* iPad：工程选择居中弹窗 */
+.mask {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ipad-space-2, 20px);
+  box-sizing: border-box;
+}
+.mask.on { display: flex; }
+.sheet {
+  width: min(560px, 100%);
+  max-height: min(72vh, 520px);
+  background: #fff;
+  border-radius: var(--ipad-radius-lg, 12px);
+  padding: var(--ipad-space-2, 20px);
+  box-sizing: border-box;
+  overflow-y: auto;
+  box-shadow: var(--ipad-shadow-float, 0 0 5px rgba(0, 0, 0, 0.3));
+}
+.sheet-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--ipad-space-2, 20px);
+}
+.sheet-head span { font-size: var(--ipad-fs-title, 16px); font-weight: 600; }
+.sheet-search {
+  width: 100%;
+  height: 44px;
+  border: 1px solid var(--ipad-border, #e5e6eb);
+  border-radius: var(--ipad-radius-md, 8px);
+  padding: 0 14px;
+  margin-bottom: var(--ipad-space-1, 10px);
+  box-sizing: border-box;
+  font-size: var(--ipad-fs-body, 14px);
+}
+.pick {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 14px;
+  margin-bottom: var(--ipad-space-1, 10px);
+  border: 1px solid var(--ipad-border, #e5e6eb);
+  border-radius: var(--ipad-radius-md, 8px);
+  background: #fff;
+  font-size: var(--ipad-fs-body, 14px);
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.15s, background 0.15s;
+}
+.pick:hover, .pick:active { border-color: var(--ipad-brand, #165dff); background: var(--ipad-brand-bg, #e8f3ff); }
+.pick sub { display: block; font-size: var(--ipad-fs-caption, 11px); color: var(--ipad-text-3, #86909c); margin-top: 4px; }
+@media (max-width: 900px) {
+  .form-layout { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .form-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body class="ipad-adapt ipad-order-form-page">
+<div class="page-status" aria-hidden="true">
+  <span>9:41</span>
+  <span class="icons"><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+</div>
+<div class="page-nav">
+  <a href="ipad_profile_orders.html" aria-label="返回"><i class="fa-solid fa-chevron-left"></i> 返回</a>
+  <span class="title">新增订单</span>
+  <span style="width:56px;"></span>
+</div>
+
+<main class="page-scroll">
+  <div class="form-layout">
+    <section class="sec">
+      <h3>基本信息</h3>
+      <div class="form-grid">
+        <div class="fld span-2">
+          <label class="lbl" for="orderName">订单名称 <span class="req">*</span></label>
+          <input type="text" id="orderName" class="inp" placeholder="请输入订单名称">
+        </div>
+        <div class="fld span-2">
+          <label class="lbl" for="orderCode">订单编码（系统自动生成）</label>
+          <input type="text" id="orderCode" class="inp" style="background:#F7F8FA" readonly placeholder="选填工程并填派单日期后预览">
+          <p class="hint">规则同 PC：有工程时用工程地址拼音缩写 + 派单日期 YYYYMMDD + 3 位流水；未选工程时编码规则以系统为准。</p>
+        </div>
+        <div class="fld">
+          <label class="lbl" for="dispatchDate">派单日期 <span class="req">*</span></label>
+          <input type="date" id="dispatchDate" class="inp" value="2026-05-14">
+        </div>
+        <div class="fld">
+          <label class="lbl" for="deadlineDate">截止日期 <span class="req">*</span></label>
+          <input type="date" id="deadlineDate" class="inp" value="2026-06-14">
+        </div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <h3>关联信息</h3>
+      <div class="form-grid">
+        <div class="fld span-2">
+          <label class="lbl" for="projDisp">所属工程</label>
+          <div class="pick-row">
+            <input type="text" id="projDisp" class="inp" style="background:#F7F8FA" readonly placeholder="选填，请点击选择工程">
+            <button type="button" id="btnPick" class="btn-pick"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> 选择</button>
+          </div>
+          <p class="hint">非必填：新建时可不选；提交审核前须关联。数据通过检测单位对下合同，关联对上合同下的工程列表（营销管理 · 工程）。关联后自动带出客户简称与「关联合同」回显。</p>
+        </div>
+        <div class="fld">
+          <label class="lbl" for="orderContractShow">关联合同（只读回显）</label>
+          <input type="text" id="orderContractShow" class="inp" style="background:#F7F8FA" readonly placeholder="选择工程后带出对下合同编号及名称">
+        </div>
+        <div class="fld">
+          <label class="lbl" for="custShort">客户简称</label>
+          <input type="text" id="custShort" class="inp" style="background:#F7F8FA" readonly placeholder="选择工程后带出">
+        </div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <h3>站点信息</h3>
+      <p class="hint" style="margin:0 0 var(--ipad-space-2, 20px);">站址、经纬度等与现场检测站址相关字段在<strong>订单</strong>维度维护。</p>
+      <div class="form-grid">
+        <div class="fld">
+          <label class="lbl" for="orderSiteProvince">所属省 <span class="req">*</span></label>
+          <select class="inp" id="orderSiteProvince" style="appearance:auto;">
+            <option value="">请选择</option>
+            <option selected>浙江省</option>
+            <option>江苏省</option>
+          </select>
+        </div>
+        <div class="fld">
+          <label class="lbl" for="orderSiteCity">所属市 <span class="req">*</span></label>
+          <select class="inp" id="orderSiteCity" style="appearance:auto;">
+            <option value="">请选择</option>
+            <option selected>杭州市</option>
+            <option>宁波市</option>
+          </select>
+        </div>
+        <div class="fld">
+          <label class="lbl" for="orderSiteAddrCode">站址编码</label>
+          <input type="text" id="orderSiteAddrCode" class="inp" placeholder="请输入站址编码">
+        </div>
+        <div class="fld">
+          <label class="lbl" for="orderSiteExt">自定义扩展字段（可选）</label>
+          <input type="text" id="orderSiteExt" class="inp" placeholder="按企业字典配置">
+        </div>
+        <div class="fld">
+          <label class="lbl" for="orderSiteLng">经度</label>
+          <input type="text" id="orderSiteLng" class="inp" placeholder="例 120.153576" inputmode="decimal">
+        </div>
+        <div class="fld">
+          <label class="lbl" for="orderSiteLat">纬度</label>
+          <input type="text" id="orderSiteLat" class="inp" placeholder="例 30.287459" inputmode="decimal">
+        </div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <h3>检测要求</h3>
+      <div class="form-grid">
+        <div class="fld">
+          <label class="lbl" for="inspectType">检测类型 <span class="req">*</span></label>
+          <select id="inspectType" class="inp" style="appearance:auto;">
+            <option value="">请选择</option>
+            <option>安全性鉴定</option>
+            <option>可靠性鉴定</option>
+            <option>抗震鉴定</option>
+            <option>年度例行检测</option>
+            <option>专项检测</option>
+          </select>
+        </div>
+        <div class="fld">
+          <label class="lbl" for="specGroup">检测规范组</label>
+          <select id="specGroup" class="inp" style="appearance:auto;">
+            <option value="">非必填</option>
+            <option>存量铁塔-单管类附表套件</option>
+            <option>存量铁塔-角钢格构附表套件</option>
+            <option>通用安全性鉴定规范组 A</option>
+          </select>
+        </div>
+        <div class="fld span-2">
+          <label class="lbl" for="demandNote">检测需求说明</label>
+          <textarea id="demandNote" class="ta" placeholder="选填：检测范围、现场条件、客户特殊要求等"></textarea>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer class="fixb">
+  <div class="fixb-inner">
+    <a href="ipad_profile_orders.html" class="btn-d"><i class="fa-regular fa-circle-xmark" aria-hidden="true"></i> 取消</a>
+    <button type="button" class="btn-p" id="btnSave"><i class="fa-solid fa-check" aria-hidden="true"></i> 保存</button>
+  </div>
+</footer>
+
+<div id="mask" class="mask" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="sheet" onclick="event.stopPropagation();">
+    <div class="sheet-head">
+      <span id="sheetTitle">选择关联工程</span>
+      <button type="button" id="mClose" style="border:none;background:none;font-size:22px;color:#86909C;cursor:pointer;line-height:1;" aria-label="关闭">×</button>
+    </div>
+    <input type="text" class="sheet-search" placeholder="工程名称 / 站址编码">
+    <button type="button" class="pick" data-p="2026年杭州铁塔年检工程|中国铁塔杭州分公司|HT2026-0512 · 杭州移动年度框架|ZZ-HZ-BJ02">2026年杭州铁塔年检工程<sub>站址编码：ZZ-HZ-BJ02</sub></button>
+    <button type="button" class="pick" data-p="城西区域改造项目|中国铁塔杭州分公司|HT2026-0428 · 城西改造专项|ZZ-HZ-CX03">城西区域改造项目<sub>站址编码：ZZ-HZ-CX03</sub></button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var mask = document.getElementById('mask');
+  document.getElementById('btnPick').addEventListener('click', function () { mask.classList.add('on'); });
+  document.getElementById('mClose').addEventListener('click', function () { mask.classList.remove('on'); });
+  mask.addEventListener('click', function (e) { if (e.target === mask) mask.classList.remove('on'); });
+  document.querySelectorAll('.pick').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var p = (b.getAttribute('data-p') || '').split('|');
+      document.getElementById('projDisp').value = p[0] || '';
+      document.getElementById('custShort').value = p[1] || '';
+      document.getElementById('orderContractShow').value = p[2] || '';
+      var ac = document.getElementById('orderSiteAddrCode');
+      if (ac && p[3] && !ac.value) ac.value = p[3];
+      mask.classList.remove('on');
+    });
+  });
+  document.getElementById('btnSave').addEventListener('click', function () {
+    alert('已保存订单草稿。');
+    location.href = 'ipad_profile_orders.html';
+  });
+})();
+</script>
+</body>
+</html>

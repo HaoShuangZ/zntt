@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新增任务模板</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+.section-card { background:#fff; border:1px solid var(--border); border-radius:6px; margin-bottom:20px; }
+.section-header { display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-bottom:1px solid var(--border); }
+.section-title { font-size:15px; font-weight:600; color:var(--text-1); display:flex; align-items:center; gap:8px; }
+.section-title i { color:var(--primary); }
+.section-body { padding:20px; }
+
+.panel-left { width:30%; min-width:240px; border-right:1px solid var(--border); padding-right:20px; }
+.panel-right { width:70%; padding-left:20px; }
+.tree-item { padding:8px 12px; cursor:pointer; border-radius:4px; font-size:13px; color:var(--text-2); transition:all .15s; display:flex; align-items:center; justify-content:space-between; }
+.tree-item:hover { background:var(--primary-light); color:var(--primary); }
+.tree-item.active { background:var(--primary-light); color:var(--primary); font-weight:500; }
+.tree-item .tree-del { opacity:0; font-size:12px; color:var(--danger); cursor:pointer; padding:2px 6px; }
+.tree-item:hover .tree-del { opacity:1; }
+.tree-child { padding-left:24px; }
+.tree-group-label { font-size:11px; color:var(--text-3); padding:6px 0 8px; }
+.field-cat-select { min-width:88px; font-size:12px; }
+.field-unit-select { min-width:88px; font-size:12px; }
+.dim-inp { font-size:12px !important; }
+.matrix-badge { display:inline-flex; align-items:center; gap:4px; font-size:10px; color:#722ed1; background:#f9f0ff; border:1px solid #d3adf7; border-radius:999px; padding:0 6px; line-height:16px; }
+.tree-node { margin-bottom: 2px; }
+.tree-children { padding-left: 14px; margin: 2px 0 4px 10px; border-left: 1px dashed var(--border); }
+.tree-children:empty { display: none; }
+
+.default-value-cell { min-width: 200px; }
+.default-value-cell .default-mode-select { width: 100%; margin-bottom: 6px; font-size: 12px; }
+.default-seq-panel { display: flex; flex-direction: column; gap: 6px; }
+.default-seq-panel.is-hidden { display: none; }
+.default-seq-params { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; }
+.default-seq-label { font-size: 11px; color: var(--text-3); white-space: nowrap; }
+.default-seq-params .form-input { width: 52px; padding: 4px 6px; font-size: 12px; }
+.default-seq-result { font-size: 12px; background: #f7f8fa; }
+.default-seq-tip { margin: 0; font-size: 10px; color: var(--text-3); line-height: 1.45; }
+.default-fixed-input.is-hidden { display: none; }
+#field-table-body td:nth-child(8) { min-width: 220px; vertical-align: top; }
+
+</style>
+</head>
+<body>
+<div id="page-content">
+
+  <div style="margin-bottom:16px;">
+    <a href="pc_task_template_list.html" class="btn btn-default btn-sm"><i class="fa-solid fa-arrow-left"></i> 返回列表</a>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;border:1px solid #e8e8ff;background:#fafbff;">
+    <div class="card-body" style="padding:10px 14px;font-size:12px;color:var(--text-2);line-height:1.6;">
+      新建模板：先选<strong>适用塔型</strong>（一塔型一套检测内容），再在左侧维护<strong>检测任务模块树</strong>；右侧为当前模块的字段表。<strong>标准值</strong>为单格录入（高、长、文字结论等）；<strong>二维表</strong>为红框类矩阵（首列行标签 × 表头多列）。
+    </div>
+  </div>
+
+  <!-- 基本信息 -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-title"><i class="fa-solid fa-info-circle"></i>基本信息</div>
+    </div>
+    <div class="section-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">模板名称 <span class="required">*</span></label>
+          <input type="text" class="form-input" style="width:100%" placeholder="请输入模板名称">
+        </div>
+        <div class="form-group">
+          <label class="form-label">模板编号</label>
+          <input type="text" class="form-input" style="width:100%;background:#f7f8fa" placeholder="系统自动生成" readonly>
+        </div>
+        <div class="form-group">
+          <label class="form-label">适用塔型 <span class="required">*</span></label>
+          <select class="form-select" style="width:100%" id="towerTypeSel">
+            <option value="">请选择</option>
+            <option>单管塔</option>
+            <option>拉线杆</option>
+            <option>角钢塔</option>
+            <option>三管塔</option>
+            <option>四管塔</option>
+          </select>
+          <p class="note" style="margin-top:6px;font-size:12px;color:var(--text-3);line-height:1.55;">一种塔型仅对应<strong>一套</strong>检测内容（本模板）；现场任务按站点塔型自动匹配。若该塔型已有已发布模板，发布前须先停用或升级版本。</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">检测类型 <span class="required">*</span></label>
+          <select class="form-select" style="width:100%">
+            <option value="">请选择</option>
+            <option>安全性鉴定</option>
+            <option>可靠性鉴定</option>
+            <option>抗震鉴定</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">自填版本号</label>
+          <input type="text" class="form-input" style="width:100%;background:#f7f8fa" value="V1.0" readonly>
+        </div>
+        <div class="form-group" style="grid-column:1/-1;">
+          <label class="form-label">模板说明</label>
+          <textarea class="form-input" rows="3" style="width:100%;resize:vertical" placeholder="请输入模板的用途说明"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 检测项与字段配置 -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-title"><i class="fa-solid fa-list-check"></i>检测任务模块与字段</div>
+    </div>
+    <div class="section-body" style="display:flex; min-height:480px;">
+
+      <!-- 左侧：检测项列表 -->
+      <div class="panel-left">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+          <div style="font-size:14px;font-weight:600;color:var(--text-1);">检测任务模块（树）</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button type="button" class="btn btn-default btn-sm" id="btn-add-item"><i class="fa-solid fa-plus"></i> 添加模块</button>
+            <button type="button" class="btn btn-default btn-sm" id="btn-add-child"><i class="fa-solid fa-folder-plus"></i> 添加子模块</button>
+          </div>
+        </div>
+        <div class="tree-group-label"><i class="fa-solid fa-sitemap" style="margin-right:4px;"></i>左侧为<strong>层级树</strong>：根节点与缩进子节点；<strong>添加模块</strong>在末尾增加同级根节点，<strong>添加子模块</strong>在<strong>当前选中</strong>节点下增加子级。</div>
+        <div id="check-item-tree">
+          <div class="tree-node">
+            <div class="tree-item active" data-item="0" data-module="basic"><span>基本信息</span><span class="tree-del" data-del="0"><i class="fa-solid fa-xmark"></i></span></div>
+            <div class="tree-children"></div>
+          </div>
+          <div class="tree-node">
+            <div class="tree-item" data-item="1"><span>整体</span><span class="tree-del" data-del="1"><i class="fa-solid fa-xmark"></i></span></div>
+            <div class="tree-children"></div>
+          </div>
+          <div class="tree-node">
+            <div class="tree-item" data-item="2"><span>基础</span><span class="tree-del" data-del="2"><i class="fa-solid fa-xmark"></i></span></div>
+            <div class="tree-children"></div>
+          </div>
+          <div class="tree-node">
+            <div class="tree-item" data-item="3"><span>地锚</span><span class="tree-del" data-del="3"><i class="fa-solid fa-xmark"></i></span></div>
+            <div class="tree-children"></div>
+          </div>
+          <div class="tree-node">
+            <div class="tree-item" data-item="4"><span>塔段</span><span class="tree-del" data-del="4"><i class="fa-solid fa-xmark"></i></span></div>
+            <div class="tree-children"></div>
+          </div>
+          <div class="tree-node">
+            <div class="tree-item" data-item="5"><span>构建检测</span><span class="tree-del" data-del="5"><i class="fa-solid fa-xmark"></i></span></div>
+            <div class="tree-children"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 右侧：字段配置 -->
+      <div class="panel-right">
+        <div id="field-panel-title" style="font-size:14px;font-weight:600;color:var(--text-1);margin-bottom:4px;">基本信息</div>
+        <div id="field-module-hint" style="font-size:12px;color:var(--text-3);margin-bottom:8px;line-height:1.55;">当前模块：<strong>基本信息</strong>。字段类别选「<strong>标准值</strong>」表示单项录入；选「<strong>二维表</strong>」时须填写<strong>行维度（首列标签）</strong>与<strong>列维度（表头·多列）</strong>。</div>
+        <div style="font-size:11px;color:var(--text-3);margin-bottom:10px;"><span class="matrix-badge"><i class="fa-solid fa-table-cells"></i> 二维表</span> 的「可选值/值域」建议按<strong>列</strong>说明填写规则（如锌层「检测6处」取最薄）。字段类型为<strong>单选/多选</strong>时，请在「<strong>选项值</strong>」列填写候选项（逗号或换行分隔）。字段类型为<strong>数字</strong>时，「<strong>默认值</strong>」可切换为<strong>序列生成</strong>（平均值、±范围、个数）。</div>
+
+        <div style="overflow-x:auto;">
+        <table class="data-table" style="min-width:1460px;">
+          <thead>
+            <tr>
+              <th>字段名称</th><th>字段编码</th><th>单位</th><th>字段类别</th><th>字段类型</th>
+              <th style="min-width:160px">选项值</th>
+              <th>可选值 / 值域</th><th>默认值</th><th>行维度（首列标签）</th><th>列维度（表头·多列）</th>
+              <th style="width:70px">必填</th><th style="width:72px">X方向排序</th><th style="width:72px">Y方向排序</th><th style="width:100px">记录合并</th><th style="width:56px">操作</th>
+            </tr>
+          </thead>
+          <tbody id="field-table-body">
+            <tr>
+              <td><input type="text" class="form-input" style="width:100%" value="塔体"></td>
+              <td><input type="text" class="form-input" style="width:100%;background:#f7f8fa" value="DGT-001" readonly></td>
+              <td><select class="form-select field-unit-select" style="width:100%" title="单值下拉"><option value="">请选择</option><option>无</option><option selected>m</option><option>mm</option><option>cm</option><option>μm</option><option>kg</option><option>kN</option><option>MPa</option><option>°</option><option>%</option></select></td>
+              <td><select class="form-select field-cat-select"><option selected>标准值</option><option>二维表</option></select></td>
+              <td><select class="form-select field-type-select" style="width:100%"><option>文本</option><option selected>数字</option><option>单选</option><option>多选</option><option>日期</option><option>图片</option><option>坐标</option></select></td>
+              <td class="td-option-wrap"><input type="text" class="form-input field-option-input" style="width:100%;min-width:140px;background:#f7f8fa" value="—" readonly title="单选、多选时填写候选项"></td>
+              <td><input type="text" class="form-input" style="width:100%" value="≥0，保留1位小数"></td>
+              <td><input type="text" class="form-input" style="width:100%" placeholder="空"></td>
+              <td><input type="text" class="form-input dim-inp" style="width:100%;background:#f7f8fa" value="—" readonly></td>
+              <td><input type="text" class="form-input dim-inp" style="width:100%;background:#f7f8fa" value="—" readonly></td>
+              <td style="text-align:center"><input type="checkbox" checked></td>
+              <td><input type="number" class="form-input" style="width:100%" value="1" title="行/块在表单中的顺序"></td>
+              <td><input type="number" class="form-input" style="width:100%" value="0" title="列或子格顺序；标准值常用 0"></td>
+              <td><select class="form-select field-merge-select" style="width:100%" title="多条检测记录是否合并展示/归档"><option>合并</option><option selected>不合并</option></select></td>
+              <td class="col-action"><button class="btn btn-text" style="color:var(--danger)">删除</button></td>
+            </tr>
+            <tr>
+              <td><input type="text" class="form-input" style="width:100%" value="外观"></td>
+              <td><input type="text" class="form-input" style="width:100%;background:#f7f8fa" value="WG-001" readonly></td>
+              <td><select class="form-select field-unit-select" style="width:100%" title="单值下拉"><option value="">请选择</option><option selected>无</option><option>m</option><option>mm</option><option>cm</option><option>μm</option><option>kg</option><option>kN</option><option>MPa</option><option>°</option><option>%</option></select></td>
+              <td><select class="form-select field-cat-select"><option selected>标准值</option><option>二维表</option></select></td>
+              <td><select class="form-select field-type-select" style="width:100%"><option selected>文本</option><option>数字</option><option>单选</option><option>多选</option><option>日期</option><option>图片</option><option>坐标</option></select></td>
+              <td class="td-option-wrap"><input type="text" class="form-input field-option-input" style="width:100%;min-width:140px;background:#f7f8fa" value="—" readonly title="单选、多选时填写候选项"></td>
+              <td><input type="text" class="form-input" style="width:100%" value="最长500字"></td>
+              <td><input type="text" class="form-input" style="width:100%" placeholder="默认空"></td>
+              <td><input type="text" class="form-input dim-inp" style="width:100%;background:#f7f8fa" value="—" readonly></td>
+              <td><input type="text" class="form-input dim-inp" style="width:100%;background:#f7f8fa" value="—" readonly></td>
+              <td style="text-align:center"><input type="checkbox" checked></td>
+              <td><input type="number" class="form-input" style="width:100%" value="2" title="行/块在表单中的顺序"></td>
+              <td><input type="number" class="form-input" style="width:100%" value="0" title="列或子格顺序；标准值常用 0"></td>
+              <td><select class="form-select field-merge-select" style="width:100%" title="多条检测记录是否合并展示/归档"><option>合并</option><option selected>不合并</option></select></td>
+              <td class="col-action"><button class="btn btn-text" style="color:var(--danger)">删除</button></td>
+            </tr>
+            <tr>
+              <td><input type="text" class="form-input" style="width:100%" value="构件"></td>
+              <td><input type="text" class="form-input" style="width:100%;background:#f7f8fa" value="JG-2" readonly></td>
+              <td><select class="form-select field-unit-select" style="width:100%" title="单值下拉"><option value="">请选择</option><option selected>无</option><option>m</option><option>mm</option><option>cm</option><option>μm</option><option>kg</option><option>kN</option><option>MPa</option><option>°</option><option>%</option></select></td>
+              <td><select class="form-select field-cat-select"><option>标准值</option><option selected>二维表</option></select></td>
+              <td><select class="form-select field-type-select" style="width:100%"><option>文本</option><option selected>数字</option><option>单选</option><option>多选</option><option>日期</option><option>图片</option><option>坐标</option></select></td>
+              <td class="td-option-wrap"><input type="text" class="form-input field-option-input" style="width:100%;min-width:140px;background:#f7f8fa" value="—" readonly title="单选、多选时填写候选项"></td>
+              <td><input type="text" class="form-input" style="width:100%" value="规格mm；材质HLD；锌层μm×6处取最薄"></td>
+              <td><input type="text" class="form-input" style="width:100%" value="空表"></td>
+              <td><input type="text" class="form-input dim-inp" style="width:100%" value="构件类型：主肢/横杆/斜杆/辅助杆/横隔杆/其他构件"></td>
+              <td><input type="text" class="form-input dim-inp" style="width:100%" value="规格(mm)｜材质(HLD)｜锌层厚度(μm,检测6处)"></td>
+              <td style="text-align:center"><input type="checkbox" checked></td>
+              <td><input type="number" class="form-input" style="width:100%" value="3" title="二维表行向块顺序"></td>
+              <td><input type="number" class="form-input" style="width:100%" value="1" title="二维表列向或表头组顺序"></td>
+              <td><select class="form-select field-merge-select" style="width:100%" title="多条检测记录是否合并展示/归档"><option>合并</option><option selected>不合并</option></select></td>
+              <td class="col-action"><button class="btn btn-text" style="color:var(--danger)">删除</button></td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+        <div style="padding:12px 0;">
+          <button class="btn btn-default" id="btn-add-field"><i class="fa-solid fa-plus"></i> 添加字段</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="form-footer">
+    <a href="pc_task_template_list.html" class="btn btn-default">取消</a>
+    <button class="btn btn-default" id="btn-save-draft">保存草稿</button>
+    <button class="btn btn-primary" id="btn-publish">发布</button>
+  </div>
+
+</div>
+<script src="../../../../assets/pc-template-field-default.js"></script>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'task_template_list', breadcrumb:['模板配置','任务模板管理','新增模板']};</script>
+<script>
+(function(){
+  var fieldIdx = 4;
+  var itemIdx = 20;
+
+  var MODULE_HINTS = {
+    '0': '当前模块：<strong>基本信息</strong>。用于任务/站点级公共采集项（编号、委托方等）。',
+    '1': '当前模块：<strong>整体</strong>。塔体整体检查与结论类字段。',
+    '2': '当前模块：<strong>基础</strong>。基础尺寸、混凝土强度、外观等。',
+    '3': '当前模块：<strong>地锚</strong>。地锚规格、埋深、拉力等。',
+    '4': '当前模块：<strong>塔段</strong>。各塔段构件规格、连接、变形、防腐、编号等采集项；可配合<strong>二维表</strong>配置行列维度。',
+    '5': '当前模块：<strong>构建检测</strong>。构件连接、螺栓、焊缝等专项字段。'
+  };
+
+  function moduleHintHtml(id) {
+    var h = MODULE_HINTS[id];
+    if (!h) return '为当前模块配置采集字段。';
+    return h;
+  }
+
+  function getTreeItemLabel(el) {
+    for (var i = 0; i < el.children.length; i++) {
+      var ch = el.children[i];
+      if (ch.tagName !== 'SPAN') continue;
+      if (ch.classList.contains('tree-del')) continue;
+      var t = (ch.textContent || '').trim();
+      if (t) return t;
+    }
+    return (el.textContent || '').replace(/\s+/g, ' ').trim();
+  }
+
+  function syncOptionCellFromType(tr) {
+    var tds = tr.querySelectorAll('td');
+    if (tds.length < 6) return;
+    var typeSel = tds[4].querySelector('select.field-type-select');
+    var optInp = tds[5].querySelector('.field-option-input');
+    if (!typeSel || !optInp) return;
+    var v = typeSel.value;
+    if (v === '单选' || v === '多选') {
+      optInp.readOnly = false;
+      optInp.style.background = '';
+      optInp.placeholder = v === '单选' ? '候选项：逗号或换行分隔' : '候选项：逗号或换行分隔（多选）';
+      if (optInp.value === '—') optInp.value = '';
+    } else {
+      optInp.readOnly = true;
+      optInp.style.background = '#f7f8fa';
+      optInp.placeholder = '';
+      optInp.value = '—';
+    }
+  }
+
+  document.addEventListener('click', function(e){
+    var treeItem = e.target.closest('.tree-item[data-item]');
+    if(treeItem && !e.target.closest('.tree-del')){
+      document.querySelectorAll('#check-item-tree .tree-item').forEach(function(el){ el.classList.remove('active'); });
+      treeItem.classList.add('active');
+      var id = treeItem.getAttribute('data-item');
+      document.getElementById('field-panel-title').textContent = getTreeItemLabel(treeItem);
+      document.getElementById('field-module-hint').innerHTML = moduleHintHtml(id);
+      return;
+    }
+    var delItem = e.target.closest('.tree-del');
+    if(delItem){
+      var row = delItem.closest('.tree-item');
+      if (!row) return;
+      var branch = row.closest('.tree-node');
+      if (branch) {
+        branch.remove();
+      } else {
+        row.remove();
+      }
+      return;
+    }
+    if(e.target.closest('#btn-add-item')){
+      var tree = document.getElementById('check-item-tree');
+      var node = document.createElement('div');
+      node.className = 'tree-node';
+      node.innerHTML = '<div class="tree-item" data-item="'+itemIdx+'"><span contenteditable="true" style="outline:none;min-width:60px;">新模块</span><span class="tree-del" data-del="'+itemIdx+'"><i class="fa-solid fa-xmark"></i></span></div><div class="tree-children"></div>';
+      tree.appendChild(node);
+      itemIdx++;
+      return;
+    }
+    if(e.target.closest('#btn-add-child')){
+      var activeItem = document.querySelector('#check-item-tree .tree-item.active');
+      if (!activeItem) {
+        alert('请先在左侧选中一个模块节点，再添加子模块。');
+        return;
+      }
+      var parentBranch = activeItem.closest('.tree-node');
+      if (!parentBranch) return;
+      var chWrap = parentBranch.querySelector(':scope > .tree-children');
+      if (!chWrap) {
+        chWrap = document.createElement('div');
+        chWrap.className = 'tree-children';
+        parentBranch.appendChild(chWrap);
+      }
+      var childNode = document.createElement('div');
+      childNode.className = 'tree-node';
+      childNode.innerHTML = '<div class="tree-item" data-item="'+itemIdx+'"><span contenteditable="true" style="outline:none;min-width:60px;">子模块</span><span class="tree-del" data-del="'+itemIdx+'"><i class="fa-solid fa-xmark"></i></span></div><div class="tree-children"></div>';
+      chWrap.appendChild(childNode);
+      document.querySelectorAll('#check-item-tree .tree-item').forEach(function(el){ el.classList.remove('active'); });
+      var newItem = childNode.querySelector('.tree-item');
+      if (newItem) {
+        newItem.classList.add('active');
+        document.getElementById('field-panel-title').textContent = getTreeItemLabel(newItem);
+        document.getElementById('field-module-hint').innerHTML = moduleHintHtml(newItem.getAttribute('data-item'));
+      }
+      itemIdx++;
+      return;
+    }
+    if(e.target.closest('#btn-add-field')){
+      var tbody = document.getElementById('field-table-body');
+      var tr = document.createElement('tr');
+      var code = 'NEW-'+String(fieldIdx).padStart(3,'0');
+      tr.innerHTML = '<td><input type="text" class="form-input" style="width:100%" placeholder="字段名称"></td>'
+        + '<td><input type="text" class="form-input" style="width:100%;background:#f7f8fa" value="'+code+'" readonly></td>'
+        + '<td><select class="form-select field-unit-select" style="width:100%" title="单值下拉"><option value="" selected>请选择</option><option>无</option><option>m</option><option>mm</option><option>cm</option><option>μm</option><option>kg</option><option>kN</option><option>MPa</option><option>°</option><option>%</option></select></td>'
+        + '<td><select class="form-select field-cat-select"><option selected>标准值</option><option>二维表</option></select></td>'
+        + '<td><select class="form-select field-type-select" style="width:100%"><option selected>文本</option><option>数字</option><option>单选</option><option>多选</option><option>日期</option><option>图片</option><option>坐标</option></select></td>'
+        + '<td class="td-option-wrap"><input type="text" class="form-input field-option-input" style="width:100%;min-width:140px;background:#f7f8fa" value="—" readonly title="单选、多选时填写候选项"></td>'
+        + '<td><input type="text" class="form-input" style="width:100%" placeholder="可选值/值域"></td>'
+        + '<td><input type="text" class="form-input" style="width:100%" placeholder="默认值"></td>'
+        + '<td><input type="text" class="form-input dim-inp" style="width:100%;background:#f7f8fa" value="—" readonly></td>'
+        + '<td><input type="text" class="form-input dim-inp" style="width:100%;background:#f7f8fa" value="—" readonly></td>'
+        + '<td style="text-align:center"><input type="checkbox" checked></td>'
+        + '<td><input type="number" class="form-input" style="width:100%" value="'+fieldIdx+'" title="X方向排序"></td>'
+        + '<td><input type="number" class="form-input" style="width:100%" value="0" title="Y方向排序"></td>'
+        + '<td><select class="form-select field-merge-select" style="width:100%" title="记录合并：合并 / 不合并"><option>合并</option><option selected>不合并</option></select></td>'
+        + '<td class="col-action"><button class="btn btn-text" style="color:var(--danger)">删除</button></td>';
+      tbody.appendChild(tr);
+      syncOptionCellFromType(tr);
+      if (window.PcTemplateFieldDefault) PcTemplateFieldDefault.syncDefaultCellFromType(tr);
+      fieldIdx++;
+      return;
+    }
+    var fieldDel = e.target.closest('#field-table-body .btn.btn-text');
+    if(fieldDel && fieldDel.style.color){
+      var r = fieldDel.closest('tr');
+      if(r) r.remove();
+      return;
+    }
+    if (e.target.closest('#btn-publish')) {
+      var tw = document.getElementById('towerTypeSel');
+      if (!tw || !tw.value) { alert('请先选择适用塔型'); return; }
+      alert('已执行塔型唯一性校验：通过。模板将发布为「' + tw.options[tw.selectedIndex].text + '」下可执行任务包。');
+      return;
+    }
+    if (e.target.closest('#btn-save-draft')) {
+      alert('草稿已保存');
+      return;
+    }
+  });
+  document.addEventListener('change', function (e) {
+    var typeSel = e.target.closest('.field-type-select');
+    if (typeSel) {
+      var trt = typeSel.closest('tr');
+      if (trt) syncOptionCellFromType(trt);
+      return;
+    }
+    var sel = e.target.closest('.field-cat-select');
+    if (!sel) return;
+    var tr = sel.closest('tr');
+    if (!tr) return;
+    var tds = tr.querySelectorAll('td');
+    if (tds.length < 10) return;
+    var rInp = tds[8].querySelector('input');
+    var cInp = tds[9].querySelector('input');
+    if (!rInp || !cInp) return;
+    if (sel.value === '标准值') {
+      rInp.value = '—';
+      cInp.value = '—';
+      rInp.readOnly = true;
+      cInp.readOnly = true;
+      rInp.style.background = '#f7f8fa';
+      cInp.style.background = '#f7f8fa';
+    } else {
+      rInp.readOnly = false;
+      cInp.readOnly = false;
+      rInp.style.background = '';
+      cInp.style.background = '';
+      if (rInp.value === '—') rInp.value = '';
+      if (cInp.value === '—') cInp.value = '';
+    }
+  });
+  document.querySelectorAll('#field-table-body tr').forEach(syncOptionCellFromType);
+  if (window.PcTemplateFieldDefault) {
+    PcTemplateFieldDefault.initRows(document.getElementById('field-table-body'));
+  }
+})();
+</script>
+</body>
+</html>

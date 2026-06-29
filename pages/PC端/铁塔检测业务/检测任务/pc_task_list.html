@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>检测任务</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .modal-mask { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:2000; align-items:center; justify-content:center; padding:16px; }
+  .modal-mask.show { display:flex; }
+  .modal-box { width:520px; max-width:calc(100vw - 32px); background:#fff; border-radius:10px; box-shadow:0 10px 40px rgba(0,0,0,.18); border:1px solid var(--border); }
+  .modal-box.wide { width:720px; }
+  #batchAssignTaskList { margin:0;padding:0;list-style:none;border:1px solid var(--border);border-radius:6px;max-height:200px;overflow:auto;background:#f8fafc; }
+  #batchAssignTaskList li { padding:8px 12px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text-1); }
+  #batchAssignTaskList li:last-child { border-bottom:none; }
+  .modal-hd { display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid var(--border); }
+  .modal-hd h3 { font-size:15px;font-weight:600;color:var(--text-1);margin:0; }
+  .modal-bd { padding:16px 18px; max-height:70vh; overflow:auto; }
+  .modal-ft { display:flex; justify-content:flex-end; gap:8px; padding:12px 18px 16px; border-top:1px solid var(--border); }
+  .modal-close { border:none;background:none;color:var(--text-3);font-size:18px;cursor:pointer; }
+  .modal-close:hover { color:var(--text-1); }
+  .kv-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px 16px; }
+  .kv-item b { display:block;font-size:12px;color:var(--text-3);margin-bottom:3px;font-weight:500; }
+  .kv-item span { color:var(--text-1);font-size:13px; }
+  /* 多行筛选时右侧操作与首行顶对齐，避免导出按钮落在垂直中间 */
+  .toolbar.task-list-toolbar { align-items: flex-start; }
+  .list-tabs { display:flex; gap:4px; border-bottom:1px solid var(--border); margin:0 0 14px; }
+  .list-tabs button {
+    padding:10px 18px; font-size:14px; border:none; background:transparent; color:var(--text-2);
+    cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; font-family:inherit;
+  }
+  .list-tabs button:hover { color:var(--primary); }
+  .list-tabs button.active { color:var(--primary); font-weight:600; border-bottom-color:var(--primary); }
+  .list-tab-badge { font-size:12px; color:var(--warning); margin-left:4px; font-weight:600; }
+  .task-list-panel { display:none; }
+  .task-list-panel.active { display:block; }
+  .view-hint { font-size:12px; color:var(--text-3); margin:0 0 12px; line-height:1.55; }
+  .audit-tab-hint { font-size:12px; color:var(--text-3); margin:0 0 12px; padding:10px 12px; background:#F7F8FA; border-radius:8px; border:1px solid var(--border); line-height:1.55; }
+  .list-empty { text-align:center; padding:48px 20px; color:var(--text-3); font-size:13px; }
+  .list-empty i { font-size:36px; color:var(--border); margin-bottom:12px; display:block; }
+  tr.row-highlight td { background:#FFF7E8 !important; }
+  .filter-dispatch-only { }
+</style>
+</head>
+<body>
+<div id="page-content">
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">检测任务</div>
+    </div>
+    <div class="card-body">
+
+      <div class="list-tabs" id="taskListTabs" role="tablist">
+        <button type="button" class="active" data-list-tab="all" role="tab">全部任务</button>
+        <button type="button" data-list-tab="audit" role="tab">待我审核<span class="list-tab-badge" id="auditTabBadge">(2)</span></button>
+        <button type="button" data-list-tab="audit-done" role="tab">已办审核</button>
+      </div>
+      <p class="view-hint" id="viewHint">当前视图：全部任务（派工、录入与全状态任务）</p>
+
+      <div class="toolbar task-list-toolbar">
+        <div class="toolbar-left" style="flex-wrap:wrap">
+          <select class="form-select" id="filterDataScope" title="数据权限" style="min-width:240px">
+            <option value="self" selected>数据权限：本单位（浙江中能工程检测有限公司）</option>
+            <option value="all">数据权限：全部检测单位（平台管理员）</option>
+            <option value="org-hc">数据权限：杭州华测结构检测中心</option>
+            <option value="org-hd">数据权限：华东某外协检测有限公司</option>
+          </select>
+          <select class="form-select filter-dispatch-only" id="filterProvince" style="width:120px">
+            <option value="">全部省</option>
+            <option selected>浙江省</option>
+            <option>江苏省</option>
+          </select>
+          <select class="form-select filter-dispatch-only" id="filterCity" style="width:120px">
+            <option value="">全部市</option>
+            <option selected>杭州市</option>
+            <option>宁波市</option>
+            <option>南京市</option>
+          </select>
+          <select class="form-select filter-dispatch-only" id="filterCompany" style="min-width:180px">
+            <option value="">全部检测单位</option>
+            <option selected>浙江中能工程检测有限公司</option>
+            <option>华东某外协检测有限公司</option>
+            <option>杭州华测结构检测中心</option>
+          </select>
+          <select class="form-select" id="filterTaskStatus" style="min-width:140px">
+            <option value="">全部任务状态</option>
+            <option>待指派</option>
+            <option>待检测</option>
+            <option>检测中</option>
+            <option>已检测</option>
+            <option>检毕</option>
+          </select>
+          <select class="form-select" id="filterAuditStatus" title="审核状态" style="min-width:120px">
+            <option value="">全部审核状态</option>
+            <option>未提交</option>
+            <option>待审核</option>
+            <option>审核中</option>
+            <option>已通过</option>
+            <option>已驳回</option>
+          </select>
+          <input type="text" class="form-input" placeholder="任务编号/订单名称/订单编码/站址编码" style="width:240px">
+          <select class="form-select">
+            <option value="">全部检测类型</option>
+            <option>安全性鉴定</option>
+            <option>可靠性鉴定</option>
+            <option>常规检测</option>
+          </select>
+          <input type="date" class="form-input filter-dispatch-only" title="派单开始" value="2026-05-01">
+          <input type="date" class="form-input filter-dispatch-only" title="派单结束" value="2026-05-13">
+          <button type="button" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> 查询</button>
+          <button type="button" class="btn btn-default">重置</button>
+        </div>
+      </div>
+
+      <div class="pc-table-actions" id="taskTableActions">
+        <button type="button" class="btn btn-primary filter-dispatch-only" id="btnBatchAssign"><i class="fa-solid fa-user-group"></i> 批量派任务</button>
+        <button type="button" class="btn btn-default"><i class="fa-solid fa-file-export"></i> 导出</button>
+      </div>
+
+      <div id="panel-tasks-all" class="task-list-panel active">
+      <div style="overflow-x:auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width:36px"><input type="checkbox" id="checkAllTasks" aria-label="全选"></th>
+              <th style="width:118px">任务编号</th>
+              <th style="width:110px">站址编码</th>
+              <th style="min-width:120px">站点名称</th>
+              <th>订单名称</th>
+              <th style="width:118px">订单编码</th>
+              <th style="width:72px">省</th>
+              <th style="width:72px">市</th>
+              <th style="width:100px">检测类型</th>
+              <th style="width:140px">检测单位</th>
+              <th style="width:88px">检测人员</th>
+              <th style="width:88px">任务状态</th>
+              <th style="width:100px">派单时间</th>
+              <th style="width:96px">审核状态</th>
+              <th style="width:100px">审核节点</th>
+              <th style="width:88px">审核人</th>
+              <th style="width:110px">审核时间</th>
+              <th class="col-action" style="min-width:280px">操作</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-all">
+            <tr data-task-id="RW202606001" data-task-status="待指派" data-audit-status="" data-version="" data-submit-time="">
+              <td><input type="checkbox" class="row-check-task" aria-label="选择"></td>
+              <td>RW202606001</td>
+              <td style="font-family:ui-monospace,monospace;font-size:12px">ZZ-HZ-BJ01</td>
+              <td>滨江枢纽站</td>
+              <td>滨江01#塔安全鉴定</td>
+              <td>ZJHBJ20260506001</td>
+              <td>浙江</td>
+              <td>杭州</td>
+              <td>安全性鉴定</td>
+              <td>浙江中能</td>
+              <td>—</td>
+              <td><span class="tag tag-orange">待指派</span></td>
+              <td>2026-05-10</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+              <td class="col-action">
+                <button type="button" class="btn btn-text btn-open-assign" data-task="RW202606001" data-title="滨江01#塔安全鉴定">派任务</button>
+                <a href="pc_task_detail.html?id=RW202606001" class="btn btn-text">详情</a>
+                <span class="btn btn-text" style="opacity:.4;cursor:default" title="提交检测数据后生成版本">检测记录</span>
+                <button type="button" class="btn btn-text btn-open-cancel" data-task="RW202606001" style="color:var(--danger)">撤单</button>
+                <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+              </td>
+            </tr>
+            <tr data-task-id="RW202606002" data-task-status="待检测" data-audit-status="未提交" data-version="" data-submit-time="">
+              <td><input type="checkbox" class="row-check-task" aria-label="选择"></td>
+              <td>RW202606002</td>
+              <td style="font-family:ui-monospace,monospace;font-size:12px">ZZ-HZ-YH09</td>
+              <td>余杭12#站点</td>
+              <td>余杭12#塔抗震鉴定</td>
+              <td>ZJHYH20260503001</td>
+              <td>浙江</td>
+              <td>杭州</td>
+              <td>抗震鉴定</td>
+              <td>浙江中能</td>
+              <td>李明</td>
+              <td><span class="tag tag-blue">待检测</span></td>
+              <td>2026-05-09</td>
+              <td><span class="tag tag-gray">未提交</span></td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+              <td class="col-action">
+                <button type="button" class="btn btn-text btn-open-entry" data-task="RW202606002">录入数据</button>
+                <button type="button" class="btn btn-text btn-open-transfer" data-task="RW202606002">转派</button>
+                <button type="button" class="btn btn-text btn-open-reject" data-task="RW202606002" style="color:var(--warning)">拒绝</button>
+                <a href="pc_task_detail.html?id=RW202606002" class="btn btn-text">详情</a>
+                <span class="btn btn-text" style="opacity:.4;cursor:default" title="提交检测数据后生成版本">检测记录</span>
+                <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+              </td>
+            </tr>
+            <tr data-task-id="RW202606003" data-task-status="检测中" data-audit-status="未提交" data-version="" data-submit-time="">
+              <td><input type="checkbox" class="row-check-task" aria-label="选择"></td>
+              <td>RW202606003</td>
+              <td style="font-family:ui-monospace,monospace;font-size:12px">ZZ-HZ-XH02</td>
+              <td>西湖文化广场</td>
+              <td>西湖角钢塔复检</td>
+              <td>ZJHXH20260502001</td>
+              <td>浙江</td>
+              <td>杭州</td>
+              <td>可靠性鉴定</td>
+              <td>浙江中能</td>
+              <td>王强</td>
+              <td><span class="tag tag-blue">检测中</span></td>
+              <td>2026-05-08</td>
+              <td><span class="tag tag-gray">未提交</span></td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+              <td class="col-action">
+                <button type="button" class="btn btn-text btn-open-entry" data-task="RW202606003">继续录入</button>
+                <button type="button" class="btn btn-text btn-open-transfer" data-task="RW202606003">转派</button>
+                <a href="pc_task_detail.html?id=RW202606003" class="btn btn-text">详情</a>
+                <span class="btn btn-text" style="opacity:.4;cursor:default" title="提交检测数据后生成版本">检测记录</span>
+                <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+              </td>
+            </tr>
+            <tr data-task-id="RW202606004" data-task-status="已检测" data-audit-status="待审核" data-version="V1" data-submit-time="2026-05-08 18:20">
+              <td><input type="checkbox" class="row-check-task" aria-label="选择"></td>
+              <td>RW202606004</td>
+              <td style="font-family:ui-monospace,monospace;font-size:12px">ZZ-HZ-XS08</td>
+              <td>萧山08#站点</td>
+              <td>萧山单管塔常规检</td>
+              <td>ZJHXS20260502001</td>
+              <td>浙江</td>
+              <td>杭州</td>
+              <td>常规检测</td>
+              <td>浙江中能</td>
+              <td>张华</td>
+              <td><span class="tag tag-orange">已检测</span></td>
+              <td>2026-05-06</td>
+              <td data-audit-col><span class="tag tag-orange">待审核</span></td>
+              <td data-audit-col>技术部主管</td>
+              <td data-audit-col>—</td>
+              <td data-audit-col>—</td>
+              <td class="col-action">
+                <button type="button" class="btn btn-text btn-pc-audit" data-audit-kind="inspect-data" data-version="V1" data-title="萧山单管塔常规检 · RW202606004" data-node="技术部主管" data-auditor-default="周敏" data-href="pc_task_detail.html?id=RW202606004&tab=review"><i class="fa-solid fa-clipboard-check"></i> 办理审核</button>
+                <a href="pc_task_detail.html?id=RW202606004" class="btn btn-text">详情</a>
+                <a href="pc_task_version_history.html?task=RW202606004" class="btn btn-text"><i class="fa-solid fa-clock-rotate-left"></i> 检测记录</a>
+                <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+              </td>
+            </tr>
+            <tr data-task-id="RW202606005" data-task-status="检毕" data-audit-status="已通过" data-version="V3" data-submit-time="2026-04-28 10:05">
+              <td><input type="checkbox" class="row-check-task" aria-label="选择"></td>
+              <td>RW202606005</td>
+              <td style="font-family:ui-monospace,monospace;font-size:12px">ZZ-HZ-JD08</td>
+              <td>建德08#站点</td>
+              <td>建德山区塔检</td>
+              <td>ZJJD20260508001</td>
+              <td>浙江</td>
+              <td>杭州</td>
+              <td>安全性鉴定</td>
+              <td>华东外协</td>
+              <td>赵六</td>
+              <td><span class="tag tag-green">检毕</span></td>
+              <td>2026-04-28</td>
+              <td><span class="tag tag-green">已通过</span></td>
+              <td>已通过</td>
+              <td>周敏</td>
+              <td>2026-04-29 17:05</td>
+              <td class="col-action">
+                <a href="../报告编制/report-list.html" class="btn btn-text">报告记录</a>
+                <a href="pc_task_detail.html?id=RW202606005" class="btn btn-text">详情</a>
+                <a href="pc_task_version_history.html?task=RW202606005" class="btn btn-text"><i class="fa-solid fa-clock-rotate-left"></i> 检测记录</a>
+                <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination">
+        <span id="paginationAll">共 5 条</span>
+        <div class="pagination-btns">
+          <button type="button" class="page-btn"><i class="fa-solid fa-chevron-left"></i></button>
+          <button type="button" class="page-btn active">1</button>
+          <button type="button" class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+      </div>
+
+      <div id="panel-tasks-audit" class="task-list-panel">
+        <p class="audit-tab-hint">本视图展示已提交检测数据、待技术审核的任务；完整检测记录与版本追溯见「检测记录」。报告审核请至「报告编制」。</p>
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width:118px">任务编号</th>
+                <th style="width:110px">站址编码</th>
+                <th style="min-width:120px">站点名称</th>
+                <th>订单名称</th>
+                <th style="width:88px">检测人员</th>
+                <th style="width:110px">提交时间</th>
+                <th style="width:72px">当前版本</th>
+                <th style="width:96px">审核状态</th>
+                <th style="width:100px">审核节点</th>
+                <th class="col-action" style="min-width:240px">操作</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-audit">
+              <tr data-task-id="RW202606004" data-task-status="已检测" data-audit-status="待审核" data-version="V1" data-submit-time="2026-05-08 18:20">
+                <td>RW202606004</td>
+                <td style="font-family:ui-monospace,monospace;font-size:12px">ZZ-HZ-XS08</td>
+                <td>萧山08#站点</td>
+                <td>萧山单管塔常规检</td>
+                <td>张华</td>
+                <td>2026-05-08 18:20</td>
+                <td><strong>V1</strong></td>
+                <td data-audit-col><span class="tag tag-orange">待审核</span></td>
+                <td data-audit-col>技术部主管</td>
+                <td class="col-action">
+                  <button type="button" class="btn btn-primary btn-sm btn-pc-audit" data-audit-kind="inspect-data" data-version="V1" data-title="萧山单管塔常规检 · RW202606004" data-node="技术部主管" data-auditor-default="周敏" data-href="pc_task_detail.html?id=RW202606004&tab=review"><i class="fa-solid fa-clipboard-check"></i> 办理审核</button>
+                  <a href="pc_task_detail.html?id=RW202606004&tab=review&from=audit" class="btn btn-text">详情</a>
+                  <a href="pc_task_version_history.html?task=RW202606004&from=audit" class="btn btn-text"><i class="fa-solid fa-clock-rotate-left"></i> 检测记录</a>
+                  <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+                </td>
+              </tr>
+              <tr data-task-id="RW202606006" data-task-status="已检测" data-audit-status="审核中" data-version="V2" data-submit-time="2026-05-09 10:05">
+                <td>RW202606006</td>
+                <td style="font-family:ui-monospace,monospace;font-size:12px">ZZ-HZ-LA03</td>
+                <td>临安03#站点</td>
+                <td>临安铁塔定期检</td>
+                <td>李明</td>
+                <td>2026-05-09 10:05</td>
+                <td><strong>V2</strong></td>
+                <td data-audit-col><span class="tag tag-blue">审核中</span></td>
+                <td data-audit-col>技术部主管</td>
+                <td class="col-action">
+                  <button type="button" class="btn btn-primary btn-sm btn-pc-audit" data-audit-kind="inspect-data" data-version="V2" data-title="临安铁塔定期检 · RW202606006" data-node="技术部主管" data-auditor-default="周敏" data-href="pc_task_detail.html?id=RW202606006&tab=review"><i class="fa-solid fa-clipboard-check"></i> 办理审核</button>
+                  <a href="pc_task_detail.html?id=RW202606006&tab=review&from=audit" class="btn btn-text">详情</a>
+                  <a href="pc_task_version_history.html?task=RW202606006&from=audit" class="btn btn-text"><i class="fa-solid fa-clock-rotate-left"></i> 检测记录</a>
+                  <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <span id="paginationAudit">共 2 条待审</span>
+        </div>
+        <div class="list-empty" id="auditEmpty" style="display:none">
+          <i class="fa-regular fa-circle-check"></i>
+          <p>暂无待审核的检测数据</p>
+          <button type="button" class="btn btn-default btn-sm" id="btnGoAllFromEmpty" style="margin-top:12px">查看全部任务</button>
+        </div>
+      </div>
+
+      <div id="panel-tasks-audit-done" class="task-list-panel">
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width:118px">任务编号</th>
+                <th style="width:110px">站址编码</th>
+                <th style="min-width:120px">站点名称</th>
+                <th>订单名称</th>
+                <th style="width:88px">任务状态</th>
+                <th style="width:96px">审核结果</th>
+                <th style="width:88px">审核人</th>
+                <th style="width:110px">审核时间</th>
+                <th class="col-action" style="min-width:180px">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-task-id="RW202605901">
+                <td>RW202605901</td>
+                <td style="font-family:ui-monospace,monospace;font-size:12px">ZZ-HZ-FY02</td>
+                <td>富阳02#站点</td>
+                <td>富阳02#塔安全性鉴定</td>
+                <td><span class="tag tag-green">检毕</span></td>
+                <td><span class="tag tag-green">已通过</span></td>
+                <td>周敏</td>
+                <td>2026-05-08 15:20</td>
+                <td class="col-action">
+                  <a href="pc_task_detail.html?id=RW202605901" class="btn btn-text">详情</a>
+                  <a href="pc_task_version_history.html?task=RW202605901" class="btn btn-text"><i class="fa-solid fa-clock-rotate-left"></i> 检测记录</a>
+                  <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination"><span>共 1 条（近 30 天本人已审）</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 派任务 -->
+  <div class="modal-mask" id="modalAssign" aria-hidden="true">
+    <div class="modal-box">
+      <div class="modal-hd">
+        <h3>派任务</h3>
+        <button type="button" class="modal-close" data-close="modalAssign">&times;</button>
+      </div>
+      <div class="modal-bd">
+        <p style="font-size:13px;color:var(--text-2);margin:0 0 16px">任务：<strong id="assignTaskLabel">—</strong></p>
+        <div class="form-group">
+          <label class="form-label">指派检测人员（现场主检）<span class="required">*</span></label>
+          <select class="form-select" id="assignPerson" style="width:100%">
+            <option value="">请选择检测人员</option>
+            <option>李明（检测一组）</option>
+            <option>王强（检测二组）</option>
+            <option>张华（检测三组）</option>
+            <option>赵六（外业机动）</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">所需设备类型<span class="required">*</span></label>
+          <div id="assignEquipmentTypes" style="display:flex;flex-direction:column;gap:8px;padding:10px 12px;border:1px solid var(--border);border-radius:6px;background:#f8fafc;margin-top:8px">
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2);cursor:pointer;margin:0">
+              <input type="checkbox" name="assignEquipmentType" value="DEV-T-CL" data-label="测量仪器">
+              <span>测量仪器</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2);cursor:pointer;margin:0">
+              <input type="checkbox" name="assignEquipmentType" value="DEV-T-NDT" data-label="无损检测">
+              <span>无损检测</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2);cursor:pointer;margin:0">
+              <input type="checkbox" name="assignEquipmentType" value="DEV-T-MEC" data-label="力学试验">
+              <span>力学试验</span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-ft">
+        <button type="button" class="btn btn-default" data-close="modalAssign">取消</button>
+        <button type="button" class="btn btn-primary" id="btnAssignOk"><i class="fa-solid fa-user-check"></i> 确认指派</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 批量派任务 -->
+  <div class="modal-mask" id="modalBatchAssign" aria-hidden="true">
+    <div class="modal-box wide">
+      <div class="modal-hd">
+        <h3>批量派任务</h3>
+        <button type="button" class="modal-close" data-close="modalBatchAssign">&times;</button>
+      </div>
+      <div class="modal-bd">
+        <p style="font-size:13px;color:var(--text-2);margin:0 0 12px;line-height:1.5" id="batchAssignSummary">已选 0 条。</p>
+        <div class="form-group">
+          <label class="form-label">任务清单</label>
+          <ul id="batchAssignTaskList"></ul>
+        </div>
+        <div class="form-group">
+          <label class="form-label">指派检测人员（现场主检）<span class="required">*</span></label>
+          <select class="form-select" id="batchAssignPerson" style="width:100%">
+            <option value="">请选择检测人员</option>
+            <option>李明（检测一组）</option>
+            <option>王强（检测二组）</option>
+            <option>张华（检测三组）</option>
+            <option>赵六（外业机动）</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">所需设备类型<span class="required">*</span></label>
+          <div id="batchAssignEquipmentTypes" style="display:flex;flex-direction:column;gap:8px;padding:10px 12px;border:1px solid var(--border);border-radius:6px;background:#f8fafc;margin-top:8px">
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2);cursor:pointer;margin:0">
+              <input type="checkbox" name="batchAssignEquipmentType" value="DEV-T-CL" data-label="测量仪器">
+              <span>测量仪器</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2);cursor:pointer;margin:0">
+              <input type="checkbox" name="batchAssignEquipmentType" value="DEV-T-NDT" data-label="无损检测">
+              <span>无损检测</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2);cursor:pointer;margin:0">
+              <input type="checkbox" name="batchAssignEquipmentType" value="DEV-T-MEC" data-label="力学试验">
+              <span>力学试验</span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-ft">
+        <button type="button" class="btn btn-default" data-close="modalBatchAssign">取消</button>
+        <button type="button" class="btn btn-primary" id="btnBatchAssignOk"><i class="fa-solid fa-user-check"></i> 确认批量指派</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 转派任务 -->
+  <div class="modal-mask" id="modalTransfer" aria-hidden="true">
+    <div class="modal-box">
+      <div class="modal-hd">
+        <h3>转派任务</h3>
+        <button type="button" class="modal-close" data-close="modalTransfer">&times;</button>
+      </div>
+      <div class="modal-bd">
+        <p style="font-size:13px;color:var(--text-2);margin:0 0 12px">任务 <strong id="transferTaskLabel">—</strong> 转派给本单位其他人员。</p>
+        <div class="form-group">
+          <label class="form-label">转派给 <span class="required">*</span></label>
+          <select class="form-select" id="transferPerson" style="width:100%">
+            <option value="">请选择</option>
+            <option>王强（检测二组）</option>
+            <option>张华（检测三组）</option>
+            <option>赵六（外业机动）</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">转派说明</label>
+          <textarea class="form-textarea" id="transferRemark" placeholder="选填：交接要点、现场注意事项等"></textarea>
+        </div>
+      </div>
+      <div class="modal-ft">
+        <button type="button" class="btn btn-default" data-close="modalTransfer">取消</button>
+        <button type="button" class="btn btn-primary" id="btnTransferOk"><i class="fa-solid fa-right-left"></i> 确认转派</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 拒绝 -->
+  <div class="modal-mask" id="modalReject" aria-hidden="true">
+    <div class="modal-box">
+      <div class="modal-hd">
+        <h3>拒绝任务</h3>
+        <button type="button" class="modal-close" data-close="modalReject">&times;</button>
+      </div>
+      <div class="modal-bd">
+        <p style="font-size:13px;color:var(--text-2);margin:0 0 12px">拒绝后，订单侧可<strong>重新改派</strong>检测单位或重新「派任务」。任务 <strong id="rejectTaskLabel">—</strong></p>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">拒绝原因 <span class="required">*</span></label>
+          <textarea class="form-textarea" id="rejectReason" placeholder="请填写拒绝原因（必填）"></textarea>
+        </div>
+      </div>
+      <div class="modal-ft">
+        <button type="button" class="btn btn-default" data-close="modalReject">取消</button>
+        <button type="button" class="btn btn-primary" id="btnRejectOk" style="background:var(--warning);border-color:var(--warning)"><i class="fa-solid fa-ban"></i> 确认拒绝</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 撤单 -->
+  <div class="modal-mask" id="modalCancel" aria-hidden="true">
+    <div class="modal-box">
+      <div class="modal-hd">
+        <h3>撤单</h3>
+        <button type="button" class="modal-close" data-close="modalCancel">&times;</button>
+      </div>
+      <div class="modal-bd">
+        <p style="font-size:13px;color:var(--text-2);margin:0 0 12px">任务 <strong id="cancelTaskLabel">—</strong> 撤单须填写原因，提交后进入审批流。</p>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">撤单原因 <span class="required">*</span></label>
+          <textarea class="form-textarea" id="cancelReason" placeholder="请填写撤单原因（必填）"></textarea>
+        </div>
+      </div>
+      <div class="modal-ft">
+        <button type="button" class="btn btn-default" data-close="modalCancel">取消</button>
+        <button type="button" class="btn btn-primary" id="btnCancelOk" style="background:var(--danger);border-color:var(--danger)"><i class="fa-solid fa-file-circle-xmark"></i> 确认撤单</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-mask" id="pcAuditModal" aria-hidden="true">
+    <div class="modal-box">
+      <div class="modal-hd">
+        <h3 id="pcAuditModalTitle">检测数据审核</h3>
+        <button type="button" class="modal-close" id="pcAuditModalClose">&times;</button>
+      </div>
+      <div class="modal-bd">
+        <p id="pcAuditModalSub" style="font-size:13px;color:var(--text-2);margin:0 0 14px;line-height:1.55"></p>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">审批意见</label>
+          <textarea class="form-textarea" id="pcAuditRemark" placeholder="选填；驳回时建议填写原因"></textarea>
+        </div>
+        <a href="#" id="pcAuditGoDetail" class="btn-text" style="font-size:12px;margin-top:10px;display:none"><i class="fa-solid fa-arrow-up-right-from-square"></i> 进入任务详情 / 数据复核</a>
+      </div>
+      <div class="modal-ft">
+        <button type="button" class="btn btn-default" id="pcAuditCancel">取消</button>
+        <button type="button" class="btn btn-default" id="pcAuditReject" style="color:var(--danger)"><i class="fa-solid fa-xmark"></i> 驳回</button>
+        <button type="button" class="btn btn-primary" id="pcAuditPass"><i class="fa-solid fa-check"></i> 通过</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 录入数据：选择铁塔类型和检测任务模板 -->
+  <div class="modal-mask" id="modalEntryData" aria-hidden="true">
+    <div class="modal-box">
+      <div class="modal-hd">
+        <h3>录入数据 — 选择铁塔类型与检测模板</h3>
+        <button type="button" class="modal-close" data-close="modalEntryData">&times;</button>
+      </div>
+      <div class="modal-bd">
+        <p style="font-size:13px;color:var(--text-2);margin:0 0 16px">任务：<strong id="entryDataTaskLabel">—</strong></p>
+        <div class="form-group">
+          <label class="form-label">铁塔类型 <span class="required">*</span></label>
+          <select class="form-select" id="entryTowerType" style="width:100%">
+            <option value="single_pipe">单管塔</option>
+            <option value="angle">角钢塔</option>
+            <option value="three_leg">三管塔</option>
+            <option value="landscape">景观塔</option>
+            <option value="bionic">仿生树塔</option>
+            <option value="other">其他 / 组合</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">检测任务模板 <span class="required">*</span></label>
+          <select class="form-select" id="entryTemplate" style="width:100%"></select>
+        </div>
+      </div>
+      <div class="modal-ft">
+        <button type="button" class="btn btn-default" data-close="modalEntryData">取消</button>
+        <button type="button" class="btn btn-primary" id="btnEntryDataOk"><i class="fa-solid fa-arrow-right"></i> 确认并录入</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script src="../../../../assets/pc-audit-action.js"></script>
+<script>window.__layoutConfig = {active:'task_list', breadcrumb:['检测管理','检测任务']};</script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+  var HINTS = {
+    all: '当前视图：全部任务（派工、录入与全状态任务）',
+    audit: '当前视图：待我审核（任务状态=已检测，审核状态=待审核/审核中）',
+    'audit-done': '当前视图：已办审核（本人近 30 天已审记录）'
+  };
+
+  function switchListTab(tab) {
+    document.querySelectorAll('#taskListTabs button').forEach(function (b) {
+      b.classList.toggle('active', b.getAttribute('data-list-tab') === tab);
+    });
+    document.querySelectorAll('.task-list-panel').forEach(function (p) {
+      p.classList.toggle('active', p.id === 'panel-tasks-' + (tab === 'all' ? 'all' : tab));
+    });
+    var hint = document.getElementById('viewHint');
+    if (hint) hint.textContent = HINTS[tab] || HINTS.all;
+    var isAudit = tab === 'audit';
+    var isDone = tab === 'audit-done';
+    document.querySelectorAll('.filter-dispatch-only').forEach(function (el) {
+      el.style.display = isAudit || isDone ? 'none' : '';
+    });
+    var batchBtn = document.getElementById('btnBatchAssign');
+    if (batchBtn) batchBtn.style.display = isAudit || isDone ? 'none' : '';
+    var taskSt = document.getElementById('filterTaskStatus');
+    var auditSt = document.getElementById('filterAuditStatus');
+    if (taskSt) {
+      if (isAudit) {
+        taskSt.value = '已检测';
+        taskSt.disabled = true;
+      } else if (!isDone) {
+        taskSt.disabled = false;
+        if (taskSt.dataset.prevLock === '1') taskSt.value = '';
+        taskSt.dataset.prevLock = '';
+      }
+    }
+    if (auditSt) {
+      if (isAudit) {
+        auditSt.disabled = true;
+      } else if (!isDone) {
+        auditSt.disabled = false;
+      }
+    }
+    if (isDone && taskSt) { taskSt.disabled = false; taskSt.value = ''; }
+    if (isDone && auditSt) { auditSt.value = '已通过'; auditSt.disabled = false; }
+    var auditPanel = document.getElementById('panel-tasks-audit');
+    var auditTable = auditPanel && auditPanel.querySelector('table');
+    var auditEmpty = document.getElementById('auditEmpty');
+    var rows = document.querySelectorAll('#tbody-audit tr');
+    if (isAudit && auditTable && auditEmpty) {
+      var n = rows.length;
+      auditTable.style.display = n ? '' : 'none';
+      auditPanel.querySelector('.pagination').style.display = n ? '' : 'none';
+      auditEmpty.style.display = n ? 'none' : 'block';
+    }
+  }
+
+  document.querySelectorAll('#taskListTabs button').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      switchListTab(this.getAttribute('data-list-tab'));
+    });
+  });
+  document.getElementById('btnGoAllFromEmpty').addEventListener('click', function () {
+    switchListTab('all');
+  });
+
+  var urlParams = new URLSearchParams(location.search);
+  var initialTab = urlParams.get('tab') || (urlParams.get('role') === 'auditor' ? 'audit' : 'all');
+  if (initialTab === 'audit' || initialTab === 'audit-done') switchListTab(initialTab);
+  else switchListTab('all');
+
+  var highlightTask = urlParams.get('task');
+  if (highlightTask) {
+    var row = document.querySelector('tr[data-task-id="' + highlightTask + '"]');
+    if (row) {
+      row.classList.add('row-highlight');
+      row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+  }
+
+  function openModal(id) {
+    var m = document.getElementById(id);
+    if (!m) return;
+    m.classList.add('show');
+    m.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(id) {
+    var m = document.getElementById(id);
+    if (!m) return;
+    m.classList.remove('show');
+    m.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+  document.querySelectorAll('[data-close]').forEach(function (btn) {
+    btn.addEventListener('click', function () { closeModal(this.getAttribute('data-close')); });
+  });
+  document.querySelectorAll('.modal-mask').forEach(function (mask) {
+    mask.addEventListener('click', function (e) { if (e.target === mask) closeModal(mask.id); });
+  });
+
+  var checkAll = document.getElementById('checkAllTasks');
+  if (checkAll) {
+    checkAll.addEventListener('change', function () {
+      var on = this.checked;
+      document.querySelectorAll('.row-check-task').forEach(function (cb) { cb.checked = on; });
+    });
+  }
+
+  function selectedPendingAssignRows() {
+    return Array.prototype.filter.call(document.querySelectorAll('#tbody-all tr'), function (tr) {
+      var cb = tr.querySelector('.row-check-task');
+      return cb && cb.checked && tr.querySelector('.btn-open-assign');
+    });
+  }
+
+  document.getElementById('btnBatchAssign').addEventListener('click', function () {
+    var rows = selectedPendingAssignRows();
+    var anyChecked = document.querySelectorAll('.row-check-task:checked').length;
+    if (!rows.length) {
+      if (!anyChecked) {
+        alert('请先勾选需要派任务的「待指派」任务。');
+      } else {
+        alert('批量派任务仅支持「待指派」状态。请仅勾选列表中带「派任务」操作的行，或取消其它任务后重试。');
+      }
+      return;
+    }
+    var list = document.getElementById('batchAssignTaskList');
+    list.innerHTML = '';
+    rows.forEach(function (tr) {
+      var id = tr.getAttribute('data-task-id') || '';
+      var no = tr.cells[1] ? tr.cells[1].textContent.trim() : '';
+      var name = tr.cells[4] ? tr.cells[4].textContent.trim() : '';
+      var li = document.createElement('li');
+      li.setAttribute('data-task-id', id);
+      li.textContent = no + ' · ' + name;
+      list.appendChild(li);
+    });
+    document.getElementById('batchAssignSummary').textContent = '已选 ' + rows.length + ' 条（待指派）。';
+    document.getElementById('batchAssignPerson').value = '';
+    document.querySelectorAll('#modalBatchAssign input[name="batchAssignEquipmentType"]').forEach(function (cb) { cb.checked = false; });
+    openModal('modalBatchAssign');
+  });
+
+  document.getElementById('btnBatchAssignOk').addEventListener('click', function () {
+    var person = document.getElementById('batchAssignPerson').value;
+    var checked = document.querySelectorAll('#modalBatchAssign input[name="batchAssignEquipmentType"]:checked');
+    if (!person) {
+      alert('请选择指派检测人员（现场主检）。');
+      return;
+    }
+    if (!checked.length) {
+      alert('请至少选择一种所需设备类型（可多选）。');
+      return;
+    }
+    var lis = document.querySelectorAll('#batchAssignTaskList li');
+    var n = lis.length;
+    var ids = Array.prototype.map.call(lis, function (li) { return li.getAttribute('data-task-id') || ''; }).filter(Boolean).join('、');
+    var equipLabels = Array.prototype.map.call(checked, function (cb) {
+      return cb.getAttribute('data-label') || cb.value;
+    }).join('、');
+    closeModal('modalBatchAssign');
+    alert('已批量指派 ' + n + ' 条任务（' + ids + '）给：' + person + '；所需设备类型：' + equipLabels + '（示意，原型不落库）。');
+    if (checkAll) checkAll.checked = false;
+    document.querySelectorAll('.row-check-task').forEach(function (cb) { cb.checked = false; });
+  });
+
+  document.querySelectorAll('.btn-open-assign').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.getElementById('assignTaskLabel').textContent = this.getAttribute('data-title') || this.getAttribute('data-task');
+      document.getElementById('assignPerson').value = '';
+      document.querySelectorAll('#modalAssign input[name="assignEquipmentType"]').forEach(function (cb) { cb.checked = false; });
+      openModal('modalAssign');
+    });
+  });
+  document.getElementById('btnAssignOk').addEventListener('click', function () {
+    var selPerson = document.getElementById('assignPerson');
+    var person = selPerson.value;
+    var checked = document.querySelectorAll('#modalAssign input[name="assignEquipmentType"]:checked');
+    if (!person) {
+      alert('请选择指派检测人员（现场主检）。');
+      return;
+    }
+    if (!checked.length) {
+      alert('请至少选择一种所需设备类型（可多选）。');
+      return;
+    }
+    var equipLabels = Array.prototype.map.call(checked, function (cb) {
+      return cb.getAttribute('data-label') || cb.value;
+    }).join('、');
+    closeModal('modalAssign');
+    alert('已指派：' + person + '；所需设备类型：' + equipLabels + '（示意，原型不落库）。');
+  });
+
+  document.querySelectorAll('.btn-open-transfer').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.getElementById('transferTaskLabel').textContent = this.getAttribute('data-task');
+      document.getElementById('transferPerson').value = '';
+      document.getElementById('transferRemark').value = '';
+      openModal('modalTransfer');
+    });
+  });
+  document.getElementById('btnTransferOk').addEventListener('click', function () {
+    if (!document.getElementById('transferPerson').value) return;
+    closeModal('modalTransfer');
+  });
+
+  document.querySelectorAll('.btn-open-reject').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.getElementById('rejectTaskLabel').textContent = this.getAttribute('data-task');
+      document.getElementById('rejectReason').value = '';
+      openModal('modalReject');
+    });
+  });
+  document.getElementById('btnRejectOk').addEventListener('click', function () {
+    if (!(document.getElementById('rejectReason').value || '').trim()) return;
+    closeModal('modalReject');
+  });
+
+  document.querySelectorAll('.btn-open-cancel').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.getElementById('cancelTaskLabel').textContent = this.getAttribute('data-task');
+      document.getElementById('cancelReason').value = '';
+      openModal('modalCancel');
+    });
+  });
+  document.getElementById('btnCancelOk').addEventListener('click', function () {
+    if (!(document.getElementById('cancelReason').value || '').trim()) return;
+    closeModal('modalCancel');
+  });
+
+  /* === 录入数据弹窗：选择铁塔类型 + 检测任务模板 === */
+  var ENTRY_TEMPLATES_BY_TOWER = {
+    single_pipe: [
+      { value: 'PKG_STOCK_SINGLE_PIPE_20260509', label: '库存单管塔 · 安全性鉴定（PKG_STOCK_SINGLE_PIPE_20260509）' },
+      { value: 'PKG_SP_PERIODIC_20260420', label: '单管塔 · 周期性检测（PKG_SP_PERIODIC_20260420）' }
+    ],
+    angle: [
+      { value: 'PKG_ANGLE_SAFE_20260315', label: '角钢塔 · 安全性鉴定（PKG_ANGLE_SAFE_20260315）' },
+      { value: 'PKG_ANGLE_NET_OPT_20260201', label: '角钢塔 · 网络优化加装复核' }
+    ],
+    three_leg: [
+      { value: 'PKG_THREE_LEG_20260501', label: '三管塔 · 通用检测包（PKG_THREE_LEG_20260501）' }
+    ],
+    landscape: [
+      { value: 'PKG_LANDSCAPE_DUAL_20260410', label: '景观塔 · 隐蔽件与打光' }
+    ],
+    bionic: [
+      { value: 'PKG_BIONIC_COATING_20260325', label: '仿生树塔 · 防腐与外观专项' }
+    ],
+    other: [
+      { value: 'PKG_CUSTOM_MIXED', label: '组合塔型 · 自定义模板库选配' }
+    ]
+  };
+
+  var entryDataTaskId = '';
+  var selEntryTower = document.getElementById('entryTowerType');
+  var selEntryTpl = document.getElementById('entryTemplate');
+
+  function rebuildEntryTemplateSelect() {
+    if (!selEntryTower || !selEntryTpl) return;
+    var type = selEntryTower.value;
+    var list = ENTRY_TEMPLATES_BY_TOWER[type] || ENTRY_TEMPLATES_BY_TOWER.other;
+    selEntryTpl.innerHTML = '';
+    list.forEach(function (row) {
+      var o = document.createElement('option');
+      o.value = row.value;
+      o.textContent = row.label;
+      selEntryTpl.appendChild(o);
+    });
+    if (list.length) selEntryTpl.value = list[0].value;
+  }
+
+  if (selEntryTower) {
+    selEntryTower.addEventListener('change', rebuildEntryTemplateSelect);
+    rebuildEntryTemplateSelect();
+  }
+
+  document.querySelectorAll('.btn-open-entry').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      entryDataTaskId = this.getAttribute('data-task') || '';
+      document.getElementById('entryDataTaskLabel').textContent = entryDataTaskId;
+      if (selEntryTower) selEntryTower.value = 'single_pipe';
+      rebuildEntryTemplateSelect();
+      openModal('modalEntryData');
+    });
+  });
+
+  document.getElementById('btnEntryDataOk').addEventListener('click', function () {
+    var towerType = selEntryTower ? selEntryTower.value : '';
+    var template = selEntryTpl ? selEntryTpl.value : '';
+    if (!towerType) { alert('请选择铁塔类型。'); return; }
+    if (!template) { alert('请选择检测任务模板。'); return; }
+    var url = '../检测数据录入/pc_task_data.html?towerType=' + encodeURIComponent(towerType) +
+              '&template=' + encodeURIComponent(template) +
+              (entryDataTaskId ? '&task=' + encodeURIComponent(entryDataTaskId) : '') +
+              '#tower-spec';
+    location.href = url;
+  });
+
+  if (window.initPcAuditModal) window.initPcAuditModal();
+});
+</script>
+</body>
+</html>

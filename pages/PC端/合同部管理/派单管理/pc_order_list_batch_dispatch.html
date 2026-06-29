@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>批量派单 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .bd-toolbar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:12px; }
+  .bd-count { font-size:13px; color:var(--text-2); }
+  .bd-count strong { color:var(--text-1); }
+</style>
+</head>
+<body>
+<div id="page-content">
+
+  <div class="page-header">
+    <div class="page-title">批量派单</div>
+    <a href="../订单管理/pc_order_list.html" class="btn btn-default"><i class="fa-solid fa-arrow-left"></i> 返回列表</a>
+  </div>
+
+  <div class="card" style="max-width:960px">
+    <div class="card-header">
+      <div class="card-title">批量派单（检测单位）</div>
+      <span style="font-size:12px;color:var(--text-3)">仅「待派单」订单可加入批量派单；统一指派至同一检测单位（来源于基础数据）</span>
+    </div>
+    <div class="card-body">
+
+      <!-- 待派订单列表：可勾选加入本次批量派单 -->
+      <div style="margin-bottom:22px">
+        <label class="form-label" style="margin-bottom:8px;font-weight:600">待派订单列表</label>
+        <p style="font-size:12px;color:var(--text-3);margin:0 0 10px">从订单管理进入时，列表中已勾选的待派单默认勾选；您仍可在此增选或取消其他待派订单。</p>
+        <div class="bd-toolbar">
+          <input type="text" class="form-input" style="width:200px" placeholder="订单编码 / 名称">
+          <button type="button" class="btn btn-default btn-sm"><i class="fa-solid fa-magnifying-glass"></i> 筛选</button>
+          <span class="bd-count" id="bdCountHint">待派单共 <strong>5</strong> 条，本次已勾选 <strong id="bdCheckedN">3</strong> 条</span>
+        </div>
+        <div style="overflow-x:auto;border:1px solid var(--border);border-radius:6px">
+          <table class="data-table" style="margin:0">
+            <thead>
+              <tr>
+                <th style="width:44px"><input type="checkbox" id="bdCheckAll" title="全选待派单"></th>
+                <th style="width:148px">订单编码</th>
+                <th>订单名称</th>
+                <th>站址编码</th>
+                <th>站点名称</th>
+                <th>关联工程</th>
+                <th style="width:110px">派单时间</th>
+                <th style="width:110px">截止日期</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><input type="checkbox" class="bd-row-cb" checked></td>
+                <td>ZJHBJ20260506001</td>
+                <td>滨江基站安全性鉴定</td>
+                <td>ZZ-HZ-BJ01</td>
+                <td>滨江江南大道站</td>
+                <td>杭州移动铁塔工程</td>
+                <td>2026-05-06</td>
+                <td>2026-06-30</td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" class="bd-row-cb" checked></td>
+                <td>ZJHYH20260503001</td>
+                <td>余杭区铁塔安全检</td>
+                <td>ZZ-YH-12</td>
+                <td>余杭五常站</td>
+                <td>余杭5G升级项目</td>
+                <td>2026-05-03</td>
+                <td>2026-05-14</td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" class="bd-row-cb" checked></td>
+                <td>ZJHXS20260501001</td>
+                <td>下沙开发区基站检</td>
+                <td>ZZ-XS-02</td>
+                <td>下沙开发区站</td>
+                <td>下沙通信配套工程</td>
+                <td>2026-05-01</td>
+                <td>2026-05-28</td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" class="bd-row-cb"></td>
+                <td>ZJJD20260508001</td>
+                <td>建德山区单管塔检测</td>
+                <td>ZZ-JD-08</td>
+                <td>建德山区站</td>
+                <td>建德农网补强项目</td>
+                <td>2026-05-08</td>
+                <td>2026-06-15</td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" class="bd-row-cb"></td>
+                <td>ZJTL20260509001</td>
+                <td>桐庐高速沿线塔检</td>
+                <td>ZZ-TL-03</td>
+                <td>桐庐沿线站</td>
+                <td>桐庐沿线整治工程</td>
+                <td>2026-05-09</td>
+                <td>2026-06-01</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div style="height:1px;background:var(--border);margin:0 0 20px"></div>
+
+      <!-- 派单设置 -->
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label">选择检测单位 <span class="required">*</span></label>
+        <select class="form-select" style="width:100%;max-width:520px">
+          <option value="">请选择（来源于基础数据 → 检测单位）</option>
+          <option selected>浙江中能工程检测有限公司</option>
+          <option>华东某外协检测有限公司</option>
+          <option>浙江华测工程检测有限公司</option>
+        </select>
+      </div>
+
+    </div>
+    <div class="form-footer">
+      <a href="../订单管理/pc_order_list.html" class="btn btn-default">取消</a>
+      <button type="button" class="btn btn-primary" id="bdConfirm"><i class="fa-solid fa-paper-plane"></i> 确认派单</button>
+    </div>
+  </div>
+
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'order_list', breadcrumb:['营销管理','订单管理','批量派单']};</script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+  var rows = document.querySelectorAll('.bd-row-cb');
+  var all = document.getElementById('bdCheckAll');
+  var nEl = document.getElementById('bdCheckedN');
+  function syncAllState() {
+    var total = rows.length;
+    var on = 0;
+    rows.forEach(function (c) { if (c.checked) on++; });
+    if (nEl) nEl.textContent = String(on);
+    if (all) {
+      all.checked = on === total && total > 0;
+      all.indeterminate = on > 0 && on < total;
+    }
+  }
+  rows.forEach(function (c) { c.addEventListener('change', syncAllState); });
+  if (all) {
+    all.addEventListener('change', function () {
+      rows.forEach(function (c) { c.checked = all.checked; });
+      syncAllState();
+    });
+  }
+  syncAllState();
+  document.getElementById('bdConfirm').addEventListener('click', function () {
+    var on = 0;
+    rows.forEach(function (c) { if (c.checked) on++; });
+    if (!on) { alert('请至少勾选一条待派订单。'); return; }
+    alert('已将 ' + on + ' 条订单指派至所选检测单位。');
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新增供应商 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .module-block {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #fff;
+    padding: 16px 16px 8px;
+    margin-bottom: 14px;
+  }
+  .module-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-1);
+    margin-bottom: 14px;
+    padding-left: 10px;
+    border-left: 3px solid var(--primary);
+  }
+  .upload-tile {
+    width: 100%;
+    height: 96px;
+    border: 1px dashed #d9d9d9;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #86909c;
+    background: #f7f8fa;
+  }
+  .upload-tile i {
+    font-size: 20px;
+    margin-bottom: 6px;
+    color: var(--primary);
+  }
+</style>
+</head>
+<body>
+<div id="page-content">
+  <div class="page-header">
+    <div style="display:flex;align-items:center;gap:12px">
+      <a href="pc_supplier_list.html" class="btn btn-default btn-sm"><i class="fa-solid fa-arrow-left"></i> 返回列表</a>
+      <h1 class="page-title">新增供应商</h1>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="module-block">
+        <div class="module-title"><i class="fa-solid fa-building"></i> 基础信息</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <span class="form-label">名称<span class="required">*</span></span>
+            <input class="form-input" placeholder="请输入名称">
+          </div>
+          <div class="form-group">
+            <span class="form-label">营业执照号</span>
+            <input class="form-input" placeholder="请输入营业执照号">
+          </div>
+          <div class="form-group">
+            <span class="form-label">类别</span>
+            <select class="form-select" style="width:100%">
+              <option value="">请选择</option>
+              <option>材料供应商</option>
+              <option>设备供应商</option>
+              <option>检测服务商</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <span class="form-label">法人代表</span>
+            <input class="form-input" placeholder="请输入法人代表">
+          </div>
+          <div class="form-group">
+            <span class="form-label">单位性质</span>
+            <input class="form-input" placeholder="请输入单位性质">
+          </div>
+          <div class="form-group" style="grid-column:span 2">
+            <span class="form-label">服务/供应品</span>
+            <textarea class="form-textarea" placeholder="请输入服务/供应品"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="module-block">
+        <div class="module-title"><i class="fa-solid fa-location-dot"></i> 地址信息</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <span class="form-label">所属区县</span>
+            <select class="form-select" style="width:100%">
+              <option value="">请选择</option>
+              <option>滨江区</option>
+              <option>西湖区</option>
+              <option>余杭区</option>
+              <option>萧山区</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <span class="form-label">邮政编码</span>
+            <input class="form-input" placeholder="请输入邮政编码">
+          </div>
+          <div class="form-group">
+            <span class="form-label">街道及门牌号</span>
+            <input class="form-input" placeholder="请输入街道及门牌号">
+          </div>
+          <div class="form-group">
+            <span class="form-label">地址全称</span>
+            <input class="form-input" placeholder="请输入地址全称">
+          </div>
+        </div>
+      </div>
+
+      <div class="module-block">
+        <div class="module-title"><i class="fa-solid fa-phone"></i> 联系信息</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <span class="form-label">电话</span>
+            <input class="form-input" placeholder="请输入电话">
+          </div>
+          <div class="form-group">
+            <span class="form-label">传真</span>
+            <input class="form-input" placeholder="请输入传真">
+          </div>
+          <div class="form-group">
+            <span class="form-label">联系人姓名</span>
+            <input class="form-input" placeholder="请输入联系人姓名">
+          </div>
+          <div class="form-group">
+            <span class="form-label">联系人电话</span>
+            <input class="form-input" placeholder="请输入联系人电话">
+          </div>
+          <div class="form-group">
+            <span class="form-label">网址</span>
+            <input class="form-input" placeholder="请输入网址">
+          </div>
+          <div class="form-group">
+            <span class="form-label">E-mail</span>
+            <input class="form-input" placeholder="请输入E-mail">
+          </div>
+        </div>
+      </div>
+
+      <div class="module-block">
+        <div class="module-title"><i class="fa-solid fa-credit-card"></i> 结算信息</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <span class="form-label">开户银行</span>
+            <input class="form-input" placeholder="请输入开户银行">
+          </div>
+          <div class="form-group">
+            <span class="form-label">账号</span>
+            <input class="form-input" placeholder="请输入账号">
+          </div>
+        </div>
+      </div>
+
+      <div class="module-block">
+        <div class="module-title"><i class="fa-solid fa-note-sticky"></i> 备注信息</div>
+        <div class="form-grid">
+          <div class="form-group" style="grid-column:span 2">
+            <span class="form-label">备注</span>
+            <textarea class="form-textarea" placeholder="请输入备注信息"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="module-block">
+        <div class="module-title"><i class="fa-solid fa-file-lines"></i> 资质文件</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <span class="form-label">营业执照</span>
+            <div class="upload-tile">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <span style="font-size:12px">点击上传营业执照</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">资质证书</span>
+            <div class="upload-tile">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <span style="font-size:12px">点击上传资质证书</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-footer">
+        <button class="btn btn-primary">保存</button>
+        <button class="btn btn-default" onclick="location.href='pc_supplier_list.html'">取消</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'supplier_list', breadcrumb:['仪器设备管理','供应商管理','新增供应商']};</script>
+</body>
+</html>
+
+

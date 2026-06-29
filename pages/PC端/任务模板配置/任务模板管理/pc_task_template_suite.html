@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>任务模板引擎说明 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+.engine-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+@media(max-width:900px){.engine-grid{grid-template-columns:1fr}}
+.engine-card{border:1px solid var(--border);border-radius:10px;padding:14px;background:#FAFBFC}
+.engine-card h4{margin:0 0 8px;font-size:14px;color:var(--text-1)}
+.pkg-code{font-family:ui-monospace,monospace;font-size:11px;background:var(--primary-light);color:var(--primary);padding:3px 8px;border-radius:4px}
+ul.sm{margin:0;padding-left:18px;font-size:12px;color:var(--text-2);line-height:1.65}
+</style>
+</head>
+<body>
+<div id="page-content">
+  <div class="page-header">
+    <div class="page-title">检测任务模板引擎说明</div>
+    <a href="pc_task_template_list.html" class="btn btn-default"><i class="fa-solid fa-arrow-left"></i> 任务模板管理</a>
+  </div>
+
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-body">
+      <p style="font-size:13px;color:var(--text-2);line-height:1.65;margin:0">
+        引擎以 <strong>模板包 + TaskContext 多维解析 + 标准块类型库 + 语义字段注册表</strong> 支持各类检测任务；下列两个链接为 <strong>已验收的预置模板包</strong>，用于对标与复制新建，不代表系统只能配置两类任务。
+      </p>
+    </div>
+  </div>
+
+  <div class="engine-grid">
+    <div class="engine-card">
+      <span class="pkg-code">PKG_STOCK_SINGLE_PIPE_20260509</span>
+      <h4>存量 · 单管塔 / 拉线杆</h4>
+      <p style="font-size:12px;color:var(--text-3);margin:0 0 8px">附表结构说明（2026-05-09）。</p>
+      <ul class="sm">
+        <li><strong>塔型唯一</strong>：单塔型主检测内容仅一套；现场按塔型 + TaskContext 解析模板包。</li>
+        <li>共性 A～H 全覆盖；管段 <code>repeatable_segment.max_n=10</code></li>
+        <li>典型块：<code>metric_sheet</code>（标量项）、<code>matrix_table</code>（<strong>红框二维表</strong>：如「构件类型」行×「规格｜材质｜锌层」列）</li>
+      </ul>
+      <p style="margin:10px 0 0"><a href="https://my.feishu.cn/docx/Tr6WduMX6ocXJ7xPGk4cq9OnnqL" target="_blank" rel="noopener" class="btn-text">打开参考文档 <i class="fa-solid fa-arrow-up-right-from-square"></i></a></p>
+    </div>
+    <div class="engine-card">
+      <span class="pkg-code">PKG_STOCK_ANGLE_LATTICE_20260511</span>
+      <h4>存量 · 角钢塔 · 格构柱</h4>
+      <p style="font-size:12px;color:var(--text-3);margin:0 0 8px">附表结构说明（2026-05-11）。</p>
+      <ul class="sm">
+        <li><code>metric_sheet</code> 启用分类列（整体/基础/地锚）；<code>max_n=12</code></li>
+        <li>抗剪连接节点、锈蚀分级量表、抽检规则 <code>rule_text</code> 等与单管差异由模板参数表达</li>
+      </ul>
+      <p style="margin:10px 0 0"><a href="https://my.feishu.cn/docx/WlMed0mhJo9acdxF31XcmkzwnUh" target="_blank" rel="noopener" class="btn-text">打开参考文档 <i class="fa-solid fa-arrow-up-right-from-square"></i></a></p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><div class="card-title">TaskContext → 模板包</div></div>
+    <div class="card-body">
+      <table class="data-table">
+        <thead><tr><th>铁塔类型</th><th>检测业务线</th><th>解析得到模板包</th></tr></thead>
+        <tbody>
+          <tr><td>法兰式单管塔</td><td>存量铁塔原始记录</td><td>PKG_STOCK_SINGLE_PIPE_20260509</td></tr>
+          <tr><td>落地角钢塔</td><td>存量铁塔原始记录</td><td>PKG_STOCK_ANGLE_LATTICE_20260511</td></tr>
+          <tr><td>四管塔</td><td>年度巡检（示例）</td><td><em>新建模板包，继承块库</em></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = { active: 'task_template_suite', breadcrumb: ['模板配置', '任务模板', '模板引擎说明'] };</script>
+</body>
+</html>

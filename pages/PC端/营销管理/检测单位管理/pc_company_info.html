@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>检测单位管理- 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+  <div class="card" style="margin-bottom:16px;border-left:4px solid var(--primary)">
+    <div class="card-body" style="padding:12px 16px;font-size:13px;color:var(--text-2)">
+      检测单位主数据已迁移至 <strong>基础数据 → 检测单位</strong>（含检测组/人员树形架构）。
+      <a href="../../基础数据/检测单位/pc_data_inspection_unit.html" class="btn btn-primary btn-sm" style="margin-left:10px">打开检测单位</a>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <div class="form-section">
+        <div class="form-section-title">单位基本信息</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <span class="form-label">单位全称<span class="required">*</span></span>
+            <input class="form-input" value="浙江中能工程检测有限公司">
+          </div>
+          <div class="form-group">
+            <span class="form-label">单位简称</span>
+            <input class="form-input" value="中能检测">
+          </div>
+          <div class="form-group">
+            <span class="form-label">统一社会信用代码<span class="required">*</span></span>
+            <input class="form-input" value="91330100MA2XXXXX">
+          </div>
+          <div class="form-group">
+            <span class="form-label">法人代表</span>
+            <input class="form-input" value="张某某">
+          </div>
+          <div class="form-group">
+            <span class="form-label">联系电话</span>
+            <input class="form-input" value="0571-88888888">
+          </div>
+          <div class="form-group">
+            <span class="form-label">传真</span>
+            <input class="form-input" placeholder="请输入传真号段">
+          </div>
+          <div class="form-group" style="grid-column:span 2">
+            <span class="form-label">地址</span>
+            <input class="form-input" style="width:100%" value="浙江省杭州市XX区XX路XX号">
+          </div>
+          <div class="form-group">
+            <span class="form-label">邮编</span>
+            <input class="form-input" value="310000">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">资质信息</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <span class="form-label">CMA资质编号</span>
+            <input class="form-input" value="2024XXXXXXXX">
+          </div>
+          <div class="form-group">
+            <span class="form-label">CMA有效期</span>
+            <input class="form-input" type="date" value="2027-12-31">
+          </div>
+          <div class="form-group">
+            <span class="form-label">CNAS资质编号</span>
+            <input class="form-input" placeholder="请输入CNAS资质编号">
+          </div>
+          <div class="form-group">
+            <span class="form-label">CNAS有效期</span>
+            <input class="form-input" type="date">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">单位LOGO</div>
+        <div style="margin-top:12px">
+          <div style="width:200px;height:80px;border:1px dashed #d9d9d9;border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:#999">
+            <i class="fa-solid fa-camera" style="font-size:20px;margin-bottom:4px"></i>
+            <span style="font-size:12px">点击上传LOGO</span>
+          </div>
+          <p style="margin-top:8px;font-size:12px;color:#999">PNG格式，建议尺寸 400×160px，用于报告封面</p>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">公章图片</div>
+        <div style="margin-top:12px">
+          <div style="width:150px;height:150px;border:1px dashed #d9d9d9;border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:#999">
+            <i class="fa-solid fa-stamp" style="font-size:24px;margin-bottom:4px"></i>
+            <span style="font-size:12px">点击上传公章</span>
+          </div>
+          <p style="margin-top:8px;font-size:12px;color:#999">PNG格式，建议尺寸 300×300px，用于报告签章</p>
+        </div>
+      </div>
+
+      <div class="form-footer">
+        <button class="btn btn-primary">保存修改</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'data_inspection_unit', breadcrumb:['基础数据','检测单位','旧版单位信息页']};</script>
+</body>
+</html>
+
+

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新增报告模板</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+
+  <div style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+    <a href="pc_report_template_list.html" class="btn btn-default btn-sm"><i class="fa-solid fa-arrow-left"></i> 返回列表</a>
+    <span style="font-size:13px;color:var(--text-3);">保存后将生成模板编号，可继续配置章节与样式</span>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">新建报告模板</div>
+    </div>
+    <div class="card-body">
+      <div class="form-grid">
+        <div class="form-group full">
+          <label class="form-label">模板名称 <span class="required">*</span></label>
+          <input type="text" id="tplName" class="form-input" style="width:100%;max-width:560px;" placeholder="例如：角钢塔安全检测报告模板">
+        </div>
+        <div class="form-group">
+          <label class="form-label">适用塔型 <span class="required">*</span></label>
+          <select id="tplTower" class="form-select" style="width:100%;min-width:0;">
+            <option value="">请选择</option>
+            <option>单管塔</option>
+            <option selected>角钢塔</option>
+            <option>三管塔</option>
+            <option>四管塔</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">报告类型 <span class="required">*</span></label>
+          <select id="tplReportType" class="form-select" style="width:100%;min-width:0;">
+            <option value="">请选择</option>
+            <option selected>角钢塔报告</option>
+            <option>格构塔报告</option>
+            <option>法兰式单管报告</option>
+            <option>插接式单管报告</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">备注</label>
+          <textarea class="form-textarea" id="tplRemark" placeholder="可选：说明适用场景、与历史模板的差异等"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="form-footer" style="margin-top:0;">
+      <a href="pc_report_template_list.html" class="btn btn-default">取消</a>
+      <button type="button" class="btn btn-primary" id="btnSaveCreate"><i class="fa-solid fa-check"></i> 保存并进入编辑</button>
+    </div>
+  </div>
+</div>
+
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'report_template_list', breadcrumb:['模板配置','报告模板管理','新增模板']};</script>
+<script>
+(function () {
+  function boot() {
+    var btn = document.getElementById('btnSaveCreate');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var n = document.getElementById('tplName');
+      if (!n || !String(n.value).trim()) {
+        alert('请填写模板名称');
+        return;
+      }
+      var tw = document.getElementById('tplTower');
+      var rt = document.getElementById('tplReportType');
+      if (!tw || !tw.value) {
+        alert('请选择适用塔型');
+        return;
+      }
+      if (!rt || !rt.value) {
+        alert('请选择报告类型');
+        return;
+      }
+      alert('已创建草稿模板，编号将按规则自动生成。');
+      location.href = 'pc_report_template_edit.html';
+    });
+  }
+  if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+})();
+</script>
+</body>
+</html>

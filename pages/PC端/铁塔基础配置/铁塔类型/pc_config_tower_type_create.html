@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新增铁塔类型 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-1);
+    margin-bottom: 12px;
+    padding-left: 10px;
+    border-left: 3px solid var(--primary);
+  }
+  .form-section { padding: 12px 0 4px; }
+  .error-text { font-size: 12px; color: var(--danger); min-height: 18px; line-height: 18px; }
+  .save-tip {
+    display: none;
+    margin: 0 20px 16px;
+    padding: 10px 12px;
+    border-radius: 4px;
+    border: 1px solid #b8e7c3;
+    background: #f2fff5;
+    color: #007a1f;
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+<div id="page-content">
+  <div class="page-header">
+    <div style="display:flex;align-items:center;gap:12px">
+      <a href="pc_config_tower_type.html" class="btn btn-default btn-sm"><i class="fa-solid fa-arrow-left"></i> 返回列表</a>
+      <h1 class="page-title">新增铁塔类型</h1>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="form-section">
+        <div class="section-title">基础信息</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <span class="form-label">类型编码 <span class="required">*</span></span>
+            <input id="typeCode" class="form-input" placeholder="请输入类型编码，例如：TT05" maxlength="10">
+            <div class="error-text" id="typeCodeError"></div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">类型名称 <span class="required">*</span></span>
+            <input id="typeName" class="form-input" placeholder="请输入类型名称">
+            <div class="error-text" id="typeNameError"></div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">状态 <span class="required">*</span></span>
+            <select id="status" class="form-select" style="width:100%">
+              <option value="">请选择</option>
+              <option value="启用">启用</option>
+              <option value="停用">停用</option>
+            </select>
+            <div class="error-text" id="statusError"></div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">检测项数量</span>
+            <input id="itemCount" type="number" class="form-input" placeholder="请输入检测项数量" min="0" step="1">
+            <div class="error-text" id="itemCountError"></div>
+          </div>
+          <div class="form-group full">
+            <span class="form-label">说明</span>
+            <textarea id="remark" class="form-textarea" placeholder="请输入类型说明"></textarea>
+            <div class="error-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="save-tip" id="saveTip">保存成功。1.2 秒后返回列表页面。</div>
+    <div class="form-footer">
+      <button class="btn btn-primary" id="saveBtn">保存</button>
+      <button class="btn btn-default" id="saveContinueBtn">保存并继续新增</button>
+      <button class="btn btn-default" id="cancelBtn">取消</button>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'config_tower_type', breadcrumb:['铁塔基础配置','铁塔类型','新增类型']};</script>
+<script>
+  (function () {
+    const typeCodeInput = document.getElementById('typeCode');
+    const typeNameInput = document.getElementById('typeName');
+    const statusInput = document.getElementById('status');
+    const itemCountInput = document.getElementById('itemCount');
+    const remarkInput = document.getElementById('remark');
+    const saveTip = document.getElementById('saveTip');
+
+    function setError(id, text) {
+      const node = document.getElementById(id);
+      if (node) node.textContent = text || '';
+    }
+
+    function clearErrors() {
+      setError('typeCodeError', '');
+      setError('typeNameError', '');
+      setError('statusError', '');
+      setError('itemCountError', '');
+    }
+
+    function validate() {
+      clearErrors();
+      let ok = true;
+      const typeCode = (typeCodeInput.value || '').trim();
+      const typeName = (typeNameInput.value || '').trim();
+      const status = (statusInput.value || '').trim();
+      const itemCount = (itemCountInput.value || '').trim();
+
+      if (!/^[A-Za-z0-9_-]{2,10}$/.test(typeCode)) {
+        setError('typeCodeError', '编码需为2-10位字母/数字/下划线/中划线');
+        ok = false;
+      }
+      if (!typeName) {
+        setError('typeNameError', '请输入类型名称');
+        ok = false;
+      }
+      if (!status) {
+        setError('statusError', '请选择状态');
+        ok = false;
+      }
+      if (itemCount && !/^\d+$/.test(itemCount)) {
+        setError('itemCountError', '检测项数量需为非负整数');
+        ok = false;
+      }
+      return ok;
+    }
+
+    function resetForm() {
+      typeCodeInput.value = '';
+      typeNameInput.value = '';
+      statusInput.value = '';
+      itemCountInput.value = '';
+      remarkInput.value = '';
+      clearErrors();
+      typeCodeInput.focus();
+    }
+
+    function save(continueCreate) {
+      if (!validate()) return;
+      saveTip.style.display = 'block';
+
+      if (continueCreate) {
+        window.setTimeout(function () {
+          saveTip.style.display = 'none';
+          resetForm();
+        }, 1000);
+        return;
+      }
+      window.setTimeout(function () {
+        location.href = 'pc_config_tower_type.html';
+      }, 1200);
+    }
+
+    document.getElementById('saveBtn').addEventListener('click', function () {
+      save(false);
+    });
+    document.getElementById('saveContinueBtn').addEventListener('click', function () {
+      save(true);
+    });
+    document.getElementById('cancelBtn').addEventListener('click', function () {
+      location.href = 'pc_config_tower_type.html';
+    });
+  })();
+</script>
+</body>
+</html>

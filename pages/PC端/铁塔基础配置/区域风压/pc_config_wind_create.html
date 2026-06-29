@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新增区域风压 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-1);
+    margin-bottom: 12px;
+    padding-left: 10px;
+    border-left: 3px solid var(--primary);
+  }
+  .form-section { padding: 12px 0 4px; }
+  .hint-text { font-size: 12px; color: var(--text-3); margin-top: 6px; }
+  .error-text { font-size: 12px; color: var(--danger); min-height: 18px; line-height: 18px; }
+  .readonly-input {
+    height: 32px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: #f7f8fa;
+    color: var(--text-2);
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    font-size: 13px;
+  }
+  .save-tip {
+    display: none;
+    margin: 0 20px 16px;
+    padding: 10px 12px;
+    border-radius: 4px;
+    border: 1px solid #b8e7c3;
+    background: #f2fff5;
+    color: #007a1f;
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+<div id="page-content">
+  <div class="page-header">
+    <div style="display:flex;align-items:center;gap:12px">
+      <a href="pc_config_wind.html" class="btn btn-default btn-sm"><i class="fa-solid fa-arrow-left"></i> 返回列表</a>
+      <h1 class="page-title">新增区域风压</h1>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="form-section">
+        <div class="section-title">父级信息</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <span class="form-label">父区域编码</span>
+            <div class="readonly-input" id="parentCodeView">000000</div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">父区域名称</span>
+            <div class="readonly-input" id="parentNameView">中国</div>
+          </div>
+          <div class="form-group full">
+            <span class="form-label">父区域路径</span>
+            <div class="readonly-input" id="parentPathView">/000000/</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-title">新增区域信息</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <span class="form-label">区域编码 <span class="required">*</span></span>
+            <input id="code" class="form-input" placeholder="请输入6位数字编码，例如：011004" maxlength="6">
+            <div class="error-text" id="codeError"></div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">区域名称 <span class="required">*</span></span>
+            <input id="name" class="form-input" placeholder="请输入区域名称">
+            <div class="error-text" id="nameError"></div>
+          </div>
+
+          <div class="form-group">
+            <span class="form-label">区域类型 <span class="required">*</span></span>
+            <select id="type" class="form-select" style="width:100%">
+              <option value="">请选择</option>
+              <option value="区域">区域</option>
+              <option value="城市">城市</option>
+            </select>
+            <div class="error-text" id="typeError"></div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">风压(kN/m²) <span class="required">*</span></span>
+            <input id="pressure" type="number" class="form-input" placeholder="请输入风压，例如：0.35" min="0" step="0.01">
+            <div class="error-text" id="pressureError"></div>
+          </div>
+
+          <div class="form-group">
+            <span class="form-label">排序 <span class="required">*</span></span>
+            <input id="sort" type="number" class="form-input" placeholder="请输入排序值，例如：40" min="0" step="1">
+            <div class="error-text" id="sortError"></div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">描述</span>
+            <input id="desc" class="form-input" placeholder="请输入描述（选填）">
+            <div class="error-text"></div>
+          </div>
+        </div>
+        <div class="hint-text">说明：区域编码需唯一；若父级为“区域”，建议子级类型选择“城市”。</div>
+      </div>
+    </div>
+    <div class="save-tip" id="saveTip">保存成功。2 秒后返回列表页面。</div>
+    <div class="form-footer">
+      <button class="btn btn-primary" id="saveBtn">保存</button>
+      <button class="btn btn-default" id="saveAndContinueBtn">保存并继续新增</button>
+      <button class="btn btn-default" id="cancelBtn">取消</button>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'config_wind', breadcrumb:['铁塔基础配置','区域风压','新增区域风压']};</script>
+<script>
+  (function () {
+    const query = new URLSearchParams(window.location.search);
+    const parentCode = query.get('parentCode') || '000000';
+    const parentName = query.get('parentName') || '中国';
+    const parentPath = query.get('parentPath') || '/000000/';
+
+    const parentCodeView = document.getElementById('parentCodeView');
+    const parentNameView = document.getElementById('parentNameView');
+    const parentPathView = document.getElementById('parentPathView');
+    const saveTip = document.getElementById('saveTip');
+
+    const codeInput = document.getElementById('code');
+    const nameInput = document.getElementById('name');
+    const typeInput = document.getElementById('type');
+    const pressureInput = document.getElementById('pressure');
+    const sortInput = document.getElementById('sort');
+    const descInput = document.getElementById('desc');
+
+    parentCodeView.textContent = parentCode;
+    parentNameView.textContent = parentName;
+    parentPathView.textContent = parentPath;
+
+    function setError(id, text) {
+      const node = document.getElementById(id);
+      if (node) node.textContent = text || '';
+    }
+
+    function clearErrors() {
+      setError('codeError', '');
+      setError('nameError', '');
+      setError('typeError', '');
+      setError('pressureError', '');
+      setError('sortError', '');
+    }
+
+    function validate() {
+      clearErrors();
+      let ok = true;
+
+      const code = (codeInput.value || '').trim();
+      const name = (nameInput.value || '').trim();
+      const type = (typeInput.value || '').trim();
+      const pressure = (pressureInput.value || '').trim();
+      const sort = (sortInput.value || '').trim();
+
+      if (!/^\d{6}$/.test(code)) {
+        setError('codeError', '请输入6位数字编码');
+        ok = false;
+      }
+      if (!name) {
+        setError('nameError', '请输入区域名称');
+        ok = false;
+      }
+      if (!type) {
+        setError('typeError', '请选择区域类型');
+        ok = false;
+      }
+      if (pressure === '' || Number.isNaN(Number(pressure)) || Number(pressure) < 0) {
+        setError('pressureError', '请输入大于等于0的风压值');
+        ok = false;
+      }
+      if (!/^\d+$/.test(sort)) {
+        setError('sortError', '请输入非负整数排序值');
+        ok = false;
+      }
+      return ok;
+    }
+
+    function resetForContinue() {
+      codeInput.value = '';
+      nameInput.value = '';
+      typeInput.value = '';
+      pressureInput.value = '';
+      sortInput.value = '';
+      descInput.value = '';
+      clearErrors();
+      codeInput.focus();
+    }
+
+    function mockSave(continueCreate) {
+      if (!validate()) return;
+      saveTip.style.display = 'block';
+
+      if (continueCreate) {
+        window.setTimeout(function () {
+          saveTip.style.display = 'none';
+          resetForContinue();
+        }, 1000);
+        return;
+      }
+
+      window.setTimeout(function () {
+        location.href = 'pc_config_wind.html';
+      }, 1200);
+    }
+
+    document.getElementById('saveBtn').addEventListener('click', function () {
+      mockSave(false);
+    });
+    document.getElementById('saveAndContinueBtn').addEventListener('click', function () {
+      mockSave(true);
+    });
+    document.getElementById('cancelBtn').addEventListener('click', function () {
+      location.href = 'pc_config_wind.html';
+    });
+  })();
+</script>
+</body>
+</html>

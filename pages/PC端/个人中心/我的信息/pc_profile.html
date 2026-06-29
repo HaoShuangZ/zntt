@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我的信息 - 个人中心</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .profile-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 16px; background: var(--bg-card); border-radius: 6px 6px 0 0; padding: 0 8px; }
+  .profile-tab {
+    padding: 12px 20px; font-size: 14px; color: var(--text-2); background: none; border: none; border-bottom: 2px solid transparent;
+    cursor: pointer; font-family: inherit; margin-bottom: -1px;
+  }
+  .profile-tab:hover { color: var(--primary); }
+  .profile-tab.on { color: var(--primary); font-weight: 600; border-bottom-color: var(--primary); }
+  .profile-panel { display: none; }
+  .profile-panel.on { display: block; }
+  .upload-drop {
+    border: 1px dashed var(--border); border-radius: 6px; min-height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 8px; padding: 16px; text-align: center; cursor: pointer; background: #FAFBFC; transition: border-color 0.2s, background 0.2s;
+  }
+  .upload-drop:hover { border-color: var(--primary); background: var(--primary-bg); }
+  .upload-drop i { font-size: 28px; color: var(--text-4); }
+  .upload-drop .ud-title { font-size: 13px; color: var(--text-2); font-weight: 500; }
+  .upload-drop .ud-sub { font-size: 12px; color: var(--text-3); line-height: 1.45; max-width: 220px; }
+  .upload-hint { font-size: 11px; color: var(--text-3); margin-top: 6px; line-height: 1.4; }
+  .radio-row { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+  .radio-row label { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-2); cursor: pointer; }
+  .grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px 24px; }
+  @media (max-width: 900px) { .grid-2-1 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div id="page-content">
+  <div class="page-header">
+    <h1 class="page-title">个人中心</h1>
+    <div>
+      <button type="button" class="btn btn-default btn-sm" onclick="alert('已刷新档案缓存')"><i class="fa-solid fa-rotate"></i> 刷新</button>
+    </div>
+  </div>
+
+  <div class="profile-tabs" role="tablist">
+    <button type="button" class="profile-tab on" role="tab" aria-selected="true" data-tab="info">我的信息</button>
+    <button type="button" class="profile-tab" role="tab" aria-selected="false" data-tab="sign">签名管理</button>
+  </div>
+
+  <!-- 我的信息 -->
+  <div id="panelInfo" class="profile-panel on" role="tabpanel">
+    <div class="card" style="margin-bottom: 16px;">
+      <div class="card-body">
+        <div class="form-grid">
+          <div class="form-group full">
+            <label class="form-label">岗位</label>
+            <select class="form-select" style="width:100%; max-width:560px;"><option value="">请选择</option><option>检测工程师</option><option>项目负责人</option><option>报告编制员</option><option>部门管理员</option></select>
+          </div>
+          <div class="form-group full">
+            <div class="grid-2-1">
+              <div class="form-group" style="gap:6px;">
+                <label class="form-label">主管领域</label>
+                <select class="form-select" style="width:100%; max-width:100%;"><option value="">请选择</option><option>铁塔结构检测</option><option>地基与基础</option><option>电气与防雷</option></select>
+              </div>
+              <div class="form-group" style="gap:6px;">
+                <label class="form-label">入职日期</label>
+                <input type="date" class="form-input" style="width:100%;" value="2025-05-08">
+              </div>
+            </div>
+          </div>
+          <div class="form-group full">
+            <label class="form-label">离职日期</label>
+            <input type="text" class="form-input" style="width:100%; max-width:560px;" placeholder="请选择或输入日期">
+          </div>
+          <div class="form-group">
+            <label class="form-label">在职状态</label>
+            <select class="form-select" style="width:100%;"><option selected>在职</option><option>离职</option><option>停薪留职</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">聘用类型</label>
+            <select class="form-select" style="width:100%;"><option selected>正式</option><option>劳务派遣</option><option>实习</option></select>
+          </div>
+          <div class="form-group full">
+            <label class="form-label">职级</label>
+            <input type="text" class="form-input" style="width:100%; max-width:560px;" placeholder="请输入后再选择">
+          </div>
+          <div class="form-group full">
+            <label class="form-label">标签</label>
+            <select class="form-select" style="width:100%; max-width:560px; height:auto; min-height:36px;" multiple size="3">
+              <option>外业骨干</option>
+              <option>报告审核资质</option>
+              <option>安全员</option>
+            </select>
+            <span style="font-size:12px;color:var(--text-3);">按住 Ctrl 多选</span>
+          </div>
+          <div class="form-group full">
+            <label class="form-label">备注</label>
+            <textarea class="form-textarea" placeholder="人事备注、资质说明等"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" style="background:#F7F8FA;">
+        <div class="card-title">个人信息</div>
+      </div>
+      <div class="card-body">
+        <div class="form-grid form-grid-3">
+          <div class="form-group">
+            <label class="form-label">照片</label>
+            <div class="upload-drop" data-upload="photo" title="点击选择文件">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <span class="ud-title">将文件拖到此处，或点击上传</span>
+            </div>
+            <input type="file" id="filePhoto" accept="image/jpeg,image/png,image/jpg" hidden>
+            <p class="upload-hint">仅支持大小 64KB 以内，JPG、PNG、JPEG 格式图片</p>
+          </div>
+          <div class="form-group">
+            <label class="form-label">证件附件</label>
+            <div class="upload-drop" data-upload="idfile">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <span class="ud-title">将文件拖到此处，或点击上传</span>
+            </div>
+            <input type="file" id="fileId" hidden>
+          </div>
+          <div class="form-group">
+            <label class="form-label">其他附件</label>
+            <div class="upload-drop" data-upload="other">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <span class="ud-title">将文件拖到此处，或点击上传</span>
+            </div>
+            <input type="file" id="fileOther" hidden>
+          </div>
+        </div>
+        <div class="form-grid" style="margin-top:20px;">
+          <div class="form-group">
+            <label class="form-label">证件类型</label>
+            <select class="form-select" style="width:100%;"><option selected>身份证</option><option>护照</option><option>其它</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">证件号码</label>
+            <input type="text" class="form-input" style="width:100%;" value="123456789" maxlength="32">
+          </div>
+          <div class="form-group">
+            <label class="form-label">出生日期</label>
+            <input type="date" class="form-input" style="width:100%;" value="2020-04-02">
+          </div>
+          <div class="form-group full">
+            <span class="form-label">性别</span>
+            <div class="radio-row">
+              <label><input type="radio" name="gender" value="m" checked> 男</label>
+              <label><input type="radio" name="gender" value="f"> 女</label>
+              <label><input type="radio" name="gender" value="o"> 其他</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-footer" style="margin-top: 0; border-radius: 0 0 6px 6px; background: var(--bg-card); border: 1px solid var(--border); border-top: none;">
+      <button type="button" class="btn btn-default" onclick="alert('已取消')">取消</button>
+      <button type="button" class="btn btn-primary" onclick="alert('已保存')"><i class="fa-solid fa-check"></i> 保存</button>
+    </div>
+  </div>
+
+  <!-- 签名管理 -->
+  <div id="panelSign" class="profile-panel" role="tabpanel">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">电子签名</div>
+      </div>
+      <div class="card-body">
+        <p style="font-size:12px;color:var(--text-3);margin:0 0 16px;line-height:1.55;">用于报告签字页与流程审批；支持 PNG，建议 300×150 像素、透明底。</p>
+        <div class="form-grid" style="grid-template-columns: 1fr; max-width: 480px;">
+          <div class="form-group">
+            <label class="form-label">签名图片</label>
+            <div id="sig-preview" style="border:1px dashed var(--border); border-radius:6px; min-height:120px; display:flex; align-items:center; justify-content:center; color:var(--text-3); font-size:13px; background:#FAFBFC;">尚未上传</div>
+            <input type="file" id="sig-file" accept="image/png,image/jpeg" style="margin-top:10px;font-size:12px;">
+            <div style="margin-top:10px;">
+              <button type="button" id="sig-clear" class="btn btn-default btn-sm">清除</button>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:16px;display:flex;justify-content:flex-end;gap:8px;">
+          <button type="button" class="btn btn-primary" onclick="alert('签名已保存')"><i class="fa-solid fa-check"></i> 保存签名</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'profile', breadcrumb:['个人中心','我的信息']};</script>
+<script>
+(function () {
+  function initProfile() {
+    document.querySelectorAll('.profile-tab').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var tab = btn.getAttribute('data-tab');
+        document.querySelectorAll('.profile-tab').forEach(function (b) {
+          b.classList.toggle('on', b === btn);
+          b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
+        });
+        var info = document.getElementById('panelInfo');
+        var sign = document.getElementById('panelSign');
+        if (info && sign) {
+          info.classList.toggle('on', tab === 'info');
+          sign.classList.toggle('on', tab === 'sign');
+        }
+      });
+    });
+
+    function wireUpload(dropSelector, inputId) {
+      var inp = document.getElementById(inputId);
+      if (!inp) return;
+      document.querySelectorAll(dropSelector).forEach(function (z) {
+        z.addEventListener('click', function () { inp.click(); });
+        ['dragenter', 'dragover'].forEach(function (ev) {
+          z.addEventListener(ev, function (e) { e.preventDefault(); z.style.borderColor = '#165DFF'; });
+        });
+        z.addEventListener('dragleave', function () { z.style.borderColor = ''; });
+        z.addEventListener('drop', function (e) {
+          e.preventDefault();
+          z.style.borderColor = '';
+          if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            try { inp.files = e.dataTransfer.files; } catch (err) {}
+            inp.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+        });
+      });
+    }
+    wireUpload('[data-upload="photo"]', 'filePhoto');
+    wireUpload('[data-upload="idfile"]', 'fileId');
+    wireUpload('[data-upload="other"]', 'fileOther');
+
+    document.getElementById('filePhoto') && document.getElementById('filePhoto').addEventListener('change', function () {
+      var z = document.querySelector('[data-upload="photo"]');
+      if (this.files && this.files[0] && z) {
+        z.querySelector('.ud-title').textContent = this.files[0].name;
+        z.style.borderStyle = 'solid';
+        z.style.borderColor = 'var(--success)';
+      }
+    });
+    document.getElementById('fileId') && document.getElementById('fileId').addEventListener('change', function () {
+      var z = document.querySelector('[data-upload="idfile"]');
+      if (this.files && this.files[0] && z) {
+        z.querySelector('.ud-title').textContent = this.files[0].name;
+        z.style.borderStyle = 'solid';
+        z.style.borderColor = 'var(--success)';
+      }
+    });
+    document.getElementById('fileOther') && document.getElementById('fileOther').addEventListener('change', function () {
+      var z = document.querySelector('[data-upload="other"]');
+      if (this.files && this.files[0] && z) {
+        z.querySelector('.ud-title').textContent = this.files[0].name;
+        z.style.borderStyle = 'solid';
+        z.style.borderColor = 'var(--success)';
+      }
+    });
+
+    var inp = document.getElementById('sig-file');
+    var prev = document.getElementById('sig-preview');
+    var clr = document.getElementById('sig-clear');
+    if (inp && prev) {
+      inp.addEventListener('change', function () {
+        var f = inp.files && inp.files[0];
+        if (!f) return;
+        var u = URL.createObjectURL(f);
+        prev.innerHTML = '<img src="' + u + '" alt="签名" style="max-width:100%;max-height:100px;object-fit:contain">';
+      });
+    }
+    if (clr && prev && inp) {
+      clr.addEventListener('click', function () {
+        inp.value = '';
+        prev.textContent = '尚未上传';
+        prev.style.cssText = 'border:1px dashed var(--border); border-radius:6px; min-height:120px; display:flex; align-items:center; justify-content:center; color:var(--text-3); font-size:13px; background:#FAFBFC;';
+      });
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', initProfile);
+  } else {
+    initProfile();
+  }
+})();
+</script>
+</body>
+</html>

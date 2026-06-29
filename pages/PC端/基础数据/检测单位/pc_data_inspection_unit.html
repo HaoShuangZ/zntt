@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>检测单位 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">检测单位</div>
+    </div>
+    <div class="card-body">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <input type="text" class="form-input" placeholder="检测单位名称/编码">
+          <button type="button" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> 查询</button>
+          <button type="button" class="btn btn-default">重置</button>
+        </div>
+      </div>
+
+      <div class="pc-table-actions">
+        <button type="button" class="btn btn-primary" onclick="location.href='pc_data_inspection_unit_create.html'"><i class="fa-solid fa-plus"></i> 新增检测单位</button>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>检测单位名称</th>
+            <th>检测单位编码</th>
+            <th>所在地址</th>
+            <th>公司负责人</th>
+            <th>联系方式</th>
+            <th class="col-action" style="width:240px">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-code="ORG-ZN-001" data-name="浙江中能工程检测有限公司">
+            <td>浙江中能工程检测有限公司</td>
+            <td>ORG-ZN-001</td>
+            <td>浙江省杭州市滨江区江南大道588号</td>
+            <td>张某某</td>
+            <td>0571-88888888</td>
+            <td class="col-action">
+              <a href="pc_data_inspection_unit_create.html?code=ORG-ZN-001&mode=detail" class="btn btn-text">详情</a>
+              <a href="pc_data_inspection_unit_create.html?code=ORG-ZN-001&mode=edit" class="btn btn-text">编辑</a>
+              <a href="pc_data_inspection_unit_create.html?code=ORG-ZN-001&view=org" class="btn btn-text">架构</a>
+              <button type="button" class="btn btn-text btn-iu-delete" style="color:var(--danger)">删除</button>
+            </td>
+          </tr>
+          <tr data-code="ORG-HC-002" data-name="杭州华测结构检测中心">
+            <td>杭州华测结构检测中心</td>
+            <td>ORG-HC-002</td>
+            <td>浙江省杭州市西湖区文三路259号</td>
+            <td>李某某</td>
+            <td>13900001111</td>
+            <td class="col-action">
+              <a href="pc_data_inspection_unit_create.html?code=ORG-HC-002&mode=detail" class="btn btn-text">详情</a>
+              <a href="pc_data_inspection_unit_create.html?code=ORG-HC-002&mode=edit" class="btn btn-text">编辑</a>
+              <a href="pc_data_inspection_unit_create.html?code=ORG-HC-002&view=org" class="btn btn-text">架构</a>
+              <button type="button" class="btn btn-text btn-iu-delete" style="color:var(--danger)">删除</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pagination">
+        <span>共 2 条记录</span>
+        <div class="pagination-btns">
+          <button type="button" class="page-btn active">1</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = { active: 'data_inspection_unit', breadcrumb: ['基础数据', '检测单位'] };</script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+  document.querySelector('tbody').addEventListener('click', function (e) {
+    var btn = e.target.closest('.btn-iu-delete');
+    if (!btn) return;
+    var row = btn.closest('tr[data-code]');
+    if (!row) return;
+    var label = (row.dataset.name || '') + '（' + (row.dataset.code || '') + '）';
+    if (confirm('确定要删除「' + label + '」吗？删除后不可恢复。')) {
+      alert('已删除（原型）');
+    }
+  });
+});
+</script>
+</body>
+</html>

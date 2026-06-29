@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<!-- iPad-ORDER_LIST v2.0 landscape -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>跳转至工作台</title>
+<script>
+(function () {
+  var t = '../../工作台/首页/ipad_workbench_index.html';
+  var q = window.location.search || '';
+  var h = window.location.hash || '';
+  window.location.replace(t + q + h);
+})();
+</script>
+<link rel="stylesheet" href="../../../../assets/ipad-tokens.css">
+<link rel="stylesheet" href="../../../../assets/ipad-frame.css">
+<link rel="stylesheet" href="../../../../assets/ipad-layout.css">
+<link rel="stylesheet" href="../../../../assets/ipad-visual.css">
+<link rel="stylesheet" href="../../../../assets/ipad-embed.css">
+<script src="../../../../assets/ipad-adapt.js" defer></script>
+</head>
+<body style="font-family:system-ui,sans-serif;padding:24px;color:#4E5969;" class="ipad-adapt">
+  <p>工单列表已合并到工作台，正在跳转…</p>
+  <p><a href="../../工作台/首页/ipad_workbench_index.html">若未自动跳转请点击</a></p>
+</body>
+</html>

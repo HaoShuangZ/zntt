@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>检测记录</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .modal-mask { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:2000; align-items:center; justify-content:center; padding:16px; }
+  .modal-mask.show { display:flex; }
+  .modal-box { width:min(920px,100%); max-height:85vh; background:#fff; border-radius:10px; box-shadow:0 10px 40px rgba(0,0,0,.18); border:1px solid var(--border); display:flex; flex-direction:column; }
+  .modal-hd { display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid var(--border); flex-shrink:0; }
+  .modal-hd h3 { font-size:15px;font-weight:600;color:var(--text-1);margin:0; }
+  .modal-bd { padding:16px 18px; overflow:auto; flex:1; font-size:13px;color:var(--text-2);line-height:1.65; }
+  .modal-ft { display:flex; justify-content:flex-end; gap:8px; padding:12px 18px 16px; border-top:1px solid var(--border); flex-shrink:0; }
+  .modal-close { border:none;background:none;color:var(--text-3);font-size:18px;cursor:pointer; }
+</style>
+</head>
+<body>
+<div id="page-content">
+
+  <div style="margin-bottom:14px;">
+    <a href="pc_task_list.html" id="backList" class="btn btn-default btn-sm"><i class="fa-solid fa-arrow-left"></i> 返回检测任务</a>
+    <a href="pc_task_detail.html" id="backDetail" class="btn btn-default btn-sm"><i class="fa-solid fa-file-lines"></i> 返回任务详情</a>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">检测记录 · <span id="taskLabel">—</span></div>
+    </div>
+    <div class="card-body">
+      <p style="font-size:12px;color:var(--text-3);margin:0 0 14px;line-height:1.6;">
+        每条版本包含：<strong>版本名称 VN</strong>、<strong>创建时间</strong>、<strong>创建人</strong>、<strong>变更摘要</strong>。<strong>修改内容</strong>查看本版相对上一版的变更说明；<strong>记录</strong>打开该版本当时的完整检测记录（只读）。
+      </p>
+      <div style="overflow-x:auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width:72px">VN</th>
+              <th style="width:168px">创建时间</th>
+              <th style="width:120px">创建人</th>
+              <th>变更摘要</th>
+              <th class="col-action" style="width:160px">操作</th>
+            </tr>
+          </thead>
+          <tbody id="versionBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-mask" id="detailModal" aria-hidden="true">
+    <div class="modal-box">
+      <div class="modal-hd">
+        <h3 id="detailTitle">修改内容</h3>
+        <button type="button" class="modal-close" id="closeDetail">&times;</button>
+      </div>
+      <div class="modal-bd" id="detailBody"></div>
+      <div class="modal-ft">
+        <button type="button" class="btn btn-default" id="closeDetail2">关闭</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'task_list', breadcrumb:['检测管理','检测任务','检测记录']};</script>
+<script>
+(function () {
+  var params = new URLSearchParams(location.search);
+  var task = params.get('task') || 'RW202606004';
+  var fromAudit = params.get('from') === 'audit';
+  document.getElementById('taskLabel').textContent = task;
+  document.getElementById('backDetail').href = 'pc_task_detail.html?id=' + encodeURIComponent(task) + (fromAudit ? '&tab=review&from=audit' : '');
+  var backList = document.getElementById('backList');
+  if (backList) {
+    backList.href = fromAudit ? 'pc_task_list.html?tab=audit' : 'pc_task_list.html';
+    backList.innerHTML = fromAudit
+      ? '<i class="fa-solid fa-arrow-left"></i> 返回待我审核'
+      : '<i class="fa-solid fa-arrow-left"></i> 返回检测任务';
+  }
+  if (fromAudit) {
+    window.__layoutConfig = { active: 'task_list', breadcrumb: ['检测管理', '检测任务', '待我审核', '检测记录'] };
+  }
+
+  var rows = task === 'RW202606006'
+    ? [
+        { vn: 'V2', time: '2026-05-09 10:05', who: '李明', sum: '检测员重新提交（驳回后修订）', body: '<p>APP 再次提交，待审核。</p><ul><li>塔体总高 36.2m</li></ul>' },
+        { vn: 'V1', time: '2026-05-08 11:00', who: '李明', sum: '检测员首次提交', body: '<p>首次提交。</p>' }
+      ]
+    : task === 'RW202606005'
+    ? [
+        { vn: 'V3', time: '2026-04-29 09:12', who: '系统', sum: '审核通过，任务检毕', body: '<p><strong>检毕快照</strong>：本版为审定有效版，报告编制已引用。</p><ul><li>塔体总高 38.0m</li><li>接地电阻 6.2Ω（平原）</li></ul>' },
+        { vn: 'V2', time: '2026-04-28 16:40', who: '周审核', sum: '修订塔体总高 37.8→38.0', body: '<p>与纸质原始记录对齐的只读视图。</p>' },
+        { vn: 'V1', time: '2026-04-28 10:05', who: '赵六', sum: '检测员首次提交', body: '<p>APP 首次成功提交生成的数据版本。</p><ul><li>塔体总高 37.8m</li></ul>' }
+      ]
+    : [
+        { vn: 'V2', time: '2026-05-07 14:22', who: '李主管', sum: '修订外观结论措辞；塔体总高 42.3→42.5', body: '<p><strong>只读检测记录</strong>（本版本全量字段）。</p><ul><li>塔体总高 <code>42.5</code> m</li><li>外观结论：未见明显损伤</li><li>二维表「构件」3 行已填</li></ul><p style="color:var(--text-3);font-size:12px;">与上一版本可对照差异。</p>' },
+        { vn: 'V1', time: '2026-05-06 18:30', who: '张华', sum: '检测员首次提交', body: '<p>首次提交锁定数据。</p><ul><li>塔体总高 <code>42.3</code> m</li><li>外观结论：未见明显异常</li></ul>' }
+      ];
+
+  var recordPage = '../检测数据录入/pc_task_data.html';
+  document.getElementById('versionBody').innerHTML = rows.map(function (r) {
+    var recordHref = recordPage + '?task=' + encodeURIComponent(task) + '&version=' + encodeURIComponent(r.vn) + '&readonly=1';
+    return '<tr><td><strong>' + r.vn + '</strong></td><td>' + r.time + '</td><td>' + r.who + '</td><td>' + r.sum + '</td><td class="col-action">' +
+      '<button type="button" class="btn btn-text btn-open-detail" data-vn="' + r.vn + '">修改内容</button> ' +
+      '<a href="' + recordHref + '" class="btn btn-text">记录</a></td></tr>';
+  }).join('');
+
+  var modal = document.getElementById('detailModal');
+  function openDetail(vn) {
+    var r = rows.filter(function (x) { return x.vn === vn; })[0];
+    if (!r) return;
+    document.getElementById('detailTitle').textContent = task + ' · ' + r.vn + ' 修改内容';
+    document.getElementById('detailBody').innerHTML = r.body;
+    modal.classList.add('show');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeDetail() {
+    modal.classList.remove('show');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('versionBody').addEventListener('click', function (e) {
+    var b = e.target.closest('.btn-open-detail');
+    if (b) openDetail(b.getAttribute('data-vn'));
+  });
+  document.getElementById('closeDetail').addEventListener('click', closeDetail);
+  document.getElementById('closeDetail2').addEventListener('click', closeDetail);
+  modal.addEventListener('click', function (e) { if (e.target === modal) closeDetail(); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新增设备 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+  <div class="page-header">
+    <div style="display:flex;align-items:center;gap:12px">
+      <a href="pc_data_device_list.html" class="btn btn-default btn-sm"><i class="fa-solid fa-arrow-left"></i> 返回列表</a>
+      <h1 class="page-title" id="pageTitle">新增设备</h1>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <p id="formHint" style="font-size:12px;color:var(--text-3);margin:0 0 16px">设备归属当前检测单位；标 <span class="required">*</span> 为必填。</p>
+      <div class="form-section">
+        <div class="form-section-title">设备档案</div>
+        <div class="form-grid form-grid-3" id="deviceForm">
+          <div class="form-group">
+            <span class="form-label">设备编码<span class="required">*</span></span>
+            <input class="form-input" id="fCode" placeholder="本单位内唯一">
+          </div>
+          <div class="form-group">
+            <span class="form-label">设备名称<span class="required">*</span></span>
+            <input class="form-input" id="fName" placeholder="请输入设备名称">
+          </div>
+          <div class="form-group">
+            <span class="form-label">设备类型<span class="required">*</span></span>
+            <select class="form-select" id="fType" style="width:100%">
+              <option value="">请选择（基础数据-设备类型）</option>
+              <option>测量仪器</option>
+              <option>无损检测</option>
+              <option>力学试验</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <span class="form-label">规格型号</span>
+            <input class="form-input" id="fModel" placeholder="规格型号">
+          </div>
+          <div class="form-group">
+            <span class="form-label">生产厂家</span>
+            <input class="form-input" id="fMaker" placeholder="生产厂家">
+          </div>
+          <div class="form-group">
+            <span class="form-label">出厂编号</span>
+            <input class="form-input" id="fSn" placeholder="出厂编号">
+          </div>
+          <div class="form-group">
+            <span class="form-label">购置时间</span>
+            <input class="form-input" id="fBuyDate" type="date">
+          </div>
+          <div class="form-group">
+            <span class="form-label">检定周期</span>
+            <input class="form-input" id="fCycle" placeholder="如 12 个月">
+          </div>
+          <div class="form-group">
+            <span class="form-label">溯源方式</span>
+            <select class="form-select" id="fTrace" style="width:100%">
+              <option value="">请选择</option>
+              <option>检定</option>
+              <option>校准</option>
+              <option>自校</option>
+              <option>其他</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <span class="form-label">有效期</span>
+            <input class="form-input" id="fValid" type="date" title="证书或溯源有效期">
+          </div>
+          <div class="form-group full">
+            <span class="form-label">检定证书号</span>
+            <input class="form-input" id="fCert" style="width:100%" placeholder="检定/校准证书编号">
+          </div>
+        </div>
+      </div>
+      <div class="form-footer" id="formFooter">
+        <button type="button" class="btn btn-primary" id="btnSave">保存</button>
+        <button type="button" class="btn btn-default" onclick="location.href='pc_data_device_list.html'">取消</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>
+window.__layoutConfig = { active: 'data_device', breadcrumb: ['基础数据', '设备管理', '新增设备'] };
+
+(function () {
+  var MOCK = {
+    'SB-ZN-202601-0001': {
+      code: 'SB-ZN-202601-0001', name: '超声波测厚仪', type: '测量仪器', model: 'DM4E',
+      maker: '北京德光', sn: 'SN-DM4E-88921', buyDate: '2024-03-15', cycle: '12 个月',
+      trace: '检定', valid: '2027-03-14', cert: '浙计检字第 2026-00118 号'
+    },
+    'SB-ZN-202601-0002': {
+      code: 'SB-ZN-202601-0002', name: '全站仪', type: '测量仪器', model: 'TS06',
+      maker: '徕卡', sn: 'SN-TS06-102233', buyDate: '2023-08-01', cycle: '12 个月',
+      trace: '校准', valid: '2026-07-31', cert: '浙校字第 2025-00902 号'
+    }
+  };
+
+  var params = new URLSearchParams(location.search);
+  var code = params.get('code') || '';
+  var mode = params.get('mode') || (code ? 'edit' : 'create');
+  var data = MOCK[code];
+  var titleEl = document.getElementById('pageTitle');
+  var hint = document.getElementById('formHint');
+  var footer = document.getElementById('formFooter');
+
+  function setSelect(sel, val) {
+    if (!sel || !val) return;
+    for (var i = 0; i < sel.options.length; i++) {
+      if (sel.options[i].text === val || sel.options[i].value === val) {
+        sel.selectedIndex = i;
+        return;
+      }
+    }
+  }
+
+  function fillForm(d) {
+    if (!d) return;
+    document.getElementById('fCode').value = d.code;
+    document.getElementById('fName').value = d.name;
+    setSelect(document.getElementById('fType'), d.type);
+    document.getElementById('fModel').value = d.model;
+    document.getElementById('fMaker').value = d.maker;
+    document.getElementById('fSn').value = d.sn;
+    document.getElementById('fBuyDate').value = d.buyDate;
+    document.getElementById('fCycle').value = d.cycle;
+    setSelect(document.getElementById('fTrace'), d.trace);
+    document.getElementById('fValid').value = d.valid;
+    document.getElementById('fCert').value = d.cert;
+  }
+
+  if (data) fillForm(data);
+
+  if (mode === 'detail') {
+    if (titleEl) titleEl.textContent = '设备详情' + (code ? ' · ' + code : '');
+    if (hint) hint.style.display = 'none';
+    if (footer) footer.style.display = 'none';
+    document.getElementById('deviceForm').querySelectorAll('input, select').forEach(function (el) {
+      el.setAttribute('readonly', 'readonly');
+      el.setAttribute('disabled', el.tagName === 'SELECT');
+      el.style.background = '#F7F8FA';
+      el.style.pointerEvents = 'none';
+    });
+    window.__layoutConfig.breadcrumb = ['基础数据', '设备管理', '详情'];
+  } else if (mode === 'edit' && code) {
+    if (titleEl) titleEl.textContent = '编辑设备 · ' + code;
+    document.getElementById('fCode').setAttribute('readonly', 'readonly');
+    document.getElementById('fCode').style.background = '#F7F8FA';
+    window.__layoutConfig.breadcrumb = ['基础数据', '设备管理', '编辑'];
+  }
+
+  document.getElementById('btnSave').addEventListener('click', function () {
+    alert('已保存（原型）');
+    location.href = 'pc_data_device_list.html';
+  });
+})();
+</script>
+</body>
+</html>

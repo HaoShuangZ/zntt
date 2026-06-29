@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>派单确认 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+
+  <div class="page-header">
+    <div class="page-title">派单确认</div>
+    <a href="pc_order_dispatch.html" class="btn btn-default"><i class="fa-solid fa-arrow-left"></i> 返回修改</a>
+  </div>
+
+  <div class="card" style="max-width:800px">
+    <div class="card-header">
+      <div class="card-title">派单确认</div>
+    </div>
+    <div class="card-body">
+
+      <!-- 派单摘要 -->
+      <div style="background:var(--primary-bg);border-radius:6px;padding:20px;margin-bottom:24px;border:1px solid rgba(22,93,255,0.12)">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+          <i class="fa-solid fa-circle-info" style="color:var(--primary);font-size:16px"></i>
+          <span style="font-size:14px;font-weight:500;color:var(--text-1)">派单信息确认</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;font-size:13px">
+          <div>
+            <span style="color:var(--text-3)">已选订单：</span>
+            <span style="color:var(--primary);font-weight:600">2 </span>
+          </div>
+          <div>
+            <span style="color:var(--text-3)">检测人员：</span>
+            <span style="color:var(--text-1);font-weight:500">张华（检测三组）</span>
+          </div>
+          <div>
+            <span style="color:var(--text-3)">计划完成日期</span>
+            <span style="color:var(--text-1);font-weight:500">2026-05-20</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 已选订单明细 -->
+      <div style="margin-bottom:8px">
+        <label class="form-label" style="font-weight:500;margin-bottom:8px">订单明细</label>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width:130px">订单编号</th>
+              <th>订单名称</th>
+              <th>铁塔名称</th>
+              <th>检测类型</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>DD202605001</td>
+              <td>滨江基站安全性鉴定</td>
+              <td>滨江01#单管</td>
+              <td>安全性鉴定</td>
+            </tr>
+            <tr>
+              <td>DD202605004</td>
+              <td>余杭区铁塔安全检</td>
+              <td>余杭12#角钢</td>
+              <td>抗震鉴定</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+    <div class="form-footer">
+      <a href="pc_order_dispatch.html" class="btn btn-default"><i class="fa-solid fa-arrow-left"></i> 返回修改</a>
+      <button class="btn btn-primary"><i class="fa-solid fa-check"></i> 确认</button>
+    </div>
+  </div>
+
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'order_list', breadcrumb:['营销管理','订单管理','派单确认']};</script>
+</body>
+</html>
+
+

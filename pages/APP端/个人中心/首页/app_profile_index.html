@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>我的</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/app-frame.css">
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; background: #F2F3F5; margin: 0; }
+.menu-item { display:flex; align-items:center; padding:14px 16px; background:#fff; text-decoration:none; color:#1D2129; font-size:15px; }
+.menu-item:active { background:#F7F8FA; }
+.menu-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; margin-right:12px; font-size:14px; }
+.profile-top { background: linear-gradient(135deg, #165DFF 0%, #4080FF 100%); color: #fff; }
+.profile-top .status-row {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  padding: 0 8px 0 4px;
+}
+.profile-top .nav-back-icon {
+  color: #fff;
+  text-decoration: none;
+  font-size: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.profile-top .status-time { font-size: 14px; font-weight: 600; margin-left: 4px; }
+.profile-top .status-spacer { flex: 1; }
+.profile-top .status-icons { font-size: 12px; opacity: 0.92; }
+</style>
+<script src="../../../../assets/app-menu-access-log.js" defer></script>
+</head>
+<body>
+<div class="profile-top">
+  <div class="status-row">
+    <a class="nav-back-icon" href="../../工作台/首页/app_workbench_index.html" aria-label="返回工作台"><i class="fa-solid fa-chevron-left"></i></a>
+    <span class="status-time">9:41</span>
+    <span class="status-spacer" aria-hidden="true"></span>
+    <span class="status-icons"><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+  </div>
+  <div style="padding:24px 16px 32px; text-align:center;">
+  <a href="app_profile_index.html" aria-label="我的" style="width:72px; height:72px; border-radius:50%; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; margin:0 auto 12px; border:3px solid rgba(255,255,255,0.4); text-decoration:none; color:#fff; -webkit-tap-highlight-color:transparent;">
+    <i class="fa-solid fa-user" style="font-size:28px;"></i>
+  </a>
+  <div style="font-size:20px; font-weight:700; margin-bottom:4px;">李明</div>
+  <div style="font-size:14px; opacity:0.85;">检测一组 · 检测工程师</div>
+  </div>
+</div>
+
+<!-- Content area -->
+<div style="padding:0 16px 24px; margin-top:-16px;">
+
+  <!-- Group 1：订单 / 流程 -->
+  <div style="border-radius:12px; overflow:hidden; margin-bottom:12px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+    <a href="../app_profile_orders.html" class="menu-item" style="border-bottom:1px solid #F2F3F5;">
+      <div class="menu-icon" style="background:#E8F3FF;"><i class="fa-solid fa-file-invoice" style="color:#165DFF;"></i></div>
+      <span style="flex:1;">订单入口</span>
+      <i class="fa-solid fa-chevron-right" style="color:#C9CDD4; font-size:12px;"></i>
+    </a>
+    <a href="../app_profile_flow.html" class="menu-item">
+      <div class="menu-icon" style="background:#FFF3E8;"><i class="fa-solid fa-diagram-project" style="color:#FF7D00;"></i></div>
+      <span style="flex:1;">流程中心</span>
+      <i class="fa-solid fa-chevron-right" style="color:#C9CDD4; font-size:12px;"></i>
+    </a>
+  </div>
+
+  <!-- Group 2：个人信息 / 密码 / 操作记录 -->
+  <div style="border-radius:12px; overflow:hidden; margin-bottom:12px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+    <a href="../app_profile_personnel_detail.html" class="menu-item" style="border-bottom:1px solid #F2F3F5;">
+      <div class="menu-icon" style="background:#E8F3FF;"><i class="fa-solid fa-user-pen" style="color:#165DFF;"></i></div>
+      <span style="flex:1;">个人信息</span>
+      <i class="fa-solid fa-chevron-right" style="color:#C9CDD4; font-size:12px;"></i>
+    </a>
+    <a href="#" class="menu-item" style="border-bottom:1px solid #F2F3F5;">
+      <div class="menu-icon" style="background:#FFF3E8;"><i class="fa-solid fa-key" style="color:#FF7D00;"></i></div>
+      <span style="flex:1;">修改密码</span>
+      <i class="fa-solid fa-chevron-right" style="color:#C9CDD4; font-size:12px;"></i>
+    </a>
+    <a href="../app_profile_ops_log.html" class="menu-item">
+      <div class="menu-icon" style="background:#E8FFEA;"><i class="fa-solid fa-clock-rotate-left" style="color:#00B42A;"></i></div>
+      <span style="flex:1;">操作记录</span>
+      <i class="fa-solid fa-chevron-right" style="color:#C9CDD4; font-size:12px;"></i>
+    </a>
+  </div>
+
+  <!-- Group 3 -->
+  <div style="border-radius:12px; overflow:hidden; margin-bottom:12px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+    <a href="#" class="menu-item" style="border-bottom:1px solid #F2F3F5;">
+      <div class="menu-icon" style="background:#F2F3F5;"><i class="fa-solid fa-circle-info" style="color:#86909C;"></i></div>
+      <span style="flex:1;">关于系统</span>
+      <i class="fa-solid fa-chevron-right" style="color:#C9CDD4; font-size:12px;"></i>
+    </a>
+    <a href="../../账号/登录/app_login.html" class="menu-item">
+      <div class="menu-icon" style="background:#FFF1F0;"><i class="fa-solid fa-right-from-bracket" style="color:#F53F3F;"></i></div>
+      <span style="flex:1; color:#F53F3F;">退出登录</span>
+    </a>
+  </div>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  if (typeof __logMenuAccess === 'function') __logMenuAccess('我的');
+});
+</script>
+</body>
+</html>

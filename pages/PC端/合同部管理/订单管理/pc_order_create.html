@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新增订单 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .oc-modal-mask { position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:2000; display:none; align-items:center; justify-content:center; padding:20px; }
+  .oc-modal-mask.open { display:flex; }
+  .oc-modal-dialog { background:#fff; border-radius:8px; width:min(880px,96vw); max-height:90vh; overflow:auto; box-shadow:0 12px 48px rgba(0,0,0,.18); }
+  .oc-modal-head { padding:14px 18px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+  .oc-modal-head h3 { margin:0; font-size:16px; font-weight:600; color:var(--text-1); }
+  .oc-modal-close { border:none; background:transparent; cursor:pointer; color:var(--text-3); padding:4px 8px; font-size:16px; line-height:1; }
+  .oc-modal-body { padding:18px 20px; }
+  .oc-modal-foot { padding:12px 18px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:8px; }
+  .oc-tag { display:inline-flex; align-items:center; padding:2px 10px; border-radius:4px; font-size:12px; background:#E8F3FF; color:#165DFF; border:1px solid #BEDAFF; margin:4px 8px 0 0; }
+  .oc-hint { font-size:12px; color:var(--text-3); margin-top:6px; line-height:1.5; }
+</style>
+</head>
+<body>
+<div id="page-content">
+
+  <div class="page-header">
+    <div class="page-title">新增订单</div>
+    <a href="pc_order_list.html" class="btn btn-default"><i class="fa-solid fa-arrow-left"></i> 返回列表</a>
+  </div>
+
+  <!-- 基本信息 -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-header">
+      <div class="card-title">基本信息</div>
+    </div>
+    <div class="card-body">
+      <div class="form-grid form-grid-3">
+        <div class="form-group">
+          <label class="form-label">订单名称 <span class="required">*</span></label>
+          <input type="text" class="form-input" style="width:100%" placeholder="请输入订单名称">
+        </div>
+        <div class="form-group">
+          <label class="form-label">订单编码（系统自动生成）</label>
+          <input type="text" id="orderCode" class="form-input" style="width:100%;background:#F7F8FA" readonly placeholder="选择所属工程后自动生成">
+          <p class="oc-hint">规则：工程所在地址的拼音首字母缩写 + 系统日期（YYYYMMDD）+ 3 位流水号。示例：<code>ZJHC</code>（浙江杭州城）+ <code>20260508</code> + <code>001</code> → <strong>ZJHC20260508001</strong>。</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">截止日期 <span class="required">*</span></label>
+          <input type="date" id="deadlineDate" class="form-input" style="width:100%" value="2026-06-08">
+          <p class="oc-hint">须完成检测/闭环的最后日期；列表「是否过期」据此与系统当前日对比。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 关联信息 -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-header">
+      <div class="card-title">关联信息</div>
+    </div>
+    <div class="card-body">
+      <div class="form-grid">
+        <div class="form-group full">
+          <label class="form-label">所属工程 <span class="required">*</span></label>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <input type="text" id="projectDisplay" class="form-input" style="flex:1;min-width:240px;background:#F7F8FA" readonly placeholder="请点击「选择工程」关联">
+            <button type="button" class="btn btn-primary" id="btnPickProject"><i class="fa-solid fa-magnifying-glass"></i> 选择工程</button>
+            <button type="button" class="btn btn-default" id="btnClearProject" style="display:none">清除</button>
+          </div>
+          <p class="oc-hint">数据来源于检测单位对下合同所关联对上合同下的工程列表。选定工程后自动带出关联合同与客户简称。</p>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">关联合同 <span class="required">*</span></label>
+          <input type="text" id="orderContractShow" class="form-input" style="width:100%;background:#F7F8FA" readonly placeholder="请先选择所属工程，系统将自动带出对下合同">
+          <p class="oc-hint">只读回显，与检测委托（对下）合同一致；须通过选择工程带出，便于审核与报告归档对齐。</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">客户简称</label>
+          <input type="text" id="customerShort" class="form-input" style="width:100%;background:#F7F8FA" readonly placeholder="选择工程后自动带出">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 检测任务（合并站点信息 + 检测要求） -->
+  <div class="card">
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+      <div class="card-title">检测任务</div>
+      <button type="button" class="btn btn-primary btn-sm" id="btnAddTaskRow"><i class="fa-solid fa-plus"></i> 新增</button>
+    </div>
+    <div class="card-body">
+      <p class="oc-hint" style="margin-top:0">一个订单可维护多个站点检测任务；每行配置站点与检测参数。检测任务中仅「站点名称」为必填，站址编码及其他字段选填。</p>
+      <div style="overflow:auto">
+        <table class="data-table" style="min-width:1560px">
+          <thead>
+            <tr>
+              <th style="width:56px">操作</th>
+              <th>站址编码</th>
+              <th>站点名称 <span class="required">*</span></th>
+              <th style="width:120px">所属省</th>
+              <th style="width:120px">所属市</th>
+              <th style="width:130px">经度</th>
+              <th style="width:130px">纬度</th>
+              <th style="width:150px">检测类型</th>
+              <th style="width:180px">检测规范组</th>
+              <th>检测规范列表</th>
+            </tr>
+          </thead>
+          <tbody id="taskListBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="form-footer">
+      <a href="pc_order_list.html" class="btn btn-default">取消</a>
+      <button type="button" class="btn btn-primary" id="btnSave"><i class="fa-solid fa-check"></i> 保存</button>
+    </div>
+  </div>
+
+  <!-- 须在 #page-content 内：initLayout 仅保留此处 innerHTML，外侧节点会被丢弃 -->
+  <div class="oc-modal-mask" id="projectModal" aria-hidden="true">
+    <div class="oc-modal-dialog" role="dialog" aria-labelledby="projectModalTitle">
+      <div class="oc-modal-head">
+        <h3 id="projectModalTitle">选择关联工程</h3>
+        <button type="button" class="oc-modal-close" id="projectModalClose" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="oc-modal-body">
+        <div style="margin-bottom:14px">
+          <input type="text" id="projectSearch" class="form-input" style="width:100%;max-width:360px" placeholder="按工程名称 / 站址编码 / 站点名称 / 客户搜索">
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>工程名称</th>
+              <th>工程地址（用于生成编码前缀）</th>
+              <th>客户简称</th>
+              <th>站址编码</th>
+              <th>站点名称</th>
+              <th style="width:100px">操作</th>
+            </tr>
+          </thead>
+          <tbody id="projectTableBody"></tbody>
+        </table>
+      </div>
+      <div class="oc-modal-foot">
+        <button type="button" class="btn btn-default" id="projectModalCancel">取消</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'order_list', breadcrumb:['营销管理','订单管理','新增订单']};</script>
+<script>
+/* initLayout 会重建 DOM，须在 DOMContentLoaded 之后绑定（且弹窗须在 #page-content 内） */
+window.addEventListener('DOMContentLoaded', function () {
+  var projects = [
+    { name: '杭州移动铁塔工程', addr: '浙江省杭州市滨江区江南大道001号', codePrefix: 'zjhbj', customerShort: '杭移', siteAddrCode: 'ZZ-HZ-BJ01', siteName: '滨江江南大道站', contractLine: 'HT2026-0512 · 杭州移动 2026 年度铁塔检测框架' },
+    { name: '城西区域改造项目', addr: '浙江省杭州市西湖区文三路168号', codePrefix: 'zjhc', customerShort: '城西移动', siteAddrCode: 'ZZ-HZ-CX03', siteName: '城西03#角钢塔站', contractLine: 'HT2026-0428 · 城西改造专项检测分包' },
+    { name: '拱墅区域项目', addr: '浙江省杭州市拱墅区大关路88号', codePrefix: 'zjhgs', customerShort: '拱墅联通', siteAddrCode: 'ZZ-HZ-GS05', siteName: '拱墅大关路站', contractLine: 'HT2026-0512 · 杭州移动 2026 年度铁塔检测框架' },
+    { name: '余杭5G升级项目', addr: '浙江省杭州市余杭区五常大道200号', codePrefix: 'zjhyh', customerShort: '余杭电信', siteAddrCode: 'ZZ-YH-12', siteName: '余杭五常站', contractLine: 'HT2026-0512 · 杭州移动 2026 年度铁塔检测框架' }
+  ];
+
+  var stdGroupMap = {
+    g1: ['GB/T 51338-2018', 'YD/T 5132-2019', 'GB 50135-2019'],
+    g2: ['GB/T 51338-2018', 'YD/T 5131-2020', 'JGJ 82-2011'],
+    g3: ['GB/T 51338-2018', 'GB 50011-2010(2016版)', 'YD/T 5132-2019']
+  };
+
+  var manualStandards = ['GB/T 51338-2018', 'YD/T 5132-2019', 'GB 50135-2019', 'YD/T 5131-2020', 'JGJ 82-2011', 'GB 50011-2010(2016版)'];
+  var inspectTypeOptions = [
+    { value: 'aq', label: '安全性鉴定' },
+    { value: 'kk', label: '可靠性鉴定' },
+    { value: 'kz', label: '抗震鉴定' },
+    { value: 'nd', label: '年度例行检测' },
+    { value: 'zx', label: '专项检测' }
+  ];
+
+  var selectedProject = null;
+  var seq = '001';
+
+  function padDate(d) {
+    var y = d.getFullYear();
+    var m = String(d.getMonth() + 1).padStart(2, '0');
+    var day = String(d.getDate()).padStart(2, '0');
+    return y + m + day;
+  }
+
+  function refreshOrderCode() {
+    var el = document.getElementById('orderCode');
+    if (!el) return;
+    if (!selectedProject) {
+      el.value = '';
+      el.placeholder = '选择所属工程后自动生成';
+      return;
+    }
+    var d = new Date();
+    el.value = (selectedProject.codePrefix + padDate(d) + seq).toUpperCase();
+  }
+
+  function buildInspectTypeOptions() {
+    return inspectTypeOptions.map(function (it) {
+      return '<option value="' + it.value + '">' + it.label + '</option>';
+    }).join('');
+  }
+  function buildStdGroupOptions() {
+    return '<option value="">不选择规范组（可手填规范列表）</option>' +
+      '<option value="g1">存量铁塔-单管类附表套件</option>' +
+      '<option value="g2">存量铁塔-角钢格构附表套件</option>' +
+      '<option value="g3">通用安全性鉴定规范组 A</option>';
+  }
+  function createTaskRow(data) {
+    var d = data || {};
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td><button type="button" class="btn-text js-del-task" style="color:var(--danger)">删除</button></td>' +
+      '<td><input type="text" class="form-input js-site-code" style="width:180px" placeholder="请输入站址编码" value="' + (d.siteCode || '') + '"></td>' +
+      '<td><input type="text" class="form-input js-site-name" style="width:160px" placeholder="请输入站点名称" value="' + (d.siteName || '') + '"></td>' +
+      '<td><select class="form-select js-province" style="width:110px"><option value="">请选择</option><option value="浙江省">浙江省</option><option value="江苏省">江苏省</option><option value="上海市">上海市</option></select></td>' +
+      '<td><select class="form-select js-city" style="width:110px"><option value="">请选择</option><option value="杭州市">杭州市</option><option value="宁波市">宁波市</option><option value="嘉兴市">嘉兴市</option></select></td>' +
+      '<td><input type="text" class="form-input js-lng" style="width:120px" placeholder="例 120.153576" value="' + (d.lng || '') + '"></td>' +
+      '<td><input type="text" class="form-input js-lat" style="width:120px" placeholder="例 30.287459" value="' + (d.lat || '') + '"></td>' +
+      '<td><select class="form-select js-inspect-type" style="width:140px"><option value="">请选择</option>' + buildInspectTypeOptions() + '</select></td>' +
+      '<td><select class="form-select js-std-group" style="width:170px">' + buildStdGroupOptions() + '</select></td>' +
+      '<td><input type="text" class="form-input js-std-list" style="width:340px" placeholder="可手填，或由规范组自动带出（逗号分隔）" value="' + (d.stdList || '') + '"></td>';
+    tr.querySelector('.js-del-task').addEventListener('click', function () {
+      var body = document.getElementById('taskListBody');
+      if (body && body.querySelectorAll('tr').length <= 1) {
+        alert('至少保留一条检测任务');
+        return;
+      }
+      tr.remove();
+    });
+    var groupSel = tr.querySelector('.js-std-group');
+    var listInput = tr.querySelector('.js-std-list');
+    groupSel.addEventListener('change', function () {
+      var groupKey = groupSel.value;
+      if (!groupKey) return;
+      var list = stdGroupMap[groupKey] || manualStandards;
+      listInput.value = list.join('，');
+    });
+    if (d.province) tr.querySelector('.js-province').value = d.province;
+    if (d.city) tr.querySelector('.js-city').value = d.city;
+    if (d.inspectType) tr.querySelector('.js-inspect-type').value = d.inspectType;
+    if (d.stdGroup) tr.querySelector('.js-std-group').value = d.stdGroup;
+    return tr;
+  }
+  function addTaskRow(data) {
+    var body = document.getElementById('taskListBody');
+    if (!body) return;
+    body.appendChild(createTaskRow(data));
+  }
+
+  function validateTaskSiteNames() {
+    var rows = document.querySelectorAll('#taskListBody tr');
+    if (!rows.length) {
+      alert('请至少添加一条检测任务');
+      return false;
+    }
+    for (var i = 0; i < rows.length; i++) {
+      var input = rows[i].querySelector('.js-site-name');
+      var val = (input && input.value || '').trim();
+      if (!val) {
+        alert('第 ' + (i + 1) + ' 行检测任务的「站点名称」为必填，请填写');
+        if (input) input.focus();
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function openModal() {
+    document.getElementById('projectModal').classList.add('open');
+    document.getElementById('projectModal').setAttribute('aria-hidden', 'false');
+    filterProjects(document.getElementById('projectSearch').value);
+  }
+  function closeModal() {
+    document.getElementById('projectModal').classList.remove('open');
+    document.getElementById('projectModal').setAttribute('aria-hidden', 'true');
+  }
+
+  function filterProjects(q) {
+    q = (q || '').trim().toLowerCase();
+    var tbody = document.getElementById('projectTableBody');
+    tbody.innerHTML = '';
+    projects.filter(function (p) {
+      if (!q) return true;
+      return (p.name + p.addr + p.customerShort + (p.siteAddrCode || '') + (p.siteName || '')).toLowerCase().indexOf(q) >= 0;
+    }).forEach(function (p) {
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td>' + p.name + '</td>' +
+        '<td>' + p.addr + '</td>' +
+        '<td>' + p.customerShort + '</td>' +
+        '<td>' + (p.siteAddrCode || '—') + '</td>' +
+        '<td>' + (p.siteName || '—') + '</td>' +
+        '<td><button type="button" class="btn btn-primary btn-sm oc-pick">选择</button></td>';
+      tr.querySelector('.oc-pick').addEventListener('click', function () {
+        selectedProject = p;
+        document.getElementById('projectDisplay').value = p.name;
+        document.getElementById('customerShort').value = p.customerShort;
+        document.getElementById('orderContractShow').value = p.contractLine || '';
+        var firstTaskCode = document.querySelector('#taskListBody .js-site-code');
+        if (firstTaskCode && !firstTaskCode.value) firstTaskCode.value = p.siteAddrCode || '';
+        var firstSiteName = document.querySelector('#taskListBody .js-site-name');
+        if (firstSiteName && !firstSiteName.value && p.siteName) firstSiteName.value = p.siteName;
+        document.getElementById('btnClearProject').style.display = '';
+        refreshOrderCode();
+        closeModal();
+      });
+      tbody.appendChild(tr);
+    });
+  }
+
+  var btnPick = document.getElementById('btnPickProject');
+  if (!btnPick) return;
+
+  btnPick.addEventListener('click', openModal);
+  document.getElementById('projectModalClose').addEventListener('click', closeModal);
+  document.getElementById('projectModalCancel').addEventListener('click', closeModal);
+  document.getElementById('projectModal').addEventListener('click', function (e) {
+    if (e.target === this) closeModal();
+  });
+  document.getElementById('btnClearProject').addEventListener('click', function () {
+    selectedProject = null;
+    document.getElementById('projectDisplay').value = '';
+    document.getElementById('customerShort').value = '';
+    document.getElementById('orderContractShow').value = '';
+    this.style.display = 'none';
+    refreshOrderCode();
+  });
+  document.getElementById('btnAddTaskRow').addEventListener('click', function () {
+    addTaskRow();
+  });
+
+  document.getElementById('btnSave').addEventListener('click', function () {
+    if (!selectedProject) {
+      alert('请选择所属工程');
+      return;
+    }
+    var contractVal = (document.getElementById('orderContractShow').value || '').trim();
+    if (!contractVal) {
+      alert('关联合同不能为空，请重新选择所属工程');
+      return;
+    }
+    if (!validateTaskSiteNames()) return;
+    alert('订单已保存（原型）');
+  });
+
+  document.getElementById('projectSearch').addEventListener('input', function () {
+    if (document.getElementById('projectModal').classList.contains('open')) filterProjects(this.value);
+  });
+
+  addTaskRow({
+    siteCode: '',
+    province: '浙江省',
+    city: '杭州市',
+    lng: '',
+    lat: '',
+    inspectType: 'aq',
+    stdGroup: 'g1',
+    stdList: stdGroupMap.g1.join('，')
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<!-- iPad-SYNC_INDEX v2.1 landscape -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>数据同步</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/app-frame.css">
+<link rel="stylesheet" href="../../../../assets/app-embed.css">
+<link rel="stylesheet" href="../../../../assets/app-inspect-layout.css">
+<link rel="stylesheet" href="../../../../assets/ipad-tokens.css">
+<link rel="stylesheet" href="../../../../assets/ipad-frame.css">
+<link rel="stylesheet" href="../../../../assets/ipad-layout.css">
+<link rel="stylesheet" href="../../../../assets/ipad-visual.css">
+<link rel="stylesheet" href="../../../../assets/ipad-inspect-layout.css">
+<link rel="stylesheet" href="../../../../assets/ipad-inspect-basic.css">
+<link rel="stylesheet" href="../../../../assets/ipad-embed.css">
+<script src="../../../../assets/ipad-adapt.js" defer></script>
+<script src="../../../../assets/app-embed.js" defer></script>
+<script src="../../../../assets/app-inspect-back.js" defer></script>
+</head>
+<body class="inspect-app-layout ipad-adapt ipad-sync-page" data-inspect-no-memo-toolbar="1" data-inspect-no-photo-recognize="1">
+<div id="appStatusBar">
+  <span>9:41</span>
+  <span><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+</div>
+<div id="appNavBar">
+  <a href="../../检测/总览/ipad_inspect_index.html" data-app-inspect-back style="color:#165DFF; text-decoration:none; font-size:14px;"><i class="fa-solid fa-chevron-left"></i> 返回</a>
+  <span style="flex:1; text-align:center; font-size:16px; font-weight:600;">数据同步</span>
+  <span style="width:40px;"></span>
+</div>
+
+<div id="appEmbedContent" class="sync-page-stack">
+
+  <header class="sync-dash" aria-label="同步概览">
+    <section class="basic-card sync-net-card" aria-label="网络状态">
+      <div class="sync-net-left">
+        <span class="sync-net-icon" aria-hidden="true"><i class="fa-solid fa-wifi"></i></span>
+        <div class="sync-net-text">
+          <span class="sync-net-title">网络状态</span>
+          <span class="sync-net-hint">当前可上传检测数据</span>
+        </div>
+      </div>
+      <span class="sync-badge sync-badge--online"><i class="fa-solid fa-circle" aria-hidden="true"></i>在线</span>
+    </section>
+
+    <div class="sync-stats-row" role="group" aria-label="同步统计">
+      <div class="sync-stat-card">
+        <div class="sync-stat-num sync-stat-num--pending">2</div>
+        <div class="sync-stat-label">待同步</div>
+      </div>
+      <div class="sync-stat-card">
+        <div class="sync-stat-num sync-stat-num--done">1</div>
+        <div class="sync-stat-label">已同步</div>
+      </div>
+      <div class="sync-stat-card">
+        <div class="sync-stat-num sync-stat-num--total">7.5</div>
+        <div class="sync-stat-label">总计 MB</div>
+      </div>
+    </div>
+  </header>
+
+  <section class="sync-panel-list" aria-labelledby="syncListTitle">
+    <div class="sync-list-head">
+      <h2 class="sync-list-title" id="syncListTitle">同步列表</h2>
+      <span class="sync-list-count">共 3 条</span>
+    </div>
+
+  <ul class="sync-list sync-card-grid">
+    <li class="sync-card sync-card--pending">
+      <span class="sync-card-icon" aria-hidden="true"><i class="fa-solid fa-tower-broadcast"></i></span>
+      <div class="sync-card-body">
+        <div class="sync-card-head">
+          <span class="sync-card-name">滨江01#单管塔</span>
+          <span class="sync-badge sync-badge--pending">待同步</span>
+        </div>
+        <div class="sync-card-meta">
+          <span class="sync-card-size"><i class="fa-solid fa-database" aria-hidden="true"></i>2.5 MB</span>
+          <span class="sync-card-time">最后编辑 · 2026-05-08 09:30</span>
+        </div>
+      </div>
+    </li>
+    <li class="sync-card sync-card--pending">
+      <span class="sync-card-icon" aria-hidden="true"><i class="fa-solid fa-tower-broadcast"></i></span>
+      <div class="sync-card-body">
+        <div class="sync-card-head">
+          <span class="sync-card-name">城西03#角钢塔</span>
+          <span class="sync-badge sync-badge--pending">待同步</span>
+        </div>
+        <div class="sync-card-meta">
+          <span class="sync-card-size"><i class="fa-solid fa-database" aria-hidden="true"></i>1.8 MB</span>
+          <span class="sync-card-time">最后编辑 · 2026-05-07 16:20</span>
+        </div>
+      </div>
+    </li>
+    <li class="sync-card sync-card--done">
+      <span class="sync-card-icon sync-card-icon--done" aria-hidden="true"><i class="fa-solid fa-circle-check"></i></span>
+      <div class="sync-card-body">
+        <div class="sync-card-head">
+          <span class="sync-card-name">拱墅05#三管塔</span>
+          <span class="sync-badge sync-badge--done">已同步</span>
+        </div>
+        <div class="sync-card-meta">
+          <span class="sync-card-size"><i class="fa-solid fa-database" aria-hidden="true"></i>3.2 MB</span>
+          <span class="sync-card-time">同步时间 · 2026-05-07 18:00</span>
+        </div>
+      </div>
+    </li>
+  </ul>
+  </section>
+
+  <section class="basic-card sync-progress-card" hidden aria-label="同步进度">
+    <div class="sync-progress-head">
+      <span>同步中...</span>
+      <span class="sync-progress-pct">45%</span>
+    </div>
+    <div class="sync-progress-bar" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100">
+      <div class="sync-progress-fill" style="width:45%;"></div>
+    </div>
+  </section>
+
+</div>
+
+<div class="ipad-flow-footer sync-flow-footer" data-app-flow-footer aria-hidden="true">
+  <p class="sync-footer-hint"><i class="fa-solid fa-circle-info" aria-hidden="true"></i>仅同步本账号待上传的离线填报包</p>
+  <button type="button" class="btn-sync-all" id="btnSyncAll" tabindex="-1">
+    <i class="fa-solid fa-cloud-arrow-up" aria-hidden="true"></i>一键同步
+  </button>
+</div>
+
+<script>
+(function () {
+  var btn = document.getElementById('btnSyncAll');
+  if (!btn) return;
+  btn.addEventListener('click', function () {
+    alert('开始同步待上传数据（原型演示）。');
+  });
+  try {
+    if (new URLSearchParams(location.search).get('embed') === '1') return;
+  } catch (e) {}
+  var footer = document.querySelector('.sync-flow-footer');
+  if (footer) footer.removeAttribute('aria-hidden');
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<!-- iPad-INSPECT_GROUND v2.0 landscape -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>接地电阻</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/app-frame.css">
+<link rel="stylesheet" href="../../../../assets/app-embed.css">
+<link rel="stylesheet" href="../../../../assets/app-inspect-layout.css">
+<link rel="stylesheet" href="../../../../assets/ipad-tokens.css">
+<link rel="stylesheet" href="../../../../assets/ipad-frame.css">
+<link rel="stylesheet" href="../../../../assets/ipad-layout.css">
+<link rel="stylesheet" href="../../../../assets/ipad-visual.css">
+<link rel="stylesheet" href="../../../../assets/ipad-inspect-layout.css">
+<link rel="stylesheet" href="../../../../assets/ipad-embed.css">
+<script src="../../../../assets/ipad-adapt.js" defer></script>
+<script src="../../../../assets/app-embed.js" defer></script>
+<script src="../../../../assets/app-inspect-back.js" defer></script>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; background: #F2F3F5; margin: 0; }
+.form-label { font-size:13px; color:#86909C; margin-bottom:6px; display:block; }
+.form-input { width:100%; height:44px; border:1px solid #E5E6EB; border-radius:12px; padding:0 14px; font-size:15px; outline:none; box-sizing:border-box; background:#fff; }
+</style>
+</head>
+<body class="inspect-app-layout inspect-embed-pad-116 ipad-adapt">
+<!-- Status bar -->
+<div id="appStatusBar">
+  <span>9:41</span>
+  <span><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+</div>
+<!-- Navigation bar -->
+<div id="appNavBar">
+  <a href="../../任务/填报主页/ipad_task_inspect_home.html" data-app-inspect-back style="color:#165DFF; text-decoration:none; font-size:14px;"><i class="fa-solid fa-chevron-left"></i> 返回</a>
+  <span style="flex:1; text-align:center; font-size:16px; font-weight:600;">接地电阻</span>
+  <span style="width:40px;"></span>
+</div>
+
+<!-- Content area -->
+<div id="appEmbedContent">
+
+  <!-- 测试信息 -->
+  <div style="background:#fff; border-radius:12px; padding:16px; margin-bottom:12px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+    <div style="font-size:15px; font-weight:600; color:#1D2129; margin-bottom:14px;">测试信息</div>
+    <div style="margin-bottom:14px;">
+      <label class="form-label">测试仪器</label>
+      <select class="form-input" style="appearance:auto;">
+        <option selected>ZC-8型接地电阻测试仪</option>
+        <option>ETCR2000型钳形接地电阻测试仪</option>
+        <option>MI2124型接地电阻测试仪</option>
+      </select>
+    </div>
+    <div style="margin-bottom:14px;">
+      <label class="form-label">测试日期</label>
+      <input type="date" class="form-input" value="2026-05-08">
+    </div>
+    <div>
+      <label class="form-label">天气</label>
+      <select class="form-input" style="appearance:auto;">
+        <option selected>晴</option>
+        <option>阴</option>
+        <option>雨</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- 测点1 -->
+  <div style="background:#fff; border-radius:12px; padding:16px; margin-bottom:12px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <span style="font-size:15px; font-weight:600; color:#1D2129;">测点 1</span>
+      <span style="padding:2px 8px; border-radius:4px; background:#E8FFEA; color:#00B42A; font-size:12px;">合格</span>
+    </div>
+    <div style="margin-bottom:14px;">
+      <label class="form-label">测点位置</label>
+      <input type="text" class="form-input" value="东北角接地极" placeholder="请输入测点位置">
+    </div>
+    <div style="display:flex; gap:12px;">
+      <div style="flex:1;">
+        <label class="form-label">电阻值（Ω）</label>
+        <input type="number" class="form-input" value="2.8">
+      </div>
+      <div style="flex:1;">
+        <label class="form-label">合格标准</label>
+        <div style="height:44px; background:#F7F8FA; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:14px; color:#86909C;">≤4Ω</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 测点2 -->
+  <div style="background:#fff; border-radius:12px; padding:16px; margin-bottom:12px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <span style="font-size:15px; font-weight:600; color:#1D2129;">测点 2</span>
+      <span style="padding:2px 8px; border-radius:4px; background:#E8FFEA; color:#00B42A; font-size:12px;">合格</span>
+    </div>
+    <div style="margin-bottom:14px;">
+      <label class="form-label">测点位置</label>
+      <input type="text" class="form-input" value="西南角接地极" placeholder="请输入测点位置">
+    </div>
+    <div style="display:flex; gap:12px;">
+      <div style="flex:1;">
+        <label class="form-label">电阻值（Ω）</label>
+        <input type="number" class="form-input" value="3.2">
+      </div>
+      <div style="flex:1;">
+        <label class="form-label">合格标准</label>
+        <div style="height:44px; background:#F7F8FA; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:14px; color:#86909C;">≤4Ω</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 测点3 -->
+  <div style="background:#fff; border-radius:12px; padding:16px; margin-bottom:12px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <span style="font-size:15px; font-weight:600; color:#1D2129;">测点 3</span>
+      <span style="padding:2px 8px; border-radius:4px; background:#FFF1F0; color:#F53F3F; font-size:12px;">不合格</span>
+    </div>
+    <div style="margin-bottom:14px;">
+      <label class="form-label">测点位置</label>
+      <input type="text" class="form-input" value="塔基接地极" placeholder="请输入测点位置">
+    </div>
+    <div style="display:flex; gap:12px;">
+      <div style="flex:1;">
+        <label class="form-label">电阻值（Ω）</label>
+        <input type="number" class="form-input" value="5.1" style="border-color:#F53F3F;">
+      </div>
+      <div style="flex:1;">
+        <label class="form-label">合格标准</label>
+        <div style="height:44px; background:#F7F8FA; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:14px; color:#86909C;">≤4Ω</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Bottom button -->
+<div class="ipad-flow-footer" data-app-flow-footer style="position:fixed; bottom:0; left:0; right:0; padding:12px 16px; background:#fff; border-top:1px solid #E5E6EB;">
+  <a href="../../检测/垂直度/ipad_inspect_vertical.html" style="display:block; width:100%; height:44px; background:#165DFF; color:#fff; border-radius:8px; font-size:16px; font-weight:600; text-decoration:none; text-align:center; line-height:44px; box-sizing:border-box;">下一步</a>
+</div>
+</body>
+</html>

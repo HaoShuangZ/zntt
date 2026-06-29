@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>设备管理 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">设备管理</div>
+    </div>
+    <div class="card-body">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <select class="form-select" id="filterDataScope" title="按数据权限/检测单位范围筛选列表" style="min-width:220px">
+            <option value="self" selected>数据权限：本单位（浙江中能工程检测有限公司）</option>
+            <option value="all">数据权限：全部检测单位（平台管理员）</option>
+            <option value="org-hc">数据权限：杭州华测结构检测中心</option>
+            <option value="org-zn">数据权限：浙江中能工程检测有限公司</option>
+          </select>
+          <input type="text" class="form-input" id="filterDeviceKeyword" placeholder="设备编码/名称">
+          <select class="form-select" id="filterDeviceType">
+            <option value="">全部设备类型</option>
+            <option>测量仪器</option>
+            <option>无损检测</option>
+            <option>力学试验</option>
+          </select>
+          <button type="button" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> 查询</button>
+          <button type="button" class="btn btn-default" id="btnDeviceFilterReset">重置</button>
+        </div>
+      </div>
+
+      <div class="pc-table-actions">
+        <button type="button" class="btn btn-primary" onclick="location.href='pc_data_device_create.html'"><i class="fa-solid fa-plus"></i> 新增设备</button>
+          <button type="button" class="btn btn-default"><i class="fa-solid fa-file-export"></i> 导出</button>
+      </div>
+
+      <div style="overflow-x:auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>设备编码</th>
+              <th>设备名称</th>
+              <th>设备类型</th>
+              <th>规格型号</th>
+              <th>生产厂家</th>
+              <th>出厂编号</th>
+              <th>购置时间</th>
+              <th>检定周期</th>
+              <th>溯源方式</th>
+              <th>有效期</th>
+              <th>检定证书号</th>
+              <th class="col-action" style="width:180px">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-code="SB-ZN-202601-0001" data-name="超声波测厚仪">
+              <td>SB-ZN-202601-0001</td>
+              <td>超声波测厚仪</td>
+              <td>测量仪器</td>
+              <td>DM4E</td>
+              <td>北京德光</td>
+              <td>SN-DM4E-88921</td>
+              <td>2024-03-15</td>
+              <td>12 个月</td>
+              <td>检定</td>
+              <td>2027-03-14</td>
+              <td>浙计检字第 2026-00118 号</td>
+              <td class="col-action">
+                <a href="pc_data_device_create.html?code=SB-ZN-202601-0001&mode=detail" class="btn btn-text">详情</a>
+                <a href="pc_data_device_create.html?code=SB-ZN-202601-0001&mode=edit" class="btn btn-text">编辑</a>
+                <button type="button" class="btn btn-text btn-dev-delete" style="color:var(--danger)">删除</button>
+              </td>
+            </tr>
+            <tr data-code="SB-ZN-202601-0002" data-name="全站仪">
+              <td>SB-ZN-202601-0002</td>
+              <td>全站仪</td>
+              <td>测量仪器</td>
+              <td>TS06</td>
+              <td>徕卡</td>
+              <td>SN-TS06-102233</td>
+              <td>2023-08-01</td>
+              <td>12 个月</td>
+              <td>校准</td>
+              <td>2026-07-31</td>
+              <td>浙校字第 2025-00902 号</td>
+              <td class="col-action">
+                <a href="pc_data_device_create.html?code=SB-ZN-202601-0002&mode=detail" class="btn btn-text">详情</a>
+                <a href="pc_data_device_create.html?code=SB-ZN-202601-0002&mode=edit" class="btn btn-text">编辑</a>
+                <button type="button" class="btn btn-text btn-dev-delete" style="color:var(--danger)">删除</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination">
+        <span>共 2 条记录</span>
+        <div class="pagination-btns">
+          <button type="button" class="page-btn active">1</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = { active: 'data_device', breadcrumb: ['基础数据', '设备管理'] };</script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+  var btn = document.getElementById('btnDeviceFilterReset');
+  if (!btn) return;
+  btn.addEventListener('click', function () {
+    var sc = document.getElementById('filterDataScope');
+    if (sc) sc.value = 'self';
+    var kw = document.getElementById('filterDeviceKeyword');
+    if (kw) kw.value = '';
+    var ty = document.getElementById('filterDeviceType');
+    if (ty) ty.value = '';
+  });
+  document.querySelector('tbody').addEventListener('click', function (e) {
+    var btnDel = e.target.closest('.btn-dev-delete');
+    if (!btnDel) return;
+    var row = btnDel.closest('tr[data-code]');
+    if (!row) return;
+    var label = (row.dataset.name || '') + '（' + (row.dataset.code || '') + '）';
+    if (confirm('确定要删除「' + label + '」吗？删除后不可恢复。')) {
+      alert('已删除（原型）');
+    }
+  });
+});
+</script>
+</body>
+</html>

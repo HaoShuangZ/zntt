@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>铁塔信息</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .upload-box {
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    color: var(--text-3);
+    background: #fafbfc;
+  }
+  .upload-box i {
+    font-size: 20px;
+    margin-bottom: 8px;
+    color: var(--primary);
+  }
+  .modal-mask {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 24px;
+  }
+  .modal-mask.open { display: flex; }
+  .modal-dialog {
+    width: min(1180px, 96vw);
+    max-height: 90vh;
+    overflow: auto;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.2);
+  }
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .modal-close {
+    border: none;
+    background: transparent;
+    color: var(--text-3);
+    font-size: 18px;
+    cursor: pointer;
+  }
+  .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-1);
+    padding-left: 10px;
+    border-left: 3px solid var(--primary);
+    margin-bottom: 14px;
+  }
+  .section-block + .section-block {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--border);
+  }
+</style>
+</head>
+<body>
+<div id="page-content">
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">铁塔信息</div>
+    </div>
+    <div class="card-body">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <input type="text" class="form-input" placeholder="搜索铁塔编号/名称">
+          <select class="form-select">
+            <option value="">全部塔型</option>
+            <option>单管塔</option>
+            <option>角钢塔</option>
+            <option>三管塔</option>
+            <option>四管塔</option>
+          </select>
+          <select class="form-select">
+            <option value="">全部站点</option>
+            <option>滨江基站</option>
+            <option>西湖基站</option>
+            <option>余杭基站</option>
+            <option>萧山基站</option>
+            <option>拱墅基站</option>
+          </select>
+          <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> 查询</button>
+          <button class="btn btn-default">重置</button>
+        </div>
+      </div>
+
+      <div class="pc-table-actions">
+        <button class="btn btn-primary" id="open-create-tower-modal"><i class="fa-solid fa-plus"></i> 新增铁塔</button>
+          <button class="btn btn-default"><i class="fa-solid fa-file-excel"></i> Excel导入</button>
+          <button class="btn btn-default"><i class="fa-solid fa-file-export"></i> 导出</button>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>铁塔编号</th>
+            <th>铁塔名称</th>
+            <th>塔型</th>
+            <th>塔高(m)</th>
+            <th>塔段</th>
+            <th>所属站</th>
+            <th>所属工程</th>
+            <th>所属客户</th>
+            <th>状态</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>TT-BJ-001</td>
+            <td>滨江01#单管</td>
+            <td><span class="tag tag-blue">单管</span></td>
+            <td>45.0</td>
+            <td>5</td>
+            <td>滨江基站</td>
+            <td>杭州移动铁塔工程</td>
+            <td>杭州移动</td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">编辑</button>
+              <button class="btn btn-text">查看</button>
+              <button class="btn btn-text">关联任务</button>
+            </td>
+          </tr>
+          <tr>
+            <td>TT-BJ-002</td>
+            <td>滨江02#角钢</td>
+            <td><span class="tag tag-green">角钢</span></td>
+            <td>50.0</td>
+            <td>6</td>
+            <td>滨江基站</td>
+            <td>杭州移动铁塔工程</td>
+            <td>杭州移动</td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">编辑</button>
+              <button class="btn btn-text">查看</button>
+              <button class="btn btn-text">关联任务</button>
+            </td>
+          </tr>
+          <tr>
+            <td>TT-XH-001</td>
+            <td>西湖01#三管</td>
+            <td><span class="tag tag-orange">三管</span></td>
+            <td>40.0</td>
+            <td>4</td>
+            <td>西湖基站</td>
+            <td>杭州联通铁塔工程</td>
+            <td>杭州联通</td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">编辑</button>
+              <button class="btn btn-text">查看</button>
+              <button class="btn btn-text">关联任务</button>
+            </td>
+          </tr>
+          <tr>
+            <td>TT-YH-001</td>
+            <td>余杭01#四管</td>
+            <td><span class="tag tag-red">四管</span></td>
+            <td>55.0</td>
+            <td>7</td>
+            <td>余杭基站</td>
+            <td>杭州电信铁塔工程</td>
+            <td>杭州电信</td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">编辑</button>
+              <button class="btn btn-text">查看</button>
+              <button class="btn btn-text">关联任务</button>
+            </td>
+          </tr>
+          <tr>
+            <td>TT-XS-001</td>
+            <td>萧山01#单管</td>
+            <td><span class="tag tag-blue">单管</span></td>
+            <td>35.0</td>
+            <td>4</td>
+            <td>萧山基站</td>
+            <td>杭州铁塔公司工程</td>
+            <td>杭州铁塔</td>
+            <td><span class="tag tag-gray">停用</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">编辑</button>
+              <button class="btn btn-text">查看</button>
+              <button class="btn btn-text">关联任务</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <span>共 5 条记录</span>
+        <div class="pagination-btns">
+          <button class="page-btn"><i class="fa-solid fa-chevron-left"></i></button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-mask" id="create-tower-modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="card-title">新增铁塔信息管理</div>
+        <button class="modal-close" id="close-create-tower-modal" aria-label="关闭">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="card-body">
+        <div class="section-block">
+          <div class="section-title">铁塔基础信息</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">数据来源</label>
+              <select class="form-select" style="width:100%;">
+                <option value="">请选择</option>
+                <option>新建铁塔信息</option>
+                <option>导入铁塔项目清单</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">铁塔编号 <span class="required">*</span></label>
+              <input class="form-input" style="width:100%;" placeholder="例如：TT-BJ-003">
+            </div>
+            <div class="form-group">
+              <label class="form-label">铁塔名称 <span class="required">*</span></label>
+              <input class="form-input" style="width:100%;" placeholder="请输入铁塔名称">
+            </div>
+            <div class="form-group">
+              <label class="form-label">铁塔类型 <span class="required">*</span></label>
+              <select class="form-select" style="width:100%;">
+                <option value="">请选择</option>
+                <option>单管塔</option>
+                <option>角钢塔</option>
+                <option>三管塔</option>
+                <option>四管塔</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">所属站点 <span class="required">*</span></label>
+              <select class="form-select" style="width:100%;">
+                <option value="">请选择</option>
+                <option>滨江基站</option>
+                <option>西湖基站</option>
+                <option>余杭基站</option>
+                <option>萧山基站</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">所属工程 <span class="required">*</span></label>
+              <select class="form-select" style="width:100%;">
+                <option value="">请选择</option>
+                <option>杭州移动铁塔工程</option>
+                <option>杭州联通铁塔工程</option>
+                <option>杭州电信铁塔工程</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">所属客户 <span class="required">*</span></label>
+              <select class="form-select" style="width:100%;">
+                <option value="">请选择</option>
+                <option>杭州移动</option>
+                <option>杭州联通</option>
+                <option>杭州电信</option>
+                <option>杭州铁塔</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">所属项目号</label>
+              <input class="form-input" style="width:100%;" placeholder="例如：202502200000">
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-title">铁塔位置基础信息</div>
+          <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">所属区域</label>
+            <input class="form-input" style="width:100%;" placeholder="例如：浙江/杭州/滨江">
+          </div>
+          <div class="form-group">
+            <label class="form-label">经度</label>
+            <input class="form-input" style="width:100%;" placeholder="例如：120.312681">
+          </div>
+          <div class="form-group">
+            <label class="form-label">纬度</label>
+            <input class="form-input" style="width:100%;" placeholder="例如：30.238121">
+          </div>
+          <div class="form-group">
+            <label class="form-label">塔高(m)</label>
+            <input class="form-input" style="width:100%;" placeholder="例如：45.0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">塔段数量</label>
+            <input class="form-input" style="width:100%;" placeholder="例如：5">
+          </div>
+          <div class="form-group">
+            <label class="form-label">风压系数</label>
+            <input class="form-input" style="width:100%;" placeholder="例如：0.30">
+          </div>
+          <div class="form-group">
+            <label class="form-label">应力允许值</label>
+            <input class="form-input" style="width:100%;" placeholder="例如：305">
+          </div>
+          <div class="form-group">
+            <label class="form-label">应力最大值</label>
+            <input class="form-input" style="width:100%;" placeholder="例如：372">
+          </div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-title">其他信息</div>
+          <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">创建人</label>
+            <input class="form-input" style="width:100%;" value="张伟">
+          </div>
+          <div class="form-group">
+            <label class="form-label">创建时间</label>
+            <input class="form-input" style="width:100%;" value="2026-05-08 13:18">
+          </div>
+        </div>
+        </div>
+
+        <div class="form-group" style="margin-top:12px;">
+          <label class="form-label">铁塔现场图片</label>
+          <div class="upload-box">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            <div>将文件拖到此处，或 <span style="color:var(--primary);">点击上传</span></div>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top:12px;">
+          <label class="form-label">备注</label>
+          <textarea class="form-textarea" placeholder="请填写铁塔相关补充信息"></textarea>
+        </div>
+
+        <div class="form-footer">
+          <button class="btn btn-default" id="cancel-create-tower-modal">取消</button>
+          <button class="btn btn-primary">保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'data_tower', breadcrumb:['基础数据','铁塔信息']};</script>
+<script>
+  (function () {
+    function getModal() {
+      return document.getElementById('create-tower-modal');
+    }
+    function openModal() {
+      const modal = getModal();
+      if (modal) modal.classList.add('open');
+    }
+    function closeModal() {
+      const modal = getModal();
+      if (modal) modal.classList.remove('open');
+    }
+
+    document.addEventListener('click', function (e) {
+      const target = e.target;
+      if (!(target instanceof Element)) return;
+
+      if (target.closest('#open-create-tower-modal')) {
+        openModal();
+        return;
+      }
+      if (target.closest('#close-create-tower-modal') || target.closest('#cancel-create-tower-modal')) {
+        closeModal();
+        return;
+      }
+      const modal = getModal();
+      if (modal && target === modal) closeModal();
+    });
+  })();
+</script>
+</body>
+</html>
+

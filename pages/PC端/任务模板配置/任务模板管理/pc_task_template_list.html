@@ -1,0 +1,759 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>任务模板管理</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+/* ---- 视图切换 ---- */
+.view { display:none; }
+.view.active { display:block; }
+
+/* ---- 详情摘要条 ---- */
+.tpl-bar { background:#fff; border:1px solid var(--border); border-radius:8px; padding:14px 20px; margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; }
+.tpl-bar-left { display:flex; align-items:center; gap:14px; }
+.tpl-bar-icon { width:40px; height:40px; border-radius:8px; background:linear-gradient(135deg,#165DFF,#4C8CFF); display:flex; align-items:center; justify-content:center; color:#fff; font-size:16px; }
+.tpl-bar h3 { font-size:15px; font-weight:700; color:var(--text-1); margin:0 0 3px; }
+.tpl-bar-meta { display:flex; gap:12px; font-size:12px; color:var(--text-3); }
+.tpl-bar-meta span { display:flex; align-items:center; gap:3px; }
+
+/* ---- Tabs ---- */
+.tab-bar { display:flex; border-bottom:2px solid var(--border); margin-bottom:0; background:#fff; border-radius:8px 8px 0 0; padding:0 20px; }
+.tab-btn { padding:12px 20px; font-size:13px; font-weight:500; color:var(--text-2); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px; transition:all .15s; background:none; border-top:none; border-left:none; border-right:none; }
+.tab-btn:hover { color:var(--primary); }
+.tab-btn.active { color:var(--primary); border-bottom-color:var(--primary); font-weight:600; }
+.tab-body { background:#fff; border:1px solid var(--border); border-top:none; border-radius:0 0 8px 8px; padding:20px; }
+.tab-panel { display:none; }
+.tab-panel.active { display:block; }
+
+/* ---- 字段配置左右面板 ---- */
+.panel-left { width:28%; min-width:220px; border-right:1px solid var(--border); padding-right:16px; }
+.panel-right { width:72%; padding-left:16px; }
+.tree-item { padding:7px 10px; cursor:pointer; border-radius:4px; font-size:13px; color:var(--text-2); transition:all .12s; }
+.tree-item:hover { background:var(--primary-light); color:var(--primary); }
+.tree-item.active { background:var(--primary-light); color:var(--primary); font-weight:500; }
+.tree-child { padding-left:20px; }
+.tree-group-label { font-size:11px; color:var(--text-3); padding:6px 10px 4px; text-transform:none; letter-spacing:0; }
+.tree-item.fixed-type { display:flex; align-items:center; justify-content:space-between; }
+.field-cat-select { min-width:88px; font-size:12px; }
+.dim-inp { font-size:12px !important; }
+.matrix-badge { display:inline-flex; align-items:center; gap:4px; font-size:10px; color:#722ed1; background:#f9f0ff; border:1px solid #d3adf7; border-radius:999px; padding:0 6px; line-height:16px; }
+.fixed-tag {
+  display:inline-flex;
+  align-items:center;
+  gap:3px;
+  font-size:10px;
+  color:#165dff;
+  background:#e8f3ff;
+  border:1px solid #cfe1ff;
+  border-radius:999px;
+  padding:0 6px;
+  line-height:16px;
+}
+.subtype-box {
+  display:none;
+  margin:10px 0 12px;
+  padding:10px 12px;
+  border:1px solid #dce7ff;
+  border-radius:6px;
+  background:#f7faff;
+}
+.subtype-box ul {
+  margin:6px 0 0;
+  padding-left:18px;
+  color:var(--text-2);
+  font-size:12px;
+  line-height:1.7;
+}
+
+/* ---- 版本时间线 ---- */
+.ver-row { display:flex; gap:0; margin-bottom:14px; }
+.ver-tl { width:36px; display:flex; flex-direction:column; align-items:center; flex-shrink:0; }
+.ver-dot { width:18px; height:18px; border-radius:50%; border:2px solid #C9CDD4; background:#fff; display:flex; align-items:center; justify-content:center; z-index:1; flex-shrink:0; }
+.ver-dot i { font-size:7px; color:#C9CDD4; }
+.ver-ln { flex:1; width:2px; background:#E5E6EB; }
+.ver-row:last-child .ver-ln { display:none; }
+.ver-row.st-published .ver-dot { border-color:var(--primary); background:var(--primary); }
+.ver-row.st-published .ver-dot i { color:#fff; }
+.ver-row.st-draft .ver-dot { border-color:#F77234; background:#FFF7E8; }
+.ver-row.st-draft .ver-dot i { color:#F77234; }
+.ver-row.st-deprecated .ver-dot { border-color:#C9CDD4; background:#F2F3F5; }
+.ver-cd { flex:1; background:#FAFBFC; border:1px solid var(--border); border-radius:6px; padding:12px 16px; transition:all .12s; }
+.ver-cd:hover { box-shadow:0 2px 6px rgba(0,0,0,.04); }
+.ver-row.st-published .ver-cd { border-color:var(--primary); background:#FAFCFF; }
+.ver-row.st-draft .ver-cd { border-color:#FFCF8B; background:#FFFBF5; }
+.ver-row.st-deprecated .ver-cd { opacity:.55; }
+.ver-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.ver-title { font-size:13px; font-weight:700; color:var(--text-1); display:flex; align-items:center; gap:6px; }
+.ver-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; font-size:11px; color:var(--text-3); }
+.ver-grid .v { color:var(--text-1); font-weight:500; margin-top:1px; }
+.ver-desc { margin-top:8px; padding:6px 10px; background:#F7F8FA; border-radius:4px; font-size:11px; color:var(--text-2); line-height:1.5; }
+.ver-row.st-published .ver-desc { background:#F0F5FF; }
+
+/* ---- 弹窗 ---- */
+.modal-mask { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,.45); z-index:1000; align-items:center; justify-content:center; }
+.modal-mask.show { display:flex; }
+.modal-box { background:#fff; border-radius:10px; width:660px; max-height:80vh; overflow-y:auto; box-shadow:0 8px 40px rgba(0,0,0,.15); }
+.modal-box.sm { width:440px; }
+.modal-hd { display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-bottom:1px solid var(--border); }
+.modal-hd h3 { font-size:15px; font-weight:600; color:var(--text-1); margin:0; }
+.modal-x { background:none; border:none; font-size:18px; color:var(--text-3); cursor:pointer; }
+.modal-x:hover { color:var(--text-1); }
+.modal-bd { padding:18px 20px; }
+.snap-table { width:100%; border-collapse:collapse; font-size:12px; }
+.snap-table th { background:#f7f8fa; padding:7px 8px; text-align:left; font-weight:500; color:var(--text-2); border-bottom:1px solid var(--border); }
+.snap-table td { padding:7px 8px; border-bottom:1px solid #f2f3f5; color:var(--text-1); }
+.ci { width:48px; height:48px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; margin-bottom:12px; }
+</style>
+</head>
+<body>
+<script>location.replace('../../模板配置/检测模板/pc_inspect_template_list.html');</script>
+<div id="page-content">
+
+  <div class="card" style="margin-bottom:16px;border:1px solid #CFE1FF;background:#F7FAFF;">
+    <div class="card-body" style="padding:12px 16px;font-size:13px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
+      <a href="../../铁塔检测业务/检测任务/pc_task_list.html" class="btn btn-text" style="padding:0 6px;">检测任务</a>
+      <a href="../../报告模板配置/报告模板管理/pc_report_template_list.html" class="btn btn-text" style="padding:0 6px;">报告模板管理</a>
+    </div>
+  </div>
+  <!-- ============================== -->
+  <!-- 视图 1：模板列表               -->
+  <!-- ============================== -->
+  <div class="view active" id="view-list">
+    <div class="card">
+      <div class="card-header"><div class="card-title">任务模板管理</div></div>
+      <div class="card-body">
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <input type="text" class="form-input" placeholder="模板名称/编号">
+            <select class="form-select">
+              <option value="">全部塔型</option>
+              <option>单管塔</option><option>拉线杆</option><option>角钢塔</option><option>三管塔</option><option>四管塔</option>
+            </select>
+            <select class="form-select">
+              <option value="">全部检测类型</option>
+              <option>安全性鉴定</option><option>可靠性鉴定</option><option>抗震鉴定</option>
+            </select>
+            <select class="form-select">
+              <option value="">全部状态</option>
+              <option>草稿</option><option>已发布</option><option>已停用</option>
+            </select>
+            <button class="btn btn-primary">查询</button>
+            <button class="btn btn-default">重置</button>
+          </div>
+      </div>
+
+      <div class="pc-table-actions">
+        <a href="pc_task_template_create.html" class="btn btn-primary"><i class="fa-solid fa-plus"></i> 新增模板</a>
+      </div>
+
+      <table class="data-table" id="tpl-table">
+          <thead>
+            <tr>
+              <th>模板编号</th><th>模板名称</th><th>适用塔型</th><th>检测类型</th><th>版本</th><th>检测项</th><th>状态</th><th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-tpl="0">
+              <td>RWMB-001</td><td>单管塔安全性检测模板</td>
+              <td><span class="tag tag-blue">单管塔</span></td>
+              <td><span class="tag tag-orange">安全性鉴定</span></td>
+              <td>V2.0</td><td>18</td>
+              <td><span class="tag tag-green">已发布</span></td>
+              <td class="col-action">
+                <a href="pc_task_template_edit.html" class="btn btn-text">编辑</a>
+                <button class="btn btn-text btn-open-detail" data-tpl="0">字段/版本</button>
+                <button class="btn btn-text">复制</button>
+                <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+                <button class="btn btn-text" style="color:var(--danger)">停用</button>
+              </td>
+            </tr>
+            <tr data-tpl="1">
+              <td>RWMB-002</td><td>角钢塔安全性检测模板</td>
+              <td><span class="tag tag-green">角钢塔</span></td>
+              <td><span class="tag tag-orange">安全性鉴定</span></td>
+              <td>V1.5</td><td>22</td>
+              <td><span class="tag tag-green">已发布</span></td>
+              <td class="col-action">
+                <a href="pc_task_template_edit.html" class="btn btn-text">编辑</a>
+                <button class="btn btn-text btn-open-detail" data-tpl="1">字段/版本</button>
+                <button class="btn btn-text">复制</button>
+                <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+                <button class="btn btn-text" style="color:var(--danger)">停用</button>
+              </td>
+            </tr>
+            <tr data-tpl="2">
+              <td>RWMB-003</td><td>三管塔可靠性检测模板</td>
+              <td><span class="tag tag-blue">三管塔</span></td>
+              <td><span class="tag tag-blue">可靠性鉴定</span></td>
+              <td>V1.0</td><td>16</td>
+              <td><span class="tag tag-gray">草稿</span></td>
+              <td class="col-action">
+                <a href="pc_task_template_edit.html" class="btn btn-text">编辑</a>
+                <button class="btn btn-text btn-open-detail" data-tpl="2">字段/版本</button>
+                <button class="btn btn-text">复制</button>
+                <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+                <button class="btn btn-text" style="color:var(--danger)">停用</button>
+              </td>
+            </tr>
+            <tr data-tpl="3">
+              <td>RWMB-004</td><td>四管塔抗震检测模板</td>
+              <td><span class="tag tag-green">四管塔</span></td>
+              <td><span class="tag tag-green">抗震鉴定</span></td>
+              <td>V1.2</td><td>20</td>
+              <td><span class="tag tag-green">已发布</span></td>
+              <td class="col-action">
+                <a href="pc_task_template_edit.html" class="btn btn-text">编辑</a>
+                <button class="btn btn-text btn-open-detail" data-tpl="3">字段/版本</button>
+                <button class="btn btn-text">复制</button>
+                <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+                <button class="btn btn-text" style="color:var(--danger)">停用</button>
+              </td>
+            </tr>
+            <tr data-tpl="4">
+              <td>RWMB-005</td><td>角钢塔可靠性检测模板</td>
+              <td><span class="tag tag-green">角钢塔</span></td>
+              <td><span class="tag tag-blue">可靠性鉴定</span></td>
+              <td>V1.0</td><td>19</td>
+              <td><span class="tag tag-red">已停用</span></td>
+              <td class="col-action">
+                <a href="pc_task_template_edit.html" class="btn btn-text">编辑</a>
+                <button class="btn btn-text btn-open-detail" data-tpl="4">字段/版本</button>
+                <button class="btn btn-text">复制</button>
+                <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+                <button class="btn btn-text" style="color:var(--success)">启用</button>
+              </td>
+            </tr>
+            <tr data-tpl="5">
+              <td>RWMB-006</td><td>存量单管/拉线杆原始记录模板包</td>
+              <td><span class="tag tag-blue">单管塔</span> <span class="tag tag-gray" style="margin-left:4px;">拉线杆</span></td>
+              <td><span class="tag tag-orange">安全性鉴定</span></td>
+              <td>V2026.05.09</td><td>26</td>
+              <td><span class="tag tag-green">已发布</span></td>
+              <td class="col-action">
+                <a href="pc_task_template_edit.html" class="btn btn-text">编辑</a>
+                <button class="btn btn-text btn-open-detail" data-tpl="5">字段/版本</button>
+                <button class="btn btn-text">复制</button>
+                <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+                <button class="btn btn-text" style="color:var(--danger)">停用</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="pagination">
+          <span>共 6 条记录</span>
+          <div class="pagination-btns">
+            <button class="page-btn"><i class="fa-solid fa-chevron-left"></i></button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================== -->
+  <!-- 视图 2：模板详情（字段+版本）  -->
+  <!-- ============================== -->
+  <div class="view" id="view-detail">
+    <div style="margin-bottom:14px;">
+      <button class="btn btn-default btn-sm" id="btn-back"><i class="fa-solid fa-arrow-left"></i> 返回列表</button>
+    </div>
+
+    <!-- 模板摘要条 -->
+    <div class="tpl-bar">
+      <div class="tpl-bar-left">
+        <div class="tpl-bar-icon"><i class="fa-solid fa-clipboard-list"></i></div>
+        <div>
+          <h3 id="det-name"></h3>
+          <div class="tpl-bar-meta" id="det-meta"></div>
+        </div>
+      </div>
+      <a href="pc_task_template_edit.html" class="btn btn-default btn-sm"><i class="fa-solid fa-pen"></i> 编辑模板</a>
+    </div>
+
+    <!-- Tab 栏 -->
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="fields"><i class="fa-solid fa-table-cells" style="margin-right:4px;"></i>模块与字段配置</button>
+      <button class="tab-btn" data-tab="versions"><i class="fa-solid fa-code-branch" style="margin-right:4px;"></i>版本管理</button>
+    </div>
+    <div class="tab-body">
+
+      <!-- Tab: 字段配置 -->
+      <div class="tab-panel active" id="tab-fields">
+        <div style="display:flex; min-height:460px;">
+          <div class="panel-left">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+              <div style="font-size:13px;font-weight:600;color:var(--text-1);">检测任务模块（树）</div>
+              <button class="btn btn-default btn-sm" id="btn-add-tree" title="新增同级模块"><i class="fa-solid fa-plus"></i></button>
+            </div>
+            <div class="tree-group-label"><i class="fa-solid fa-folder-tree" style="margin-right:4px;opacity:.7;"></i>模块分组 · 点击切换右侧字段表</div>
+            <div id="field-tree">
+              <div class="tree-item active" data-ti="0">铁塔外观检测</div>
+              <div class="tree-item" data-ti="1">基础状况检测</div>
+              <div class="tree-child">
+                <div class="tree-item" data-ti="2">基础裂缝检测</div>
+                <div class="tree-item" data-ti="3">地锚检测</div>
+              </div>
+              <div class="tree-item fixed-type" data-ti="4" data-fixed="segment">
+                <span>塔段检测</span>
+                <span class="fixed-tag"><i class="fa-solid fa-lock"></i>固定类型</span>
+              </div>
+              <div class="tree-child" data-fixed-group="segment">
+                <div class="tree-item" data-ti="41" data-parent="segment">塔段构件检测</div>
+                <div class="tree-item" data-ti="42" data-parent="segment">塔段连接检测</div>
+                <div class="tree-item" data-ti="43" data-parent="segment">塔段变形检测</div>
+                <div class="tree-item" data-ti="44" data-parent="segment">塔段防腐检测</div>
+                <div class="tree-item" data-ti="45" data-parent="segment">塔段编号检测</div>
+              </div>
+              <div class="tree-item" data-ti="5">塔身垂直度检测</div>
+              <div class="tree-item" data-ti="6">防腐层检测</div>
+              <div class="tree-item" data-ti="7">螺栓紧固检测</div>
+              <div class="tree-item" data-ti="8">焊接质量检测</div>
+            </div>
+          </div>
+          <div class="panel-right">
+            <div id="fp-title" style="font-size:13px;font-weight:600;color:var(--text-1);margin-bottom:3px;">铁塔外观检测</div>
+            <div id="fp-desc" style="font-size:11px;color:var(--text-3);margin-bottom:12px;">配置本模块下的采集字段。<strong>二维表</strong>即附表中红框类表格：左侧<strong>首列</strong>为行标签（如构件类型），<strong>顶行</strong>为多列表头（如规格、材质、锌层厚度），交叉格逐项填报。</div>
+            <div class="subtype-box" id="segment-subtype-box">
+              <div style="font-size:12px;font-weight:600;color:var(--text-1);">塔段检测（固定类型）子类</div>
+              <ul>
+                <li>塔段构件检测</li>
+                <li>塔段连接检测</li>
+                <li>塔段变形检测</li>
+                <li>塔段防腐检测</li>
+                <li>塔段编号检测</li>
+              </ul>
+            </div>
+            <div style="font-size:11px;color:var(--text-3);margin-bottom:8px;"><span class="matrix-badge"><i class="fa-solid fa-table-cells"></i> 二维表</span> 须配置<strong>行维度</strong>（首列语义）、<strong>列维度</strong>（各列表头语义）；「可选值/值域」说明<strong>按列</strong>的填写与校验（如锌层「检测6处」）。<strong>标量值</strong>行/列维填「—」。</div>
+            <div style="overflow-x:auto;">
+            <table class="data-table" id="field-tbl" style="min-width:1100px;">
+              <thead>
+                <tr>
+                  <th>字段名称</th><th>字段编码</th><th>字段类别</th><th>字段类型</th>
+                  <th>可选值 / 值域</th><th>默认值</th><th>行维度（首列·行标签）</th><th>列维度（表头·多列）</th>
+                  <th style="width:52px">必填</th><th style="width:48px">排序</th><th style="width:48px">操作</th>
+                </tr>
+              </thead>
+              <tbody id="field-tbody">
+                <tr>
+                  <td><input type="text" class="form-input" style="width:100%" value="塔体总高度(m)"></td>
+                  <td><input type="text" class="form-input" style="width:100%;background:#f7f8fa" value="DG-001" readonly></td>
+                  <td><select class="form-select field-cat-select"><option selected>标量值</option><option>二维表</option></select></td>
+                  <td><select class="form-select" style="width:100%"><option>文本</option><option selected>数字</option><option>单选</option><option>多选</option><option>日期</option><option>图片</option><option>坐标</option></select></td>
+                  <td><input type="text" class="form-input dim-inp" style="width:100%" value="≥0，保留1位小数"></td>
+                  <td><input type="text" class="form-input" style="width:100%" placeholder="空"></td>
+                  <td><input type="text" class="form-input dim-inp" style="width:100%;background:#f7f8fa" value="—" readonly title="标量无行维"></td>
+                  <td><input type="text" class="form-input dim-inp" style="width:100%;background:#f7f8fa" value="—" readonly title="标量无列维"></td>
+                  <td style="text-align:center"><input type="checkbox" checked></td>
+                  <td><input type="number" class="form-input" style="width:100%" value="1"></td>
+                  <td class="col-action"><button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button></td>
+                </tr>
+                <tr>
+                  <td><input type="text" class="form-input" style="width:100%" value="外观状况描述"></td>
+                  <td><input type="text" class="form-input" style="width:100%;background:#f7f8fa" value="WG-001" readonly></td>
+                  <td><select class="form-select field-cat-select"><option selected>标量值</option><option>二维表</option></select></td>
+                  <td><select class="form-select" style="width:100%"><option selected>文本</option><option>数字</option><option>单选</option><option>多选</option><option>日期</option><option>图片</option><option>坐标</option></select></td>
+                  <td><input type="text" class="form-input" style="width:100%" value="最长500字"></td>
+                  <td><input type="text" class="form-input" style="width:100%" placeholder="默认空"></td>
+                  <td><input type="text" class="form-input dim-inp" style="width:100%;background:#f7f8fa" value="—" readonly></td>
+                  <td><input type="text" class="form-input dim-inp" style="width:100%;background:#f7f8fa" value="—" readonly></td>
+                  <td style="text-align:center"><input type="checkbox" checked></td>
+                  <td><input type="number" class="form-input" style="width:100%" value="2"></td>
+                  <td class="col-action"><button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button></td>
+                </tr>
+                <tr>
+                  <td><input type="text" class="form-input" style="width:100%" value="锈蚀程度"></td>
+                  <td><input type="text" class="form-input" style="width:100%;background:#f7f8fa" value="WG-002" readonly></td>
+                  <td><select class="form-select field-cat-select"><option selected>标量值</option><option>二维表</option></select></td>
+                  <td><select class="form-select" style="width:100%"><option>文本</option><option>数字</option><option selected>单选</option><option>多选</option><option>日期</option><option>图片</option><option>坐标</option></select></td>
+                  <td><input type="text" class="form-input" style="width:100%" value="无锈蚀,轻微,中等,严重"></td>
+                  <td><input type="text" class="form-input" style="width:100%" value="无锈蚀"></td>
+                  <td><input type="text" class="form-input dim-inp" style="width:100%;background:#f7f8fa" value="—" readonly></td>
+                  <td><input type="text" class="form-input dim-inp" style="width:100%;background:#f7f8fa" value="—" readonly></td>
+                  <td style="text-align:center"><input type="checkbox" checked></td>
+                  <td><input type="number" class="form-input" style="width:100%" value="3"></td>
+                  <td class="col-action"><button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button></td>
+                </tr>
+                <tr>
+                  <td><input type="text" class="form-input" style="width:100%" value="角钢（圆管）规格·材质·锌层表"></td>
+                  <td><input type="text" class="form-input" style="width:100%;background:#f7f8fa" value="JG-2D-01" readonly></td>
+                  <td><select class="form-select field-cat-select"><option>标量值</option><option selected>二维表</option></select></td>
+                  <td><select class="form-select" style="width:100%"><option>文本</option><option selected>数字</option><option>单选</option><option>多选</option><option>日期</option><option>图片</option><option>坐标</option></select></td>
+                  <td><input type="text" class="form-input" style="width:100%" value="规格mm≥0；材质HLD按仪器；锌层μm每格6测点取最薄"></td>
+                  <td><input type="text" class="form-input" style="width:100%" value="空表"></td>
+                  <td><input type="text" class="form-input dim-inp" style="width:100%" value="构件类型：主肢/横杆/斜杆/辅助杆/横隔杆/其他构件"></td>
+                  <td><input type="text" class="form-input dim-inp" style="width:100%" value="规格(mm)｜材质(HLD)｜锌层厚度(μm,检测6处)"></td>
+                  <td style="text-align:center"><input type="checkbox" checked></td>
+                  <td><input type="number" class="form-input" style="width:100%" value="4"></td>
+                  <td class="col-action"><button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button></td>
+                </tr>
+                <tr>
+                  <td><input type="text" class="form-input" style="width:100%" value="构件缺陷检查矩阵"></td>
+                  <td><input type="text" class="form-input" style="width:100%;background:#f7f8fa" value="DX-M02" readonly></td>
+                  <td><select class="form-select field-cat-select"><option>标量值</option><option selected>二维表</option></select></td>
+                  <td><select class="form-select" style="width:100%"><option>文本</option><option>数字</option><option selected>单选</option><option>多选</option><option>日期</option><option>图片</option><option>坐标</option></select></td>
+                  <td><input type="text" class="form-input" style="width:100%" value="无缺陷,一般缺陷,严重缺陷"></td>
+                  <td><input type="text" class="form-input" style="width:100%" value="无缺陷"></td>
+                  <td><input type="text" class="form-input dim-inp" style="width:100%" value="检查部位（区段+构件）"></td>
+                  <td><input type="text" class="form-input dim-inp" style="width:100%" value="缺陷类型（涂层/螺栓/焊缝…）"></td>
+                  <td style="text-align:center"><input type="checkbox" checked></td>
+                  <td><input type="number" class="form-input" style="width:100%" value="5"></td>
+                  <td class="col-action"><button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button></td>
+                </tr>
+                <tr>
+                  <td><input type="text" class="form-input" style="width:100%" value="现场照片组"></td>
+                  <td><input type="text" class="form-input" style="width:100%;background:#f7f8fa" value="WG-004" readonly></td>
+                  <td><select class="form-select field-cat-select"><option selected>标量值</option><option>二维表</option></select></td>
+                  <td><select class="form-select" style="width:100%"><option>文本</option><option>数字</option><option>单选</option><option>多选</option><option>日期</option><option selected>图片</option><option>坐标</option></select></td>
+                  <td><input type="text" class="form-input" style="width:100%" value="最少张数≥2"></td>
+                  <td><input type="text" class="form-input" style="width:100%" placeholder="无"></td>
+                  <td><input type="text" class="form-input dim-inp" style="width:100%;background:#f7f8fa" value="—" readonly></td>
+                  <td><input type="text" class="form-input dim-inp" style="width:100%;background:#f7f8fa" value="—" readonly></td>
+                  <td style="text-align:center"><input type="checkbox" checked></td>
+                  <td><input type="number" class="form-input" style="width:100%" value="6"></td>
+                  <td class="col-action"><button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button></td>
+                </tr>
+              </tbody>
+            </table>
+            </div>
+            <div style="padding:10px 0;">
+              <button class="btn btn-default btn-sm" id="btn-add-field"><i class="fa-solid fa-plus"></i> 添加字段</button>
+              <button class="btn btn-primary btn-sm" style="margin-left:8px;" id="btn-save-fields"><i class="fa-solid fa-check"></i> 保存</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: 版本管理 -->
+      <div class="tab-panel" id="tab-versions">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div id="ver-summary" style="font-size:12px;color:var(--text-3);"></div>
+          <button class="btn btn-primary btn-sm" id="btn-new-ver"><i class="fa-solid fa-plus"></i> 创建新版本</button>
+        </div>
+        <div id="ver-list"></div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- 版本详情弹窗 -->
+<div class="modal-mask" id="modal-detail">
+  <div class="modal-box">
+    <div class="modal-hd"><h3 id="detail-title">版本详情</h3><button class="modal-x" data-close="modal-detail">&times;</button></div>
+    <div class="modal-bd" id="detail-body"></div>
+  </div>
+</div>
+<!-- 创建新版本弹窗 -->
+<div class="modal-mask" id="modal-create">
+  <div class="modal-box sm">
+    <div class="modal-hd"><h3>创建新版本</h3><button class="modal-x" data-close="modal-create">&times;</button></div>
+    <div class="modal-bd">
+      <div class="form-group" style="margin-bottom:14px;"><label class="form-label">版本号 <span class="required">*</span></label><input type="text" class="form-input" id="new-ver-no" style="width:100%" placeholder="例如 V3.0"></div>
+      <div class="form-group" style="margin-bottom:18px;"><label class="form-label">变更说明</label><textarea class="form-input" id="new-ver-desc" rows="3" style="width:100%;resize:vertical" placeholder="请描述本版本的主要变更内容"></textarea></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;"><button class="btn btn-default" data-close="modal-create">取消</button><button class="btn btn-primary" id="btn-create-ok"><i class="fa-solid fa-plus"></i> 创建</button></div>
+    </div>
+  </div>
+</div>
+<!-- 发布确认弹窗 -->
+<div class="modal-mask" id="modal-publish">
+  <div class="modal-box sm">
+    <div class="modal-hd"><h3>确认发布</h3><button class="modal-x" data-close="modal-publish">&times;</button></div>
+    <div class="modal-bd" style="text-align:center;padding:24px;">
+      <div class="ci" style="background:#E8FFEA;"><i class="fa-solid fa-rocket" style="font-size:20px;color:#00B42A;"></i></div>
+      <div style="font-size:14px;font-weight:600;color:var(--text-1);margin-bottom:5px;">确定发布 <span id="pub-ver" style="color:var(--primary);"></span> ？</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:18px;line-height:1.7;">发布后该版本成为当前生效版本，原生效版本自动转为历史版本。</div>
+      <div style="display:flex;gap:8px;justify-content:center;"><button class="btn btn-default" data-close="modal-publish">取消</button><button class="btn btn-primary" id="btn-pub-ok"><i class="fa-solid fa-rocket"></i> 确认发布</button></div>
+    </div>
+  </div>
+</div>
+<!-- 回滚确认弹窗 -->
+<div class="modal-mask" id="modal-rollback">
+  <div class="modal-box sm">
+    <div class="modal-hd"><h3>确认回滚</h3><button class="modal-x" data-close="modal-rollback">&times;</button></div>
+    <div class="modal-bd" style="text-align:center;padding:24px;">
+      <div class="ci" style="background:#FFF7E8;"><i class="fa-solid fa-rotate-left" style="font-size:20px;color:#F77234;"></i></div>
+      <div style="font-size:14px;font-weight:600;color:var(--text-1);margin-bottom:5px;">确定回滚到 <span id="rb-ver" style="color:var(--primary);"></span> ？</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:18px;line-height:1.7;">系统将基于该版本创建新草稿，当前生效版本不受影响。</div>
+      <div style="display:flex;gap:8px;justify-content:center;"><button class="btn btn-default" data-close="modal-rollback">取消</button><button class="btn btn-primary" id="btn-rb-ok"><i class="fa-solid fa-rotate-left"></i> 确认回滚</button></div>
+    </div>
+  </div>
+</div>
+
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'task_template_list', breadcrumb:['模板配置','任务模板管理']};</script>
+<script>
+(function(){
+
+  /* ====== 模板数据 ====== */
+  var templates = [
+    {code:'RWMB-001',name:'单管塔安全性检测模板',tower:'单管塔',type:'安全性鉴定',ver:'V2.0',items:18,status:'已发布'},
+    {code:'RWMB-002',name:'角钢塔安全性检测模板',tower:'角钢塔',type:'安全性鉴定',ver:'V1.5',items:22,status:'已发布'},
+    {code:'RWMB-003',name:'三管塔可靠性检测模板',tower:'三管塔',type:'可靠性鉴定',ver:'V1.0',items:16,status:'草稿'},
+    {code:'RWMB-004',name:'四管塔抗震检测模板',tower:'四管塔',type:'抗震鉴定',ver:'V1.2',items:20,status:'已发布'},
+    {code:'RWMB-005',name:'角钢塔可靠性检测模板',tower:'角钢塔',type:'可靠性鉴定',ver:'V1.0',items:19,status:'已停用'},
+    {code:'RWMB-006',name:'存量单管/拉线杆原始记录模板包',tower:'单管塔/拉线杆',type:'安全性鉴定',ver:'V2026.05.09',items:26,status:'已发布'}
+  ];
+
+  /* ====== 版本数据（示例：RWMB-001） ====== */
+  var nextVerId = 4;
+  var versions = [
+    {id:1,ver:'V1.0',status:'history',time:'2025-12-01 10:00',by:'李明',desc:'初始发布，包含 12 项基础检测项',
+     items:[{name:'铁塔外观检测',code:'TT-001',parent:'—',req:true,f:5},{name:'基础状况检测',code:'TT-002',parent:'—',req:true,f:3},{name:'  基础裂缝检测',code:'TT-003',parent:'基础状况检测',req:true,f:4},{name:'  地锚检测',code:'TT-004',parent:'基础状况检测',req:true,f:3},{name:'塔段检测',code:'TT-005',parent:'—',req:true,f:4},{name:'塔身垂直度检测',code:'TT-006',parent:'—',req:true,f:3},{name:'防腐层检测',code:'TT-007',parent:'—',req:false,f:4},{name:'螺栓紧固检测',code:'TT-008',parent:'—',req:true,f:3},{name:'焊接质量检测',code:'TT-009',parent:'—',req:true,f:2},{name:'锈蚀面积',code:'TT-010',parent:'铁塔外观检测',req:false,f:2},{name:'外观状况描述',code:'TT-011',parent:'铁塔外观检测',req:true,f:1},{name:'临时标注',code:'TT-012',parent:'—',req:false,f:1}]},
+    {id:2,ver:'V1.5',status:'history',time:'2026-02-10 09:15',by:'张伟',desc:'优化字段校验规则，调整检测项排序，基础检测项提前',
+     items:[{name:'基础状况检测',code:'TT-002',parent:'—',req:true,f:3},{name:'  基础裂缝检测',code:'TT-003',parent:'基础状况检测',req:true,f:4},{name:'  地锚检测',code:'TT-004',parent:'基础状况检测',req:true,f:3},{name:'铁塔外观检测',code:'TT-001',parent:'—',req:true,f:5},{name:'塔段检测',code:'TT-005',parent:'—',req:true,f:4},{name:'塔身垂直度检测',code:'TT-006',parent:'—',req:true,f:3},{name:'防腐层检测',code:'TT-007',parent:'—',req:false,f:4},{name:'螺栓紧固检测',code:'TT-008',parent:'—',req:true,f:3},{name:'焊接质量检测',code:'TT-009',parent:'—',req:true,f:2},{name:'锈蚀面积',code:'TT-010',parent:'铁塔外观检测',req:true,f:2},{name:'外观状况描述',code:'TT-011',parent:'铁塔外观检测',req:true,f:1},{name:'现场照片',code:'TT-013',parent:'铁塔外观检测',req:true,f:1},{name:'检测位置坐标',code:'TT-014',parent:'铁塔外观检测',req:false,f:1},{name:'锈蚀程度',code:'TT-015',parent:'铁塔外观检测',req:true,f:1},{name:'临时标注',code:'TT-012',parent:'—',req:false,f:1}]},
+    {id:3,ver:'V2.0',status:'published',time:'2026-04-15 14:30',by:'张伟',desc:'新增螺栓松动、焊缝超声、基础沉降 3 项；废弃"临时标注"',
+     items:[{name:'基础状况检测',code:'TT-002',parent:'—',req:true,f:3},{name:'  基础裂缝检测',code:'TT-003',parent:'基础状况检测',req:true,f:4},{name:'  地锚检测',code:'TT-004',parent:'基础状况检测',req:true,f:3},{name:'  基础沉降检测',code:'TT-016',parent:'基础状况检测',req:true,f:3},{name:'铁塔外观检测',code:'TT-001',parent:'—',req:true,f:5},{name:'塔段检测',code:'TT-005',parent:'—',req:true,f:4},{name:'塔身垂直度检测',code:'TT-006',parent:'—',req:true,f:3},{name:'防腐层检测',code:'TT-007',parent:'—',req:false,f:4},{name:'螺栓紧固检测',code:'TT-008',parent:'—',req:true,f:3},{name:'螺栓松动检测',code:'TT-017',parent:'—',req:true,f:3},{name:'焊接质量检测',code:'TT-009',parent:'—',req:true,f:2},{name:'焊缝超声检测',code:'TT-018',parent:'—',req:true,f:4},{name:'锈蚀面积',code:'TT-010',parent:'铁塔外观检测',req:true,f:2},{name:'外观状况描述',code:'TT-011',parent:'铁塔外观检测',req:true,f:1},{name:'现场照片',code:'TT-013',parent:'铁塔外观检测',req:true,f:1},{name:'检测位置坐标',code:'TT-014',parent:'铁塔外观检测',req:false,f:1},{name:'锈蚀程度',code:'TT-015',parent:'铁塔外观检测',req:true,f:1}]}
+  ];
+  var pendingAction = null;
+  var curTpl = 0;
+  var fieldIdx = 6;
+  var segmentSubtypes = ['塔段构件检测','塔段连接检测','塔段变形检测','塔段防腐检测','塔段编号检测'];
+
+  var SM = {draft:{l:'草稿',c:'tag-orange'},published:{l:'已发布',c:'tag-green'},history:{l:'历史版本',c:'tag-gray'},deprecated:{l:'已废弃',c:'tag-red'}};
+  function esc(s){return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function getPub(){return versions.find(function(v){return v.status==='published';});}
+
+  /* ====== 视图切换 ====== */
+  function showView(id){
+    document.querySelectorAll('.view').forEach(function(el){el.classList.remove('active');});
+    document.getElementById(id).classList.add('active');
+  }
+
+  function openDetail(idx){
+    curTpl = idx;
+    var t = templates[idx];
+    document.getElementById('det-name').textContent = t.name;
+    document.getElementById('det-meta').innerHTML =
+      '<span><i class="fa-solid fa-hashtag"></i>'+esc(t.code)+'</span>'
+      +'<span><i class="fa-solid fa-tower-broadcast"></i>'+esc(t.tower)+'</span>'
+      +'<span><i class="fa-solid fa-shield-halved"></i>'+esc(t.type)+'</span>'
+      +'<span><i class="fa-solid fa-code-branch"></i>'+esc(t.ver)+'</span>';
+    showView('view-detail');
+    switchTab('fields');
+    renderVersions();
+  }
+
+  /* ====== Tab 切换 ====== */
+  function switchTab(tab){
+    document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-tab')===tab);});
+    document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.toggle('active',p.id==='tab-'+tab);});
+  }
+
+  /* ====== 版本渲染 ====== */
+  function renderVersions(){
+    var pub = getPub();
+    var drafts = versions.filter(function(v){return v.status==='draft';}).length;
+    var hists = versions.filter(function(v){return v.status==='history';}).length;
+    document.getElementById('ver-summary').textContent =
+      '共 '+versions.length+' 个版本（'+(pub?'生效 1':'生效 0')+'，草稿 '+drafts+'，历史 '+hists+'）';
+
+    var sorted = versions.slice().sort(function(a,b){
+      if(a.status==='draft'&&b.status!=='draft') return -1;
+      if(b.status==='draft'&&a.status!=='draft') return 1;
+      if(a.status==='published'&&b.status!=='published') return -1;
+      if(b.status==='published'&&a.status!=='published') return 1;
+      return b.id-a.id;
+    });
+
+    var h='';
+    sorted.forEach(function(v,i){
+      var s=SM[v.status], last=i===sorted.length-1;
+      h+='<div class="ver-row st-'+v.status+'">';
+      h+='<div class="ver-tl"><div class="ver-dot"><i class="fa-solid '+(v.status==='published'?'fa-check':v.status==='draft'?'fa-pen':'fa-clock-rotate-left')+'"></i></div>'+(last?'':'<div class="ver-ln"></div>')+'</div>';
+      h+='<div class="ver-cd"><div class="ver-top"><div class="ver-title">'+esc(v.ver)+' <span class="tag '+s.c+'" style="font-size:10px;">'+s.l+'</span></div><div style="display:flex;gap:4px;">';
+      h+='<button class="btn btn-default btn-sm" data-va="detail" data-vid="'+v.id+'"><i class="fa-solid fa-eye"></i> 详情</button>';
+      if(v.status==='draft') h+='<button class="btn btn-primary btn-sm" data-va="publish" data-vid="'+v.id+'"><i class="fa-solid fa-rocket"></i> 发布</button><button class="btn btn-default btn-sm" data-va="delete" data-vid="'+v.id+'" style="color:var(--danger);border-color:var(--danger);"><i class="fa-solid fa-trash"></i></button>';
+      if(v.status==='history') h+='<button class="btn btn-default btn-sm" data-va="rollback" data-vid="'+v.id+'"><i class="fa-solid fa-rotate-left"></i> 回滚</button><button class="btn btn-default btn-sm" data-va="deprecate" data-vid="'+v.id+'" style="color:var(--text-3);"><i class="fa-solid fa-ban"></i></button>';
+      h+='</div></div>';
+      h+='<div class="ver-grid"><div>发布时间<div class="v">'+(v.status==='draft'?'未发布':esc(v.time))+'</div></div><div>操作人<div class="v">'+esc(v.by)+'</div></div><div>检测项<div class="v">'+v.items.length+' 项</div></div><div>状态<div class="v"><span class="tag '+s.c+'" style="font-size:10px;">'+s.l+'</span></div></div></div>';
+      if(v.desc) h+='<div class="ver-desc"><i class="fa-solid fa-file-lines" style="margin-right:3px;color:var(--text-3);"></i>'+esc(v.desc)+'</div>';
+      h+='</div></div>';
+    });
+    document.getElementById('ver-list').innerHTML=h;
+  }
+
+  function renderVerDetail(v){
+    var s=SM[v.status];
+    var h='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;font-size:12px;color:var(--text-3);">';
+    h+='<div>版本号<div class="v" style="color:var(--text-1);font-weight:500;margin-top:1px;">'+esc(v.ver)+'</div></div>';
+    h+='<div>状态<div style="margin-top:2px;"><span class="tag '+s.c+'" style="font-size:10px;">'+s.l+'</span></div></div>';
+    h+='<div>时间<div class="v" style="color:var(--text-1);font-weight:500;margin-top:1px;">'+(v.status==='draft'?'未发布':esc(v.time))+'</div></div>';
+    h+='<div>操作人<div class="v" style="color:var(--text-1);font-weight:500;margin-top:1px;">'+esc(v.by)+'</div></div></div>';
+    if(v.desc) h+='<div style="margin-bottom:14px;padding:8px 12px;background:#F7F8FA;border-radius:4px;font-size:12px;color:var(--text-2);line-height:1.5;"><strong>变更说明：</strong>'+esc(v.desc)+'</div>';
+    h+='<div style="font-size:12px;font-weight:600;color:var(--text-1);margin-bottom:6px;">检测项清单（'+v.items.length+' 项）</div>';
+    h+='<table class="snap-table"><thead><tr><th>序号</th><th>检测项</th><th>编码</th><th>父级</th><th>必检</th><th>字段数</th></tr></thead><tbody>';
+    v.items.forEach(function(it,i){h+='<tr><td>'+(i+1)+'</td><td>'+esc(it.name)+'</td><td>'+esc(it.code)+'</td><td>'+esc(it.parent)+'</td><td>'+(it.req?'是':'否')+'</td><td>'+it.f+'</td></tr>';});
+    h+='</tbody></table>';
+    return h;
+  }
+
+  function openModal(id){document.getElementById(id).classList.add('show');}
+  function closeModal(id){document.getElementById(id).classList.remove('show');}
+  function syncSegmentFixedUI(item){
+    var box = document.getElementById('segment-subtype-box');
+    var desc = document.getElementById('fp-desc');
+    var addTreeBtn = document.getElementById('btn-add-tree');
+    if(!item || !box || !desc || !addTreeBtn) return;
+    var isSegment = item.getAttribute('data-fixed')==='segment' || item.getAttribute('data-parent')==='segment';
+    box.style.display = isSegment ? 'block' : 'none';
+    desc.textContent = isSegment
+      ? ('塔段检测为固定类型，子类固定为：' + segmentSubtypes.join('、') + '。子模块内可配置标量与二维测区表。')
+      : '配置本模块下的采集字段；二维表即红框类「行标签×列表头」矩阵。';
+    addTreeBtn.disabled = isSegment;
+    addTreeBtn.style.opacity = isSegment ? '.6' : '1';
+    addTreeBtn.title = isSegment ? '塔段检测为固定类型，不支持新增子类' : '';
+  }
+
+  /* ====== 全局事件 ====== */
+  document.addEventListener('click',function(e){
+    // 关闭弹窗
+    var cb=e.target.closest('[data-close]');
+    if(cb){closeModal(cb.getAttribute('data-close'));return;}
+    if(e.target.classList.contains('modal-mask')){e.target.classList.remove('show');return;}
+
+    // 打开模板详情
+    var od=e.target.closest('.btn-open-detail');
+    if(od){openDetail(parseInt(od.getAttribute('data-tpl')));return;}
+
+    // 返回列表
+    if(e.target.closest('#btn-back')){showView('view-list');return;}
+
+    // Tab 切换
+    var tb=e.target.closest('.tab-btn');
+    if(tb){switchTab(tb.getAttribute('data-tab'));return;}
+
+    // 左侧树点击
+    var ti=e.target.closest('.tree-item[data-ti]');
+    if(ti){
+      document.querySelectorAll('#field-tree .tree-item').forEach(function(el){el.classList.remove('active');});
+      ti.classList.add('active');
+      var titleEl = ti.querySelector('span') ? ti.querySelector('span').textContent : ti.textContent;
+      document.getElementById('fp-title').textContent=titleEl;
+      syncSegmentFixedUI(ti);
+      return;
+    }
+
+    // 添加检测项
+    if(e.target.closest('#btn-add-tree')){
+      var tree=document.getElementById('field-tree');
+      var d=document.createElement('div');
+      d.className='tree-item';
+      d.setAttribute('data-ti','99');
+      d.textContent='新检测项';
+      d.contentEditable='true';
+      tree.appendChild(d);
+      d.focus();
+      return;
+    }
+
+    // 添加字段行
+    if(e.target.closest('#btn-add-field')){
+      var tb2=document.getElementById('field-tbody');
+      var tr=document.createElement('tr');
+      var c='NEW-'+String(fieldIdx).padStart(3,'0');
+      tr.innerHTML='<td><input type="text" class="form-input" style="width:100%" placeholder="字段名称"></td>'
+        +'<td><input type="text" class="form-input" style="width:100%;background:#f7f8fa" value="'+c+'" readonly></td>'
+        +'<td><select class="form-select field-cat-select"><option selected>标量值</option><option>二维表</option></select></td>'
+        +'<td><select class="form-select" style="width:100%"><option selected>文本</option><option>数字</option><option>单选</option><option>多选</option><option>日期</option><option>图片</option><option>坐标</option></select></td>'
+        +'<td><input type="text" class="form-input" style="width:100%" placeholder="可选值/值域"></td>'
+        +'<td><input type="text" class="form-input" style="width:100%" placeholder="默认值"></td>'
+        +'<td><input type="text" class="form-input dim-inp" style="width:100%;background:#f7f8fa" value="—" readonly></td>'
+        +'<td><input type="text" class="form-input dim-inp" style="width:100%;background:#f7f8fa" value="—" readonly></td>'
+        +'<td style="text-align:center"><input type="checkbox" checked></td>'
+        +'<td><input type="number" class="form-input" style="width:100%" value="'+fieldIdx+'"></td>'
+        +'<td class="col-action"><button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button></td>';
+      tb2.appendChild(tr);
+      fieldIdx++;
+      return;
+    }
+
+    // 删除字段行
+    var fd=e.target.closest('#field-tbody .btn.btn-text');
+    if(fd&&fd.style.color){var rr=fd.closest('tr');if(rr)rr.remove();return;}
+
+    // 版本操作
+    var va=e.target.closest('[data-va]');
+    if(va){
+      var act=va.getAttribute('data-va'),vid=parseInt(va.getAttribute('data-vid'));
+      var v=versions.find(function(x){return x.id===vid;});
+      if(!v) return;
+      if(act==='detail'){
+        document.getElementById('detail-title').textContent='版本详情 — '+v.ver;
+        document.getElementById('detail-body').innerHTML=renderVerDetail(v);
+        openModal('modal-detail');
+      }
+      if(act==='publish'){pendingAction={t:'publish',id:vid};document.getElementById('pub-ver').textContent=v.ver;openModal('modal-publish');}
+      if(act==='rollback'){pendingAction={t:'rollback',id:vid};document.getElementById('rb-ver').textContent=v.ver;openModal('modal-rollback');}
+      if(act==='delete'&&v.status==='draft'){versions=versions.filter(function(x){return x.id!==vid;});renderVersions();}
+      if(act==='deprecate'){v.status='deprecated';renderVersions();}
+      return;
+    }
+
+    // 创建新版本
+    if(e.target.closest('#btn-new-ver')){
+      var pub=getPub();
+      document.getElementById('new-ver-no').value=pub?'V'+(parseFloat(pub.ver.replace('V',''))+1).toFixed(1):'V1.0';
+      document.getElementById('new-ver-desc').value='';
+      openModal('modal-create');
+      return;
+    }
+    if(e.target.closest('#btn-create-ok')){
+      var no=document.getElementById('new-ver-no').value.trim(),desc=document.getElementById('new-ver-desc').value.trim();
+      if(!no)return;
+      var pub=getPub(),base=pub?pub.items.slice():[];
+      versions.push({id:nextVerId++,ver:no,status:'draft',time:new Date().toISOString().slice(0,16).replace('T',' '),by:'当前用户',desc:desc||'基于 '+(pub?pub.ver:'空模板')+' 创建',items:base});
+      closeModal('modal-create');renderVersions();return;
+    }
+    // 发布确认
+    if(e.target.closest('#btn-pub-ok')&&pendingAction&&pendingAction.t==='publish'){
+      versions.forEach(function(v){if(v.status==='published')v.status='history';});
+      var tgt=versions.find(function(v){return v.id===pendingAction.id;});
+      if(tgt){tgt.status='published';tgt.time=new Date().toISOString().slice(0,16).replace('T',' ');}
+      pendingAction=null;closeModal('modal-publish');renderVersions();return;
+    }
+    // 回滚确认
+    if(e.target.closest('#btn-rb-ok')&&pendingAction&&pendingAction.t==='rollback'){
+      var src=versions.find(function(v){return v.id===pendingAction.id;});
+      if(src){var pub=getPub();var nxt=pub?'V'+(parseFloat(pub.ver.replace('V',''))+0.1).toFixed(1):'V1.0';
+        versions.push({id:nextVerId++,ver:nxt,status:'draft',time:new Date().toISOString().slice(0,16).replace('T',' '),by:'当前用户',desc:'回滚自 '+src.ver,items:src.items.slice()});}
+      pendingAction=null;closeModal('modal-rollback');renderVersions();return;
+    }
+  });
+  document.addEventListener('change', function (e) {
+    var sel = e.target.closest('.field-cat-select');
+    if (!sel) return;
+    var tr = sel.closest('tr');
+    if (!tr) return;
+    var tds = tr.querySelectorAll('td');
+    if (tds.length < 8) return;
+    var rInp = tds[6].querySelector('input');
+    var cInp = tds[7].querySelector('input');
+    if (!rInp || !cInp) return;
+    if (sel.value === '标量值') {
+      rInp.value = '—';
+      cInp.value = '—';
+      rInp.readOnly = true;
+      cInp.readOnly = true;
+      rInp.style.background = '#f7f8fa';
+      cInp.style.background = '#f7f8fa';
+    } else {
+      rInp.readOnly = false;
+      cInp.readOnly = false;
+      rInp.style.background = '';
+      cInp.style.background = '';
+      if (rInp.value === '—') rInp.value = '';
+      if (cInp.value === '—') cInp.value = '';
+    }
+  });
+  syncSegmentFixedUI(document.querySelector('#field-tree .tree-item.active'));
+
+})();
+</script>
+</body>
+</html>

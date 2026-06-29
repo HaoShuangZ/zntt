@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<!-- iPad-TASK_INSPECT_HOME v3.0 landscape · 方案B 左菜单+右内嵌 -->
+<html lang="zh-CN" class="ipad-task-html">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>检测填报</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/app-frame.css">
+<link rel="stylesheet" href="../../../../assets/ipad-tokens.css">
+<link rel="stylesheet" href="../../../../assets/ipad-frame.css">
+<link rel="stylesheet" href="../../../../assets/ipad-layout.css">
+<link rel="stylesheet" href="../../../../assets/ipad-visual.css">
+<link rel="stylesheet" href="../../../../assets/ipad-embed.css">
+<link rel="stylesheet" href="../../../../assets/ipad-task-shell.css">
+<script src="../../../../assets/ipad-adapt.js" defer></script>
+<style>
+/* 分享弹窗：与 APP 端一致的底部 action sheet */
+.export-sheet-mask {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.45);
+  align-items: flex-end;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+}
+.export-sheet-mask.show { display: flex; }
+.export-sheet {
+  width: 100%;
+  max-width: 100%;
+  background: #fff;
+  border-radius: 16px 16px 0 0;
+  padding: 12px 16px calc(20px + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.12);
+}
+.export-sheet-h {
+  margin: 4px 0 12px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1d2129;
+}
+.share-channels {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 4px 8px 18px;
+}
+.share-channel {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: inherit;
+}
+.share-channel:active { opacity: 0.88; }
+.share-channel-ic {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 26px;
+  line-height: 1;
+}
+.share-channel-ic svg { width: 28px; height: 28px; display: block; }
+.share-channel-ic--wechat { background: #07c160; }
+.share-channel-ic--wxwork { background: #2f7deb; }
+.share-channel-ic--dingtalk { background: #0089ff; }
+.share-channel-ic--link {
+  background: #f2f3f5;
+  color: #4e5969;
+  border: 1px solid #e5e6eb;
+  font-size: 22px;
+}
+.share-channel-label {
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.3;
+  color: #4e5969;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.export-sheet-cancel {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin: 4px 0 0;
+  border: none;
+  background: transparent;
+  color: #86909c;
+  font-size: 15px;
+  cursor: pointer;
+  font-family: inherit;
+}
+</style>
+</head>
+<body class="ipad-adapt ipad-task-page ipad-task-split" data-ipad-tab-active="inspect">
+<script>try{if(/\bembed=1\b/.test(location.search))document.documentElement.classList.add('task-embed');var _k='tower_app_active_inspect_order';var _sp=new URLSearchParams(location.search);var _oid=(_sp.get('order')||'').trim().toUpperCase();if(_oid)sessionStorage.setItem(_k,_oid);}catch(e){}</script>
+
+<div class="header-fixed">
+  <div class="status-bar" aria-hidden="true">
+    <span class="status-time">9:41</span>
+    <span class="status-icons" aria-hidden="true">
+      <i class="fa-solid fa-signal"></i>
+      <i class="fa-solid fa-wifi"></i>
+      <i class="fa-solid fa-battery-full"></i>
+    </span>
+  </div>
+  <div class="top">
+    <div class="top-row">
+      <a class="top-back" href="../../工作台/首页/ipad_workbench_index.html" aria-label="返回"><i class="fa-solid fa-chevron-left"></i></a>
+      <h1 class="top-title" id="topTaskTitle">滨江基站01 · 单管</h1>
+    </div>
+    <div class="top-actions" role="toolbar" aria-label="任务操作">
+      <div class="top-actions-left">
+        <button type="button" class="top-act top-act-export" id="btnExportVoice" title="分享检测任务数据"><i class="fa-solid fa-share-nodes"></i> 分享</button>
+      </div>
+      <div class="top-actions-right">
+        <button type="button" class="top-act top-act-save" id="btnSave">保存</button>
+        <button type="button" class="top-act top-act-sync" id="btnSyncAll" hidden>
+          <i class="fa-solid fa-cloud-arrow-up" aria-hidden="true"></i>一键同步
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main class="inspect-split-main" id="inspectSplitMain">
+  <aside class="inspect-split-nav" aria-label="检测模块菜单">
+    <div class="inspect-split-progress" aria-label="总进度">
+      <div class="prog-h"><span>总进度</span><span id="progPctLabel">38%</span></div>
+      <div class="prog-bar"><div class="prog-in" id="progBarIn"></div></div>
+    </div>
+    <nav class="inspect-mod-nav" id="inspectModNav" aria-label="模块列表"></nav>
+  </aside>
+  <section class="inspect-split-pane" aria-label="模块填报区">
+    <header class="inspect-pane-head">
+      <h2 id="paneModuleTitle">基础信息</h2>
+    </header>
+    <iframe id="moduleFrame" class="inspect-module-frame" title="当前检测模块" src="about:blank"></iframe>
+  </section>
+</main>
+
+<div class="export-sheet-mask" id="exportSheetMask" role="dialog" aria-modal="true" aria-labelledby="exportSheetTitle">
+  <div class="export-sheet" id="exportSheetPanel" role="document">
+    <div class="export-sheet-h" id="exportSheetTitle">检测任务数据分享到</div>
+    <div class="share-channels" role="list">
+      <button type="button" class="share-channel" id="shareWechat" role="listitem" aria-label="分享到微信">
+        <span class="share-channel-ic share-channel-ic--wechat"><i class="fa-brands fa-weixin" aria-hidden="true"></i></span>
+        <span class="share-channel-label">微信</span>
+      </button>
+      <button type="button" class="share-channel" id="shareWxwork" role="listitem" aria-label="分享到企业微信">
+        <span class="share-channel-ic share-channel-ic--wxwork" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M8.2 4.5C4.9 5.8 3 8.6 3 11.4c0 2.1 1.1 4 2.9 5.3-.2.7-.7 2.4-.7 2.5 0 .1.1.2.2.2.1 0 2.1-1.1 2.6-1.4.7.2 1.5.3 2.3.3 4.2 0 7.6-2.8 7.6-6.3 0-3.2-3-6.1-7.1-7.5-1-.3-2.1-.5-3-.5z"/><path fill="currentColor" opacity=".9" d="M15.8 7.2c3.8 1.2 6.2 4 6.2 7.1 0 3.1-2.9 5.7-6.6 6.5-.6.1-1.2.2-1.8.2-2.9 0-5.4-1.4-6.7-3.5 2.5-.9 4.2-2.8 4.2-5 0-2.4-1.8-4.4-4.3-5.3.9-.2 1.9-.3 2.9-.3 2.2 0 4.2.6 6.1 1.8z"/></svg>
+        </span>
+        <span class="share-channel-label">企微</span>
+      </button>
+      <button type="button" class="share-channel" id="shareDingtalk" role="listitem" aria-label="分享到钉钉">
+        <span class="share-channel-ic share-channel-ic--dingtalk" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M19.35 3.65 9.55 20.35l-2.25-7.2L3.5 10.1l15.85-6.45z"/></svg>
+        </span>
+        <span class="share-channel-label">钉钉</span>
+      </button>
+      <button type="button" class="share-channel" id="shareCopyLink" role="listitem" aria-label="复制链接">
+        <span class="share-channel-ic share-channel-ic--link"><i class="fa-solid fa-link" aria-hidden="true"></i></span>
+        <span class="share-channel-label">复制链接</span>
+      </button>
+    </div>
+    <button type="button" class="export-sheet-cancel" id="exportSheetCancel">取消</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var TITLES = {
+    DD20260506001: '滨江基站01 · 单管',
+    DD20260507002: '城西枢纽站 · 角钢',
+    DD20260508004: '余杭南枢纽 · 四管',
+    DD20260505003: '拱墅北环站 · 三管',
+    DD20260504005: '西湖景区东 · 单管'
+  };
+  var KEY = 'tower_app_active_inspect_order';
+  var oid = '';
+  try { oid = (new URLSearchParams(location.search).get('order') || '').trim().toUpperCase(); } catch (e) {}
+  if (!oid) { try { oid = (sessionStorage.getItem(KEY) || '').trim().toUpperCase(); } catch (e2) {} }
+  if (!oid) oid = 'DD20260506001';
+  var titleEl = document.getElementById('topTaskTitle');
+  if (titleEl) titleEl.textContent = TITLES[oid] || TITLES.DD20260506001;
+
+  var MODULES = [
+    { group: '资料与照片', name: '基础信息', icon: 'fa-id-card', src: '../../检测/塔体/ipad_inspect_tower.html', done: true },
+    { group: '资料与照片', name: '上传铁塔照片', icon: 'fa-camera-retro', src: '../../检测/塔体/ipad_inspect_tower_photos.html', done: false, noPhoto: true },
+    { group: '检测大模块', name: '整体模块', icon: 'fa-ruler-combined', src: '../../检测/垂直度/ipad_inspect_vertical.html', done: false },
+    { group: '检测大模块', name: '基础', icon: 'fa-monument', src: '../../检测/地基/ipad_inspect_foundation.html', done: true },
+    { group: '检测大模块', name: '地锚', icon: 'fa-anchor', src: '../../检测/地基/ipad_inspect_foundation.html', done: false },
+    { group: '检测大模块', name: '塔段', icon: 'fa-layer-group', src: '../../检测/分段/ipad_inspect_segment.html', done: false },
+    { group: '检测大模块', name: '平台及设备', icon: 'fa-satellite-dish', src: '../../检测/平台/ipad_inspect_platform.html', done: false },
+    { group: '检测大模块', name: '防腐层质量', icon: 'fa-paint-roller', src: '../../检测/防腐层/ipad_inspect_coating.html', done: false },
+    { group: '检测大模块', name: '焊接', icon: 'fa-wrench', src: '../../检测/焊接/ipad_inspect_weld.html', done: false },
+    { group: '检测大模块', name: '馈线门高度', icon: 'fa-door-open', src: '../../检测/馈线/ipad_inspect_feed.html', done: false },
+    { group: '检测大模块', name: '馈线孔 / 爬梯 / 拉线', icon: 'fa-ruler-horizontal', src: '../../检测/馈线/ipad_inspect_feed.html', done: false },
+    { group: '检测大模块', name: '连接质量', icon: 'fa-link', src: '../../检测/连接/ipad_inspect_connection.html', done: false },
+    { group: '检测大模块', name: '构建质量与接地避雷', icon: 'fa-bolt', src: '../../检测/接地/ipad_inspect_ground.html', done: false },
+    { group: '便捷与校验', name: '校验与提交', icon: 'fa-check-double', src: '../../检测/校验/ipad_inspect_validate.html', done: false, id: 'validate' },
+    { group: '便捷与校验', name: '同步队列', icon: 'fa-cloud-arrow-up', src: '../../系统/同步/ipad_sync_index.html', done: false, id: 'sync' }
+  ];
+
+  var navEl = document.getElementById('inspectModNav');
+  var frame = document.getElementById('moduleFrame');
+  var paneTitle = document.getElementById('paneModuleTitle');
+  var btnSave = document.getElementById('btnSave');
+  var btnSyncAll = document.getElementById('btnSyncAll');
+  var activeIdx = 0;
+
+  var MODULE_ID_BY_FILE = {
+    'ipad_inspect_tower.html': 'tower',
+    'ipad_inspect_tower_photos.html': 'tower_photos',
+    'ipad_inspect_vertical.html': 'vertical',
+    'ipad_inspect_foundation.html': 'foundation',
+    'ipad_inspect_segment.html': 'segment',
+    'ipad_inspect_platform.html': 'platform',
+    'ipad_inspect_coating.html': 'coating',
+    'ipad_inspect_weld.html': 'weld',
+    'ipad_inspect_feed.html': 'feed',
+    'ipad_inspect_connection.html': 'connection',
+    'ipad_inspect_ground.html': 'ground',
+    'ipad_inspect_note.html': 'note',
+    'ipad_inspect_validate.html': 'validate',
+    'ipad_sync_index.html': 'sync'
+  };
+
+  function moduleMeta(mod) {
+    if (!mod) return null;
+    var fn = (mod.src || '').split('/').pop() || '';
+    return {
+      id: mod.id || MODULE_ID_BY_FILE[fn] || fn.replace(/\.html$/i, ''),
+      name: mod.name,
+      noPhoto: !!(mod.noPhoto || mod.noShellTools || mod.id === 'sync' || mod.id === 'validate' || mod.id === 'note' || /tower_photos|inspect_note|ipad_sync/i.test(fn)),
+      noShellTools: !!(mod.noShellTools || mod.id === 'sync' || mod.id === 'validate' || mod.id === 'note')
+    };
+  }
+
+  var flatItems = [];
+
+  function embedUrl(path) {
+    try {
+      var u = new URL(path, window.location.href);
+      u.searchParams.set('embed', '1');
+      if (oid) u.searchParams.set('order', oid);
+      return u.pathname + u.search + u.hash;
+    } catch (e) {
+      return path + (path.indexOf('?') >= 0 ? '&' : '?') + 'embed=1';
+    }
+  }
+
+  function buildNav() {
+    if (!navEl) return;
+    navEl.innerHTML = '';
+    flatItems = [];
+    var groups = {};
+    MODULES.forEach(function (m, i) {
+      if (!groups[m.group]) groups[m.group] = [];
+      groups[m.group].push({ mod: m, index: i });
+    });
+    Object.keys(groups).forEach(function (groupName) {
+      var section = document.createElement('div');
+      section.className = 'inspect-mod-group';
+      var gt = document.createElement('span');
+      gt.className = 'inspect-mod-group-title';
+      gt.textContent = groupName;
+      section.appendChild(gt);
+      groups[groupName].forEach(function (entry) {
+        var m = entry.mod;
+        var idx = entry.index;
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'inspect-mod-item' + (m.done ? ' is-done' : '');
+        btn.setAttribute('data-idx', String(idx));
+        btn.innerHTML =
+          '<span class="mod-ic"><i class="fa-solid ' + m.icon + '" aria-hidden="true"></i></span>' +
+          '<span class="mod-txt"><span class="mod-name">' + m.name + '</span></span>' +
+          (m.done ? '<span class="mod-badge">100%</span>' : '');
+        btn.addEventListener('click', function () { selectModule(idx); });
+        section.appendChild(btn);
+        flatItems.push(btn);
+      });
+      navEl.appendChild(section);
+    });
+  }
+
+  function isSyncModule(mod) {
+    return !!(mod && (mod.id === 'sync' || /ipad_sync_index/i.test(mod.src || '')));
+  }
+
+  function isValidateModule(mod) {
+    return !!(mod && (mod.id === 'validate' || /ipad_inspect_validate/i.test(mod.src || '')));
+  }
+
+  function updateHeaderActions(mod) {
+    var syncMode = isSyncModule(mod);
+    var validateMode = isValidateModule(mod);
+    var hideDefaultActs = syncMode || validateMode;
+    var meta = moduleMeta(mod);
+    var hideShellTools = !!(meta && meta.noShellTools);
+    document.body.classList.toggle('ipad-sync-module-active', syncMode);
+    document.body.classList.toggle('ipad-validate-module-active', validateMode);
+    document.body.classList.toggle('ipad-inspect-shell-tools-hidden', hideShellTools);
+    if (btnSave) btnSave.hidden = hideDefaultActs;
+    if (btnSyncAll) btnSyncAll.hidden = !syncMode;
+  }
+
+  function selectModule(idx) {
+    if (idx < 0 || idx >= MODULES.length) return;
+    activeIdx = idx;
+    var m = MODULES[idx];
+    flatItems.forEach(function (btn, i) {
+      var itemIdx = parseInt(btn.getAttribute('data-idx'), 10);
+      btn.classList.toggle('is-active', itemIdx === idx);
+    });
+    if (paneTitle) paneTitle.textContent = m.name;
+    updateHeaderActions(m);
+    if (frame) {
+      frame.src = embedUrl(m.src);
+    }
+    var activeBtn = flatItems.filter(function (b) { return parseInt(b.getAttribute('data-idx'), 10) === idx; })[0];
+    if (activeBtn && typeof activeBtn.scrollIntoView === 'function') {
+      activeBtn.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+  }
+
+  buildNav();
+  selectModule(0);
+
+  var exportMask = document.getElementById('exportSheetMask');
+  function openExportSheet() {
+    exportMask.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeExportSheet() {
+    exportMask.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('btnExportVoice').addEventListener('click', openExportSheet);
+  exportMask.addEventListener('click', function (e) {
+    if (e.target === exportMask) closeExportSheet();
+  });
+  document.getElementById('exportSheetCancel').addEventListener('click', closeExportSheet);
+  function shareDemo(channel) {
+    closeExportSheet();
+    alert('正在通过「' + channel + '」分享检测任务数据（原型演示）。');
+  }
+  document.getElementById('shareWechat').addEventListener('click', function () { shareDemo('微信'); });
+  document.getElementById('shareWxwork').addEventListener('click', function () { shareDemo('企业微信'); });
+  document.getElementById('shareDingtalk').addEventListener('click', function () { shareDemo('钉钉'); });
+  document.getElementById('shareCopyLink').addEventListener('click', function () {
+    closeExportSheet();
+    alert('检测任务分享链接已复制到剪贴板（原型演示）。');
+  });
+  if (btnSave) {
+    btnSave.addEventListener('click', function () {
+      alert('已保存当前任务全部模块数据');
+    });
+  }
+  if (btnSyncAll) {
+    btnSyncAll.addEventListener('click', function () {
+      alert('开始同步待上传数据（原型演示）。');
+    });
+  }
+})();
+</script>
+</body>
+</html>

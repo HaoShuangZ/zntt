@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<!-- iPad-ORDER_DETAIL v2.1 landscape -->
+<html lang="zh-CN" class="ipad-task-html">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>订单详情</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/app-frame.css">
+<link rel="stylesheet" href="../../../../assets/ipad-tokens.css">
+<link rel="stylesheet" href="../../../../assets/ipad-frame.css">
+<link rel="stylesheet" href="../../../../assets/ipad-layout.css">
+<link rel="stylesheet" href="../../../../assets/ipad-visual.css">
+<link rel="stylesheet" href="../../../../assets/ipad-embed.css">
+<link rel="stylesheet" href="../../../../assets/ipad-task-shell.css">
+<script src="../../../../assets/ipad-adapt.js" defer></script>
+<style>
+html, body.ipad-order-detail-page {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+body.ipad-order-detail-page {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--ipad-font, -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif);
+  background: var(--ipad-bg-page, #f2f3f5);
+  color: var(--ipad-text-1, #1d2129);
+}
+.page-status {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(8px + env(safe-area-inset-top, 0px)) var(--ipad-space-2, 20px) 6px;
+  background: linear-gradient(135deg, #165dff 0%, #4080ff 100%);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+}
+.page-status .icons { font-size: 12px; opacity: 0.92; letter-spacing: 4px; }
+.page-nav {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: 8px var(--ipad-space-2, 20px) 12px;
+  background: #fff;
+  border-bottom: 1px solid var(--ipad-border, #e5e6eb);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+}
+.page-nav a {
+  color: var(--ipad-brand, #165dff);
+  text-decoration: none;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.page-nav .title {
+  flex: 1;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 600;
+  margin: 0;
+}
+.page-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: var(--ipad-space-2, 20px);
+  box-sizing: border-box;
+}
+.detail-layout {
+  max-width: var(--ipad-content-max, 1180px);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ipad-space-2, 20px);
+  align-items: start;
+}
+.sec {
+  background: #fff;
+  border-radius: var(--ipad-radius-lg, 12px);
+  padding: var(--ipad-space-2, 20px);
+  border: 1px solid var(--ipad-border, #e5e6eb);
+  box-shadow: var(--ipad-shadow-card, 0 0 5px rgba(0, 0, 0, 0.3));
+  min-width: 0;
+}
+.sec h2 {
+  margin: 0 0 var(--ipad-space-2, 20px);
+  padding-bottom: var(--ipad-space-1, 10px);
+  border-bottom: 1px solid #f2f3f5;
+  font-size: var(--ipad-fs-title, 16px);
+  font-weight: 600;
+}
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ipad-space-1, 10px) var(--ipad-space-2, 20px);
+}
+.info-cell { min-width: 0; }
+.info-cell.span-2 { grid-column: 1 / -1; }
+.info-label {
+  display: block;
+  font-size: var(--ipad-fs-sub, 13px);
+  color: var(--ipad-text-3, #86909c);
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+.info-value {
+  font-size: var(--ipad-fs-body, 14px);
+  color: var(--ipad-text-1, #1d2129);
+  font-weight: 500;
+  line-height: 1.45;
+  word-break: break-word;
+}
+.info-value.mono {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-variant-numeric: tabular-nums;
+}
+.status-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.map-open-link {
+  color: #165dff;
+  text-decoration: none;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 13px;
+}
+.map-open-link:active { opacity: 0.75; }
+.map-row-link {
+  color: #165dff;
+  text-decoration: none;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+}
+.inspector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 4px;
+}
+.inspector-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #e8f3ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #165dff;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.inspector-name { font-size: 14px; font-weight: 600; }
+.inspector-team { font-size: 12px; color: #86909c; margin-top: 2px; }
+.order-detail-footer .btn-primary {
+  min-width: 160px;
+}
+.order-detail-footer .btn-primary.is-disabled {
+  background: #e5e6eb;
+  color: #86909c;
+  pointer-events: none;
+  opacity: 0.9;
+}
+@media (max-width: 900px) {
+  .detail-layout { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body class="ipad-adapt ipad-order-detail-page">
+
+<div class="page-status" aria-hidden="true">
+  <span>9:41</span>
+  <span class="icons"><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+</div>
+
+<div class="page-nav">
+  <a href="../../工作台/首页/ipad_workbench_index.html#orders"><i class="fa-solid fa-chevron-left"></i> 返回</a>
+  <h1 class="title">订单详情</h1>
+  <span style="width:52px" aria-hidden="true"></span>
+</div>
+
+<main class="page-scroll">
+  <div class="detail-layout">
+    <section class="sec">
+      <h2>基本信息</h2>
+      <div class="info-grid">
+        <div class="info-cell">
+          <span class="info-label">订单编号</span>
+          <span class="info-value mono" id="elOrderId">—</span>
+        </div>
+        <div class="info-cell">
+          <span class="info-label">订单状态</span>
+          <span class="info-value"><span class="status-badge" id="elStatusBadge">—</span></span>
+        </div>
+        <div class="info-cell span-2">
+          <span class="info-label">订单名称</span>
+          <span class="info-value" id="elOrderName">—</span>
+        </div>
+        <div class="info-cell">
+          <span class="info-label">截止日期</span>
+          <span class="info-value mono" id="elDeadline">—</span>
+        </div>
+        <div class="info-cell">
+          <span class="info-label">站址编码</span>
+          <span class="info-value" id="elSite">—</span>
+        </div>
+        <div class="info-cell span-2">
+          <span class="info-label">经纬度</span>
+          <span class="info-value">
+            <a class="map-open-link" id="elMapLink" href="#" target="_blank" rel="noopener noreferrer" title="在高德地图中打开导航">—<i class="fa-solid fa-up-right-from-square" style="font-size:10px" aria-hidden="true"></i></a>
+          </span>
+        </div>
+        <div class="info-cell">
+          <span class="info-label">联系人</span>
+          <span class="info-value" id="elContact">—</span>
+        </div>
+        <div class="info-cell">
+          <span class="info-label">发布时间</span>
+          <span class="info-value mono" id="elPublish">—</span>
+        </div>
+        <div class="info-cell">
+          <span class="info-label">所属项目</span>
+          <span class="info-value" id="elProject">—</span>
+        </div>
+        <div class="info-cell">
+          <span class="info-label">省份地市</span>
+          <span class="info-value" id="elRegion">—</span>
+        </div>
+        <div class="info-cell span-2">
+          <span class="info-label">检测需求</span>
+          <span class="info-value" id="elDemand">—</span>
+        </div>
+        <div class="info-cell span-2">
+          <span class="info-label">地图</span>
+          <span class="info-value">
+            <a class="map-row-link" href="../列表/ipad_order_map.html"><i class="fa-solid fa-map-location-dot"></i> 查看本订单铁塔位置</a>
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <h2>铁塔信息</h2>
+      <div class="info-grid">
+        <div class="info-cell">
+          <span class="info-label">铁塔编号</span>
+          <span class="info-value" id="elTowerNo">—</span>
+        </div>
+        <div class="info-cell">
+          <span class="info-label">铁塔名称</span>
+          <span class="info-value" id="elTowerName">—</span>
+        </div>
+        <div class="info-cell">
+          <span class="info-label">塔型</span>
+          <span class="info-value" id="elTowerType">—</span>
+        </div>
+        <div class="info-cell">
+          <span class="info-label">塔高</span>
+          <span class="info-value" id="elTowerHeight">—</span>
+        </div>
+        <div class="info-cell span-2">
+          <span class="info-label">所属站点</span>
+          <span class="info-value" id="elTowerSite">—</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <h2>关联信息</h2>
+      <div class="info-grid">
+        <div class="info-cell span-2">
+          <span class="info-label">客户名称</span>
+          <span class="info-value" id="elCustomer">—</span>
+        </div>
+        <div class="info-cell span-2">
+          <span class="info-label">工程名称</span>
+          <span class="info-value" id="elEngineering">—</span>
+        </div>
+        <div class="info-cell span-2">
+          <span class="info-label">检测类型</span>
+          <span class="info-value" id="elInspectType">—</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <h2>检测人员</h2>
+      <div class="inspector">
+        <div class="inspector-avatar"><i class="fa-solid fa-user"></i></div>
+        <div>
+          <div class="inspector-name">李明</div>
+          <div class="inspector-team">检测一组</div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div class="task-footer order-detail-footer">
+  <a id="btnPrimaryAction" class="btn-primary" href="#">开始检测</a>
+</div>
+
+<script>
+(function () {
+  var CATALOG = {
+    DD20260506001: {
+      orderName: '滨江区铁塔年度检测订单',
+      status: '待检测',
+      statusBg: '#E8F7FF',
+      statusColor: '#165DFF',
+      deadline: '2026-05-15',
+      site: '滨江基站01',
+      siteAddrCode: 'ZZ-HZ-BJ01',
+      towerNo: 'TT-BJ-001',
+      towerName: '滨江区01#单管塔',
+      towerType: '单管塔',
+      towerHeight: '45m',
+      contact: '王某某 138****5678',
+      publish: '2026-05-06 09:00',
+      project: '2026年杭州铁塔年检工程',
+      region: '浙江省杭州市',
+      demand: '年度常规检测，含塔体与基础',
+      customer: '中国铁塔杭州分公司',
+      engineering: '2026年杭州铁塔年检工程',
+      inspectType: '年度常规检测',
+      mapCoord: '120.2126，30.2084',
+      mapNav: 'https://uri.amap.com/navigation?to=120.2126,30.2084&mode=car&src=tower-app&callnative=1',
+      flow: 'wizard'
+    },
+    DD20260507002: {
+      orderName: '城西区铁塔专项安全检测',
+      status: '检测中',
+      statusBg: '#FFF7E8',
+      statusColor: '#FF7D00',
+      deadline: '2026-05-18',
+      site: '城西枢纽站',
+      siteAddrCode: 'ZZ-HZ-CX03',
+      towerNo: 'TT-CX-003',
+      towerName: '城西区03#角钢塔',
+      towerType: '角钢塔',
+      towerHeight: '52m',
+      contact: '李某某 139****1234',
+      publish: '2026-05-07 10:20',
+      project: '城西枢纽安全专项',
+      region: '浙江省杭州市',
+      demand: '专项安全检测',
+      customer: '中国铁塔杭州分公司',
+      engineering: '城西枢纽安全专项',
+      inspectType: '专项安全检测',
+      mapCoord: '120.0891，30.2955',
+      mapNav: 'https://uri.amap.com/navigation?to=120.0891,30.2955&mode=car&src=tower-app&callnative=1',
+      flow: 'continue'
+    },
+    DD20260508004: {
+      orderName: '余杭区铁塔季度巡检',
+      status: '待检测',
+      statusBg: '#E8F7FF',
+      statusColor: '#165DFF',
+      deadline: '2026-05-22',
+      site: '余杭南枢纽',
+      siteAddrCode: 'ZZ-YH-08',
+      towerNo: 'TT-YH-008',
+      towerName: '余杭区08#四管塔',
+      towerType: '四管塔',
+      towerHeight: '38m',
+      contact: '周某某 137****8899',
+      publish: '2026-05-08 14:00',
+      project: '2026年季度巡检',
+      region: '浙江省杭州市',
+      demand: '季度例行巡检',
+      customer: '中国铁塔杭州分公司',
+      engineering: '2026年季度巡检',
+      inspectType: '季度巡检',
+      mapCoord: '119.9780，30.4211',
+      mapNav: 'https://uri.amap.com/navigation?to=119.9780,30.4211&mode=car&src=tower-app&callnative=1',
+      flow: 'wizard'
+    },
+    DD20260505003: {
+      orderName: '拱墅区铁塔加固复检',
+      status: '已完成',
+      statusBg: '#E8FFEA',
+      statusColor: '#00B42A',
+      deadline: '2026-05-10',
+      site: '拱墅北环站',
+      siteAddrCode: 'ZZ-HZ-GS05',
+      towerNo: 'TT-GS-005',
+      towerName: '拱墅区05#三管塔',
+      towerType: '三管塔',
+      towerHeight: '42m',
+      contact: '陈某某 136****0001',
+      publish: '2026-05-01 09:30',
+      project: '加固复检工程',
+      region: '浙江省杭州市',
+      demand: '加固后复检',
+      customer: '中国铁塔杭州分公司',
+      engineering: '加固复检工程',
+      inspectType: '复检',
+      mapCoord: '120.1412，30.3320',
+      mapNav: 'https://uri.amap.com/navigation?to=120.1412,30.3320&mode=car&src=tower-app&callnative=1',
+      flow: 'done'
+    },
+    DD20260504005: {
+      orderName: '西湖区铁塔新建验收',
+      status: '已完成',
+      statusBg: '#E8FFEA',
+      statusColor: '#00B42A',
+      deadline: '2026-05-03',
+      site: '西湖景区东',
+      siteAddrCode: 'ZZ-XH-12',
+      towerNo: 'TT-XH-012',
+      towerName: '西湖区12#单管塔',
+      towerType: '单管塔',
+      towerHeight: '35m',
+      contact: '赵某某 135****7788',
+      publish: '2026-04-28 11:00',
+      project: '新建站验收',
+      region: '浙江省杭州市',
+      demand: '新建验收检测',
+      customer: '中国铁塔杭州分公司',
+      engineering: '新建站验收',
+      inspectType: '验收检测',
+      mapCoord: '120.1188，30.2455',
+      mapNav: 'https://uri.amap.com/navigation?to=120.1188,30.2455&mode=car&src=tower-app&callnative=1',
+      flow: 'done'
+    }
+  };
+
+  var id = '';
+  try {
+    id = (new URLSearchParams(window.location.search).get('order') || '').trim().toUpperCase();
+  } catch (e) {}
+  if (!id || !CATALOG[id]) id = 'DD20260506001';
+  var o = CATALOG[id];
+  var WIZ = '../../任务/开启检测任务/ipad_task_start_wizard.html?order=' + encodeURIComponent(id);
+  var HOME = '../../任务/填报主页/ipad_task_inspect_home.html?order=' + encodeURIComponent(id);
+
+  document.getElementById('elOrderId').textContent = id;
+  document.getElementById('elOrderName').textContent = o.orderName;
+  var badge = document.getElementById('elStatusBadge');
+  badge.textContent = o.status;
+  badge.style.background = o.statusBg;
+  badge.style.color = o.statusColor;
+  document.getElementById('elDeadline').textContent = o.deadline;
+  document.getElementById('elSite').textContent = o.siteAddrCode || '—';
+  document.getElementById('elContact').textContent = o.contact;
+  document.getElementById('elPublish').textContent = o.publish;
+  document.getElementById('elProject').textContent = o.project;
+  document.getElementById('elRegion').textContent = o.region;
+  document.getElementById('elDemand').textContent = o.demand;
+  document.getElementById('elTowerNo').textContent = o.towerNo;
+  document.getElementById('elTowerName').textContent = o.towerName;
+  document.getElementById('elTowerType').textContent = o.towerType;
+  document.getElementById('elTowerHeight').textContent = o.towerHeight;
+  document.getElementById('elTowerSite').textContent = o.site;
+  document.getElementById('elCustomer').textContent = o.customer;
+  document.getElementById('elEngineering').textContent = o.engineering;
+  document.getElementById('elInspectType').textContent = o.inspectType;
+  var mapA = document.getElementById('elMapLink');
+  mapA.textContent = o.mapCoord;
+  mapA.href = o.mapNav;
+
+  var btn = document.getElementById('btnPrimaryAction');
+  btn.classList.remove('is-disabled');
+  if (o.flow === 'wizard') {
+    btn.textContent = '开始检测';
+    btn.href = WIZ;
+  } else if (o.flow === 'continue') {
+    btn.textContent = '继续填报';
+    btn.href = HOME;
+  } else {
+    btn.textContent = '已完工';
+    btn.href = '#';
+    btn.classList.add('is-disabled');
+    btn.addEventListener('click', function (e) { e.preventDefault(); });
+  }
+})();
+</script>
+</body>
+</html>

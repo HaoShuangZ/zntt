@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>检测填报</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/app-frame.css">
+<style>
+/* 顶区不滚动：状态栏 + 导航；仅中间 main 滚动，滚动条不出现在顶栏上 */
+html{background:#165DFF;height:100%}
+html.task-embed,html.task-embed body{background:#F2F3F5!important}
+html.task-embed .header-fixed{display:none!important}
+html.task-embed .scroll-main{
+  padding-top:max(8px, env(safe-area-inset-top, 0px));
+}
+html,body{height:100%;overflow:hidden;margin:0}
+body{
+  display:flex;
+  flex-direction:column;
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;
+  background:#F2F3F5;
+}
+.header-fixed{
+  flex-shrink:0;
+  z-index:50;
+  background:#165DFF;
+  color:#fff;
+  box-shadow:0 4px 14px rgba(0,0,0,.08);
+}
+.status-bar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:calc(8px + env(safe-area-inset-top, 0px)) 18px 6px;
+  font-size:14px;
+  font-weight:600;
+  letter-spacing:-0.02em;
+  color:rgba(255,255,255,.95);
+  -webkit-user-select:none;user-select:none;
+}
+.status-bar .status-icons{font-size:12px;opacity:.92;letter-spacing:4px}
+.top{
+  padding:4px 12px 10px;
+  box-sizing:border-box;
+}
+.top-row{display:flex;align-items:center;gap:8px;min-height:40px}
+.top a.top-back{color:#fff;opacity:.92;text-decoration:none;flex-shrink:0;padding:4px}
+.top-title{font-size:15px;font-weight:600;min-width:0;flex:1;line-height:1.35;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.top-actions{
+  display:flex;flex-wrap:nowrap;align-items:center;gap:8px;margin-top:6px;
+  width:100%;min-width:0;box-sizing:border-box;padding-bottom:2px;
+}
+.top-actions-left,.top-actions-right{display:flex;flex-wrap:nowrap;align-items:center;gap:5px;flex-shrink:0}
+.top-actions-right{margin-left:auto}
+.top-actions-narrow{overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-width:none}
+.top-actions-narrow::-webkit-scrollbar{display:none}
+.top-actions button,.top-actions .top-act{
+  flex-shrink:0;
+  border:none;background:rgba(255,255,255,.22);color:#fff;font-size:11px;font-weight:600;
+  padding:7px 10px;border-radius:999px;cursor:pointer;font-family:inherit;white-space:nowrap;text-decoration:none;
+  display:inline-flex;align-items:center;gap:5px;-webkit-tap-highlight-color:transparent;
+}
+.top-actions button:active,.top-actions .top-act:active{opacity:.85}
+.top-actions .top-act-export{background:rgba(255,255,255,.32)}
+.top-actions .top-act-save{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.45)}
+.scroll-main{
+  flex:1;
+  min-height:0;
+  overflow-x:hidden;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  padding:12px 14px calc(16px + env(safe-area-inset-bottom, 0px));
+  background:#F2F3F5;
+}
+.prog-h{display:flex;justify-content:space-between;font-size:12px;color:#86909C;margin-bottom:6px}
+.prog-bar{height:6px;background:#E5E6EB;border-radius:99px;overflow:hidden;margin-bottom:14px}
+.prog-in{height:100%;width:38%;background:linear-gradient(90deg,#52C41A,#95DE64);border-radius:99px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mod{position:relative;display:block;background:#fff;border-radius:14px;padding:12px 10px;text-decoration:none;color:inherit;border:1px solid #E5E6EB;box-shadow:0 2px 8px rgba(0,0,0,.04);transition:transform .15s, border-color .2s, box-shadow .2s}
+.mod:active{transform:scale(.98)}
+.mod-done-badge{
+  position:absolute;top:8px;right:8px;
+  font-size:10px;font-weight:700;color:#00B42A;
+  background:#E8FFEA;border:1px solid #AFF0B5;border-radius:6px;
+  padding:2px 6px;line-height:1.2;letter-spacing:0.02em;
+}
+.mod-done-badge i{font-size:9px;margin-right:2px;vertical-align:0}
+.mod-complete{
+  border-color:#B7EB8F;
+  background:linear-gradient(165deg,#f6ffed 0%,#fff 45%);
+  box-shadow:0 2px 10px rgba(0,180,66,.08);
+}
+.mod-complete .ic{background:#E8FFEA;color:#00B42A}
+.mod-complete .t{color:#135200}
+.mod-complete .s{color:#389e0d}
+.mod .t{font-size:13px;font-weight:600;color:#1D2129;line-height:1.3}
+.mod .s{font-size:11px;color:#86909C;margin-top:4px;line-height:1.35}
+.mod .ic{width:36px;height:36px;border-radius:10px;background:#F5F9FF;color:#165DFF;display:flex;align-items:center;justify-content:center;margin-bottom:8px;font-size:15px}
+.sec-title{font-size:12px;font-weight:600;color:#86909C;margin:14px 0 8px;padding-left:2px}
+/* 分享：底部 action sheet */
+.export-sheet-mask{
+  display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.45);
+  align-items:flex-end;justify-content:center;-webkit-tap-highlight-color:transparent;
+}
+.export-sheet-mask.show{display:flex}
+.export-sheet{
+  width:100%;max-width:100%;background:#fff;border-radius:16px 16px 0 0;
+  padding:12px 16px calc(20px + env(safe-area-inset-bottom,0px));box-sizing:border-box;
+  box-shadow:0 -8px 32px rgba(0,0,0,.12);
+}
+.export-sheet-h{margin:4px 0 12px;text-align:center;font-size:13px;font-weight:600;color:#1D2129}
+.share-channels{
+  display:flex;justify-content:space-around;align-items:flex-start;gap:8px;
+  padding:4px 8px 18px;
+}
+.share-channel{
+  border:none;background:transparent;padding:0;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;
+  -webkit-tap-highlight-color:transparent;font-family:inherit;
+}
+.share-channel:active{opacity:.88}
+.share-channel-ic{
+  width:52px;height:52px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:26px;line-height:1;
+}
+.share-channel-ic svg{width:28px;height:28px;display:block}
+.share-channel-ic--wechat{background:#07C160}
+.share-channel-ic--wxwork{background:#2F7DEB}
+.share-channel-ic--dingtalk{background:#0089FF}
+.share-channel-ic--link{background:#F2F3F5;color:#4E5969;border:1px solid #E5E6EB;font-size:22px}
+.share-channel-label{
+  margin-top:6px;font-size:12px;line-height:1.3;color:#4E5969;font-weight:500;
+  white-space:nowrap;
+}
+.export-sheet-cancel{
+  display:block;width:100%;padding:12px;margin:4px 0 0;border:none;background:transparent;
+  color:#86909C;font-size:15px;cursor:pointer;font-family:inherit;
+}
+</style>
+</head>
+<body>
+<script>try{if(/\bembed=1\b/.test(location.search))document.documentElement.classList.add('task-embed');var _k='tower_app_active_inspect_order';var _sp=new URLSearchParams(location.search);var _oid=(_sp.get('order')||'').trim().toUpperCase();if(_oid)sessionStorage.setItem(_k,_oid);}catch(e){}</script>
+
+<div class="header-fixed">
+  <div class="status-bar" aria-hidden="true">
+    <span class="status-time">9:41</span>
+    <span class="status-icons" aria-hidden="true">
+      <i class="fa-solid fa-signal"></i>
+      <i class="fa-solid fa-wifi"></i>
+      <i class="fa-solid fa-battery-full"></i>
+    </span>
+  </div>
+  <div class="top">
+    <div class="top-row">
+      <a class="top-back" href="../../工作台/首页/app_workbench_index.html" aria-label="返回"><i class="fa-solid fa-chevron-left"></i></a>
+      <h1 class="top-title" id="topTaskTitle">滨江基站01 · 单管</h1>
+    </div>
+    <div class="top-actions top-actions-narrow" role="toolbar" aria-label="任务操作">
+      <div class="top-actions-left">
+        <button type="button" class="top-act top-act-export" id="btnExportVoice" title="分享检测任务数据"><i class="fa-solid fa-share-nodes"></i> 分享</button>
+      </div>
+      <div class="top-actions-right">
+        <button type="button" class="top-act top-act-save" id="btnSave">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main class="scroll-main">
+  <div class="prog-h"><span>总进度</span><span>38%</span></div>
+  <div class="prog-bar"><div class="prog-in"></div></div>
+
+  <div class="sec-title">资料与照片</div>
+  <div class="grid2">
+    <a class="mod mod-complete" href="../../检测/塔体/app_inspect_tower.html">
+      <span class="mod-done-badge" title="该模块必填项已全部完成"><i class="fa-solid fa-check"></i>100%</span>
+      <div class="ic"><i class="fa-solid fa-id-card"></i></div>
+      <div class="t">基础信息</div>
+      <div class="s">检测模块配置的基础信息；地址、站址编码等可预填</div>
+    </a>
+    <a class="mod" href="../../检测/塔体/app_inspect_tower_photos.html">
+      <div class="ic"><i class="fa-solid fa-camera-retro"></i></div>
+      <div class="t">上传铁塔照片</div>
+      <div class="s">必拍项由检测任务模板展开，与模板同步。</div>
+    </a>
+  </div>
+
+  <div class="sec-title">检测大模块</div>
+  <div class="grid2">
+    <a class="mod" href="../../检测/垂直度/app_inspect_vertical.html">
+      <div class="ic"><i class="fa-solid fa-ruler-combined"></i></div>
+      <div class="t">整体模块</div>
+      <div class="s">总高、垂直度、外观等</div>
+    </a>
+    <a class="mod mod-complete" href="../../检测/地基/app_inspect_foundation.html">
+      <span class="mod-done-badge" title="该模块必填项已全部完成"><i class="fa-solid fa-check"></i>100%</span>
+      <div class="ic"><i class="fa-solid fa-monument"></i></div>
+      <div class="t">基础</div>
+      <div class="s">检测模板中「基础」配置项（尺寸、混凝土、外观等）</div>
+    </a>
+    <a class="mod" href="../../检测/地基/app_inspect_foundation.html">
+      <div class="ic"><i class="fa-solid fa-anchor"></i></div>
+      <div class="t">地锚</div>
+      <div class="s">与基础同页分块</div>
+    </a>
+    <a class="mod" href="../../检测/分段/app_inspect_segment.html">
+      <div class="ic"><i class="fa-solid fa-layer-group"></i></div>
+      <div class="t">塔段</div>
+      <div class="s">按塔段数量展示多段；每段字段随检测模板配置。</div>
+    </a>
+    <a class="mod" href="../../检测/平台/app_inspect_platform.html">
+      <div class="ic"><i class="fa-solid fa-satellite-dish"></i></div>
+      <div class="t">平台及设备</div>
+      <div class="s">天线、馈线、爬梯、平台附属等模板配置项</div>
+    </a>
+    <a class="mod" href="../../检测/防腐层/app_inspect_coating.html">
+      <div class="ic"><i class="fa-solid fa-paint-roller"></i></div>
+      <div class="t">防腐层质量</div>
+      <div class="s">与模板二维表 / 照片类字段同源（逻辑同检测模块配置）</div>
+    </a>
+    <a class="mod" href="../../检测/焊接/app_inspect_weld.html">
+      <div class="ic"><i class="fa-solid fa-wrench"></i></div>
+      <div class="t">焊接</div>
+      <div class="s">焊缝抽检、记录表</div>
+    </a>
+    <a class="mod" href="../../检测/馈线/app_inspect_feed.html">
+      <div class="ic"><i class="fa-solid fa-door-open"></i></div>
+      <div class="t">馈线门高度</div>
+      <div class="s">模板中馈线门相关限值与测量项</div>
+    </a>
+    <a class="mod" href="../../检测/馈线/app_inspect_feed.html">
+      <div class="ic"><i class="fa-solid fa-ruler-horizontal"></i></div>
+      <div class="t">馈线孔余量 / 排列 / 爬梯 / 拉线</div>
+      <div class="s">馈线孔空间余量、直径与排列宽度；爬梯规格、拉线等（模板配置）</div>
+    </a>
+    <a class="mod" href="../../检测/结构图/app_inspect_diagram.html">
+      <div class="ic"><i class="fa-solid fa-link"></i></div>
+      <div class="t">连接质量</div>
+      <div class="s">螺栓扭矩、连接副等模板配置项</div>
+    </a>
+    <a class="mod" href="../../检测/接地/app_inspect_ground.html">
+      <div class="ic"><i class="fa-solid fa-bolt"></i></div>
+      <div class="t">构建质量与接地避雷</div>
+      <div class="s">构建质量检测、基础情况、避雷针体、引下线、接地电阻、接地装置、扁铁等</div>
+    </a>
+  </div>
+
+  <div class="sec-title">便捷与校验</div>
+  <div class="grid2">
+    <a class="mod" href="../../检测/校验/app_inspect_validate.html">
+      <div class="ic"><i class="fa-solid fa-check-double"></i></div>
+      <div class="t">校验与提交</div>
+      <div class="s">必填通过后提交锁定</div>
+    </a>
+    <a class="mod" href="../../系统/同步/app_sync_index.html">
+      <div class="ic"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+      <div class="t">同步队列</div>
+      <div class="s">弱网重试</div>
+    </a>
+  </div>
+</main>
+
+<div class="export-sheet-mask" id="exportSheetMask" role="dialog" aria-modal="true" aria-labelledby="exportSheetTitle">
+  <div class="export-sheet" id="exportSheetPanel" role="document">
+    <div class="export-sheet-h" id="exportSheetTitle">检测任务数据分享到</div>
+    <div class="share-channels" role="list">
+      <button type="button" class="share-channel" id="shareWechat" role="listitem" aria-label="分享到微信">
+        <span class="share-channel-ic share-channel-ic--wechat"><i class="fa-brands fa-weixin" aria-hidden="true"></i></span>
+        <span class="share-channel-label">微信</span>
+      </button>
+      <button type="button" class="share-channel" id="shareWxwork" role="listitem" aria-label="分享到企业微信">
+        <span class="share-channel-ic share-channel-ic--wxwork" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M8.2 4.5C4.9 5.8 3 8.6 3 11.4c0 2.1 1.1 4 2.9 5.3-.2.7-.7 2.4-.7 2.5 0 .1.1.2.2.2.1 0 2.1-1.1 2.6-1.4.7.2 1.5.3 2.3.3 4.2 0 7.6-2.8 7.6-6.3 0-3.2-3-6.1-7.1-7.5-1-.3-2.1-.5-3-.5z"/><path fill="currentColor" opacity=".9" d="M15.8 7.2c3.8 1.2 6.2 4 6.2 7.1 0 3.1-2.9 5.7-6.6 6.5-.6.1-1.2.2-1.8.2-2.9 0-5.4-1.4-6.7-3.5 2.5-.9 4.2-2.8 4.2-5 0-2.4-1.8-4.4-4.3-5.3.9-.2 1.9-.3 2.9-.3 2.2 0 4.2.6 6.1 1.8z"/></svg>
+        </span>
+        <span class="share-channel-label">企微</span>
+      </button>
+      <button type="button" class="share-channel" id="shareDingtalk" role="listitem" aria-label="分享到钉钉">
+        <span class="share-channel-ic share-channel-ic--dingtalk" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M19.35 3.65 9.55 20.35l-2.25-7.2L3.5 10.1l15.85-6.45z"/></svg>
+        </span>
+        <span class="share-channel-label">钉钉</span>
+      </button>
+      <button type="button" class="share-channel" id="shareCopyLink" role="listitem" aria-label="复制链接">
+        <span class="share-channel-ic share-channel-ic--link"><i class="fa-solid fa-link" aria-hidden="true"></i></span>
+        <span class="share-channel-label">复制链接</span>
+      </button>
+    </div>
+    <button type="button" class="export-sheet-cancel" id="exportSheetCancel">取消</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var TITLES = {
+    DD20260506001: '滨江基站01 · 单管',
+    DD20260507002: '城西枢纽站 · 角钢',
+    DD20260508004: '余杭南枢纽 · 四管',
+    DD20260505003: '拱墅北环站 · 三管',
+    DD20260504005: '西湖景区东 · 单管'
+  };
+  var KEY = 'tower_app_active_inspect_order';
+  var oid = '';
+  try { oid = (new URLSearchParams(location.search).get('order') || '').trim().toUpperCase(); } catch (e) {}
+  if (!oid) { try { oid = (sessionStorage.getItem(KEY) || '').trim().toUpperCase(); } catch (e2) {} }
+  if (!oid) oid = 'DD20260506001';
+  var titleEl = document.getElementById('topTaskTitle');
+  if (titleEl) titleEl.textContent = TITLES[oid] || TITLES.DD20260506001;
+
+  var exportMask = document.getElementById('exportSheetMask');
+  function openExportSheet() {
+    exportMask.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeExportSheet() {
+    exportMask.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('btnExportVoice').addEventListener('click', openExportSheet);
+  exportMask.addEventListener('click', function (e) {
+    if (e.target === exportMask) closeExportSheet();
+  });
+  document.getElementById('exportSheetCancel').addEventListener('click', closeExportSheet);
+  function shareDemo(channel) {
+    closeExportSheet();
+    alert('正在通过「' + channel + '」分享检测任务数据（原型演示）。');
+  }
+  document.getElementById('shareWechat').addEventListener('click', function () { shareDemo('微信'); });
+  document.getElementById('shareWxwork').addEventListener('click', function () { shareDemo('企业微信'); });
+  document.getElementById('shareDingtalk').addEventListener('click', function () { shareDemo('钉钉'); });
+  document.getElementById('shareCopyLink').addEventListener('click', function () {
+    closeExportSheet();
+    alert('检测任务分享链接已复制到剪贴板（原型演示）。');
+  });
+  document.getElementById('btnSave').addEventListener('click', function () {
+    alert('已保存');
+  });
+})();
+</script>
+</body>
+</html>

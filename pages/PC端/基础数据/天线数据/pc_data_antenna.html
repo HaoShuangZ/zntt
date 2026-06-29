@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>天线数据</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+
+  <div class="card" style="border-color:#FF7D00;background:#FFFBF5">
+    <div class="card-body" style="font-size:13px;color:var(--text-2);line-height:1.6">
+      <strong>本页已弃用：</strong>天线信息请在「基础数据 → 站点管理」中维护。
+      <a href="../站点数据/pc_data_site.html" class="btn-text" style="margin-left:8px"><i class="fa-solid fa-location-dot"></i> 前往站点管理</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">天线数据</div>
+    </div>
+    <div class="card-body">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <input type="text" class="form-input" placeholder="搜索天线编号/型号">
+          <select class="form-select">
+            <option value="">全部品牌</option>
+            <option>华为</option>
+            <option>中兴</option>
+            <option>大唐</option>
+            <option>京信</option>
+            <option>通宇</option>
+          </select>
+          <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> 查询</button>
+          <button class="btn btn-default">重置</button>
+        </div>
+      </div>
+
+      <div class="pc-table-actions">
+        <button class="btn btn-primary"><i class="fa-solid fa-plus"></i> 新增天线</button>
+          <button class="btn btn-default"><i class="fa-solid fa-file-import"></i> 导入</button>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>天线编号</th>
+            <th>天线品牌</th>
+            <th>天线型号</th>
+            <th>尺寸(mm)</th>
+            <th>重量(kg)</th>
+            <th>增益(dBi)</th>
+            <th>频段</th>
+            <th>状态</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>TX001</td>
+            <td>华为</td>
+            <td>ATR4518R6</td>
+            <td>2600×310×160</td>
+            <td>22.5</td>
+            <td>18.0</td>
+            <td>1800-2600MHz</td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">编辑</button>
+              <button class="btn btn-text" style="color:var(--danger)">删除</button>
+            </td>
+          </tr>
+          <tr>
+            <td>TX002</td>
+            <td>中兴</td>
+            <td>TD-R830A</td>
+            <td>1400×350×140</td>
+            <td>18.2</td>
+            <td>15.5</td>
+            <td>800-900MHz</td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">编辑</button>
+              <button class="btn btn-text" style="color:var(--danger)">删除</button>
+            </td>
+          </tr>
+          <tr>
+            <td>TX003</td>
+            <td>大唐</td>
+            <td>TDA-2326C</td>
+            <td>1320×310×130</td>
+            <td>15.8</td>
+            <td>17.5</td>
+            <td>2300-2600MHz</td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">编辑</button>
+              <button class="btn btn-text" style="color:var(--danger)">删除</button>
+            </td>
+          </tr>
+          <tr>
+            <td>TX004</td>
+            <td>京信</td>
+            <td>JX-65-1710</td>
+            <td>1800×280×120</td>
+            <td>16.0</td>
+            <td>17.0</td>
+            <td>1710-2170MHz</td>
+            <td><span class="tag tag-gray">停用</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">编辑</button>
+              <button class="btn btn-text" style="color:var(--danger)">删除</button>
+            </td>
+          </tr>
+          <tr>
+            <td>TX005</td>
+            <td>通宇</td>
+            <td>TY-0809DA</td>
+            <td>1500×330×150</td>
+            <td>19.5</td>
+            <td>16.0</td>
+            <td>806-960MHz</td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">编辑</button>
+              <button class="btn btn-text" style="color:var(--danger)">删除</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <span>共 5 条记录</span>
+        <div class="pagination-btns">
+          <button class="page-btn"><i class="fa-solid fa-chevron-left"></i></button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'data_site', breadcrumb:['基础数据','站点管理','天线数据（已弃用）']};</script>
+</body>
+</html>
+

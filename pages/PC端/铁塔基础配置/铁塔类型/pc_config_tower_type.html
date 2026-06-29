@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>铁塔类型</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+
+  <div class="card" style="margin-bottom:16px;border-left:4px solid var(--primary)">
+    <div class="card-body" style="padding:12px 16px;font-size:13px;color:var(--text-2)">
+      现行菜单：<strong>基础数据 → 铁塔类型</strong>。
+      <a href="../../基础数据/铁塔类型/pc_data_tower_type.html" class="btn btn-primary btn-sm" style="margin-left:10px">前往</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">铁塔类型管理</div>
+    </div>
+    <div class="card-body">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <button class="btn btn-primary">查询</button>
+          <button class="btn btn-default">重置</button>
+        </div>
+      </div>
+
+      <div class="pc-table-actions">
+        <a class="btn btn-primary" href="pc_config_tower_type_create.html"><i class="fa-solid fa-plus"></i> 新增类型</a>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>类型编码</th>
+            <th>类型名称</th>
+            <th>说明</th>
+            <th>检测项数量</th>
+            <th>状态</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>TT01</td>
+            <td>单管</td>
+            <td>法兰连接或插接式单管</td>
+            <td>18</td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">编辑</button>
+              <button class="btn btn-text">配置检测项</button>
+            </td>
+          </tr>
+          <tr>
+            <td>TT02</td>
+            <td>角钢</td>
+            <td>角钢格构式铁塔</td>
+            <td>22</td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">编辑</button>
+              <button class="btn btn-text">配置检测项</button>
+            </td>
+          </tr>
+          <tr>
+            <td>TT03</td>
+            <td>三管</td>
+            <td>三根主管组成</td>
+            <td>16</td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">编辑</button>
+              <button class="btn btn-text">配置检测项</button>
+            </td>
+          </tr>
+          <tr>
+            <td>TT04</td>
+            <td>四管</td>
+            <td>四根主管组成</td>
+            <td>20</td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">编辑</button>
+              <button class="btn btn-text">配置检测项</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <span>共 4 条记录</span>
+        <div class="pagination-btns">
+          <button class="page-btn"><i class="fa-solid fa-chevron-left"></i></button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'config_tower_type', breadcrumb:['铁塔基础配置','铁塔类型']};</script>
+</body>
+</html>
+
+

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>订单管理</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../assets/app-frame.css">
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; background: #F2F3F5; margin: 0; padding-bottom: 24px; }
+.nav-bar { height: 44px; display: flex; align-items: center; padding: 0 12px; background: #fff; border-bottom: 1px solid #E5E6EB; position: sticky; top: 0; z-index: 10; }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; }
+.tag-blue { background: #E8F7FF; color: #165DFF; }
+.tag-orange { background: #FFF7E8; color: #FF7D00; }
+.tag-green { background: #E8FFEA; color: #00B42A; }
+.card { background: #fff; border-radius: 12px; margin: 10px 16px; padding: 14px; box-shadow: 0 1px 4px rgba(0,0,0,.06); border: 1px solid #E5E6EB; }
+.row { display: flex; justify-content: space-between; font-size: 12px; color: #86909C; margin-top: 6px; }
+.row strong { color: #1D2129; font-weight: 500; }
+.hint { font-size: 11px; color: #86909C; padding: 8px 16px 0; line-height: 1.45; }
+</style>
+<script src="../../../assets/app-menu-access-log.js" defer></script>
+</head>
+<body>
+<div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:#165DFF;">
+  <span style="font-size:14px;font-weight:600;color:#fff;">9:41</span>
+  <span style="font-size:12px;color:#fff;"><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+</div>
+<div class="nav-bar">
+  <a href="首页/app_profile_index.html" style="color:#165DFF;text-decoration:none;font-size:14px;"><i class="fa-solid fa-chevron-left"></i></a>
+  <span style="flex:1;text-align:center;font-size:16px;font-weight:600;">订单管理</span>
+  <a href="app_profile_order_create.html" style="color:#165DFF;text-decoration:none;font-size:14px;font-weight:600;"><i class="fa-solid fa-plus"></i> 新增</a>
+</div>
+<p class="hint">已催办订单置顶，其余按派单时间倒序。</p>
+
+<div style="padding:8px 16px 0;display:flex;gap:8px;flex-wrap:wrap;">
+  <input type="text" placeholder="订单名称/编号" style="flex:1;min-width:140px;height:36px;border:1px solid #E5E6EB;border-radius:8px;padding:0 10px;font-size:14px;box-sizing:border-box;">
+  <select style="height:36px;border:1px solid #E5E6EB;border-radius:8px;font-size:13px;padding:0 8px;">
+    <option>全部状态</option>
+    <option>待派单</option>
+    <option>已派单</option>
+    <option>已完成</option>
+  </select>
+</div>
+<div style="padding:10px 16px;">
+  <button type="button" style="width:100%;height:38px;background:#165DFF;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;"><i class="fa-solid fa-magnifying-glass"></i> 查询</button>
+</div>
+
+<div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+    <span style="font-size:12px;color:#86909C;font-family:ui-monospace,monospace;">ZJHC20260505001</span>
+    <span class="tag tag-orange">已催办</span>
+  </div>
+  <div style="font-size:15px;font-weight:600;color:#1D2129;margin-bottom:8px;">城西改造项目检</div>
+  <div class="row"><span>站址编码</span><strong>ZZ-HZ-CX03</strong></div>
+  <div class="row"><span>关联工程</span><strong>城西区域改造项目</strong></div>
+  <div class="row"><span>检测单位</span><strong>华东某外协检测</strong></div>
+  <div class="row"><span>检测类型</span><strong>可靠性鉴定</strong></div>
+  <div class="row"><span>状态</span><span class="tag tag-blue">已派</span></div>
+  <div class="row"><span>派单 / 截止</span><strong>2026-05-05 · 2026-05-20</strong></div>
+  <div class="row"><span>是否过期</span><span class="tag tag-green">正常</span></div>
+  <div class="row"><span>检测人</span><strong>李明</strong></div>
+  <div style="margin-top:12px;padding-top:10px;border-top:1px solid #F2F3F5;text-align:right;">
+    <button type="button" style="border:none;background:none;color:#165DFF;font-size:14px;font-weight:600;">查看</button>
+  </div>
+</div>
+
+<div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+    <span style="font-size:12px;color:#86909C;font-family:ui-monospace,monospace;">ZJHYH20260503002</span>
+    <span class="tag tag-orange">已催办</span>
+  </div>
+  <div style="font-size:15px;font-weight:600;color:#1D2129;margin-bottom:8px;">余杭5G升级检测</div>
+  <div class="row"><span>站址编码</span><strong>ZZ-YH-12</strong></div>
+  <div class="row"><span>关联工程</span><strong>余杭5G升级项目</strong></div>
+  <div class="row"><span>检测单位</span><strong>浙江中能检测</strong></div>
+  <div class="row"><span>检测类型</span><strong>安全性鉴定</strong></div>
+  <div class="row"><span>状态</span><span class="tag tag-blue">已派</span></div>
+  <div class="row"><span>派单 / 截止</span><strong>2026-05-03 · 2026-05-15</strong></div>
+  <div class="row"><span>是否过期</span><span class="tag tag-orange">即将过期</span></div>
+  <div class="row"><span>检测人</span><strong>王强</strong></div>
+  <div style="margin-top:12px;padding-top:10px;border-top:1px solid #F2F3F5;text-align:right;">
+    <button type="button" style="border:none;background:none;color:#165DFF;font-size:14px;font-weight:600;">查看</button>
+  </div>
+</div>
+
+<div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+    <span style="font-size:12px;color:#86909C;font-family:ui-monospace,monospace;">ZJZN20260508003</span>
+    <span class="tag" style="background:#F2F3F5;color:#86909C;">未催办</span>
+  </div>
+  <div style="font-size:15px;font-weight:600;color:#1D2129;margin-bottom:8px;">滨江年检批次二</div>
+  <div class="row"><span>站址编码</span><strong>ZZ-HZ-BJ02</strong></div>
+  <div class="row"><span>关联工程</span><strong>2026年杭州铁塔年检工程</strong></div>
+  <div class="row"><span>检测单位</span><strong>浙江中能检测</strong></div>
+  <div class="row"><span>检测类型</span><strong>年度例行检测</strong></div>
+  <div class="row"><span>状态</span><span class="tag" style="background:#FFF7E8;color:#FF7D00;">待派</span></div>
+  <div class="row"><span>派单 / 截止</span><strong>— · 2026-06-01</strong></div>
+  <div class="row"><span>检测人</span><strong>—</strong></div>
+  <div style="margin-top:12px;padding-top:10px;border-top:1px solid #F2F3F5;text-align:right;">
+    <button type="button" style="border:none;background:none;color:#165DFF;font-size:14px;font-weight:600;">查看</button>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  if (typeof __logMenuAccess === 'function') __logMenuAccess('订单入口');
+});
+</script>
+</body>
+</html>

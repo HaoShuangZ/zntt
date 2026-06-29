@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>站点管理</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">站点管理</div>
+    </div>
+    <div class="card-body">
+      <p style="font-size:12px;color:var(--text-3);margin:0 0 12px">与「新增站点」主档一致：<strong>省/市所属区域</strong>、经纬度、状态、备注；天线与铁塔在<strong>查看详情</strong>中维护。</p>
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <input type="text" class="form-input" placeholder="搜索站址编码/名称">
+          <select class="form-select">
+            <option value="">全部区域</option>
+            <option>浙江省 / 杭州市</option>
+            <option>浙江省 / 宁波市</option>
+            <option>浙江省 / 温州市</option>
+            <option>江苏省 / 南京市</option>
+            <option>上海市 / 上海市</option>
+          </select>
+          <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> 查询</button>
+          <button class="btn btn-default">重置</button>
+        </div>
+      </div>
+
+      <div class="pc-table-actions">
+        <button type="button" class="btn btn-primary" onclick="location.href='pc_data_site_create.html'"><i class="fa-solid fa-plus"></i> 新增站点</button>
+          <button class="btn btn-default"><i class="fa-solid fa-file-import"></i> 导入</button>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>站址编码</th>
+            <th>站点名称</th>
+            <th>所属区域</th>
+            <th>经度</th>
+            <th>纬度</th>
+            <th>状态</th>
+            <th>备注</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>ZD001</td>
+            <td>滨江基站</td>
+            <td>浙江省 / 杭州市</td>
+            <td>120.2134</td>
+            <td>30.2088</td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td style="max-width:200px;color:var(--text-2)">长河路侧，近地铁</td>
+            <td class="col-action">
+              <button type="button" class="btn btn-text">编辑</button>
+              <button type="button" class="btn btn-text">查看详情</button>
+            </td>
+          </tr>
+          <tr>
+            <td>ZD002</td>
+            <td>西湖基站</td>
+            <td>浙江省 / 杭州市</td>
+            <td>120.1312</td>
+            <td>30.2689</td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td style="max-width:200px;color:var(--text-2)">—</td>
+            <td class="col-action">
+              <button type="button" class="btn btn-text">编辑</button>
+              <button type="button" class="btn btn-text">查看详情</button>
+            </td>
+          </tr>
+          <tr>
+            <td>ZD003</td>
+            <td>余杭基站</td>
+            <td>浙江省 / 杭州市</td>
+            <td>120.2988</td>
+            <td>30.4192</td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td style="max-width:200px;color:var(--text-2)">临平大道园区</td>
+            <td class="col-action">
+              <button type="button" class="btn btn-text">编辑</button>
+              <button type="button" class="btn btn-text">查看详情</button>
+            </td>
+          </tr>
+          <tr>
+            <td>ZD004</td>
+            <td>萧山基站</td>
+            <td>浙江省 / 杭州市</td>
+            <td>120.2643</td>
+            <td>30.1834</td>
+            <td><span class="tag tag-gray">停用</span></td>
+            <td style="max-width:200px;color:var(--text-2)">待迁站</td>
+            <td class="col-action">
+              <button type="button" class="btn btn-text">编辑</button>
+              <button type="button" class="btn btn-text">查看详情</button>
+            </td>
+          </tr>
+          <tr>
+            <td>ZD005</td>
+            <td>拱墅基站</td>
+            <td>浙江省 / 杭州市</td>
+            <td>120.1456</td>
+            <td>30.3167</td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td style="max-width:200px;color:var(--text-2)">—</td>
+            <td class="col-action">
+              <button type="button" class="btn btn-text">编辑</button>
+              <button type="button" class="btn btn-text">查看详情</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <span>共 5 条记录</span>
+        <div class="pagination-btns">
+          <button class="page-btn"><i class="fa-solid fa-chevron-left"></i></button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'data_site', breadcrumb:['基础数据','站点管理']};</script>
+</body>
+</html>

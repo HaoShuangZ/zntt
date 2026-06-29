@@ -1,0 +1,56 @@
+/**
+ * iPad 设计令牌 · dp 基准 · 相对移动端放大 ≤20%
+ * 基准横屏：1024×768（4:3）· 兼容 Pro 大屏
+ */
+:root {
+  --ipad-scale: 1.12;
+
+  --ipad-brand: #165dff;
+  --ipad-brand-light: #4080ff;
+  --ipad-brand-bg: #e8f3ff;
+  --ipad-text-1: #1d2129;
+  --ipad-text-2: #4e5969;
+  --ipad-text-3: #86909c;
+  --ipad-text-4: #c9cdd4;
+  --ipad-border: #e5e6eb;
+  --ipad-bg-page: #f2f3f5;
+  --ipad-success: #00b42a;
+  --ipad-danger: #f53f3f;
+  --ipad-warning: #ff7d00;
+
+  --ipad-radius-lg: 12px;
+  --ipad-radius-md: 8px;
+  --ipad-font: -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", Roboto, sans-serif;
+
+  /* 间距：10 的倍数 */
+  --ipad-space-1: 10px;
+  --ipad-space-2: 20px;
+  --ipad-space-3: 30px;
+
+  /* 字号：移动端 +2 / 辅助 -2（封顶） */
+  --ipad-fs-caption: 11px;
+  --ipad-fs-body: 14px;
+  --ipad-fs-sub: 13px;
+  --ipad-fs-title: 16px;
+  --ipad-fs-head: 18px;
+  --ipad-lh-tight: 1.35;
+  --ipad-lh-body: 1.5;
+  --ipad-lh-loose: 1.6;
+
+  /* 阴影规范：#000 30% · blur 5 */
+  --ipad-shadow-card: 0 0 5px rgba(0, 0, 0, 0.3);
+  --ipad-shadow-float: 0 0 5px rgba(0, 0, 0, 0.3);
+
+  --ipad-content-max: 1180px;
+  --ipad-read-col: min(480px, 100%);
+  --ipad-touch-min: 44px;
+  --ipad-tab-rail: 92px;
+  --ipad-shell-w: 1024px;
+  --ipad-shell-h: 768px;
+}
+
+@media (min-width: 1366px) {
+  :root {
+    --ipad-content-max: 1280px;
+  }
+}

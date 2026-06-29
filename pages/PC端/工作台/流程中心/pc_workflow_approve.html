@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>流程审批 - 基础平台</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+  <div class="page-header">
+    <div class="page-title">流程审批（基础平台）</div>
+    <a href="pc_workflow.html" class="btn btn-default"><i class="fa-solid fa-arrow-left"></i> 返回流程中心</a>
+  </div>
+  <div class="card" style="margin-bottom:16px;border:1px solid #CFE1FF;background:#F8FAFF">
+    <div class="card-body" style="font-size:13px;color:var(--text-2)">本页为<strong>基础平台</strong>审批能力占位。业务系统仅展示审批结果，不在列表内弹窗审批。</div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <h3 style="margin:0 0 12px;font-size:15px;font-weight:600" id="bizTitle">审批内容</h3>
+      <p id="bizDesc" style="font-size:13px;color:var(--text-2);line-height:1.6;margin:0 0 16px"></p>
+      <a href="#" id="bizLink" class="btn btn-text" style="padding:0;display:none"><i class="fa-solid fa-arrow-up-right-from-square"></i> 查看业务单据</a>
+      <div class="form-group" style="margin-top:20px">
+        <label class="form-label">审批意见</label>
+        <textarea class="form-textarea" style="width:100%;min-height:88px" placeholder="请输入意见"></textarea>
+      </div>
+      <div style="margin-top:16px;display:flex;gap:8px">
+        <button type="button" class="btn btn-primary" onclick="alert('已通过（平台）')"><i class="fa-solid fa-check"></i> 同意</button>
+        <button type="button" class="btn btn-default" style="color:var(--danger)" onclick="alert('已驳回（平台）')"><i class="fa-solid fa-xmark"></i> 驳回</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>
+window.__layoutConfig = { active: '', breadcrumb: ['工作台', '流程中心', '审批'] };
+window.addEventListener('DOMContentLoaded', function () {
+  var p = new URLSearchParams(location.search);
+  var type = p.get('bizType') || '';
+  var id = p.get('bizId') || '';
+  var title = document.getElementById('bizTitle');
+  var desc = document.getElementById('bizDesc');
+  var link = document.getElementById('bizLink');
+  if (type.indexOf('contract') === 0) {
+    title.textContent = '合同审批 · ' + id;
+    desc.textContent = '对上/对下合同主档审批。通过后业务侧展示「已通过」，方可按规则登记收付款、新建工程等。';
+    link.style.display = 'inline-flex';
+    link.href = type === 'contract_down'
+      ? '../../合同管理/对下合同/pc_contract_downstream_detail.html?code=' + encodeURIComponent(id)
+      : '../../合同管理/合同编辑/pc_contract_detail.html?code=' + encodeURIComponent(id);
+    link.textContent = ' 查看合同详情';
+  } else {
+    desc.textContent = '铁塔结构安全性检测报告（编号 BG-2026-0512）待您审批。';
+  }
+});
+</script>
+</body>
+</html>

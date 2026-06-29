@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新建检测任务</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-1);
+    margin-bottom: 12px;
+    padding-left: 10px;
+    border-left: 3px solid var(--primary);
+  }
+  .form-section { padding: 12px 0 4px; }
+  .error-text { font-size: 12px; color: var(--danger); min-height: 18px; line-height: 18px; }
+  .note {
+    font-size: 12px;
+    color: var(--text-3);
+    margin-top: -4px;
+    margin-bottom: 8px;
+  }
+  .rule-tip {
+    margin-bottom: 14px;
+    font-size: 12px;
+    color: #92400e;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 8px;
+    padding: 8px 10px;
+  }
+</style>
+</head>
+<body>
+<div id="page-content">
+  <div class="page-header">
+    <div style="display:flex;align-items:center;gap:12px">
+      <a href="pc_task_list.html" class="btn btn-default btn-sm"><i class="fa-solid fa-arrow-left"></i> 返回列表</a>
+      <h1 class="page-title">新建检测任务</h1>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="rule-tip">
+        <strong>任务来源：</strong>正常由「营销管理 · 订单」派单至检测单位后<strong>自动生成</strong>检测任务；本页为<strong>例外补录</strong>入口。检测人员一般在「检测任务」列表通过<strong>派任务</strong>指定；此处可不选检测人，保存后为<strong>待指派</strong>。
+      </div>
+      <div class="form-section">
+        <div class="section-title">任务基础信息</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <span class="form-label">任务编号</span>
+            <input id="taskCode" class="form-input" value="系统保存后自动生成" disabled>
+            <div class="error-text"></div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">来源订单 <span class="required">*</span></span>
+            <select id="orderCode" class="form-select" style="width:100%">
+              <option value="">请选择订单</option>
+              <option>DD202605001 - 滨江01#塔项目</option>
+              <option>DD202605002 - 滨江02#塔项目</option>
+              <option>DD202605003 - 西湖01#塔项目</option>
+            </select>
+            <div class="error-text" id="orderCodeError"></div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">任务名称 <span class="required">*</span></span>
+            <input id="taskName" class="form-input" placeholder="请输入任务名称">
+            <div class="error-text" id="taskNameError"></div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">关联铁塔 <span class="required">*</span></span>
+            <input id="towerCode" class="form-input" placeholder="请输入铁塔编码，如 TT-BJ-003">
+            <div class="error-text" id="towerCodeError"></div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">所属工程 <span class="required">*</span></span>
+            <select id="projectName" class="form-select" style="width:100%">
+              <option value="">请选择工程</option>
+              <option>滨江铁塔年度检测工程</option>
+              <option>西湖通信塔可靠性复检工程</option>
+              <option>余杭站点隐患治理项目</option>
+            </select>
+            <div class="error-text" id="projectNameError"></div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">委托单位 <span class="required">*</span></span>
+            <select id="customerName" class="form-select" style="width:100%">
+              <option value="">请选择委托单位</option>
+              <option>中国铁塔浙江分公司</option>
+              <option>中国移动浙江公司</option>
+            </select>
+            <div class="error-text" id="customerNameError"></div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">检测类型 <span class="required">*</span></span>
+            <select id="inspectType" class="form-select" style="width:100%">
+              <option value="">请选择</option>
+              <option>安全性鉴定</option>
+              <option>可靠性鉴定</option>
+              <option>常规检测</option>
+            </select>
+            <div class="error-text" id="inspectTypeError"></div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">检测依据 <span class="required">*</span></span>
+            <select id="standardRef" class="form-select" style="width:100%">
+              <option value="">请选择检测依据</option>
+              <option>Q/ZJZN 2026《通信铁塔检测规范》</option>
+              <option>GB/T 2694-2018《输电线路铁塔制造技术条件》</option>
+              <option>企业常规检测作业指导书（2026版）</option>
+            </select>
+            <div class="error-text" id="standardRefError"></div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">模板包（template_package_id）<span class="required">*</span></span>
+            <select id="taskTemplate" class="form-select" style="width:100%">
+              <option value="">请选择模板包</option>
+              <option>PKG_STOCK_SINGLE_PIPE_20260509 · 存量单管/拉线杆</option>
+              <option>PKG_STOCK_ANGLE_LATTICE_20260511 · 存量角钢格构</option>
+              <option>RWMB-002 · 安全性鉴定（企业扩展包）</option>
+            </select>
+            <p style="font-size:11px;color:var(--text-3);margin:6px 0 0">由 TaskContext 解析得到；创建任务时写入快照，后续填报不随引擎升级漂移。</p>
+            <div class="error-text" id="taskTemplateError"></div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">检测人</span>
+            <select id="inspector" class="form-select" style="width:100%">
+              <option value="">暂不指定（待指派，由任务列表「派任务」）</option>
+              <option>李明</option>
+              <option>王强</option>
+              <option>张华</option>
+              <option>赵六</option>
+            </select>
+            <p class="note">与列表「派任务」二选一或后补；未选则任务状态为待指派。</p>
+            <div class="error-text" id="inspectorError"></div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">派单日期 <span class="required">*</span></span>
+            <input id="dispatchDate" type="date" class="form-input">
+            <div class="error-text" id="dispatchDateError"></div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">计划开始时间 <span class="required">*</span></span>
+            <input id="planStartDate" type="date" class="form-input">
+            <div class="error-text" id="planStartDateError"></div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">计划完成时间 <span class="required">*</span></span>
+            <input id="planFinishDate" type="date" class="form-input">
+            <div class="error-text" id="planFinishDateError"></div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">优先级 <span class="required">*</span></span>
+            <select id="priorityLevel" class="form-select" style="width:100%">
+              <option value="">请选择优先级</option>
+              <option>高</option>
+              <option>中</option>
+              <option>低</option>
+            </select>
+            <div class="error-text" id="priorityLevelError"></div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">是否回传平台 <span class="required">*</span></span>
+            <select id="needSync" class="form-select" style="width:100%">
+              <option value="">请选择</option>
+              <option>是（默认）</option>
+              <option>否（需审批说明）</option>
+            </select>
+            <div class="error-text" id="needSyncError"></div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">任务状态</span>
+            <input class="form-input" value="待指派（保存后）" disabled>
+            <div class="error-text"></div>
+          </div>
+          <div class="form-group full">
+            <span class="form-label">任务说明</span>
+            <textarea id="taskRemark" class="form-textarea" placeholder="请输入任务说明"></textarea>
+            <div class="error-text"></div>
+          </div>
+          <div class="form-group full">
+            <span class="form-label">不回传说明（当“是否回传平台=否”时必填）</span>
+            <textarea id="syncExceptionReason" class="form-textarea" placeholder="请填写不回传原因及审批依据"></textarea>
+            <div class="error-text" id="syncExceptionReasonError"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-footer">
+      <a href="pc_task_list.html" class="btn btn-default">取消</a>
+      <button class="btn btn-default" id="saveDraftBtn">保存草稿</button>
+      <button class="btn btn-primary" id="saveBtn">保存任务</button>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'task_list', breadcrumb:['检测管理','检测任务','新建任务']};</script>
+<script>
+  (function () {
+    function setError(id, text) {
+      const node = document.getElementById(id);
+      if (node) node.textContent = text || '';
+    }
+    function clearErrors() {
+      setError('orderCodeError', '');
+      setError('taskNameError', '');
+      setError('towerCodeError', '');
+      setError('projectNameError', '');
+      setError('customerNameError', '');
+      setError('inspectTypeError', '');
+      setError('standardRefError', '');
+      setError('taskTemplateError', '');
+      setError('inspectorError', '');
+      setError('dispatchDateError', '');
+      setError('planStartDateError', '');
+      setError('planFinishDateError', '');
+      setError('priorityLevelError', '');
+      setError('needSyncError', '');
+      setError('syncExceptionReasonError', '');
+    }
+    function validate() {
+      clearErrors();
+      let ok = true;
+      const orderCode = (document.getElementById('orderCode').value || '').trim();
+      const taskName = (document.getElementById('taskName').value || '').trim();
+      const towerCode = (document.getElementById('towerCode').value || '').trim();
+      const projectName = (document.getElementById('projectName').value || '').trim();
+      const customerName = (document.getElementById('customerName').value || '').trim();
+      const inspectType = (document.getElementById('inspectType').value || '').trim();
+      const standardRef = (document.getElementById('standardRef').value || '').trim();
+      const taskTemplate = (document.getElementById('taskTemplate').value || '').trim();
+      const dispatchDate = (document.getElementById('dispatchDate').value || '').trim();
+      const planStartDate = (document.getElementById('planStartDate').value || '').trim();
+      const planFinishDate = (document.getElementById('planFinishDate').value || '').trim();
+      const priorityLevel = (document.getElementById('priorityLevel').value || '').trim();
+      const needSync = (document.getElementById('needSync').value || '').trim();
+      const syncExceptionReason = (document.getElementById('syncExceptionReason').value || '').trim();
+      if (!orderCode) { setError('orderCodeError', '请选择来源订单'); ok = false; }
+      if (!taskName) { setError('taskNameError', '请输入任务名称'); ok = false; }
+      if (!towerCode) { setError('towerCodeError', '请输入关联铁塔编码'); ok = false; }
+      if (!projectName) { setError('projectNameError', '请选择所属工程'); ok = false; }
+      if (!customerName) { setError('customerNameError', '请选择委托单位'); ok = false; }
+      if (!inspectType) { setError('inspectTypeError', '请选择检测类型'); ok = false; }
+      if (!standardRef) { setError('standardRefError', '请选择检测依据'); ok = false; }
+      if (!taskTemplate) { setError('taskTemplateError', '请选择模板包'); ok = false; }
+      /* 检测人可选：未选则任务为待指派，由列表「派任务」指定 */
+      if (!dispatchDate) { setError('dispatchDateError', '请选择派单日期'); ok = false; }
+      if (!planStartDate) { setError('planStartDateError', '请选择计划开始时间'); ok = false; }
+      if (!planFinishDate) { setError('planFinishDateError', '请选择计划完成时间'); ok = false; }
+      if (!priorityLevel) { setError('priorityLevelError', '请选择优先级'); ok = false; }
+      if (!needSync) { setError('needSyncError', '请选择是否回传平台'); ok = false; }
+      if (dispatchDate && planStartDate && dispatchDate > planStartDate) {
+        setError('planStartDateError', '计划开始时间不能早于派单日期');
+        ok = false;
+      }
+      if (planStartDate && planFinishDate && planStartDate > planFinishDate) {
+        setError('planFinishDateError', '计划完成时间不能早于计划开始时间');
+        ok = false;
+      }
+      if (needSync.indexOf('否') === 0 && !syncExceptionReason) {
+        setError('syncExceptionReasonError', '当不回传平台时，必须填写不回传说明');
+        ok = false;
+      }
+      return ok;
+    }
+
+    document.getElementById('saveDraftBtn').addEventListener('click', function () {
+      alert('草稿已保存');
+    });
+
+    document.getElementById('saveBtn').addEventListener('click', function () {
+      if (!validate()) return;
+      alert('任务创建成功');
+      location.href = 'pc_task_list.html';
+    });
+  })();
+</script>
+</body>
+</html>

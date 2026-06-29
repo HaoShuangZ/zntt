@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>设备档案 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+  <div class="card" style="margin-bottom:16px;border-left:4px solid var(--primary)">
+    <div class="card-body" style="padding:12px 16px;font-size:13px;color:var(--text-2)">
+      设备档案已迁移至 <strong>基础数据 → 设备管理</strong>（按检测单位数据权限隔离）。
+      <a href="../../基础数据/设备管理/pc_data_device_list.html" class="btn btn-primary btn-sm" style="margin-left:10px">前往设备管理</a>
+    </div>
+  </div>
+  <div class="page-header">
+    <h1 class="page-title">设备档案</h1>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <input class="form-input" placeholder="设备名称/编号">
+          <select class="form-select">
+            <option>全部状态</option>
+            <option>在用</option>
+            <option>停用</option>
+            <option>维修中</option>
+            <option>报废</option>
+          </select>
+          <select class="form-select">
+            <option>全部供应商</option>
+            <option>杭州精密仪器有限公司</option>
+            <option>浙江光电科技有限公司</option>
+          </select>
+          <button class="btn btn-primary">查询</button>
+          <button class="btn btn-default">重置</button>
+        </div>
+      </div>
+
+      <div class="pc-table-actions">
+        <button class="btn btn-primary" onclick="location.href='../../基础数据/设备管理/pc_data_device_create.html'"><i class="fa-solid fa-plus"></i> 新增设备</button>
+          <button class="btn btn-default"><i class="fa-solid fa-file-export"></i> 导出列表</button>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>设备编号</th>
+            <th>设备名称</th>
+            <th>设备类别</th>
+            <th>规格型号</th>
+            <th>状态</th>
+            <th>保管信息</th>
+            <th>校准有效</th>
+            <th>供应</th>
+            <th class="col-action">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>SB-CL-202601-0001</td>
+            <td>超声波测厚仪</td>
+            <td>测量仪器</td>
+            <td>DM4E</td>
+            <td><span class="tag tag-green">在用</span></td>
+            <td>本部仪器室</td>
+            <td>2027-03-15</td>
+            <td>杭州精密仪器有限公司</td>
+            <td class="col-action">
+              <a class="btn-text" href="../../基础数据/设备管理/pc_data_device_create.html"><i class="fa-solid fa-edit"></i> 编辑</a>
+              <a class="btn-text" style="color:var(--danger)"><i class="fa-solid fa-trash"></i> 删除</a>
+            </td>
+          </tr>
+          <tr>
+            <td>SB-CL-202601-0002</td>
+            <td>钢筋锈蚀</td>
+            <td>金属材料实验仪器</td>
+            <td>PS-6</td>
+            <td><span class="tag tag-green">在用</span></td>
+            <td>外业一组 / 李明</td>
+            <td>2027-01-20</td>
+            <td>浙江光电科技有限公司</td>
+            <td class="col-action">
+              <a class="btn-text"><i class="fa-solid fa-eye"></i> 查看</a>
+            </td>
+          </tr>
+          <tr>
+            <td>SB-QY-202602-0001</td>
+            <td>回弹</td>
+            <td>测量仪器</td>
+            <td>ZC3-A</td>
+            <td><span class="tag tag-green">在用</span></td>
+            <td>本部仪器室</td>
+            <td>2026-06-10 <span style="color:var(--danger);font-size:12px;margin-left:4px"><i class="fa-solid fa-triangle-exclamation"></i> 校准临期</span></td>
+            <td>上海测量设备有限公司</td>
+            <td class="col-action">
+              <a class="btn-text" href="../../基础数据/设备管理/pc_data_device_create.html"><i class="fa-solid fa-edit"></i> 编辑</a>
+              <a class="btn-text" style="color:var(--danger)"><i class="fa-solid fa-trash"></i> 删除</a>
+            </td>
+          </tr>
+          <tr>
+            <td>SB-CL-202603-0001</td>
+            <td>接地电阻测试</td>
+            <td>测量仪器</td>
+            <td>ETCR-2000</td>
+            <td><span class="tag tag-orange">停用</span></td>
+            <td>—</td>
+            <td>2027-08-25</td>
+            <td>杭州精密仪器有限公司</td>
+            <td class="col-action">
+              <a class="btn-text"><i class="fa-solid fa-eye"></i> 查看</a>
+            </td>
+          </tr>
+          <tr>
+            <td>SB-SY-202601-0001</td>
+            <td>全站</td>
+            <td>测量仪器</td>
+            <td>TS06</td>
+            <td><span class="tag tag-orange">维修中</span></td>
+            <td>—</td>
+            <td>2027-05-10</td>
+            <td>南京测控仪器</td>
+            <td class="col-action">
+              <a class="btn-text"><i class="fa-solid fa-eye"></i> 查看</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <span>共 78 条</span>
+        <div class="pagination-btns">
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <button class="page-btn">4</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'data_device', breadcrumb:['基础数据','设备管理']};</script>
+</body>
+</html>
+
+

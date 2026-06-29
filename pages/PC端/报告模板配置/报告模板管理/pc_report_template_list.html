@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>报告模板管理</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .tpl-modal-overlay { display:none; position:fixed; inset:0; z-index:2000; background:rgba(15,23,42,0.45); align-items:center; justify-content:center; padding:24px; }
+  .tpl-modal-overlay.open { display:flex; }
+  .tpl-modal { width:min(960px, 96vw); max-height:90vh; background:#fff; border-radius:10px; box-shadow:0 20px 50px rgba(0,0,0,0.2); display:flex; flex-direction:column; overflow:hidden; }
+  .tpl-modal-hd { display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid var(--border); background:#fafbfc; }
+  .tpl-modal-hd h3 { margin:0; font-size:16px; font-weight:600; color:var(--text-1); }
+  .tpl-modal-tabs { display:flex; gap:0; border-bottom:1px solid var(--border); background:#fff; padding:0 12px; }
+  .tpl-modal-tab { padding:10px 16px; font-size:13px; color:var(--text-2); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; }
+  .tpl-modal-tab.active { color:var(--primary); font-weight:600; border-bottom-color:var(--primary); }
+  .tpl-modal-bd { flex:1; min-height:0; background:#f5f6f8; }
+  .tpl-modal-bd iframe { width:100%; height:min(72vh,640px); border:0; display:block; background:#fff; }
+  .tpl-modal-bd .pane { display:none; height:100%; }
+  .tpl-modal-bd .pane.active { display:block; }
+  .template-name-cell { cursor:pointer; color:var(--primary); text-decoration:underline; text-underline-offset:3px; }
+  .template-name-cell:hover { color:#1d4ed8; }
+</style>
+</head>
+<body>
+<script>location.replace('../../模板配置/检测模板/pc_inspect_template_list.html');</script>
+<div id="page-content">
+
+  <div class="card" style="margin-bottom:16px;border:1px solid #CFE1FF;background:#FFFBF5;">
+    <div class="card-body" style="padding:12px 16px;font-size:13px;color:var(--text-2);line-height:1.65;">
+      <strong style="color:#D4760A">说明</strong>：章节与样式在 <strong>侧栏不再单独建菜单</strong>，请<strong>点击模板名称</strong>或<strong>「章节与样式」</strong>在弹窗中配置。检测表单项请在 <strong>任务模板管理</strong> 中维护。报告结论用<strong>评定等级</strong>主档在
+      <a href="pc_report_rating_level.html" class="btn btn-text" style="padding:0 6px;">评定等级管理</a>。
+      <a href="../../任务模板配置/任务模板管理/pc_task_template_list.html" class="btn btn-text" style="padding:0 6px;">任务模板管理</a>
+      <a href="../../铁塔检测业务/报告编制/report-list.html" class="btn btn-text" style="padding:0 6px;">报告编制</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">报告模板管理</div>
+    </div>
+    <div class="card-body">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <input type="text" class="form-input" placeholder="模板名称/编号">
+          <select class="form-select">
+            <option value="">全部塔型</option>
+            <option>单管无</option>
+            <option>角钢无</option>
+            <option>三管无</option>
+            <option>四管无</option>
+          </select>
+          <select class="form-select">
+            <option value="">全部报告类型</option>
+            <option>角钢塔报告</option>
+            <option>格构塔报告</option>
+            <option>法兰式单管报告</option>
+            <option>插接式单管报告</option>
+          </select>
+          <button class="btn btn-primary">查询</button>
+          <button class="btn btn-default">重置</button>
+        </div>
+      </div>
+
+      <div class="pc-table-actions">
+        <a href="pc_report_template_create.html" class="btn btn-primary"><i class="fa-solid fa-plus"></i> 新增模板</a>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>模板编号</th>
+            <th>模板名称</th>
+            <th>适用塔型</th>
+            <th>报告类型</th>
+            <th>版本</th>
+            <th>章节</th>
+            <th>状态</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="report-template-tbody">
+          <tr class="template-row" data-code="BGMB-001" data-name="角钢塔安全检测报告模">
+            <td>BGMB-001</td>
+            <td class="template-name-cell">角钢塔安全检测报告模</td>
+            <td><span class="tag tag-green">角钢</span></td>
+            <td><span class="tag tag-blue">角钢塔报</span></td>
+            <td>V2.1</td>
+            <td>9</td>
+            <td><span class="tag tag-green">已发</span></td>
+            <td class="col-action">
+              <a href="pc_report_template_edit.html" class="btn btn-text">编辑</a>
+              <button type="button" class="btn btn-text open-tpl-config">章节与样式</button>
+              <button class="btn btn-text">复制</button>
+              <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+            </td>
+          </tr>
+          <tr class="template-row" data-code="BGMB-002" data-name="法兰式单管塔检测报告模">
+            <td>BGMB-002</td>
+            <td class="template-name-cell">法兰式单管塔检测报告模</td>
+            <td><span class="tag tag-blue">单管</span></td>
+            <td><span class="tag tag-orange">法兰式单管报</span></td>
+            <td>V1.3</td>
+            <td>9</td>
+            <td><span class="tag tag-green">已发</span></td>
+            <td class="col-action">
+              <a href="pc_report_template_edit.html" class="btn btn-text">编辑</a>
+              <button type="button" class="btn btn-text open-tpl-config">章节与样式</button>
+              <button class="btn btn-text">复制</button>
+              <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+            </td>
+          </tr>
+          <tr class="template-row" data-code="BGMB-003" data-name="插接式单管塔检测报告模">
+            <td>BGMB-003</td>
+            <td class="template-name-cell">插接式单管塔检测报告模</td>
+            <td><span class="tag tag-blue">单管</span></td>
+            <td><span class="tag tag-orange">插接式单管报</span></td>
+            <td>V1.0</td>
+            <td>8</td>
+            <td><span class="tag tag-gray">草稿</span></td>
+            <td class="col-action">
+              <a href="pc_report_template_edit.html" class="btn btn-text">编辑</a>
+              <button type="button" class="btn btn-text open-tpl-config">章节与样式</button>
+              <button class="btn btn-text">复制</button>
+              <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+            </td>
+          </tr>
+          <tr class="template-row" data-code="BGMB-004" data-name="格构塔可靠性检测报告模">
+            <td>BGMB-004</td>
+            <td class="template-name-cell">格构塔可靠性检测报告模</td>
+            <td><span class="tag tag-green">角钢</span></td>
+            <td><span class="tag tag-blue">格构塔报</span></td>
+            <td>V1.8</td>
+            <td>10</td>
+            <td><span class="tag tag-green">已发</span></td>
+            <td class="col-action">
+              <a href="pc_report_template_edit.html" class="btn btn-text">编辑</a>
+              <button type="button" class="btn btn-text open-tpl-config">章节与样式</button>
+              <button class="btn btn-text">复制</button>
+              <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+            </td>
+          </tr>
+          <tr class="template-row" data-code="BGMB-005" data-name="三管塔安全检测报告模">
+            <td>BGMB-005</td>
+            <td class="template-name-cell">三管塔安全检测报告模</td>
+            <td><span class="tag tag-blue">三管</span></td>
+            <td><span class="tag tag-green">格构塔报</span></td>
+            <td>V1.1</td>
+            <td>9</td>
+            <td><span class="tag tag-red">已停</span></td>
+            <td class="col-action">
+              <a href="pc_report_template_edit.html" class="btn btn-text">编辑</a>
+              <button type="button" class="btn btn-text open-tpl-config">章节与样式</button>
+              <button class="btn btn-text">复制</button>
+              <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <span>共 5 条记录</span>
+        <div class="pagination-btns">
+          <button class="page-btn"><i class="fa-solid fa-chevron-left"></i></button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tpl-modal-overlay" id="tpl-config-modal" aria-hidden="true">
+    <div class="tpl-modal" role="dialog" aria-modal="true" aria-labelledby="tpl-modal-title">
+      <div class="tpl-modal-hd">
+        <h3 id="tpl-modal-title">报告模板配置</h3>
+        <button type="button" class="btn btn-default btn-sm" id="tpl-modal-close"><i class="fa-solid fa-xmark"></i> 关闭</button>
+      </div>
+      <div class="tpl-modal-tabs">
+        <div class="tpl-modal-tab active" data-tab="chapters">报告章节配置</div>
+        <div class="tpl-modal-tab" data-tab="style">报告样式配置</div>
+      </div>
+      <div class="tpl-modal-bd">
+        <div class="pane active" id="pane-chapters"><iframe id="iframe-chapters" title="章节配置"></iframe></div>
+        <div class="pane" id="pane-style"><iframe id="iframe-style" title="样式配置"></iframe></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'report_template_list', breadcrumb:['模板配置','报告模板管理']};</script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+  var modal = document.getElementById('tpl-config-modal');
+  var titleEl = document.getElementById('tpl-modal-title');
+  var iframeCh = document.getElementById('iframe-chapters');
+  var iframeSt = document.getElementById('iframe-style');
+  var tabs = modal.querySelectorAll('.tpl-modal-tab');
+  var panes = { chapters: document.getElementById('pane-chapters'), style: document.getElementById('pane-style') };
+
+  function qs(obj) {
+    return Object.keys(obj).map(function (k) {
+      return encodeURIComponent(k) + '=' + encodeURIComponent(obj[k] == null ? '' : String(obj[k]));
+    }).join('&');
+  }
+
+  function openModal(row) {
+    var code = row.getAttribute('data-code') || '';
+    var name = row.getAttribute('data-name') || '';
+    titleEl.textContent = '模板配置 — ' + (name || code);
+    var q = qs({ embed: '1', tpl: code, name: name });
+    iframeCh.src = '../报告章节配置/pc_report_template_chapters.html?' + q;
+    iframeSt.src = '../报告样式配置/pc_report_template_style.html?' + q;
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+    switchTab('chapters');
+  }
+
+  function closeModal() {
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+    iframeCh.removeAttribute('src');
+    iframeSt.removeAttribute('src');
+  }
+
+  function switchTab(key) {
+    tabs.forEach(function (t) {
+      t.classList.toggle('active', t.getAttribute('data-tab') === key);
+    });
+    panes.chapters.classList.toggle('active', key === 'chapters');
+    panes.style.classList.toggle('active', key === 'style');
+  }
+
+  document.getElementById('report-template-tbody').addEventListener('click', function (e) {
+    var row = e.target.closest('tr.template-row');
+    if (!row) return;
+    if (e.target.closest('.open-tpl-config')) {
+      e.preventDefault();
+      openModal(row);
+      return;
+    }
+    if (e.target.closest('.template-name-cell') && !e.target.closest('a,button')) {
+      openModal(row);
+    }
+  });
+
+  tabs.forEach(function (t) {
+    t.addEventListener('click', function () { switchTab(t.getAttribute('data-tab')); });
+  });
+  document.getElementById('tpl-modal-close').addEventListener('click', closeModal);
+  modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+  });
+});
+</script>
+</body>
+</html>
+
+

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>备忘录</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/app-frame.css">
+<style>
+html{background:#165DFF;height:100%}
+html,body{height:100%;overflow:hidden;margin:0}
+body{display:flex;flex-direction:column;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;background:#F2F3F5}
+.header-fixed{flex-shrink:0;z-index:50;background:#165DFF;color:#fff;box-shadow:0 4px 14px rgba(0,0,0,.08)}
+.status-bar{display:flex;align-items:center;justify-content:space-between;padding:calc(8px + env(safe-area-inset-top, 0px)) 18px 6px;font-size:14px;font-weight:600;color:rgba(255,255,255,.95);-webkit-user-select:none;user-select:none}
+.status-bar .status-icons{font-size:12px;opacity:.92;letter-spacing:4px}
+.top{padding:4px 12px 10px;display:flex;align-items:center;gap:10px}
+.top a{color:#fff;opacity:.92;text-decoration:none}
+.top h1{margin:0;font-size:15px;font-weight:600;flex:1}
+.scroll-main{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 14px 20px;background:#F2F3F5}
+.hint{font-size:12px;color:#86909C;line-height:1.55;margin:0 0 12px;background:#fff;border:1px solid #E5E6EB;border-radius:12px;padding:10px 12px}
+.voice-card{background:#fff;border-radius:16px;padding:20px 16px;text-align:center;border:1px solid #E5E6EB;box-shadow:0 2px 8px rgba(0,0,0,.04);margin-bottom:14px}
+.voice-btn{width:88px;height:88px;border-radius:50%;border:none;cursor:pointer;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:34px;
+  background:linear-gradient(135deg,#165DFF 0%,#4080FF 100%);box-shadow:0 4px 16px rgba(22,93,255,.35);transition:transform .15s, box-shadow .2s}
+.voice-btn:active{transform:scale(.96)}
+.voice-btn.recording{background:linear-gradient(135deg,#F53F3F 0%,#FF7875 100%);box-shadow:0 4px 16px rgba(245,63,63,.35);animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.88}}
+.timer{font-size:26px;font-weight:700;color:#1D2129;margin-bottom:4px;font-variant-numeric:tabular-nums}
+.status-txt{font-size:13px;color:#86909C}
+.trans-wrap{margin-top:18px;padding:12px;background:#F7F8FA;border-radius:10px;text-align:left;border:1px solid #E5E6EB;min-height:72px}
+.trans-label{font-size:11px;color:#C9CDD4;margin-bottom:6px}
+.trans-body{font-size:14px;color:#1D2129;line-height:1.65;min-height:44px}
+.sec-h{font-size:13px;font-weight:600;color:#1D2129;margin:16px 0 8px}
+.item{background:#fff;border-radius:12px;padding:12px 14px;margin-bottom:8px;border:1px solid #E5E6EB;font-size:13px;color:#4E5969;line-height:1.5}
+.item-meta{font-size:11px;color:#C9CDD4;display:block;margin-top:6px}
+</style>
+</head>
+<body>
+<div class="header-fixed">
+  <div class="status-bar" aria-hidden="true">
+    <span>9:41</span>
+    <span class="status-icons"><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+  </div>
+  <div class="top">
+    <a href="../填报主页/app_task_inspect_home.html"><i class="fa-solid fa-chevron-left"></i></a>
+    <h1>备忘录</h1>
+  </div>
+</div>
+
+<main class="scroll-main">
+
+  <div class="voice-card">
+    <button type="button" class="voice-btn" id="btnMic" aria-label="开始或结束语音备忘">
+      <i class="fa-solid fa-microphone" id="btnMicIcon"></i>
+    </button>
+    <div class="timer" id="timer">00:00</div>
+    <div class="status-txt" id="recHint">点击麦克风开始语音备忘</div>
+    <div class="trans-wrap">
+      <div class="trans-label">实时转写</div>
+      <div class="trans-body" id="liveText">（尚未录音）</div>
+    </div>
+  </div>
+
+  <div class="sec-h" id="memoSecTitle">本条任务已保存的备忘片段</div>
+  <div id="memoList">
+  <div class="item">【模块·基础】东侧地脚螺栓 2 颗松动，已拍照留证。<span class="item-meta">2026-05-14 10:22 · 来自模块语音</span></div>
+  <div class="item">【整体】塔顶避雷针外观正常，无锈蚀。<span class="item-meta">2026-05-14 09:05 · 来自模块语音</span></div>
+  </div>
+</main>
+
+<script>
+(function () {
+  var sp = new URLSearchParams(location.search);
+  if (sp.get('scope') !== 'module') return;
+  var name = '';
+  try {
+    name = decodeURIComponent(sp.get('moduleName') || '') || '当前模块';
+  } catch (e0) {
+    name = sp.get('moduleName') || '当前模块';
+  }
+  var mid = sp.get('moduleId') || '';
+  var ret = sp.get('return') || '';
+  var h1 = document.querySelector('.top h1');
+  if (h1) h1.textContent = '备忘录 · ' + name;
+  var backA = document.querySelector('.top a');
+  if (backA && ret) {
+    backA.href = ret;
+    backA.addEventListener('click', function (ev) {
+      ev.preventDefault();
+      if (window.history.length > 1) window.history.back();
+      else window.location.href = ret;
+    });
+  }
+  var hint = document.querySelector('.hint');
+  if (hint) {
+    hint.innerHTML =
+      '本页仅展示<strong>「' +
+      name +
+      '」</strong>模块下的<strong>语音备份录</strong>及转写，与填报主页「备忘录」一致；新建录音归入本模块。导出在填报主页合并。';
+  }
+  var st = document.getElementById('memoSecTitle');
+  if (st) st.textContent = '本模块已保存的备忘片段';
+  var list = document.getElementById('memoList');
+  if (!list) return;
+  var rows = {
+    vertical: [
+      ['【模块·垂直度】全站仪定向完成，基准点稳定。', '2026-05-14 11:18 · 本模块语音'],
+      ['【模块·垂直度】塔顶偏移复核中，未见异常摆动。', '2026-05-14 10:55 · 本模块语音']
+    ],
+    foundation: [['【模块·基础】东侧地脚螺栓 2 颗松动，已拍照留证。', '2026-05-14 10:22 · 本模块语音']],
+    tower: [['【模块·铁塔信息】站址与台账一致，经纬度待复核。', '2026-05-14 09:40 · 本模块语音']],
+    tower_photos: [['【模块·上传铁塔照片】全貌远景已拍，待补铭牌。', '2026-05-14 09:12 · 本模块语音']],
+    segment: [['【模块·塔段】第 3 段法兰涂层轻微起皮，已记录。', '2026-05-14 08:50 · 本模块语音']],
+    platform: [['【模块·平台及设备】天线支架紧固力矩抽检 2 处合格。', '2026-05-14 08:20 · 本模块语音']],
+    diagram: [['【模块·结构简图】防腐测区已编号，待上传矩阵照片。', '2026-05-14 07:55 · 本模块语音']],
+    feed: [['【模块·馈线】馈线孔余量目测满足模板要求。', '2026-05-14 07:30 · 本模块语音']],
+    ground: [['【模块·接地】接地电阻测试仪自检通过。', '2026-05-14 07:10 · 本模块语音']],
+    antenna: [['【模块·天线】抱杆与支架螺栓目测完好，待力矩复核。', '2026-05-14 12:10 · 本模块语音']],
+    other: [['【模块·其他】接地扁铁焊接外观合格，防腐涂层局部修补。', '2026-05-14 11:50 · 本模块语音']],
+    rebound: [['【模块·回弹】测区已凿毛，碳化深度待读数。', '2026-05-14 06:50 · 本模块语音']],
+    validate: [['【模块·校验】照片缺项清单已核对 2 条。', '2026-05-14 06:20 · 本模块语音']],
+    note: [['【模块·手记】现场风速偏大，暂缓登高。', '2026-05-14 06:00 · 本模块语音']],
+    sync: [['【模块·同步】离线包已生成，待 Wi‑Fi 上传。', '2026-05-14 05:40 · 本模块语音']],
+    upload: [['【模块·上传数据】校验通过后将提交正式版。', '2026-05-14 05:15 · 本模块语音']]
+  };
+  var pack = rows[mid] || [
+    ['【模块·' + name + '】（暂无历史片段，可在上方开始录制）', '—']
+  ];
+  list.innerHTML = pack
+    .map(function (p) {
+      return '<div class="item">' + p[0] + '<span class="item-meta">' + p[1] + '</span></div>';
+    })
+    .join('');
+})();
+</script>
+
+<script>
+(function () {
+  var recording = false;
+  var t0 = 0;
+  var tick = null;
+  var asrTimer = null;
+  var fullText = '';
+  var sample = '滨江基站01现场备忘：塔体垂直度目测正常，待仪器复核。基础周边排水通畅，未见积水。';
+  var idx = 0;
+  var btn = document.getElementById('btnMic');
+  var icon = document.getElementById('btnMicIcon');
+  var timerEl = document.getElementById('timer');
+  var hint = document.getElementById('recHint');
+  var live = document.getElementById('liveText');
+
+  function fmt(ms) {
+    var s = Math.floor(ms / 1000);
+    var m = Math.floor(s / 60);
+    s = s % 60;
+    return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+  }
+
+  btn.addEventListener('click', function () {
+    if (!recording) {
+      recording = true;
+      btn.classList.add('recording');
+      icon.className = 'fa-solid fa-stop';
+      hint.textContent = '录音中…再次点击结束并保存片段';
+      live.textContent = '';
+      idx = 0;
+      fullText = '';
+      t0 = Date.now();
+      tick = setInterval(function () {
+        timerEl.textContent = fmt(Date.now() - t0);
+      }, 200);
+      asrTimer = setInterval(function () {
+        if (idx < sample.length) {
+          fullText += sample.charAt(idx);
+          live.textContent = fullText;
+          idx++;
+        }
+      }, 120);
+    } else {
+      recording = false;
+      btn.classList.remove('recording');
+      icon.className = 'fa-solid fa-microphone';
+      clearInterval(tick);
+      clearInterval(asrTimer);
+      tick = null;
+      asrTimer = null;
+      timerEl.textContent = '00:00';
+      hint.textContent = '已停止。点击麦克风可重新录制';
+      if (!live.textContent) live.textContent = '（尚未录音）';
+      else alert('已保存本条语音备忘片段并附带转写文本');
+    }
+  });
+})();
+</script>
+</body>
+</html>

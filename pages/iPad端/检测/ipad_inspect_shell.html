@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<!-- iPad-INSPECT_SHELL v2.0 landscape -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>现场检测</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../assets/app-frame.css">
+<style>
+html, body { height: 100%; margin: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; background: #E5E6EB; display: flex; flex-direction: column; overflow: hidden; }
+.shell-head { flex-shrink: 0; background: #fff; border-bottom: 1px solid #E5E6EB; }
+.shell-head .sub-bar-blue {
+  background: #165DFF !important; border-top: none !important;
+}
+.shell-head .sub-bar-blue a { color: #fff !important; }
+.shell-head .sub-bar-blue .shell-title { color: #fff !important; }
+.shell-head .sub-bar-blue .shell-actions button {
+  background: rgba(255,255,255,0.18) !important; color: #fff !important; border: 1px solid rgba(255,255,255,0.35);
+  font-size: 10px;
+  padding: 5px 6px;
+}
+.shell-actions button:active { background: rgba(255,255,255,0.28) !important; }
+.shell-actions button:disabled { opacity: 0.45; cursor: not-allowed; }
+.shell-actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; max-width: 78%; }
+.shell-actions button {
+  border: none; background: rgba(22, 93, 255, 0.08); color: #165DFF; font-size: 10px; padding: 5px 6px; border-radius: 8px; cursor: pointer; white-space: nowrap; font-weight: 600;
+  -webkit-tap-highlight-color: transparent;
+}
+.shell-actions button:active { background: rgba(22, 93, 255, 0.16); }
+.shell-main { flex: 1; display: flex; min-height: 0; overflow: hidden; }
+.shell-nav {
+  width: 108px; flex-shrink: 0; background: #fff; border-right: 1px solid #E5E6EB; overflow-y: auto; padding: 6px 0 12px; box-sizing: border-box;
+}
+.shell-nav .nav-item {
+  display: block; padding: 8px 8px; font-size: 11px; line-height: 1.35; color: #4E5969; text-decoration: none; border-left: 3px solid transparent; cursor: pointer; background: none; border-right: none; border-top: none; border-bottom: none; width: 100%; text-align: left; font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+.shell-nav .nav-item:active { background: #F7F8FA; }
+.shell-nav .nav-item.on { color: #165DFF; font-weight: 600; border-left-color: #165DFF; background: #F2F8FF; }
+.shell-nav .nav-sub { font-size: 10px; color: #86909C; padding: 2px 8px 6px 11px; line-height: 1.3; }
+.order-ctx-row { display: flex; align-items: center; gap: 8px; padding: 8px 12px 10px; border-top: 1px solid #F2F3F5; line-height: 1.4; }
+.order-ctx-row .ctx-text { flex: 1; min-width: 0; font-size: 11px; color: #86909C; }
+.order-ctx-row .ctx-text .tower { color: #1D2129; font-weight: 600; }
+#btnSwitchOrder {
+  flex-shrink: 0; border: 1px solid #E5E6EB; background: #fff; color: #165DFF; font-size: 11px; font-weight: 600;
+  padding: 5px 10px; border-radius: 8px; cursor: pointer; white-space: nowrap; font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+#btnSwitchOrder:active { background: #F2F8FF; border-color: #165DFF; }
+.order-switch-mask { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200; align-items: flex-end; justify-content: center; }
+.order-switch-mask.show { display: flex; }
+.order-switch-sheet { width: 100%; max-height: 72vh; background: #fff; border-radius: 16px 16px 0 0; padding: 12px 16px 20px; box-sizing: border-box; overflow-y: auto; }
+.order-switch-sheet h3 { margin: 0 0 12px; font-size: 16px; font-weight: 600; color: #1D2129; text-align: center; }
+.order-pick {
+  display: block; width: 100%; text-align: left; padding: 12px; margin-bottom: 8px; border: 1px solid #E5E6EB; border-radius: 10px;
+  background: #fff; font-size: 14px; color: #1D2129; cursor: pointer; font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+.order-pick:active { background: #F7F8FA; }
+.order-pick .oid { font-size: 12px; color: #86909C; margin-bottom: 4px; }
+.order-pick .otitle { font-weight: 600; }
+.order-pick.on { border-color: #165DFF; background: #F2F8FF; }
+#iframeHost { flex: 1; min-width: 0; min-height: 0; background: #F2F3F5; display: flex; flex-direction: column; }
+#iframeHost iframe { flex: 1; min-height: 0; width: 100%; border: 0; display: block; background: #F2F3F5; }
+</style>
+</head>
+<body>
+<div class="shell-head">
+  <div style="height:44px; display:flex; align-items:center; justify-content:space-between; padding:0 16px;">
+    <span style="font-size:14px; font-weight:600;">9:41</span>
+    <span style="font-size:12px; color:#86909C;"><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+  </div>
+  <div class="sub-bar-blue" style="min-height:48px; display:flex; align-items:center; padding:6px 8px 6px 12px; gap:8px; border-top:1px solid #F2F3F5;">
+    <a href="../工单/详情/ipad_order_detail.html" style="text-decoration:none; font-size:13px; white-space:nowrap;"><i class="fa-solid fa-chevron-left"></i> 订单</a>
+    <div class="shell-title" style="flex:1; min-width:0; text-align:center; font-size:15px; font-weight:600;">滨江基站01 · 单管</div>
+    <div class="shell-actions">
+      <button type="button" id="actMemo" title="任务备忘录（语音实时转写）"><i class="fa-solid fa-microphone"></i> 备忘录</button>
+      <button type="button" id="actExport" title="分享检测任务数据"><i class="fa-solid fa-share-nodes"></i> 分享</button>
+      <button type="button" id="actSave" title="保存"><i class="fa-solid fa-floppy-disk"></i> 保存</button>
+      <button type="button" id="actHub" title="检测填报主页（大模块）"><i class="fa-solid fa-table-cells-large"></i> 主页</button>
+      <button type="button" id="actSync" title="同步数据"><i class="fa-solid fa-rotate"></i> 同步</button>
+      <button type="button" id="actUpload" title="上传数据"><i class="fa-solid fa-cloud-arrow-up"></i> 上传</button>
+    </div>
+  </div>
+  <div class="order-ctx-row">
+    <div class="ctx-text" id="orderContextText"><span class="tower" id="orderTower">滨江区01#单管塔</span> · <span id="orderNo">DD20260506001</span></div>
+    <button type="button" id="btnSwitchOrder" title="切换检测订单" aria-label="切换订单"><i class="fa-solid fa-arrows-rotate"></i> 切换订单</button>
+  </div>
+</div>
+<div class="shell-main">
+  <aside class="shell-nav" id="shellNav" aria-label="检测模块">
+    <button type="button" class="nav-item on" data-src="../任务/填报主页/ipad_task_inspect_home.html?embed=1">填报主页</button>
+    <button type="button" class="nav-item" data-src="塔体/ipad_inspect_tower.html?embed=1">铁塔信息</button>
+    <button type="button" class="nav-item" data-src="地基/ipad_inspect_foundation.html?embed=1">基础及地锚</button>
+    <button type="button" class="nav-item" data-src="结构图/ipad_inspect_diagram.html?embed=1">结构简图</button>
+    <button type="button" class="nav-item" data-src="分段/ipad_inspect_segment.html?embed=1">塔段检测</button>
+    <button type="button" class="nav-item" data-src="平台/ipad_inspect_platform.html?embed=1">平台及设备</button>
+  </aside>
+  <div id="iframeHost">
+    <iframe id="moduleFrame" title="检测模块" src="../任务/填报主页/ipad_task_inspect_home.html?embed=1"></iframe>
+  </div>
+</div>
+<div id="orderSwitchMask" class="order-switch-mask" role="dialog" aria-modal="true" aria-labelledby="orderSwitchTitle">
+  <div class="order-switch-sheet" onclick="event.stopPropagation();">
+    <h3 id="orderSwitchTitle">切换检测订单</h3>
+    <div id="orderPickList"></div>
+    <a href="../工作台/首页/ipad_workbench_index.html#orders" style="display:block;text-align:center;margin-top:8px;padding:10px;font-size:13px;color:#165DFF;text-decoration:none;">去工作台查看全部订单</a>
+    <button type="button" id="orderSwitchClose" style="width:100%;margin-top:12px;height:44px;border:none;background:#F2F3F5;color:#4E5969;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;">取消</button>
+  </div>
+</div>
+<script>
+(function () {
+  var ORDERS = [
+    { id: 'DD20260506001', tower: '滨江区01#单管塔', title: '滨江区铁塔年度检测订单' },
+    { id: 'DD20260507002', tower: '城西区03#角钢塔', title: '城西区铁塔专项安全检测' },
+    { id: 'DD20260508004', tower: '余杭区08#四管塔', title: '余杭区铁塔季度巡检' },
+    { id: 'DD20260505003', tower: '拱墅区05#三管塔', title: '拱墅区铁塔加固复检' },
+    { id: 'DD20260504005', tower: '西湖区12#单管塔', title: '西湖区铁塔新建验收' }
+  ];
+  var frame = document.getElementById('moduleFrame');
+  var towerEl = document.getElementById('orderTower');
+  var noEl = document.getElementById('orderNo');
+  var mask = document.getElementById('orderSwitchMask');
+  var pickList = document.getElementById('orderPickList');
+  var TASK_HOME_EMBED = '../任务/填报主页/ipad_task_inspect_home.html?embed=1';
+
+  function setFrame(src) {
+    frame.src = src;
+  }
+  function tryClickIframeBtn(id) {
+    try {
+      var doc = frame.contentDocument || (frame.contentWindow && frame.contentWindow.document);
+      if (!doc) return false;
+      var el = doc.getElementById(id);
+      if (!el) return false;
+      el.click();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+  function markActive(btn) {
+    document.querySelectorAll('.shell-nav .nav-item').forEach(function (b) { b.classList.remove('on'); });
+    if (btn) btn.classList.add('on');
+  }
+  function applyOrder(o) {
+    towerEl.textContent = o.tower;
+    noEl.textContent = o.id;
+    try {
+      var u = new URL(window.location.href);
+      u.searchParams.set('order', o.id);
+      history.replaceState(null, '', u.pathname + u.search);
+    } catch (e) {}
+    document.querySelectorAll('.order-pick').forEach(function (btn) {
+      btn.classList.toggle('on', btn.getAttribute('data-order-id') === o.id);
+    });
+  }
+  function openSwitchSheet() {
+    mask.classList.add('show');
+  }
+  function closeSwitchSheet() {
+    mask.classList.remove('show');
+  }
+
+  function initOrderFromUrl() {
+    var id = '';
+    try { id = (new URLSearchParams(window.location.search).get('order') || '').trim().toUpperCase(); } catch (e) {}
+    if (!id) return;
+    for (var i = 0; i < ORDERS.length; i++) {
+      if (ORDERS[i].id === id) {
+        applyOrder(ORDERS[i]);
+        return;
+      }
+    }
+  }
+
+  ORDERS.forEach(function (o) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'order-pick';
+    b.setAttribute('data-order-id', o.id);
+    b.innerHTML = '<div class="oid"></div><div class="otitle"></div>';
+    b.querySelector('.oid').textContent = o.id;
+    b.querySelector('.otitle').textContent = o.title;
+    pickList.appendChild(b);
+  });
+
+  pickList.addEventListener('click', function (e) {
+    var btn = e.target.closest('.order-pick');
+    if (!btn) return;
+    var id = btn.getAttribute('data-order-id');
+    var o = null;
+    for (var i = 0; i < ORDERS.length; i++) {
+      if (ORDERS[i].id === id) { o = ORDERS[i]; break; }
+    }
+    if (o) applyOrder(o);
+    closeSwitchSheet();
+  });
+
+  document.getElementById('btnSwitchOrder').addEventListener('click', openSwitchSheet);
+  document.getElementById('orderSwitchClose').addEventListener('click', closeSwitchSheet);
+  mask.addEventListener('click', function (e) {
+    if (e.target === mask) closeSwitchSheet();
+  });
+
+  initOrderFromUrl();
+
+  document.getElementById('shellNav').addEventListener('click', function (e) {
+    var t = e.target.closest('.nav-item');
+    if (!t || !t.getAttribute('data-src')) return;
+    setFrame(t.getAttribute('data-src'));
+    markActive(t);
+  });
+  document.getElementById('actMemo').addEventListener('click', function () {
+    setFrame('../任务/备忘录/ipad_task_memo.html');
+    markActive(null);
+  });
+  document.getElementById('actExport').addEventListener('click', function () {
+    if (!tryClickIframeBtn('btnExportVoice')) {
+      alert('请切换到「填报主页」后，点击「分享」选择分享渠道。');
+    }
+  });
+  document.getElementById('actSave').addEventListener('click', function () {
+    if (!tryClickIframeBtn('btnSave')) {
+      alert('已保存');
+    }
+  });
+  document.getElementById('actHub').addEventListener('click', function () {
+    setFrame(TASK_HOME_EMBED);
+    document.querySelectorAll('.shell-nav .nav-item').forEach(function (b) {
+      b.classList.toggle('on', b.getAttribute('data-src') && b.getAttribute('data-src').indexOf('ipad_task_inspect_home') !== -1);
+    });
+  });
+  document.getElementById('actSync').addEventListener('click', function () {
+    setFrame('../系统/同步/ipad_sync_index.html?embed=1');
+    markActive(null);
+  });
+  document.getElementById('actUpload').addEventListener('click', function () {
+    setFrame('ipad_inspect_upload.html?embed=1');
+    markActive(null);
+  });
+})();
+</script>
+</body>
+</html>

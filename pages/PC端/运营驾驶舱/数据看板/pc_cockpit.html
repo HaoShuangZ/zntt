@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>运营驾驶舱</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .page-content { background:#0B1437 !important; }
+  .cockpit-wrap { color:#fff; }
+  .cockpit-top { display:flex; align-items:center; justify-content:space-between; padding:16px 0 24px; border-bottom:1px solid rgba(255,255,255,0.08); margin-bottom:24px; }
+  .cockpit-title { font-size:22px; font-weight:700; letter-spacing:2px; background:linear-gradient(90deg,#4FC3F7,#81D4FA,#B3E5FC); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .cockpit-company { font-size:13px; color:rgba(255,255,255,0.5); }
+  .cockpit-clock { font-size:14px; color:rgba(255,255,255,0.6); font-family:monospace; }
+  .kpi-row { display:grid; grid-template-columns:repeat(6,1fr); gap:16px; margin-bottom:24px; }
+  .kpi-card { background:linear-gradient(135deg,rgba(22,93,255,0.15),rgba(22,93,255,0.05)); border:1px solid rgba(22,93,255,0.2); border-radius:8px; padding:20px; text-align:center; }
+  .kpi-value { font-size:32px; font-weight:700; color:#4FC3F7; }
+  .kpi-label { font-size:13px; color:rgba(255,255,255,0.55); margin-top:4px; }
+  .dash-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px; }
+  .dash-card { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:20px; }
+  .dash-card-title { font-size:15px; font-weight:600; color:rgba(255,255,255,0.85); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+  .dash-card-title i { color:#4FC3F7; }
+  .bar-row { display:flex; align-items:center; gap:12px; margin-bottom:12px; font-size:13px; }
+  .bar-label { width:60px; color:rgba(255,255,255,0.6); text-align:right; flex-shrink:0; }
+  .bar-track { flex:1; height:24px; background:rgba(255,255,255,0.06); border-radius:4px; overflow:hidden; }
+  .bar-fill { height:100%; border-radius:4px; display:flex; align-items:center; padding-left:8px; font-size:12px; color:#fff; font-weight:500; }
+  .bar-count { width:40px; color:rgba(255,255,255,0.5); text-align:right; flex-shrink:0; }
+  .rank-list { list-style:none; padding:0; }
+  .rank-item { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:13px; }
+  .rank-num { width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; flex-shrink:0; }
+  .rank-1 { background:#FFD700; color:#000; }
+  .rank-2 { background:#C0C0C0; color:#000; }
+  .rank-3 { background:#CD7F32; color:#fff; }
+  .rank-other { background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.5); }
+  .rank-name { flex:1; color:rgba(255,255,255,0.8); }
+  .rank-count { color:#4FC3F7; font-weight:600; }
+  .trend-row { display:flex; gap:20px; flex-wrap:wrap; }
+  .trend-item { text-align:center; flex:1; min-width:60px; }
+  .trend-month { font-size:12px; color:rgba(255,255,255,0.4); margin-bottom:8px; }
+  .trend-bar { width:100%; background:rgba(255,255,255,0.06); border-radius:4px; position:relative; min-height:120px; display:flex; align-items:flex-end; justify-content:center; }
+  .trend-fill { width:36px; border-radius:4px 4px 0 0; transition:height .3s; }
+  .trend-val { font-size:12px; color:#4FC3F7; font-weight:500; margin-top:6px; }
+</style>
+</head>
+<body>
+<div id="page-content">
+  <div class="cockpit-wrap">
+
+    <!-- Top Bar -->
+    <div class="cockpit-top">
+      <div class="cockpit-company">浙江中能工程检测有限公司</div>
+      <div class="cockpit-title">通信铁塔检测运营驾驶舱</div>
+      <div class="cockpit-clock" id="cockpit-clock">2026-05-08 09:40:00</div>
+    </div>
+
+    <!-- KPI Row -->
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-value">42</div>
+        <div class="kpi-label">本月任务</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">86.7<span style="font-size:16px">%</span></div>
+        <div class="kpi-label">完成</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">4.2<span style="font-size:16px">%</span></div>
+        <div class="kpi-label">不合格率</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">12</div>
+        <div class="kpi-label">在检人员</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">28</div>
+        <div class="kpi-label">设备在用</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">5</div>
+        <div class="kpi-label">报告待审</div>
+      </div>
+    </div>
+
+    <!-- Row 2 -->
+    <div class="dash-row">
+      <div class="dash-card">
+        <div class="dash-card-title"><i class="fa-solid fa-chart-bar"></i> 任务进度分布</div>
+        <div class="bar-row">
+          <div class="bar-label">待执</div>
+          <div class="bar-track"><div class="bar-fill" style="width:36%;background:var(--warning);">15</div></div>
+          <div class="bar-count">15</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">执行</div>
+          <div class="bar-track"><div class="bar-fill" style="width:29%;background:var(--primary);">12</div></div>
+          <div class="bar-count">12</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">待审</div>
+          <div class="bar-track"><div class="bar-fill" style="width:19%;background:#F7BA1E;">8</div></div>
+          <div class="bar-count">8</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">已完</div>
+          <div class="bar-track"><div class="bar-fill" style="width:17%;background:var(--success);">7</div></div>
+          <div class="bar-count">7</div>
+        </div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-card-title"><i class="fa-solid fa-ranking-star"></i> 人员工作量排</div>
+        <ul class="rank-list">
+          <li class="rank-item"><span class="rank-num rank-1">1</span><span class="rank-name">李明</span><span class="rank-count">15 </span></li>
+          <li class="rank-item"><span class="rank-num rank-2">2</span><span class="rank-name">王强</span><span class="rank-count">12 </span></li>
+          <li class="rank-item"><span class="rank-num rank-3">3</span><span class="rank-name">张华</span><span class="rank-count">10 </span></li>
+          <li class="rank-item"><span class="rank-num rank-other">4</span><span class="rank-name">赵六</span><span class="rank-count">8 </span></li>
+          <li class="rank-item"><span class="rank-num rank-other">5</span><span class="rank-name">刘七</span><span class="rank-count">5 </span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Row 3 -->
+    <div class="dash-row">
+      <div class="dash-card">
+        <div class="dash-card-title"><i class="fa-solid fa-microchip"></i> 设备状态分</div>
+        <div class="bar-row">
+          <div class="bar-label">闲置</div>
+          <div class="bar-track"><div class="bar-fill" style="width:58%;background:#4FC3F7;">45</div></div>
+          <div class="bar-count">45</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">借出</div>
+          <div class="bar-track"><div class="bar-fill" style="width:36%;background:var(--primary);">28</div></div>
+          <div class="bar-count">28</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">维修</div>
+          <div class="bar-track"><div class="bar-fill" style="width:4%;background:var(--warning);">3</div></div>
+          <div class="bar-count">3</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">报废</div>
+          <div class="bar-track"><div class="bar-fill" style="width:3%;background:var(--danger);">2</div></div>
+          <div class="bar-count">2</div>
+        </div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-card-title"><i class="fa-solid fa-chart-line"></i> 近月任务趋势</div>
+        <div class="trend-row">
+          <div class="trend-item">
+            <div class="trend-bar"><div class="trend-fill" style="height:64%;background:linear-gradient(0deg,rgba(22,93,255,0.3),rgba(79,195,247,0.8));"></div></div>
+            <div class="trend-val">32</div>
+            <div class="trend-month">1</div>
+          </div>
+          <div class="trend-item">
+            <div class="trend-bar"><div class="trend-fill" style="height:56%;background:linear-gradient(0deg,rgba(22,93,255,0.3),rgba(79,195,247,0.8));"></div></div>
+            <div class="trend-val">28</div>
+            <div class="trend-month">2</div>
+          </div>
+          <div class="trend-item">
+            <div class="trend-bar"><div class="trend-fill" style="height:70%;background:linear-gradient(0deg,rgba(22,93,255,0.3),rgba(79,195,247,0.8));"></div></div>
+            <div class="trend-val">35</div>
+            <div class="trend-month">3</div>
+          </div>
+          <div class="trend-item">
+            <div class="trend-bar"><div class="trend-fill" style="height:80%;background:linear-gradient(0deg,rgba(22,93,255,0.3),rgba(79,195,247,0.8));"></div></div>
+            <div class="trend-val">40</div>
+            <div class="trend-month">4</div>
+          </div>
+          <div class="trend-item">
+            <div class="trend-bar"><div class="trend-fill" style="height:84%;background:linear-gradient(0deg,rgba(22,93,255,0.3),rgba(79,195,247,0.8));"></div></div>
+            <div class="trend-val">42</div>
+            <div class="trend-month">5</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>
+window.__layoutConfig = {active:'cockpit', breadcrumb:['运营驾驶舱','数据看板']};
+setInterval(function(){
+  var d=new Date();
+  var s=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0');
+  var el=document.getElementById('cockpit-clock');
+  if(el)el.textContent=s;
+},1000);
+</script>
+</body>
+</html>
+

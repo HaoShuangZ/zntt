@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>打印审批</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .readonly-field { background:#F7F8FA; border:1px solid var(--border); border-radius:4px; padding:6px 12px; font-size:13px; color:var(--text-2); min-height:32px; display:flex; align-items:center; }
+  .readonly-textarea { background:#F7F8FA; border:1px solid var(--border); border-radius:4px; padding:8px 12px; font-size:13px; color:var(--text-2); min-height:60px; line-height:1.6; }
+  .radio-group { display:flex; gap:20px; align-items:center; }
+  .radio-group label { display:flex; align-items:center; gap:6px; font-size:13px; color:var(--text-2); cursor:pointer; }
+</style>
+</head>
+<body>
+<div id="page-content">
+
+  <!-- 申请信息 -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-header"><div class="card-title">申请信息</div></div>
+    <div class="card-body">
+      <div class="form-grid form-grid-3">
+        <div class="form-group">
+          <label class="form-label">申请</label>
+          <div class="readonly-field">张华</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">申请时间</label>
+          <div class="readonly-field">2026-05-08 10:00</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">报告名称</label>
+          <div class="readonly-field">滨江01#单管塔检测报</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">打印份数</label>
+          <div class="readonly-field">3 </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">打印用</label>
+          <div class="readonly-field">客户交付</div>
+        </div>
+      </div>
+      <div style="margin-top:16px;">
+        <div class="form-group">
+          <label class="form-label">申请说明</label>
+          <div class="readonly-textarea">杭州移动要求提交3份纸质检测报告，其中2份交付客户，1份存档</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 审批意见 -->
+  <div class="card">
+    <div class="card-header"><div class="card-title">审批意见</div></div>
+    <div class="card-body">
+      <div class="form-group" style="margin-bottom:16px;">
+        <label class="form-label">审批意见</label>
+        <textarea class="form-textarea" placeholder="请输入审批意见""""></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">审批结果 <span class="required">*</span></label>
+        <div class="radio-group">
+          <label><input type="radio" name="print_result" checked> 同意打印</label>
+          <label><input type="radio" name="print_result"> 拒绝</label>
+        </div>
+      </div>
+
+      <div class="form-footer">
+        <a href="pc_print_audit_list.html" class="btn btn-default">返回列表</a>
+        <button class="btn btn-danger">拒绝</button>
+        <button class="btn btn-primary">同意</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'report_generate', breadcrumb:['检测管理','报告编制','打印审批']};</script>
+</body>
+</html>
+

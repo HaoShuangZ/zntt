@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>检测任务 · 附表步骤</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/app-frame.css">
+<style>
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;background:#F2F3F5}
+.top{height:48px;display:flex;align-items:center;padding:0 12px;background:#165DFF;color:#fff;font-size:15px;font-weight:600}
+.top a{color:#fff;opacity:.9;margin-right:10px;text-decoration:none}
+.step-wrap{padding:12px 14px 100px}
+.step{background:#fff;border-radius:14px;padding:12px 14px;margin-bottom:10px;border:1px solid #E5E6EB;box-shadow:0 2px 8px rgba(0,0,0,.04);display:flex;align-items:center;justify-content:space-between;text-decoration:none;color:inherit;transition:transform .15s ease}
+.step:active{transform:scale(.98)}
+.step .idx{width:28px;height:28px;border-radius:8px;background:#E8F3FF;color:#165DFF;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.step.done .idx{background:#E8FFEA;color:#00B42A}
+.step .txt{flex:1;margin:0 12px;font-size:14px;color:#1D2129}
+.step .sub{display:block;font-size:11px;color:#86909C;margin-top:2px;font-weight:400}
+.fixb{position:fixed;left:0;right:0;bottom:0;padding:10px 14px 22px;background:linear-gradient(180deg,rgba(242,243,245,0) 0%,#F2F3F5 18%);border-top:1px solid #E5E6EB}
+.badge{font-size:10px;padding:2px 6px;border-radius:4px;background:#FFF7E8;color:#FF7D00;margin-left:6px}
+</style>
+</head>
+<body>
+<div class="top">
+  <a href="../填报主页/app_task_inspect_home.html"><i class="fa-solid fa-chevron-left"></i></a>
+  模板包分步 <span style="opacity:.85;font-weight:400;font-size:13px;margin-left:6px">滨江01#单管</span>
+</div>
+<div class="step-wrap">
+  <p style="font-size:12px;color:#86909C;margin:0 0 10px">日常填报请用 <a href="../填报主页/app_task_inspect_home.html" style="color:#165DFF">检测填报主页</a>。模板包 <span class="badge">PKG_STOCK_SINGLE_PIPE_20260509</span> v1.2 · 自动保存已开启</p>
+  <a class="step done" href="../../检测/塔体/app_inspect_tower.html">
+    <span class="idx"><i class="fa-solid fa-check" style="font-size:12px"></i></span>
+    <div class="txt">基础信息<span class="sub">检测模块配置；地址、站址编码等可预填</span></div>
+    <i class="fa-solid fa-chevron-right" style="color:#C9CDD4;font-size:12px"></i>
+  </a>
+  <a class="step" href="../../检测/塔体/app_inspect_tower_photos.html">
+    <span class="idx">2</span>
+    <div class="txt">上传铁塔照片<span class="sub">仅拍照/相册；清单由检测任务模板展开</span></div>
+    <i class="fa-solid fa-chevron-right" style="color:#C9CDD4;font-size:12px"></i>
+  </a>
+  <a class="step" href="../../检测/垂直度/app_inspect_vertical.html">
+    <span class="idx">3</span>
+    <div class="txt">整体模块<span class="sub">总高、垂直度、外观等模板配置项</span></div>
+    <i class="fa-solid fa-chevron-right" style="color:#C9CDD4;font-size:12px"></i>
+  </a>
+  <a class="step" href="../../检测/地基/app_inspect_foundation.html">
+    <span class="idx">4</span>
+    <div class="txt">基础<span class="sub">尺寸、混凝土、外观等</span></div>
+    <i class="fa-solid fa-chevron-right" style="color:#C9CDD4;font-size:12px"></i>
+  </a>
+  <a class="step" href="../../检测/地基/app_inspect_foundation.html">
+    <span class="idx">5</span>
+    <div class="txt">地锚<span class="sub">规格、埋深、拉力等</span></div>
+    <i class="fa-solid fa-chevron-right" style="color:#C9CDD4;font-size:12px"></i>
+  </a>
+  <a class="step" href="../../检测/分段/app_inspect_segment.html">
+    <span class="idx">6</span>
+    <div class="txt">塔段（1～N）<span class="sub">当前 N=6 · 字段随模板配置</span></div>
+    <i class="fa-solid fa-chevron-right" style="color:#C9CDD4;font-size:12px"></i>
+  </a>
+  <a class="step" href="../../检测/平台/app_inspect_platform.html">
+    <span class="idx">7</span>
+    <div class="txt">平台及设备<span class="sub">天线、馈线、爬梯等</span></div>
+    <i class="fa-solid fa-chevron-right" style="color:#C9CDD4;font-size:12px"></i>
+  </a>
+  <a class="step" href="../../检测/防腐层/app_inspect_coating.html">
+    <span class="idx">8</span>
+    <div class="txt">防腐层质量<span class="sub">二维表 / 照片类字段</span></div>
+    <i class="fa-solid fa-chevron-right" style="color:#C9CDD4;font-size:12px"></i>
+  </a>
+  <a class="step" href="../../检测/焊接/app_inspect_weld.html">
+    <span class="idx">9</span>
+    <div class="txt">焊接<span class="sub">焊缝抽检与记录</span></div>
+    <i class="fa-solid fa-chevron-right" style="color:#C9CDD4;font-size:12px"></i>
+  </a>
+  <a class="step" href="../../检测/馈线/app_inspect_feed.html">
+    <span class="idx">10</span>
+    <div class="txt">馈线门高度<span class="sub">限值与测量</span></div>
+    <i class="fa-solid fa-chevron-right" style="color:#C9CDD4;font-size:12px"></i>
+  </a>
+  <a class="step" href="../../检测/馈线/app_inspect_feed.html">
+    <span class="idx">11</span>
+    <div class="txt">馈线孔余量 / 排列 / 爬梯 / 拉线<span class="sub">孔洞余量、直径与排列；爬梯、拉线等</span></div>
+    <i class="fa-solid fa-chevron-right" style="color:#C9CDD4;font-size:12px"></i>
+  </a>
+  <a class="step" href="../../检测/结构图/app_inspect_diagram.html">
+    <span class="idx">12</span>
+    <div class="txt">连接质量<span class="sub">螺栓、连接副等</span></div>
+    <i class="fa-solid fa-chevron-right" style="color:#C9CDD4;font-size:12px"></i>
+  </a>
+  <a class="step" href="../../检测/接地/app_inspect_ground.html">
+    <span class="idx">13</span>
+    <div class="txt">构建质量与接地避雷<span class="sub">避雷针体、引下线、接地电阻、扁铁等</span></div>
+    <i class="fa-solid fa-chevron-right" style="color:#C9CDD4;font-size:12px"></i>
+  </a>
+  <a class="step" href="../../检测/校验/app_inspect_validate.html">
+    <span class="idx">14</span>
+    <div class="txt">校验与提交<span class="sub">必填通过后提交锁定</span></div>
+    <i class="fa-solid fa-chevron-right" style="color:#C9CDD4;font-size:12px"></i>
+  </a>
+</div>
+<div class="fixb">
+  <div style="display:flex;gap:10px">
+    <a href="../填报主页/app_task_inspect_home.html" class="btn btn-default" style="flex:1;text-align:center;padding:12px;border-radius:12px;text-decoration:none;border:1px solid #E5E6EB;background:#fff;color:#4E5969;font-size:14px">填报主页</a>
+    <a href="../../检测/塔体/app_inspect_tower.html" style="flex:2;text-align:center;padding:12px;border-radius:12px;text-decoration:none;background:#165DFF;color:#fff;font-size:14px;font-weight:600">继续填报</a>
+  </div>
+</div>
+</body>
+</html>

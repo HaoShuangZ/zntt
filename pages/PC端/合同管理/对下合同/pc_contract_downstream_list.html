@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>对下合同 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+  <div class="page-header">
+    <div class="page-title">对下合同</div>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-body" style="padding:10px 14px;font-size:12px;color:var(--text-2)">
+      付款提醒 → <strong>消息中心</strong>（见 <a href="../../消息模板配置/消息模板管理/pc_message_template_list.html" class="btn-text" style="padding:0">消息模板</a>）；审批 → <strong>基础平台</strong>。
+      <a href="../合同付款/pc_contract_payment.html" class="btn-text" style="margin-left:8px">对下付款登记</a>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <input type="text" class="form-input" placeholder="对下合同名称/编码" style="width:200px">
+          <input type="text" class="form-input" placeholder="对上合同编号" style="width:160px">
+          <button type="button" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> 查询</button>
+        </div>
+      </div>
+
+      <div class="pc-table-actions">
+        <a href="pc_contract_downstream_detail.html?mode=create" class="btn btn-primary"><i class="fa-solid fa-file-circle-plus"></i> 新增对下合同</a>
+        <a href="../合同列表/pc_contract_list.html" class="btn btn-default"><i class="fa-solid fa-arrow-left"></i> 对上合同</a>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>合同编码</th>
+            <th>合同名称</th>
+            <th>检测单位</th>
+            <th>金额(元)</th>
+            <th>对上合同</th>
+            <th>审批（平台）</th>
+            <th>付款进度</th>
+            <th class="col-action" style="width:220px">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-code="DX2026-0101" data-name="单站检测外协服务包">
+            <td>DX2026-0101</td>
+            <td>单站检测外协服务包</td>
+            <td>杭州某某检测技术有限公司</td>
+            <td>120,000</td>
+            <td>HT2026-0512</td>
+            <td><span class="tag tag-green">已通过</span></td>
+            <td>4.5万 / 12万</td>
+            <td class="col-action">
+              <a href="pc_contract_downstream_detail.html?code=DX2026-0101" class="btn-text">详情</a>
+              <a href="pc_contract_downstream_detail.html?code=DX2026-0101&mode=edit" class="btn-text">编辑</a>
+              <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+            </td>
+          </tr>
+          <tr data-code="DX2026-0102" data-name="塔身焊缝抽检协作">
+            <td>DX2026-0102</td>
+            <td>塔身焊缝抽检协作</td>
+            <td>外协协作单位</td>
+            <td>96,000</td>
+            <td>HT2026-0428</td>
+            <td><span class="tag tag-blue">审核中</span></td>
+            <td>2.2万 / 9.6万</td>
+            <td class="col-action">
+              <a href="pc_contract_downstream_detail.html?code=DX2026-0102" class="btn-text">详情</a>
+              <a href="../../工作台/流程中心/pc_workflow_approve.html?bizType=contract_down&bizId=DX2026-0102" class="btn-text" style="color:var(--primary)">审批(平台)</a>
+              <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = { active: 'contract_downstream', breadcrumb: ['合同管理', '对下合同'] };</script>
+</body>
+</html>

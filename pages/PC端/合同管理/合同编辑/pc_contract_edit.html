@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>跳转编辑页</title>
+<script>
+  var q = location.search || '';
+  if (q.indexOf('mode=') < 0) q += (q ? '&' : '?') + 'mode=edit';
+  location.replace('pc_contract_detail.html' + q);
+</script>
+</head>
+<body></body>
+</html>

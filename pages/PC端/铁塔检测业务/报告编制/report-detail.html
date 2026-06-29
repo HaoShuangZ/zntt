@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>检测报告详情 · 报告编制</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .readonly-box { background:#f8fafc; border:1px solid #e5e7eb; border-radius:6px; min-height:34px; padding:7px 10px; color:#374151; font-size:13px; }
+  .section-title { font-size:14px; font-weight:600; color:var(--text-1); margin-bottom:10px; padding-left:8px; border-left:3px solid var(--primary); }
+  .row-grid { display:grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap:10px 14px; }
+  .item-table th,.item-table td { padding:8px; border:1px solid #e5e7eb; font-size:12px; vertical-align:top; }
+  .item-table th { background:#f8fafc; color:#374151; }
+  .status-pill { display:inline-flex; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:600; }
+</style>
+</head>
+<body>
+<div id="page-content">
+  <div class="card" style="margin-bottom:14px;">
+    <div class="card-body" style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+      <div>
+        <div style="font-size:16px;font-weight:600;color:var(--text-1);margin-bottom:4px;">报告详情</div>
+        <div style="font-size:12px;color:var(--text-3);" id="progressText">流程进度：-</div>
+        <div style="font-size:12px;color:var(--text-2);margin-top:6px;line-height:1.5;" id="auditFlowHint"></div>
+      </div>
+      <div id="statusView"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="form-section">
+        <div class="section-title">审核信息</div>
+        <div class="row-grid">
+          <div><div class="form-label">审核状态</div><div class="readonly-box" id="auditStatus"></div></div>
+          <div><div class="form-label">审核节点</div><div class="readonly-box" id="auditNode"></div></div>
+          <div><div class="form-label">审核人</div><div class="readonly-box" id="auditor"></div></div>
+          <div><div class="form-label">审核时间</div><div class="readonly-box" id="auditAt"></div></div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-title">1. 报告基本信息</div>
+        <div class="row-grid">
+          <div><div class="form-label">报告编号</div><div class="readonly-box" id="reportNo"></div></div>
+          <div><div class="form-label">铁塔编号</div><div class="readonly-box" id="towerCode"></div></div>
+          <div><div class="form-label">合同编号</div><div class="readonly-box" id="contractNo"></div></div>
+          <div><div class="form-label">检测任务编号</div><div class="readonly-box" id="taskId"></div></div>
+          <div><div class="form-label">检测人员</div><div class="readonly-box" id="inspector"></div></div>
+          <div><div class="form-label">检测日期</div><div class="readonly-box" id="inspectDate"></div></div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-title">2. 铁塔基础信息</div>
+        <div class="row-grid">
+          <div><div class="form-label">铁塔地址</div><div class="readonly-box" id="towerAddress"></div></div>
+          <div><div class="form-label">铁塔类型</div><div class="readonly-box" id="towerType"></div></div>
+          <div><div class="form-label">建设年代</div><div class="readonly-box" id="buildYear"></div></div>
+          <div><div class="form-label">产权单位</div><div class="readonly-box" id="ownerUnit"></div></div>
+          <div><div class="form-label">维护单位</div><div class="readonly-box" id="maintainUnit"></div></div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-title">3. 检测项目数据</div>
+        <table class="item-table" style="width:100%;border-collapse:collapse">
+          <thead>
+            <tr>
+              <th>检测分类</th>
+              <th>检测内容</th>
+              <th>标准值</th>
+              <th>实测值</th>
+              <th>检测结果</th>
+              <th>备注</th>
+            </tr>
+          </thead>
+          <tbody id="itemBody"></tbody>
+        </table>
+      </div>
+
+      <div class="form-section">
+        <div class="section-title">4. 附件</div>
+        <div class="row-grid">
+          <div><div class="form-label">现场照片</div><div class="readonly-box" id="photos"></div></div>
+          <div><div class="form-label">检测原始记录</div><div class="readonly-box" id="records"></div></div>
+          <div><div class="form-label">签字扫描件</div><div class="readonly-box" id="signFiles"></div></div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-title">5. 检测结论与签字</div>
+        <div class="row-grid">
+          <div style="grid-column:1 / span 3;"><div class="form-label">检测结论</div><div class="readonly-box" id="conclusion" style="min-height:78px;"></div></div>
+          <div><div class="form-label">检测人员签字</div><div class="readonly-box" id="inspectorSign"></div></div>
+          <div><div class="form-label">审核人员签字</div><div class="readonly-box" id="auditorSign"></div></div>
+          <div id="rejectReasonWrap" style="display:none;grid-column:1 / span 3;"><div class="form-label" style="color:#dc2626;">驳回原因</div><div class="readonly-box" id="rejectReason" style="min-height:60px;border-color:#fecaca;background:#fef2f2;color:#b91c1c;"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="form-footer" id="actionBar"></div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'report_generate', breadcrumb:['检测管理','报告编制','报告详情']};</script>
+<script>
+  (function () {
+    const REPORT_KEY = 'tower_reports';
+    const TASK_KEY = 'tower_tasks';
+    const params = new URLSearchParams(window.location.search);
+    const reportId = params.get('reportId') || '';
+
+    const statusMeta = {
+      '待编制': { cls:'bg-slate-100 text-slate-700', progress:'待发起报告编制（任务检毕副本）' },
+      '编制中': { cls:'bg-blue-100 text-blue-800', progress:'报告编制中，未发起审核' },
+      '已编制': { cls:'bg-amber-100 text-amber-800', progress:'已发起报告审核，流程处理中' },
+      '已出报告': { cls:'bg-green-100 text-green-800', progress:'审核通过，已出报告' },
+      '草稿': { cls:'bg-gray-100 text-gray-700', progress:'已迁移为「编制中」' },
+      '待审核': { cls:'bg-amber-100 text-amber-800', progress:'已迁移为「已编制」' },
+      '已通过': { cls:'bg-green-100 text-green-800', progress:'已迁移为「已出报告」' },
+      '已驳回': { cls:'bg-red-100 text-red-700', progress:'已迁移为「编制中」' }
+    };
+
+    function deriveAuditFields(r) {
+      if (r.auditStatus) return;
+      if (r.status === '待编制') {
+        r.auditStatus = '未涉及'; r.auditNode = '—'; r.auditor = '—'; r.auditAt = '—';
+      } else if (r.status === '编制中') {
+        r.auditStatus = '未提交'; r.auditNode = '未发起审核'; r.auditor = '—'; r.auditAt = '—';
+      } else if (r.status === '已编制') {
+        r.auditStatus = '审核中'; r.auditNode = r.auditStep || '待技术部门主管审核'; r.auditor = r.auditor || '—'; r.auditAt = r.auditAt || '—';
+      } else if (r.status === '已出报告') {
+        r.auditStatus = '已通过'; r.auditNode = r.auditStep || '已完成'; r.auditor = r.auditor || '—'; r.auditAt = r.auditAt || '—';
+      }
+    }
+
+    function migrateReportRow(r) {
+      var s = r.status;
+      if (s === '草稿') { r.status = '编制中'; }
+      else if (s === '待审核') { r.status = '已编制'; if (!r.auditStep) r.auditStep = '待技术部门主管审核'; }
+      else if (s === '已通过') { r.status = '已出报告'; if (!r.auditStep) r.auditStep = '已完成'; }
+      else if (s === '已驳回') { r.status = '编制中'; r.auditStatus = '已驳回'; }
+      deriveAuditFields(r);
+      return r;
+    }
+
+    function nowText() {
+      var d = new Date();
+      var p = function (n) { return String(n).padStart(2, '0'); };
+      return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+    }
+
+    function loadReportsMigrate() {
+      var list;
+      try { list = JSON.parse(localStorage.getItem(REPORT_KEY) || '[]'); } catch (e) { list = []; }
+      var needSave = false;
+      list = list.map(function (r) {
+        var old = r.status;
+        migrateReportRow(r);
+        if (r.status !== old) needSave = true;
+        return r;
+      });
+      if (needSave) localStorage.setItem(REPORT_KEY, JSON.stringify(list));
+      return list;
+    }
+
+    function loadReports() {
+      return loadReportsMigrate();
+    }
+    function saveReports(list) { localStorage.setItem(REPORT_KEY, JSON.stringify(list)); }
+    function loadTasks() {
+      try { return JSON.parse(localStorage.getItem(TASK_KEY) || '[]'); } catch (e) { return []; }
+    }
+    function saveTasks(list) { localStorage.setItem(TASK_KEY, JSON.stringify(list)); }
+
+    function setText(id, text) { document.getElementById(id).textContent = text || '-'; }
+    function listText(arr) { return arr && arr.length ? arr.join('、') : '无'; }
+
+    function touchTaskSync(taskId, note) {
+      if (!taskId) return;
+      const tasks = loadTasks();
+      const idx = tasks.findIndex(function (t) { return t.id === taskId; });
+      if (idx < 0) return;
+      tasks[idx].reportSyncNote = note;
+      saveTasks(tasks);
+    }
+
+    function flowHintHtml(report) {
+      if (report.status === '待编制') {
+        var s = '说明：本条为检测任务审核通过（检毕）后<strong>系统自动复制</strong>的报告侧数据，原任务主数据不变。';
+        if (report.declareFailed) s += ' <span style="color:#b91c1c;font-weight:600">申报失败</span>：' + (report.declareFailReason || '—');
+        return s;
+      }
+      if (report.status === '编制中') return '编制人员在此阶段维护报告正文；保存草稿保持「编制中」。发起报告审核后进入「已编制」并按下方节点推进。';
+      if (report.status === '已编制') {
+        return '审核流：<strong>编制发起</strong> → <strong>技术部门主管</strong> → <strong>抄送相关人员</strong>' + (report.extraSign ? ' → <strong>加签</strong>' : '') + ' → <strong>出具报告</strong>。当前节点：「' + (report.auditStep || '待技术部门主管审核') + '」。';
+      }
+      if (report.status === '已出报告') return '审核已全部通过；本记录为已出具报告终态，可导出归档。';
+      return '';
+    }
+
+    function renderReport(report) {
+      deriveAuditFields(report);
+      document.getElementById('rejectReasonWrap').style.display = 'none';
+      setText('auditStatus', report.auditStatus);
+      setText('auditNode', report.auditNode);
+      setText('auditor', report.auditor);
+      setText('auditAt', report.auditAt);
+      setText('reportNo', report.reportNo);
+      setText('towerCode', report.towerCode + ' / ' + (report.towerName || '-'));
+      setText('contractNo', report.contractNo);
+      setText('taskId', report.taskId);
+      setText('inspector', report.inspector);
+      setText('inspectDate', report.inspectDate);
+      setText('towerAddress', report.towerAddress);
+      setText('towerType', report.towerType);
+      setText('buildYear', report.buildYear);
+      setText('ownerUnit', report.ownerUnit);
+      setText('maintainUnit', report.maintainUnit);
+      setText('photos', listText(report.attachments && report.attachments.photos));
+      setText('records', listText(report.attachments && report.attachments.records));
+      setText('signFiles', listText(report.attachments && report.attachments.signFiles));
+      setText('conclusion', report.conclusion);
+      setText('inspectorSign', report.inspectorSign);
+      setText('auditorSign', report.auditorSign);
+      if (report.rejectReason && report.status === '编制中') {
+        document.getElementById('rejectReasonWrap').style.display = 'block';
+        setText('rejectReason', report.rejectReason);
+      }
+      const meta = statusMeta[report.status] || statusMeta['待编制'];
+      var pill = '<span class="status-pill ' + meta.cls + '">' + report.status + '</span>';
+      if (report.status === '待编制' && report.declareFailed) {
+        pill += ' <span class="status-pill bg-red-50 text-red-700" style="margin-left:6px;">申报失败</span>';
+      }
+      if (report.status === '已编制' && report.extraSign) {
+        pill += ' <span class="status-pill bg-violet-50 text-violet-700" style="margin-left:6px;">加签</span>';
+      }
+      document.getElementById('statusView').innerHTML = pill;
+      document.getElementById('progressText').textContent = '流程进度：' + meta.progress;
+      document.getElementById('auditFlowHint').innerHTML = flowHintHtml(report);
+
+      document.getElementById('itemBody').innerHTML = (report.items || []).map(function (it) {
+        return '<tr><td>' + (it.category || '-') + '</td><td>' + (it.content || '-') + '</td><td>' + (it.standard || '-') + '</td><td>' + (it.actual || '-') + '</td><td>' + (it.result || '-') + '</td><td>' + (it.remark || '-') + '</td></tr>';
+      }).join('') || '<tr><td colspan="6" style="text-align:center;color:#9ca3af;">暂无数据</td></tr>';
+      renderActionBar(report);
+    }
+
+    function patchReport(id, mutator) {
+      const list = loadReports();
+      const idx = list.findIndex(function (r) { return r.id === id; });
+      if (idx < 0) return null;
+      mutator(list[idx]);
+      saveReports(list);
+      return list[idx];
+    }
+
+    function renderActionBar(report) {
+      const bar = document.getElementById('actionBar');
+      const backBtn = '<a href="report-list.html" class="btn btn-default">返回列表</a>';
+
+      if (report.status === '待编制') {
+        bar.innerHTML = backBtn +
+          '<div style="display:flex;gap:8px;flex-wrap:wrap;"><a href="report-edit.html?reportId=' + report.id + '" class="btn btn-primary">发起编制</a></div>';
+        return;
+      }
+
+      if (report.status === '编制中') {
+        bar.innerHTML = backBtn +
+          '<div style="display:flex;gap:8px;flex-wrap:wrap;"><a href="report-edit.html?reportId=' + report.id + '" class="btn btn-primary">继续编辑</a><button class="btn btn-danger" id="btn-delete-draft">删除草稿</button></div>';
+        document.getElementById('btn-delete-draft').addEventListener('click', function () {
+          if (!confirm('确认删除该编制中草稿？')) return;
+          const rest = loadReports().filter(function (r) { return r.id !== report.id; });
+          saveReports(rest);
+          location.href = 'report-list.html';
+        });
+        return;
+      }
+
+      if (report.status === '已编制') {
+        var step = report.auditStep || '待技术部门主管审核';
+        var knownSteps = ['待技术部门主管审核', '待抄送相关人员', '待加签审核', '待出具报告'];
+        if (knownSteps.indexOf(step) < 0) step = '待技术部门主管审核';
+        var buttons = '<button class="btn btn-default" id="btn-recall-audit">撤回至编制中</button>';
+
+        if (step === '待技术部门主管审核') {
+          buttons += '<button class="btn btn-primary" id="btn-supervisor-pass">主管审核通过</button><button class="btn btn-danger" id="btn-audit-reject">驳回至编制中</button>';
+        } else if (step === '待抄送相关人员') {
+          buttons += '<button class="btn btn-primary" id="btn-cc-confirm">抄送确认</button><button class="btn btn-danger" id="btn-audit-reject">驳回至编制中</button>';
+        } else if (step === '待加签审核') {
+          buttons += '<button class="btn btn-primary" id="btn-extra-sign-pass">加签通过</button><button class="btn btn-danger" id="btn-audit-reject">驳回至编制中</button>';
+        } else if (step === '待出具报告') {
+          buttons += '<button class="btn btn-primary" id="btn-final-issue">出具报告（终审通过）</button><button class="btn btn-danger" id="btn-audit-reject">驳回至编制中</button>';
+        }
+
+        bar.innerHTML = backBtn + '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">' + buttons + '</div>';
+
+        var rejectHandler = function () {
+          var reason = prompt('请输入驳回原因（将退回「编制中」）');
+          if (!reason) return;
+          patchReport(report.id, function (r) {
+            r.status = '编制中';
+            r.auditStep = '';
+            r.auditStatus = '已驳回';
+            r.auditNode = '已驳回';
+            r.auditor = '—';
+            r.auditAt = '—';
+            r.rejectReason = reason;
+          });
+          touchTaskSync(report.taskId, '报告编制中');
+          location.reload();
+        };
+
+        var recallHandler = function () {
+          if (!confirm('撤回后报告退回「编制中」，需重新发起审核。确定？')) return;
+          patchReport(report.id, function (r) {
+            r.status = '编制中';
+            r.auditStep = '';
+            r.auditStatus = '未提交';
+            r.auditNode = '未发起审核';
+            r.auditor = '—';
+            r.auditAt = '—';
+          });
+          touchTaskSync(report.taskId, '报告编制中');
+          location.reload();
+        };
+
+        var bind = function (id, fn) {
+          var el = document.getElementById(id);
+          if (el) el.addEventListener('click', fn);
+        };
+
+        bind('btn-recall-audit', recallHandler);
+        bind('btn-audit-reject', rejectHandler);
+        bind('btn-supervisor-pass', function () {
+          patchReport(report.id, function (r) {
+            r.auditStep = '待抄送相关人员';
+            r.auditStatus = '审核中';
+            r.auditNode = '待抄送相关人员';
+            r.auditor = '技术部主管-周敏';
+            r.auditAt = nowText();
+          });
+          location.reload();
+        });
+        bind('btn-cc-confirm', function () {
+          patchReport(report.id, function (r) {
+            r.auditStep = r.extraSign ? '待加签审核' : '待出具报告';
+            r.auditStatus = '审核中';
+            r.auditNode = r.auditStep;
+            r.auditor = '抄送确认-李娜';
+            r.auditAt = nowText();
+          });
+          location.reload();
+        });
+        bind('btn-extra-sign-pass', function () {
+          patchReport(report.id, function (r) {
+            r.auditStep = '待出具报告';
+            r.auditStatus = '审核中';
+            r.auditNode = '待出具报告';
+            r.auditor = '加签-陈总';
+            r.auditAt = nowText();
+          });
+          location.reload();
+        });
+        bind('btn-final-issue', function () {
+          patchReport(report.id, function (r) {
+            r.status = '已出报告';
+            r.auditStep = '已完成';
+            r.auditStatus = '已通过';
+            r.auditNode = '已完成';
+            r.auditor = r.auditor && r.auditor !== '—' ? r.auditor : '终审-张伟';
+            r.auditAt = nowText();
+          });
+          touchTaskSync(report.taskId, '报告已出具');
+          location.reload();
+        });
+        return;
+      }
+
+      if (report.status === '已出报告') {
+        bar.innerHTML = backBtn +
+          '<div style="display:flex;gap:8px;"><button class="btn btn-default" id="btn-export">导出PDF</button><button class="btn btn-primary" id="btn-print">打印</button></div>';
+        document.getElementById('btn-export').addEventListener('click', function () { alert('已导出PDF'); });
+        document.getElementById('btn-print').addEventListener('click', function () { alert('已发送打印'); });
+      }
+    }
+
+    const report = loadReports().find(function (r) { return r.id === reportId; });
+    if (!report) {
+      alert('未找到报告数据');
+      location.href = 'report-list.html';
+      return;
+    }
+    renderReport(report);
+  })();
+</script>
+</body>
+</html>

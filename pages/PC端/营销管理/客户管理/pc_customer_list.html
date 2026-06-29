@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>客户管理 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+  <div class="card">
+    <div class="card-body">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <input class="form-input" placeholder="单位名称/编号">
+          <select class="form-select">
+            <option>全部类型</option>
+            <option>运营无</option>
+            <option>集团</option>
+            <option>政府</option>
+            <option>企业</option>
+          </select>
+          <select class="form-select">
+            <option>全部状态</option>
+            <option>启用</option>
+            <option>停用</option>
+          </select>
+          <button class="btn btn-primary"><i class="fa-solid fa-search"></i> 查询</button>
+          <button class="btn btn-default">重置</button>
+        </div>
+      </div>
+
+      <div class="pc-table-actions">
+        <button class="btn btn-primary" onclick="location.href='pc_customer_create.html'"><i class="fa-solid fa-plus"></i> 新增客户</button>
+          <button class="btn btn-default"><i class="fa-solid fa-file-import"></i> 导入</button>
+          <button class="btn btn-default"><i class="fa-solid fa-file-export"></i> 导出</button>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>客户编号</th>
+            <th>单位名称</th>
+            <th>单位简</th>
+            <th>客户类型</th>
+            <th>联系</th>
+            <th>联系电话</th>
+            <th>状态</th>
+            <th class="col-action">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>KH001</td>
+            <td>中国移动杭州分公</td>
+            <td>杭州移动</td>
+            <td><span class="tag tag-blue">运营</span></td>
+            <td>张经</td>
+            <td>138-0000-1111</td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td class="col-action"><a class="btn-text" href="pc_customer_create.html"><i class="fa-solid fa-edit"></i> 编辑</a><button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button><a class="btn-text" style="color:var(--danger)"><i class="fa-solid fa-ban"></i> 停用</a></td>
+          </tr>
+          <tr>
+            <td>KH002</td>
+            <td>中国电信浙江分公</td>
+            <td>浙江电信</td>
+            <td><span class="tag tag-blue">运营</span></td>
+            <td>李主</td>
+            <td>139-0000-2222</td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td class="col-action"><a class="btn-text" href="pc_customer_create.html"><i class="fa-solid fa-edit"></i> 编辑</a><button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button><a class="btn-text" style="color:var(--danger)"><i class="fa-solid fa-ban"></i> 停用</a></td>
+          </tr>
+          <tr>
+            <td>KH003</td>
+            <td>浙江省铁塔公</td>
+            <td>浙江铁塔</td>
+            <td><span class="tag tag-green">集团</span></td>
+            <td>王总监</td>
+            <td>137-0000-3333</td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td class="col-action"><a class="btn-text" href="pc_customer_create.html"><i class="fa-solid fa-edit"></i> 编辑</a><button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button><a class="btn-text" style="color:var(--danger)"><i class="fa-solid fa-ban"></i> 停用</a></td>
+          </tr>
+          <tr>
+            <td>KH004</td>
+            <td>杭州市住建局</td>
+            <td>住建局</td>
+            <td><span class="tag tag-orange">政府</span></td>
+            <td>赵科</td>
+            <td>136-0000-4444</td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td class="col-action"><a class="btn-text" href="pc_customer_create.html"><i class="fa-solid fa-edit"></i> 编辑</a><button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button><a class="btn-text" style="color:var(--danger)"><i class="fa-solid fa-ban"></i> 停用</a></td>
+          </tr>
+          <tr>
+            <td>KH005</td>
+            <td>浙江恒通建设集</td>
+            <td>恒通建</td>
+            <td><span class="tag tag-gray">企业</span></td>
+            <td>刘主</td>
+            <td>135-0000-5555</td>
+            <td><span class="tag tag-gray">停用</span></td>
+            <td class="col-action"><a class="btn-text" href="pc_customer_create.html"><i class="fa-solid fa-edit"></i> 编辑</a><button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button><a class="btn-text" style="color:var(--primary)"><i class="fa-solid fa-check-circle"></i> 启用</a></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pagination">
+        <span>共 86 条</span>
+        <div class="pagination-btns">
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <button class="page-btn">4</button>
+          <button class="page-btn">5</button>
+          <button class="page-btn"><i class="fa-solid fa-angle-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'customer_list', breadcrumb:['营销管理','客户管理']};</script>
+</body>
+</html>
+
+

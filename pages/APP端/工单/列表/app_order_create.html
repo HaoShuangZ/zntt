@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>添加订单</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/app-frame.css">
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; background: #F2F3F5; margin: 0; }
+.fld { margin-bottom:14px; }
+.fld label { display:block; font-size:13px; color:#86909C; margin-bottom:6px; }
+.fld input, .fld select, .fld textarea { width:100%; box-sizing:border-box; padding:10px 12px; border:1px solid #E5E6EB; border-radius:8px; font-size:14px; }
+.req::after { content:" *"; color:#F53F3F; }
+</style>
+</head>
+<body>
+<div style="height:44px; display:flex; align-items:center; justify-content:space-between; padding:0 16px; background:#fff;">
+  <span style="font-size:14px; font-weight:600;">9:41</span>
+  <span style="font-size:12px;"><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+</div>
+<div style="height:44px; display:flex; align-items:center; padding:0 16px; background:#fff; border-bottom:1px solid #E5E6EB;">
+  <a href="../../工作台/首页/app_workbench_index.html#orders" style="color:#165DFF; text-decoration:none; font-size:14px;"><i class="fa-solid fa-chevron-left"></i> 取消</a>
+  <span style="flex:1; text-align:center; font-size:16px; font-weight:600;">添加订单</span>
+  <span style="width:48px;"></span>
+</div>
+<div style="padding:12px 16px 100px;">
+  <p style="font-size:12px;color:#92400e;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:8px 10px;margin:0 0 14px;">
+    现场补录场景：若企业规定仅合同部 PC 建单，可在权限配置中隐藏本入口。
+  </p>
+  <div style="background:#fff;border-radius:12px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+    <div class="fld"><label class="req">订单名称</label><input type="text" placeholder="请输入订单名称"></div>
+    <div class="fld"><label class="req">站址编码</label><input type="text" placeholder="如：ZZ-HZ-BJ01"></div>
+    <div class="fld"><label class="req">经度</label><input type="text" placeholder="如 120.2126"></div>
+    <div class="fld"><label class="req">纬度</label><input type="text" placeholder="如 30.2084"></div>
+    <div class="fld"><label class="req">塔型</label>
+      <select><option value="">请选择</option><option>单管塔</option><option>角钢塔</option><option>三管塔</option><option>四管塔</option></select>
+    </div>
+    <div class="fld"><label class="req">联系人</label><input type="text" placeholder="姓名"></div>
+    <div class="fld"><label class="req">联系电话</label><input type="tel" placeholder="11位手机号"></div>
+    <div class="fld"><label class="req">所属项目</label><input type="text" placeholder="工程/项目名称"></div>
+    <div class="fld"><label class="req">省份地市</label><input type="text" placeholder="如：浙江省杭州市"></div>
+    <div class="fld"><label class="req">检测需求</label><textarea rows="3" placeholder="简要说明检测范围与要求"></textarea></div>
+  </div>
+</div>
+<div style="position:fixed;bottom:0;left:0;right:0;padding:12px 16px;background:#fff;border-top:1px solid #E5E6EB;">
+  <button type="button" class="btn-save" style="display:block;width:100%;height:44px;background:#165DFF;color:#fff;border:none;border-radius:8px;font-size:16px;font-weight:600;">保存订单</button>
+</div>
+<script>
+document.querySelector('.btn-save').addEventListener('click', function () {
+  alert('订单已保存，将出现在待办列表');
+  location.href = '../../工作台/首页/app_workbench_index.html#orders';
+});
+</script>
+</body>
+</html>

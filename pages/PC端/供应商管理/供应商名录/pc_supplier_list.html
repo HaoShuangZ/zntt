@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>供应商管理 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .modal-mask {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: rgba(0, 0, 0, 0.45);
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .modal-mask.show { display: flex; }
+  .modal-dialog {
+    width: 100%;
+    max-width: 760px;
+    max-height: min(90vh, 820px);
+    background: var(--bg-card);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.18);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .modal-hd {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .modal-hd h2 { margin: 0; font-size: 16px; font-weight: 600; color: var(--text-1); }
+  .modal-close {
+    border: none;
+    background: none;
+    font-size: 20px;
+    line-height: 1;
+    color: var(--text-3);
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+  .modal-close:hover { color: var(--text-1); background: var(--bg-page); }
+  .modal-bd {
+    padding: 16px 18px;
+    overflow-y: auto;
+    flex: 1;
+  }
+  .modal-ft {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 18px;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+    background: #FAFBFC;
+  }
+  .modal-block {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 14px 8px;
+    margin-bottom: 12px;
+    background: #fff;
+  }
+  .modal-block-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-1);
+    margin-bottom: 12px;
+    padding-left: 8px;
+    border-left: 3px solid var(--primary);
+  }
+  .upload-tile {
+    width: 100%;
+    height: 88px;
+    border: 1px dashed #d9d9d9;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #86909c;
+    background: #f7f8fa;
+  }
+  .upload-tile i { font-size: 18px; margin-bottom: 4px; color: var(--primary); }
+</style>
+</head>
+<body>
+<div id="page-content">
+  <div class="card">
+    <div class="card-body">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <input class="form-input" placeholder="供应商编号 / 名称">
+          <select class="form-select">
+            <option>全部状态</option>
+            <option>启用</option>
+            <option>停用</option>
+          </select>
+          <button type="button" class="btn btn-primary"><i class="fa-solid fa-search"></i> 查询</button>
+          <button type="button" class="btn btn-default">重置</button>
+        </div>
+      </div>
+
+      <div class="pc-table-actions">
+        <button type="button" class="btn btn-primary" id="btnOpenAddSupplier"><i class="fa-solid fa-plus"></i> 新增</button>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>供应商编号</th>
+            <th>供应商名称</th>
+            <th>统一社会信用代码</th>
+            <th>联系人</th>
+            <th>联系电话</th>
+            <th>资质有效期</th>
+            <th>状态</th>
+            <th class="col-action">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-supplier-code="GYS001" data-name="杭州精密仪器有限公司" data-credit="91330100XXXXXXXX" data-contact="陈经理" data-phone="138-1111-0001">
+            <td>GYS001</td>
+            <td>杭州精密仪器有限公司</td>
+            <td>91330100XXXXXXXX</td>
+            <td>陈经理</td>
+            <td>138-1111-0001</td>
+            <td>2028-06-30</td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td class="col-action"><a class="btn-text js-supplier-edit" href="javascript:void(0)" role="button"><i class="fa-solid fa-pen"></i> 编辑</a><a class="btn-text" href="javascript:void(0)"><i class="fa-solid fa-file-lines"></i> 查看资质</a></td>
+          </tr>
+          <tr data-supplier-code="GYS002" data-name="浙江光电科技有限公司" data-credit="91330200XXXXXXXX" data-contact="孙主管" data-phone="139-2222-0002">
+            <td>GYS002</td>
+            <td>浙江光电科技有限公司</td>
+            <td>91330200XXXXXXXX</td>
+            <td>孙主管</td>
+            <td>139-2222-0002</td>
+            <td>2027-03-15</td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td class="col-action"><a class="btn-text js-supplier-edit" href="javascript:void(0)" role="button"><i class="fa-solid fa-pen"></i> 编辑</a><a class="btn-text" href="javascript:void(0)"><i class="fa-solid fa-file-lines"></i> 查看资质</a></td>
+          </tr>
+          <tr data-supplier-code="GYS003" data-name="上海测量设备有限公司" data-credit="91310100XXXXXXXX" data-contact="吴经理" data-phone="137-3333-0003">
+            <td>GYS003</td>
+            <td>上海测量设备有限公司</td>
+            <td>91310100XXXXXXXX</td>
+            <td>吴经理</td>
+            <td>137-3333-0003</td>
+            <td>2026-06-10</td>
+            <td><span class="tag tag-orange">即将到期</span></td>
+            <td class="col-action"><a class="btn-text js-supplier-edit" href="javascript:void(0)" role="button"><i class="fa-solid fa-pen"></i> 编辑</a><a class="btn-text" href="javascript:void(0)"><i class="fa-solid fa-file-lines"></i> 查看资质</a></td>
+          </tr>
+          <tr data-supplier-code="GYS004" data-name="南京测控仪器" data-credit="91320100XXXXXXXX" data-contact="郑工" data-phone="136-4444-0004">
+            <td>GYS004</td>
+            <td>南京测控仪器</td>
+            <td>91320100XXXXXXXX</td>
+            <td>郑工</td>
+            <td>136-4444-0004</td>
+            <td>2029-12-31</td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td class="col-action"><a class="btn-text js-supplier-edit" href="javascript:void(0)" role="button"><i class="fa-solid fa-pen"></i> 编辑</a><a class="btn-text" href="javascript:void(0)"><i class="fa-solid fa-file-lines"></i> 查看资质</a></td>
+          </tr>
+          <tr data-supplier-code="GYS005" data-name="杭州办公设备供应" data-credit="91330100YYYYYYYY" data-contact="周经理" data-phone="135-5555-0005">
+            <td>GYS005</td>
+            <td>杭州办公设备供应</td>
+            <td>91330100YYYYYYYY</td>
+            <td>周经理</td>
+            <td>135-5555-0005</td>
+            <td>2025-12-01</td>
+            <td><span class="tag tag-red">已过期</span></td>
+            <td class="col-action"><a class="btn-text js-supplier-edit" href="javascript:void(0)" role="button"><i class="fa-solid fa-pen"></i> 编辑</a><a class="btn-text" href="javascript:void(0)"><i class="fa-solid fa-file-lines"></i> 查看资质</a></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pagination">
+        <span>共 23 条</span>
+        <div class="pagination-btns">
+          <button type="button" class="page-btn active">1</button>
+          <button type="button" class="page-btn">2</button>
+          <button type="button" class="page-btn">3</button>
+          <button type="button" class="page-btn"><i class="fa-solid fa-angle-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-mask" id="addSupplierModal" role="dialog" aria-modal="true" aria-labelledby="addSupplierTitle">
+    <div class="modal-dialog">
+      <div class="modal-hd">
+        <h2 id="addSupplierTitle">新增供应商</h2>
+        <button type="button" class="modal-close" id="addSupplierModalClose" aria-label="关闭">&times;</button>
+      </div>
+      <div class="modal-bd">
+        <div class="modal-block">
+          <div class="modal-block-title"><i class="fa-solid fa-building"></i> 基础信息</div>
+          <div class="form-grid">
+            <div class="form-group" id="supplierModalCodeWrap" style="display:none">
+              <label class="form-label">供应商编号</label>
+              <input type="text" id="supplierModalCode" class="form-input" style="width:100%" readonly>
+            </div>
+            <div class="form-group">
+              <label class="form-label">名称 <span class="required">*</span></label>
+              <input type="text" id="supplierModalName" class="form-input" style="width:100%" placeholder="请输入供应商名称">
+            </div>
+            <div class="form-group">
+              <label class="form-label">统一社会信用代码</label>
+              <input type="text" id="supplierModalCredit" class="form-input" style="width:100%" placeholder="18 位统一社会信用代码">
+            </div>
+            <div class="form-group">
+              <label class="form-label">类别</label>
+              <select id="supplierModalCategory" class="form-select" style="width:100%">
+                <option value="">请选择</option>
+                <option>材料供应商</option>
+                <option>设备供应商</option>
+                <option>检测服务商</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">法人代表</label>
+              <input type="text" id="supplierModalLegal" class="form-input" style="width:100%" placeholder="请输入法人代表">
+            </div>
+          </div>
+        </div>
+        <div class="modal-block">
+          <div class="modal-block-title"><i class="fa-solid fa-phone"></i> 联系信息</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">联系人 <span class="required">*</span></label>
+              <input type="text" id="supplierModalContact" class="form-input" style="width:100%" placeholder="请输入联系人姓名">
+            </div>
+            <div class="form-group">
+              <label class="form-label">联系电话 <span class="required">*</span></label>
+              <input type="text" id="supplierModalPhone" class="form-input" style="width:100%" placeholder="请输入联系电话">
+            </div>
+            <div class="form-group full">
+              <label class="form-label">备注</label>
+              <textarea id="supplierModalRemark" class="form-textarea" style="width:100%;min-height:72px" placeholder="选填"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-block" style="margin-bottom:0">
+          <div class="modal-block-title"><i class="fa-solid fa-file-lines"></i> 资质文件</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">营业执照</label>
+              <div class="upload-tile"><i class="fa-solid fa-cloud-arrow-up"></i><span style="font-size:12px">点击上传</span></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">资质证书</label>
+              <div class="upload-tile"><i class="fa-solid fa-cloud-arrow-up"></i><span style="font-size:12px">点击上传</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-ft">
+        <button type="button" class="btn btn-default" id="addSupplierModalCancel">取消</button>
+        <button type="button" class="btn btn-primary" id="addSupplierModalSave"><i class="fa-solid fa-check"></i> 保存</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'supplier_list', breadcrumb:['仪器设备管理','供应商管理']};</script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+  var mask = document.getElementById('addSupplierModal');
+  var openBtn = document.getElementById('btnOpenAddSupplier');
+  var closeBtn = document.getElementById('addSupplierModalClose');
+  var cancelBtn = document.getElementById('addSupplierModalCancel');
+  var saveBtn = document.getElementById('addSupplierModalSave');
+  var titleEl = document.getElementById('addSupplierTitle');
+  var codeWrap = document.getElementById('supplierModalCodeWrap');
+  var codeInput = document.getElementById('supplierModalCode');
+  var tableBody = document.querySelector('.data-table tbody');
+
+  function openModal() {
+    if (mask) mask.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    if (mask) mask.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+
+  function resetSupplierForm() {
+    var name = document.getElementById('supplierModalName');
+    var credit = document.getElementById('supplierModalCredit');
+    var category = document.getElementById('supplierModalCategory');
+    var legal = document.getElementById('supplierModalLegal');
+    var contact = document.getElementById('supplierModalContact');
+    var phone = document.getElementById('supplierModalPhone');
+    var remark = document.getElementById('supplierModalRemark');
+    if (name) name.value = '';
+    if (credit) credit.value = '';
+    if (category) category.selectedIndex = 0;
+    if (legal) legal.value = '';
+    if (contact) contact.value = '';
+    if (phone) phone.value = '';
+    if (remark) remark.value = '';
+    if (codeInput) codeInput.value = '';
+  }
+
+  function openAddSupplier() {
+    resetSupplierForm();
+    if (titleEl) titleEl.textContent = '新增供应商';
+    if (codeWrap) codeWrap.style.display = 'none';
+    openModal();
+  }
+
+  function openEditSupplier(tr) {
+    if (!tr || !tr.dataset) return;
+    resetSupplierForm();
+    var d = tr.dataset;
+    if (titleEl) titleEl.textContent = '编辑供应商';
+    if (codeWrap) codeWrap.style.display = '';
+    if (codeInput) codeInput.value = d.supplierCode || '';
+    var name = document.getElementById('supplierModalName');
+    var credit = document.getElementById('supplierModalCredit');
+    var contact = document.getElementById('supplierModalContact');
+    var phone = document.getElementById('supplierModalPhone');
+    if (name) name.value = d.name || '';
+    if (credit) credit.value = d.credit || '';
+    if (contact) contact.value = d.contact || '';
+    if (phone) phone.value = d.phone || '';
+    openModal();
+  }
+
+  if (openBtn) openBtn.addEventListener('click', openAddSupplier);
+  if (tableBody) {
+    tableBody.addEventListener('click', function (e) {
+      var edit = e.target.closest('.js-supplier-edit');
+      if (!edit) return;
+      e.preventDefault();
+      var tr = edit.closest('tr');
+      if (tr) openEditSupplier(tr);
+    });
+  }
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+  if (mask) mask.addEventListener('click', function (e) { if (e.target === mask) closeModal(); });
+  if (saveBtn) saveBtn.addEventListener('click', function () {
+    alert('已保存');
+    closeModal();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && mask && mask.classList.contains('show')) closeModal();
+  });
+});
+</script>
+</body>
+</html>

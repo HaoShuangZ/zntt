@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>评定等级管理</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .tower-tabs { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:4px; align-items:flex-end; }
+  .tower-tab {
+    padding:9px 16px; font-size:13px; border-radius:8px 8px 0 0; cursor:pointer;
+    border:1px solid transparent; border-bottom:none; color:var(--text-2);
+    background:#f1f5f9; margin-bottom:-1px;
+  }
+  .tower-tab:hover { color:var(--text-1); }
+  .tower-tab.active {
+    background:#fff; border-color:var(--border); color:var(--primary);
+    font-weight:600; position:relative; z-index:1;
+  }
+  .tower-panel-wrap { border:1px solid var(--border); border-radius:0 8px 8px 8px; background:#fff; padding:16px 18px; margin-top:0; }
+  .rating-block-title { font-size:16px;font-weight:600;color:var(--text-1);margin:0 0 14px;padding-bottom:10px;border-bottom:1px solid var(--border); }
+  .row-drag { width:32px; text-align:center; color:var(--text-3); cursor:grab; vertical-align:middle; user-select:none; }
+  .row-drag i { font-size:14px; pointer-events:none; }
+  tr[data-row-index][draggable="true"] { cursor:grab; }
+  tr[data-row-index].drag-over td { box-shadow: inset 0 3px 0 0 var(--primary); }
+  .custom-cell {
+    font-size:13px; padding:8px 10px; min-height:40px; line-height:1.45;
+    border-radius:6px; transition:background .15s;
+  }
+  .custom-cell.placeholder { color:var(--text-3); font-style:italic; }
+  .custom-cell.filled { color:var(--text-1); font-style:normal; }
+  .custom-cell--edit { cursor:pointer; }
+  .custom-cell--edit:hover { background:#f1f5f9; }
+  .grade-cell {
+    text-align:center; vertical-align:middle; padding:10px 8px;
+    background:#f8fafc; border-left:1px dashed #e5e7eb; min-width:140px;
+  }
+  .grade-hint { font-size:12px; color:var(--text-2); line-height:1.5; margin-bottom:8px; }
+  .grade-preview { font-size:11px; color:var(--text-3); line-height:1.4; max-width:220px; margin:0 auto 6px; text-align:left; }
+  .add-row-bar { padding:10px 0 4px 40px; border-top:1px solid var(--border); margin-top:0; }
+  .modal-mask { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:2000; align-items:center; justify-content:center; padding:16px; }
+  .modal-mask.show { display:flex; }
+  .modal-box { width:520px; max-width:calc(100vw - 32px); background:#fff; border-radius:10px; box-shadow:0 10px 40px rgba(0,0,0,.18); border:1px solid var(--border); }
+  .modal-box.wide { width:720px; max-width:calc(100vw - 24px); }
+  .modal-hd { display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid var(--border); }
+  .modal-hd h3 { font-size:15px;font-weight:600;color:var(--text-1);margin:0; }
+  .modal-bd { padding:16px 18px; max-height:70vh; overflow:auto; }
+  .modal-ft { display:flex; justify-content:flex-end; gap:8px; padding:12px 18px 16px; border-top:1px solid var(--border); }
+  .modal-close { border:none;background:none;color:var(--text-3);font-size:18px;cursor:pointer; }
+  .modal-close:hover { color:var(--text-1); }
+  .hint-inline { font-size:12px;color:var(--text-3);margin-top:4px;line-height:1.45; }
+  .range-table { width:100%; font-size:13px; border-collapse:collapse; margin-top:8px; }
+  .range-table th, .range-table td { border:1px solid var(--border); padding:6px 8px; vertical-align:middle; }
+  .range-table thead th { background:#f8fafc; font-weight:600; color:var(--text-2); font-size:12px; }
+  .range-table input.form-input { width:100%; min-width:0; box-sizing:border-box; }
+  .range-table .form-select { width:100%; min-width:72px; }
+  .overall-grade-table th { font-size:12px; text-align:center; vertical-align:middle; }
+  .overall-grade-table td { font-size:13px; vertical-align:middle; }
+  .overall-grade-table .overall-merged { text-align:center; background:#f8fafc; min-width:100px; }
+  .overall-grade-table .sys-grade { font-size:18px; font-weight:600; color:var(--text-1); }
+</style>
+</head>
+<body>
+<script>location.replace('../../模板配置/检测模板/pc_inspect_template_list.html');</script>
+<div id="page-content">
+
+  <div class="card">
+    <div class="card-header" style="flex-wrap:wrap;gap:8px;">
+      <div class="card-title">评定等级管理</div>
+      <span style="font-size:12px;color:var(--text-3);margin-left:auto">塔型切换 → 每行一条评定项 → 三列等级分别配置参数</span>
+    </div>
+    <div class="card-body" style="padding-top:12px;">
+
+      <div class="tower-tabs" id="towerTabs" role="tablist" aria-label="塔型"></div>
+      <div class="tower-panel-wrap">
+        <h2 class="rating-block-title">构件及节点评级</h2>
+
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width:32px" aria-hidden="true"></th>
+                <th style="min-width:120px">评定内容</th>
+                <th style="min-width:100px">类型</th>
+                <th style="min-width:100px">位置</th>
+                <th style="min-width:160px">安全性等级</th>
+                <th style="min-width:160px">适用性等级</th>
+                <th style="min-width:160px">耐用性等级</th>
+              </tr>
+            </thead>
+            <tbody id="fieldTbody"></tbody>
+          </table>
+        </div>
+
+        <div class="add-row-bar">
+          <button type="button" class="btn btn-text" id="btnAddRow" style="padding-left:0"><i class="fa-solid fa-plus"></i> 添加</button>
+        </div>
+
+        <p style="font-size:12px;color:var(--text-3);margin:12px 0 0;" id="fieldCount">共 0 条</p>
+      </div>
+
+      <div class="tower-panel-wrap" style="margin-top:16px">
+        <h2 class="rating-block-title">10.2 整体评级</h2>
+        <p class="hint-inline" style="margin-bottom:12px">
+          各子体系的安全性、适用性、耐久性等级由报告取值；在此配置<strong>分项→体系状态评级</strong>的合成规则，以及<strong>三体系状态→整体结构评定等级</strong>（如 一 / 二 / 三）的合成规则。
+        </p>
+        <div style="overflow-x:auto">
+          <table class="data-table overall-grade-table">
+            <thead>
+              <tr>
+                <th colspan="2">评定项目</th>
+                <th colspan="4">项目评定等级</th>
+                <th rowspan="2" style="min-width:100px;vertical-align:middle;line-height:1.35">整体结构<br>评定等级</th>
+              </tr>
+              <tr>
+                <th style="min-width:72px">结构系统</th>
+                <th style="min-width:96px">项目名称</th>
+                <th style="min-width:88px">安全性</th>
+                <th style="min-width:88px">适用性</th>
+                <th style="min-width:88px">耐久性</th>
+                <th style="min-width:120px">体系状态评级</th>
+              </tr>
+            </thead>
+            <tbody id="overallTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 整体评级：子体系 → 体系状态 -->
+  <div class="modal-mask" id="modalOverallRow" aria-hidden="true">
+    <div class="modal-box wide">
+      <div class="modal-hd">
+        <h3 id="modalOverallRowTitle">配置体系状态评级</h3>
+        <button type="button" class="modal-close" data-close="modalOverallRow">&times;</button>
+      </div>
+      <div class="modal-bd">
+        <p style="font-size:12px;color:var(--text-3);margin:0 0 14px" id="modalOverallRowCtx"></p>
+        <div class="form-group">
+          <label class="form-label">报告取值说明</label>
+          <textarea class="form-textarea" id="ovReportHint" rows="2" placeholder="如：取报告第 8 章「地基基础」分项结论"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">报告分项等级示例（表格三列展示）</label>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+            <span style="font-size:12px;color:var(--text-3)">安全性</span>
+            <input type="text" class="form-input" id="ovSToken" placeholder="Au" style="width:88px">
+            <span style="font-size:12px;color:var(--text-3)">适用性</span>
+            <input type="text" class="form-input" id="ovAToken" placeholder="As" style="width:88px">
+            <span style="font-size:12px;color:var(--text-3)">耐久性</span>
+            <input type="text" class="form-input" id="ovDToken" placeholder="Ad" style="width:88px">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">安全性等级 — 参与合成的规则 / 参数</label>
+          <textarea class="form-textarea" id="ovSafetyRule" rows="2" placeholder="如：Au～Du 等级序列；与承载力分项联动"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">适用性等级 — 参与合成的规则 / 参数</label>
+          <textarea class="form-textarea" id="ovApplicRule" rows="2" placeholder="如：As～Cs 与变形限值对照"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">耐久性等级 — 参与合成的规则 / 参数</label>
+          <textarea class="form-textarea" id="ovDurRule" rows="2" placeholder="如：ad～cd 与剩余年限区间"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">体系状态评级 — 合成规则</label>
+          <textarea class="form-textarea" id="ovSystemRule" rows="3" placeholder="如：取三项中控制性最不利等级；适用性为 Cs 时体系状态不低于 C"></textarea>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">示例 / 缺省输出等级（展示用）</label>
+          <input type="text" class="form-input" id="ovSystemGrade" placeholder="如 A、B、C" style="max-width:120px">
+        </div>
+      </div>
+      <div class="modal-ft">
+        <button type="button" class="btn btn-default" data-close="modalOverallRow">取消</button>
+        <button type="button" class="btn btn-primary" id="btnOverallRowSave"><i class="fa-solid fa-check"></i> 保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 整体评级：整体结构评定等级 -->
+  <div class="modal-mask" id="modalOverallGrade" aria-hidden="true">
+    <div class="modal-box">
+      <div class="modal-hd">
+        <h3>配置整体结构评定等级</h3>
+        <button type="button" class="modal-close" data-close="modalOverallGrade">&times;</button>
+      </div>
+      <div class="modal-bd">
+        <p class="hint-inline" style="margin-bottom:12px">依据地基基础、主体结构、附属结构三项「体系状态评级」综合判定整体等级（如规范表 10.2）。</p>
+        <div class="form-group">
+          <label class="form-label">整体结构评定等级（展示用）</label>
+          <input type="text" class="form-input" id="ovOverallGrade" placeholder="如一、二、三 或 I、II、III" style="max-width:160px">
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">三体系 → 整体的合成规则 / 参数</label>
+          <textarea class="form-textarea" id="ovOverallRule" rows="5" placeholder="如：任一体系状态为 C 且其余不低于 A 时，整体取二级；三项均为 A 取一级；出现 D 取三级。"></textarea>
+        </div>
+      </div>
+      <div class="modal-ft">
+        <button type="button" class="btn btn-default" data-close="modalOverallGrade">取消</button>
+        <button type="button" class="btn btn-primary" id="btnOverallGradeSave"><i class="fa-solid fa-check"></i> 保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 配置等级 -->
+  <div class="modal-mask" id="modalGrade" aria-hidden="true">
+    <div class="modal-box wide">
+      <div class="modal-hd">
+        <h3 id="modalGradeTitle">配置等级</h3>
+        <button type="button" class="modal-close" data-close="modalGrade">&times;</button>
+      </div>
+      <div class="modal-bd">
+        <p style="font-size:12px;color:var(--text-3);margin:0 0 14px;line-height:1.5" id="modalGradeCtx"></p>
+
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">参数区间 → 评定等级</label>
+          <p class="hint-inline">按参数取值范围映射等级：例如下限 <strong>50</strong>、上限 <strong>70</strong>、单位 <strong>%</strong>、评定等级 <strong>A</strong> 表示 50%～70% 区间对应 A。可添加多条规则（边界含否以实施方案为准）。</p>
+          <table class="range-table data-table">
+            <thead>
+              <tr>
+                <th style="width:20%">参数下限</th>
+                <th style="width:20%">参数上限</th>
+                <th style="width:16%">单位</th>
+                <th style="width:26%">评定等级</th>
+                <th style="width:12%">操作</th>
+              </tr>
+            </thead>
+            <tbody id="cfgRangeBody"></tbody>
+          </table>
+          <button type="button" class="btn btn-text" id="btnCfgAddRange" style="padding-left:0;margin-top:8px"><i class="fa-solid fa-plus"></i> 添加区间规则</button>
+        </div>
+      </div>
+      <div class="modal-ft">
+        <button type="button" class="btn btn-default" data-close="modalGrade">取消</button>
+        <button type="button" class="btn btn-primary" id="btnGradeSave"><i class="fa-solid fa-check"></i> 保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 编辑评定项（左三列） -->
+  <div class="modal-mask" id="modalRow" aria-hidden="true">
+    <div class="modal-box">
+      <div class="modal-hd">
+        <h3 id="modalRowTitle">编辑评定项</h3>
+        <button type="button" class="modal-close" data-close="modalRow">&times;</button>
+      </div>
+      <div class="modal-bd">
+        <div class="form-group">
+          <label class="form-label">评定内容 <span class="required">*</span></label>
+          <input type="text" class="form-input" id="rowContent">
+        </div>
+        <div class="form-group">
+          <label class="form-label">类型 <span class="required">*</span></label>
+          <input type="text" class="form-input" id="rowType">
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">位置</label>
+          <input type="text" class="form-input" id="rowPosition" placeholder="可填 — 或具体区段">
+        </div>
+      </div>
+      <div class="modal-ft">
+        <button type="button" class="btn btn-default" data-close="modalRow">取消</button>
+        <button type="button" class="btn btn-primary" id="btnRowSave"><i class="fa-solid fa-check"></i> 保存</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = { active: 'report_rating_level', breadcrumb: ['模板配置', '评定等级管理'] };</script>
+<script>
+(function () {
+  var GRADE_HINT = '不同的参数，不同的等级';
+
+  var SEED = {
+    angle: {
+      label: '角钢塔',
+      rows: [
+        { content: '自定义字段', type: '自定义字段', position: '自定义字段', s: '', a: '', d: '', placeholder: true },
+        { content: '主材构件', type: '构件', position: '塔身全高', s: 'Au / Bu / Cu / Du + 抽验系数 α', a: 'As / Bs / Cs + 涂层状况', d: 'ad / bd / cd + 剩余寿命区间' },
+        { content: '节点与螺栓', type: '连接', position: '法兰/包钢节点', s: 'Au～Du；扭矩不合格映射 Bu/Cu', a: '变形与松动分级', d: '防腐与锈蚀年数' },
+        { content: '综合结论句', type: '结论', position: '—', s: '与承载结论联动', a: '与适用性结论联动', d: '与耐久年限联动' }
+      ]
+    },
+    single_pipe: {
+      label: '单管塔（法兰式）',
+      rows: [
+        { content: '自定义字段', type: '自定义字段', position: '自定义字段', s: '', a: '', d: '', placeholder: true },
+        { content: '整体稳定', type: '体系', position: '全塔', s: 'A / B / C（单管专标）', a: '—', d: '—' },
+        { content: '地基基础', type: '基础', position: '承台/桩顶', s: '满足 / 基本满足 / 不满足', a: '—', d: '沉降速率 mm/年 阈值' }
+      ]
+    },
+    single_socket: {
+      label: '单管塔（插接式）',
+      rows: [
+        { content: '自定义字段', type: '自定义字段', position: '自定义字段', s: '', a: '', d: '', placeholder: true },
+        { content: '插接段', type: '连接', position: '各插接面', s: '优 / 良 / 中 / 差 + 长度不足标记', a: '插接区变形', d: '镀锌层剩余寿命' }
+      ]
+    },
+    triple: {
+      label: '三管塔',
+      rows: [
+        { content: '自定义字段', type: '自定义字段', position: '自定义字段', s: '', a: '', d: '', placeholder: true },
+        { content: '三腿协同', type: '体系', position: '塔腿 1～3', s: '对称性评分 + A/B/C', a: '不均匀沉降影响', d: '氯离子环境系数' }
+      ]
+    },
+    quad: {
+      label: '四管塔',
+      rows: [
+        { content: '自定义字段', type: '自定义字段', position: '自定义字段', s: '', a: '', d: '', placeholder: true },
+        { content: '抗扭表现', type: '整体', position: '塔顶扭转', s: '扭转角区间 + 合格/关注', a: '—', d: '涂层体系耐久' }
+      ]
+    }
+  };
+
+  var state = {};
+  var currentKey = 'angle';
+  var gradeCtx = { rowIndex: -1, field: '' };
+  var rowCtx = { rowIndex: -1 };
+  var overallRowCtx = { index: -1 };
+
+  /** 与报告 10.2 表一致：三子体系 ×（安/适/耐）→ 体系状态；再综合为整体等级 */
+  var OVERALL_PACK_SEED = {
+    rows: [
+      {
+        name: '地基基础',
+        sToken: 'Au', aToken: 'As', dToken: 'Ad', systemGrade: 'A',
+        reportHint: '取报告「地基基础」章节分项等级。',
+        safetyRule: '与地基承载力、变形限值结论联动。',
+        applicRule: '与沉降、开裂适用性结论联动。',
+        durRule: '与基础耐久年限、环境作用等级联动。',
+        systemRule: '三项均为高等级时体系状态取 A；任一项降级按控制项取低。'
+      },
+      {
+        name: '主体结构',
+        sToken: 'Au', aToken: 'Cs', dToken: 'Ad', systemGrade: 'C',
+        reportHint: '取报告「上部承重结构」主要构件与节点结论。',
+        safetyRule: '主材 Au 与节点抽检系数 α 联动。',
+        applicRule: '变形或功能项为 Cs 时控制体系状态。',
+        durRule: '涂层与锈蚀年数映射 ad～cd。',
+        systemRule: '适用性为 Cs 时体系状态不低于 C（示例）。'
+      },
+      {
+        name: '附属结构',
+        sToken: 'Au', aToken: 'As', dToken: 'Ad', systemGrade: 'A',
+        reportHint: '取报告「附属设施」相关结论。',
+        safetyRule: '连接与附属构件安全性条款。',
+        applicRule: '附属设施适用性条款。',
+        durRule: '附属防腐与维护周期。',
+        systemRule: '按三项最不利控制。'
+      }
+    ],
+    overallGrade: '二',
+    overallGradeRule: '综合规则示例：任一体系状态为 C、且其余体系不低于 A 时，整体结构评定等级取二级；三项均为 A 取一级；出现 D 取三级。'
+  };
+
+  var overallState = {};
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  function ensureState(key) {
+    if (!state[key]) state[key] = clone(SEED[key].rows);
+    return state[key];
+  }
+
+  function ensureOverallState(key) {
+    if (!overallState[key]) overallState[key] = clone(OVERALL_PACK_SEED);
+    return overallState[key];
+  }
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+  }
+
+  function openModal(id) {
+    var m = document.getElementById(id);
+    if (!m) return;
+    m.classList.add('show');
+    m.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(id) {
+    var m = document.getElementById(id);
+    if (!m) return;
+    m.classList.remove('show');
+    m.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  function kindLabel(kind) {
+    return { safety: '安全性等级', applic: '适用性等级', durability: '耐用性等级' }[kind] || kind;
+  }
+  function fieldKey(kind) {
+    return { safety: 's', applic: 'a', durability: 'd' }[kind] || 's';
+  }
+
+  var UNIT_OPTIONS = ['%', '‰', 'MPa', 'mm', '无'];
+
+  function stripDefaultFromSummary(full) {
+    return (full || '').replace(/（默认：[^）]+）\s*$/, '').trim();
+  }
+
+  function parseOneRangeSeg(seg) {
+    seg = (seg || '').trim();
+    if (!seg || seg.indexOf('→') === -1) return null;
+    var idx = seg.lastIndexOf('→');
+    var left = seg.slice(0, idx).trim();
+    var grade = seg.slice(idx + 1).trim();
+    // 区间符：勿写成 [–-…]，否则「–」到「-」会被当成非法码点范围
+    var re = /^(\d+(?:\.\d+)?)\s*(%|‰|MPa|mm|)\s*[–~～-]\s*(\d+(?:\.\d+)?)\s*(%|‰|MPa|mm|)?$/i;
+    var m = left.match(re);
+    if (!m) return null;
+    var lo = m[1], u1 = (m[2] || '').trim(), hi = m[3], u2 = (m[4] || '').trim();
+    var unit = u2 || u1 || '%';
+    if (!unit) unit = '%';
+    return { lo: lo, hi: hi, unit: unit, grade: grade };
+  }
+
+  function parseRangesFromRangeStr(s) {
+    if (!s) return [];
+    return s.split('；').map(parseOneRangeSeg).filter(Boolean);
+  }
+
+  function buildRangeSummary(parts) {
+    return parts.map(function (r) {
+      var u = r.unit === '无' ? '' : (r.unit || '%');
+      if (!u) return r.lo + '–' + r.hi + '→' + r.grade;
+      return r.lo + u + '–' + r.hi + u + '→' + r.grade;
+    }).join('；');
+  }
+
+  function unitOptionsHtml(selected) {
+    return UNIT_OPTIONS.map(function (u) {
+      return '<option value="' + esc(u) + '"' + (u === selected ? ' selected' : '') + '>' + esc(u) + '</option>';
+    }).join('');
+  }
+
+  function renderRangeTable(rows) {
+    var body = document.getElementById('cfgRangeBody');
+    var arr = rows && rows.length ? rows : [{ lo: '', hi: '', unit: '%', grade: '' }];
+    body.innerHTML = arr.map(function (r) {
+      return (
+        '<tr>' +
+        '<td><input type="number" step="any" class="form-input cfg-r-lo" placeholder="如 50" value="' + esc(r.lo) + '"></td>' +
+        '<td><input type="number" step="any" class="form-input cfg-r-hi" placeholder="如 70" value="' + esc(r.hi) + '"></td>' +
+        '<td><select class="form-select cfg-r-unit">' + unitOptionsHtml(r.unit || '%') + '</select></td>' +
+        '<td><input type="text" class="form-input cfg-r-grade" placeholder="如 A" value="' + esc(r.grade) + '"></td>' +
+        '<td><button type="button" class="btn btn-text btn-remove-range" style="color:var(--danger)">删除</button></td>' +
+        '</tr>'
+      );
+    }).join('');
+  }
+
+  function collectRangeRows() {
+    var body = document.getElementById('cfgRangeBody');
+    var out = [];
+    Array.prototype.forEach.call(body.querySelectorAll('tr'), function (tr) {
+      var lo = (tr.querySelector('.cfg-r-lo') && tr.querySelector('.cfg-r-lo').value || '').trim();
+      var hi = (tr.querySelector('.cfg-r-hi') && tr.querySelector('.cfg-r-hi').value || '').trim();
+      var unitEl = tr.querySelector('.cfg-r-unit');
+      var unit = unitEl ? unitEl.value : '%';
+      var grade = (tr.querySelector('.cfg-r-grade') && tr.querySelector('.cfg-r-grade').value || '').trim();
+      if (!lo && !hi && !grade) return;
+      out.push({ lo: lo, hi: hi, unit: unit, grade: grade });
+    });
+    return out;
+  }
+
+  function openGradeModal(rowIndex, kind) {
+    var rows = ensureState(currentKey);
+    var row = rows[rowIndex];
+    if (!row) return;
+    gradeCtx.rowIndex = rowIndex;
+    gradeCtx.field = fieldKey(kind);
+    var fk = gradeCtx.field;
+    var curRaw = row[fk] || '';
+    document.getElementById('modalGradeTitle').textContent = '配置 · ' + kindLabel(kind);
+    document.getElementById('modalGradeCtx').textContent =
+      SEED[currentKey].label + ' · 第 ' + (rowIndex + 1) + ' 行 · ' +
+      [row.content, row.type, row.position].join(' / ');
+
+    var work = stripDefaultFromSummary(curRaw);
+    if (work.indexOf(' | 枚举：') !== -1) {
+      work = work.split(' | 枚举：')[0].trim();
+    }
+    if (work.indexOf('+') !== -1 && work.indexOf('→') === -1) {
+      work = work.split('+')[0].trim();
+    }
+
+    var parsedRanges = parseRangesFromRangeStr(work);
+    renderRangeTable(parsedRanges.length ? parsedRanges : [{ lo: '', hi: '', unit: '%', grade: '' }]);
+    openModal('modalGrade');
+  }
+
+  function openRowModal(rowIndex) {
+    var rows = ensureState(currentKey);
+    var row = rows[rowIndex];
+    if (!row) return;
+    rowCtx.rowIndex = rowIndex;
+    document.getElementById('modalRowTitle').textContent = '编辑评定项 · 第 ' + (rowIndex + 1) + ' 行';
+    document.getElementById('rowContent').value = row.content || '';
+    document.getElementById('rowType').value = row.type || '';
+    document.getElementById('rowPosition').value = row.position || '';
+    openModal('modalRow');
+  }
+
+  function gradeHtml(kind, text, rowIdx) {
+    var body = (text && String(text).trim()) ? '<div class="grade-preview">' + esc(text) + '</div>' : '<div class="grade-hint">' + GRADE_HINT + '</div>';
+    return (
+      '<div class="grade-cell">' +
+      body +
+      '<button type="button" class="btn btn-text btn-grade-cfg" data-kind="' + esc(kind) + '" data-row="' + rowIdx + '" style="font-size:12px;padding:2px 8px">配置</button>' +
+      '</div>'
+    );
+  }
+
+  function previewSnippet(t, max) {
+    t = String(t == null ? '' : t).trim();
+    max = max || 48;
+    if (!t) return '<span style="color:var(--text-4)">—</span>';
+    if (t.length <= max) return esc(t);
+    return esc(t.slice(0, max)) + '…';
+  }
+
+  function overallDemoCell(token, rule) {
+    return (
+      '<div style="text-align:center">' +
+      '<span style="font-size:15px;font-weight:600;color:var(--text-1)">' + esc(token || '—') + '</span>' +
+      '<div class="grade-preview" style="margin-top:6px;max-width:none;text-align:center">' + previewSnippet(rule, 40) + '</div>' +
+      '</div>'
+    );
+  }
+
+  function overallMergedGradeCell(pack) {
+    return (
+      '<td rowspan="3" class="overall-merged">' +
+      '<div class="sys-grade" style="margin-bottom:6px">' + esc(pack.overallGrade || '—') + '</div>' +
+      '<div class="grade-preview" style="text-align:left;margin:0 auto;max-width:220px">' + previewSnippet(pack.overallGradeRule, 96) + '</div>' +
+      '<button type="button" class="btn btn-text btn-overall-grade-cfg" style="font-size:12px;padding:2px 0;margin-top:8px">配置整体等级</button>' +
+      '</td>'
+    );
+  }
+
+  function renderOverallTable() {
+    var pack = ensureOverallState(currentKey);
+    var rows = pack.rows;
+    var tb = document.getElementById('overallTbody');
+    if (!tb) return;
+    var html = '';
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i];
+      var sysCell =
+        '<td class="grade-cell">' +
+        '<div class="sys-grade">' + esc(r.systemGrade || '—') + '</div>' +
+        '<div class="grade-preview" style="text-align:center">' + previewSnippet(r.systemRule, 40) + '</div>' +
+        '<button type="button" class="btn btn-text btn-overall-system-cfg" data-o="' + i + '" style="font-size:12px;padding:2px 8px">配置</button>' +
+        '</td>';
+      html +=
+        '<tr>' +
+        (i === 0 ? '<td rowspan="3" style="vertical-align:middle;text-align:center;background:#fafafa;font-weight:600;color:var(--text-2)">结构系统</td>' : '') +
+        '<td style="font-weight:500">' + esc(r.name) + '</td>' +
+        '<td>' + overallDemoCell(r.sToken, r.safetyRule) + '</td>' +
+        '<td>' + overallDemoCell(r.aToken, r.applicRule) + '</td>' +
+        '<td>' + overallDemoCell(r.dToken, r.durRule) + '</td>' +
+        sysCell +
+        (i === 0 ? overallMergedGradeCell(pack) : '') +
+        '</tr>';
+    }
+    tb.innerHTML = html;
+  }
+
+  function openOverallRowModal(index) {
+    var pack = ensureOverallState(currentKey);
+    var r = pack.rows[index];
+    if (!r) return;
+    overallRowCtx.index = index;
+    document.getElementById('modalOverallRowTitle').textContent = '配置体系状态评级 · ' + r.name;
+    document.getElementById('modalOverallRowCtx').textContent =
+      SEED[currentKey].label + ' · 子体系「' + r.name + '」：配置三项等级如何参与合成体系状态。';
+    document.getElementById('ovReportHint').value = r.reportHint || '';
+    document.getElementById('ovSToken').value = r.sToken || '';
+    document.getElementById('ovAToken').value = r.aToken || '';
+    document.getElementById('ovDToken').value = r.dToken || '';
+    document.getElementById('ovSafetyRule').value = r.safetyRule || '';
+    document.getElementById('ovApplicRule').value = r.applicRule || '';
+    document.getElementById('ovDurRule').value = r.durRule || '';
+    document.getElementById('ovSystemRule').value = r.systemRule || '';
+    document.getElementById('ovSystemGrade').value = r.systemGrade || '';
+    openModal('modalOverallRow');
+  }
+
+  function openOverallGradeModal() {
+    var pack = ensureOverallState(currentKey);
+    document.getElementById('ovOverallGrade').value = pack.overallGrade || '';
+    document.getElementById('ovOverallRule').value = pack.overallGradeRule || '';
+    openModal('modalOverallGrade');
+  }
+
+  function cellCustom(val, rowIdx, col) {
+    var v = (val == null ? '' : String(val));
+    var isPh = v === '自定义字段';
+    var cls = 'custom-cell custom-cell--edit' + (isPh ? ' placeholder' : ' filled');
+    return '<div class="' + cls + '" data-edit-col="' + esc(col) + '" data-row="' + rowIdx + '" role="button" tabindex="0" title="点击编辑">' + esc(v || '自定义字段') + '</div>';
+  }
+
+  function renderTabs() {
+    var el = document.getElementById('towerTabs');
+    el.innerHTML = '';
+    Object.keys(SEED).forEach(function (key) {
+      var t = SEED[key];
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'tower-tab' + (key === currentKey ? ' active' : '');
+      btn.setAttribute('role', 'tab');
+      btn.setAttribute('data-tower', key);
+      btn.textContent = t.label;
+      btn.addEventListener('click', function () {
+        currentKey = key;
+        Array.prototype.forEach.call(el.querySelectorAll('.tower-tab'), function (x) {
+          x.classList.toggle('active', x.getAttribute('data-tower') === currentKey);
+        });
+        renderTable();
+      });
+      el.appendChild(btn);
+    });
+  }
+
+  var dragFrom = null;
+
+  function bindDrag() {
+    var tb = document.getElementById('fieldTbody');
+    Array.prototype.forEach.call(tb.querySelectorAll('tr[data-row-index]'), function (tr) {
+      tr.setAttribute('draggable', 'true');
+      tr.ondragstart = function (e) {
+        dragFrom = parseInt(tr.getAttribute('data-row-index'), 10);
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', String(dragFrom));
+        tr.style.opacity = '0.55';
+      };
+      tr.ondragend = function () {
+        tr.style.opacity = '';
+        Array.prototype.forEach.call(tb.querySelectorAll('tr'), function (x) { x.classList.remove('drag-over'); });
+        dragFrom = null;
+      };
+      tr.ondragover = function (e) {
+        if (dragFrom == null) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        tr.classList.add('drag-over');
+      };
+      tr.ondragleave = function () { tr.classList.remove('drag-over'); };
+      tr.ondrop = function (e) {
+        if (dragFrom == null) return;
+        e.preventDefault();
+        tr.classList.remove('drag-over');
+        var to = parseInt(tr.getAttribute('data-row-index'), 10);
+        if (isNaN(to) || isNaN(dragFrom) || to === dragFrom) return;
+        var arr = ensureState(currentKey);
+        var item = arr.splice(dragFrom, 1)[0];
+        var insert = to > dragFrom ? to - 1 : to;
+        arr.splice(insert, 0, item);
+        dragFrom = null;
+        renderTable();
+      };
+    });
+  }
+
+  function renderTable() {
+    var meta = SEED[currentKey];
+    var rows = ensureState(currentKey);
+    var filtered = rows.map(function (r, i) { return { r: r, i: i }; });
+
+    var tb = document.getElementById('fieldTbody');
+    tb.innerHTML = filtered.map(function (o) {
+      var r = o.r;
+      var idx = o.i;
+      return (
+        '<tr data-row-index="' + idx + '">' +
+        '<td class="row-drag" title="拖拽排序"><i class="fa-solid fa-grip-vertical"></i></td>' +
+        '<td>' + cellCustom(r.content, idx, 'content') + '</td>' +
+        '<td>' + cellCustom(r.type, idx, 'type') + '</td>' +
+        '<td>' + cellCustom(r.position, idx, 'position') + '</td>' +
+        '<td>' + gradeHtml('safety', r.s, idx) + '</td>' +
+        '<td>' + gradeHtml('applic', r.a, idx) + '</td>' +
+        '<td>' + gradeHtml('durability', r.d, idx) + '</td>' +
+        '</tr>'
+      );
+    }).join('');
+
+    if (!filtered.length) {
+      tb.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--text-3)">暂无数据</td></tr>';
+    }
+
+    document.getElementById('fieldCount').textContent = '共 ' + rows.length + ' 条（' + meta.label + '）';
+    bindDrag();
+    renderOverallTable();
+  }
+
+  /** 在 shared-layout 完成 initLayout 之后再绑定 DOM，避免 #page-content 曾脱离文档导致 getElementById 失败 */
+  window.__prototypePageInit = function bindRatingPage() {
+    document.querySelectorAll('[data-close]').forEach(function (btn) {
+      btn.addEventListener('click', function () { closeModal(this.getAttribute('data-close')); });
+    });
+    document.getElementById('modalGrade').addEventListener('click', function (e) { if (e.target.id === 'modalGrade') closeModal('modalGrade'); });
+    document.getElementById('modalRow').addEventListener('click', function (e) { if (e.target.id === 'modalRow') closeModal('modalRow'); });
+    document.getElementById('modalOverallRow').addEventListener('click', function (e) { if (e.target.id === 'modalOverallRow') closeModal('modalOverallRow'); });
+    document.getElementById('modalOverallGrade').addEventListener('click', function (e) { if (e.target.id === 'modalOverallGrade') closeModal('modalOverallGrade'); });
+
+    document.getElementById('btnOverallRowSave').addEventListener('click', function () {
+      var pack = ensureOverallState(currentKey);
+      var r = pack.rows[overallRowCtx.index];
+      if (!r) return;
+      r.reportHint = (document.getElementById('ovReportHint').value || '').trim();
+      r.sToken = (document.getElementById('ovSToken').value || '').trim();
+      r.aToken = (document.getElementById('ovAToken').value || '').trim();
+      r.dToken = (document.getElementById('ovDToken').value || '').trim();
+      r.safetyRule = (document.getElementById('ovSafetyRule').value || '').trim();
+      r.applicRule = (document.getElementById('ovApplicRule').value || '').trim();
+      r.durRule = (document.getElementById('ovDurRule').value || '').trim();
+      r.systemRule = (document.getElementById('ovSystemRule').value || '').trim();
+      r.systemGrade = (document.getElementById('ovSystemGrade').value || '').trim();
+      closeModal('modalOverallRow');
+      renderOverallTable();
+    });
+
+    document.getElementById('btnOverallGradeSave').addEventListener('click', function () {
+      var pack = ensureOverallState(currentKey);
+      pack.overallGrade = (document.getElementById('ovOverallGrade').value || '').trim();
+      pack.overallGradeRule = (document.getElementById('ovOverallRule').value || '').trim();
+      closeModal('modalOverallGrade');
+      renderOverallTable();
+    });
+
+    document.getElementById('btnCfgAddRange').addEventListener('click', function () {
+      var body = document.getElementById('cfgRangeBody');
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td><input type="number" step="any" class="form-input cfg-r-lo" placeholder="如 50"></td>' +
+        '<td><input type="number" step="any" class="form-input cfg-r-hi" placeholder="如 70"></td>' +
+        '<td><select class="form-select cfg-r-unit">' + unitOptionsHtml('%') + '</select></td>' +
+        '<td><input type="text" class="form-input cfg-r-grade" placeholder="如 A"></td>' +
+        '<td><button type="button" class="btn btn-text btn-remove-range" style="color:var(--danger)">删除</button></td>';
+      body.appendChild(tr);
+    });
+    document.getElementById('modalGrade').addEventListener('click', function (e) {
+      var rm = e.target.closest('.btn-remove-range');
+      if (!rm) return;
+      var tr = rm.closest('tr');
+      var body = document.getElementById('cfgRangeBody');
+      if (body.querySelectorAll('tr').length <= 1) {
+        tr.querySelectorAll('input').forEach(function (inp) { inp.value = ''; });
+        var su = tr.querySelector('.cfg-r-unit');
+        if (su) su.value = '%';
+        return;
+      }
+      tr.remove();
+    });
+
+    document.getElementById('btnGradeSave').addEventListener('click', function () {
+      var ranges = collectRangeRows();
+      var partial = ranges.some(function (r) {
+        var n = (r.lo ? 1 : 0) + (r.hi ? 1 : 0) + (r.grade ? 1 : 0);
+        return n > 0 && n < 3;
+      });
+      if (partial) {
+        alert('区间规则需同时填写「参数下限、上限、评定等级」，或删除该行留空。');
+        return;
+      }
+      var validRanges = ranges.filter(function (r) {
+        if (!r.lo || !r.hi || !r.grade) return false;
+        return parseFloat(r.lo) <= parseFloat(r.hi);
+      });
+      if (ranges.length && validRanges.length !== ranges.length) {
+        alert('请保证参数下限不大于上限。');
+        return;
+      }
+      if (!validRanges.length) {
+        alert('请至少添加一条完整的「参数区间→评定等级」规则。');
+        return;
+      }
+      var summary = buildRangeSummary(validRanges);
+      var rows = ensureState(currentKey);
+      var row = rows[gradeCtx.rowIndex];
+      if (row) {
+        row[gradeCtx.field] = summary;
+      }
+      closeModal('modalGrade');
+      renderTable();
+    });
+
+    document.getElementById('btnRowSave').addEventListener('click', function () {
+      var c = (document.getElementById('rowContent').value || '').trim();
+      var t = (document.getElementById('rowType').value || '').trim();
+      var p = (document.getElementById('rowPosition').value || '').trim();
+      if (!c || !t) {
+        alert('请填写评定内容与类型。');
+        return;
+      }
+      var rows = ensureState(currentKey);
+      var row = rows[rowCtx.rowIndex];
+      if (row) {
+        row.content = c;
+        row.type = t;
+        row.position = p || '—';
+        row.placeholder = (c === '自定义字段' && t === '自定义字段' && (p === '自定义字段' || p === ''));
+      }
+      closeModal('modalRow');
+      renderTable();
+    });
+
+    document.getElementById('btnAddRow').addEventListener('click', function () {
+      ensureState(currentKey).push({
+        content: '自定义字段',
+        type: '自定义字段',
+        position: '自定义字段',
+        s: '', a: '', d: '',
+        placeholder: true
+      });
+      renderTable();
+    });
+
+    document.getElementById('overallTbody').addEventListener('click', function (e) {
+      var sys = e.target.closest('.btn-overall-system-cfg');
+      if (sys) {
+        openOverallRowModal(parseInt(sys.getAttribute('data-o'), 10));
+        return;
+      }
+      if (e.target.closest('.btn-overall-grade-cfg')) {
+        openOverallGradeModal();
+      }
+    });
+
+    document.getElementById('fieldTbody').addEventListener('click', function (e) {
+      var g = e.target.closest('.btn-grade-cfg');
+      if (g) {
+        openGradeModal(parseInt(g.getAttribute('data-row'), 10), g.getAttribute('data-kind'));
+        return;
+      }
+      var cell = e.target.closest('.custom-cell--edit');
+      if (cell) {
+        openRowModal(parseInt(cell.getAttribute('data-row'), 10));
+      }
+    });
+
+    document.getElementById('fieldTbody').addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter') return;
+      var cell = e.target.closest('.custom-cell--edit');
+      if (cell) openRowModal(parseInt(cell.getAttribute('data-row'), 10));
+    });
+
+    renderTabs();
+    renderTable();
+  };
+
+  /** shared-layout 会在 initLayout 之后调用 __prototypePageInit；若脚本未加载（路径错误），此处补绑定 */
+  document.addEventListener('DOMContentLoaded', function () {
+    setTimeout(function () {
+      if (typeof window.__prototypePageInit === 'function') {
+        var fn = window.__prototypePageInit;
+        window.__prototypePageInit = undefined;
+        try {
+          fn();
+        } catch (e) {
+          console.error('[prototype] bindRatingPage fallback', e);
+        }
+      }
+    }, 0);
+  });
+})();
+</script>
+</body>
+</html>

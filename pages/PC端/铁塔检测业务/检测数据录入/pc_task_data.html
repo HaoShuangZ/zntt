@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>检测数据录入</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  /* 方案 A：顶栏固定 + 左侧双级导航 + 右侧单面板 */
+  .entry-shell { display: flex; flex-direction: column; gap: 0; min-height: calc(100vh - 120px); }
+  /* 嵌入模式（详情页 iframe 内）：去除顶栏后 entry-shell 应填满 iframe，避免底部留白 */
+  html.pc-embed body { min-height: 100vh; }
+  html.pc-embed #page-content { padding: 0 !important; min-height: 100vh; }
+  html.pc-embed .entry-shell { min-height: 100vh; padding: 10px 14px 14px; box-sizing: border-box; }
+  html.pc-embed .entry-toolbar { margin-bottom: 10px; padding: 8px 14px 10px; box-shadow: none; }
+  html.pc-embed .entry-toolbar-row--actions { padding-top: 10px; }
+  html.pc-embed .entry-nav { max-height: calc(100vh - 150px); }
+  html.pc-embed .entry-main { max-height: calc(100vh - 150px); }
+  .entry-toolbar {
+    position: sticky; top: 0; z-index: 20;
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px;
+    padding: 12px 16px 14px; margin-bottom: 12px;
+    display: flex; flex-direction: column; align-items: stretch; gap: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .entry-toolbar-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; width: 100%; min-width: 0; }
+  .entry-toolbar-row--head .tb-mid { flex: 1; min-width: 0; }
+  .entry-toolbar-row--actions {
+    padding-top: 12px; border-top: 1px solid var(--border); gap: 10px 12px;
+  }
+  .entry-toolbar .tb-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; flex-shrink: 0; }
+  .entry-toolbar .tb-mid { font-size: 13px; color: var(--text-2); line-height: 1.45; }
+  .entry-toolbar .tb-mid strong { color: var(--text-1); }
+  .entry-toolbar-row--actions .tb-right-actions {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px;
+    flex: 1 1 auto; min-width: 0;
+  }
+  .entry-toolbar-row--actions .tb-pc-mod-boundary {
+    display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0;
+    margin-left: auto; padding-left: 14px; border-left: 1px solid var(--border);
+  }
+  .btn-pc-mod-memo {
+    border: none; border-radius: 999px; padding: 5px 12px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit;
+    display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; line-height: 1.2;
+    background: #FFECE8; color: #F53F3F;
+  }
+  .btn-pc-mod-memo:hover { filter: brightness(0.97); }
+  .entry-body { display: flex; gap: 0; align-items: stretch; flex: 1; min-height: 0; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-card); overflow: hidden; }
+  .entry-nav {
+    width: 280px; flex-shrink: 0; background: #F7F8FA; border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; max-height: calc(100vh - 300px); overflow-y: auto;
+    transition: width 0.2s ease;
+  }
+  .entry-nav.collapsed { width: 52px; }
+  .entry-nav.collapsed .nav-group-title,
+  .entry-nav.collapsed .nav-leaf-label,
+  .entry-nav.collapsed .entry-nav-doc,
+  .entry-nav.collapsed .nav-group-heading { display: none; }
+  .entry-nav.collapsed .nav-leaf { justify-content: center; padding: 10px 6px; }
+  .entry-nav.collapsed .nav-collapse-btn i { transform: rotate(180deg); }
+  .nav-collapse-btn {
+    align-self: flex-end; margin: 8px 8px 0 0; width: 32px; height: 32px; border: 1px solid var(--border);
+    background: #fff; border-radius: 4px; cursor: pointer; color: var(--text-2);
+  }
+  .nav-collapse-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .entry-nav-doc {
+    padding: 10px 12px 12px; border-bottom: 1px solid var(--border);
+    background: #fff;
+  }
+  .entry-nav-doc .form-group { margin-bottom: 10px; }
+  .entry-nav-doc .form-group:last-of-type { margin-bottom: 6px; }
+  .entry-nav-doc .form-label { font-size: 12px; margin-bottom: 4px; display: block; color: var(--text-2); }
+  .entry-nav-doc .form-input { width: 100%; max-width: none; box-sizing: border-box; }
+  .nav-group-heading {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    padding: 8px 10px 6px 14px;
+  }
+  .nav-group-heading .nav-group-title { padding: 0; flex-shrink: 0; }
+  .nav-group-actions { display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; }
+  .nav-group-actions .btn { padding: 2px 8px; font-size: 11px; }
+  .nav-group-title {
+    font-size: 11px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.04em;
+    padding: 8px 14px 6px;
+  }
+  .nav-leaf {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    width: 100%; padding: 10px 14px; border: none; background: transparent; cursor: pointer;
+    font-size: 13px; color: var(--text-2); text-align: left; font-family: inherit;
+    border-left: 3px solid transparent;
+  }
+  .nav-leaf:hover { background: rgba(22, 93, 255, 0.06); color: var(--text-1); }
+  .nav-leaf.active { background: #fff; color: var(--primary); font-weight: 600; border-left-color: var(--primary); }
+  .nav-leaf-label { flex: 1; min-width: 0; }
+  .seg-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .seg-dot.done { background: #00B42A; }
+  .seg-dot.warn { background: #FF7D00; }
+  .seg-dot.fail { background: #F53F3F; }
+  .seg-dot.empty { background: #C9CDD4; }
+  .entry-main { flex: 1; min-width: 0; overflow-y: auto; max-height: calc(100vh - 300px); padding: 16px 20px; background: #fff; }
+  .entry-panel { display: none; }
+  .entry-panel.active { display: block; }
+  .upload-wrap { width: 100%; }
+  .upload-area { border: 1px dashed var(--border); border-radius: 4px; padding: 20px; text-align: center; color: var(--text-3); font-size: 13px; cursor: pointer; transition: border-color .2s, background .2s; outline: none; }
+  .upload-area:hover, .upload-area:focus { border-color: var(--primary); }
+  .upload-area.dragover { border-color: var(--primary); background: rgba(22, 93, 255, 0.06); }
+  .upload-area.has-files { border-style: solid; border-color: #00B42A; color: var(--text-2); }
+  .upload-names { margin-top: 8px; font-size: 12px; color: var(--text-2); list-style: none; padding: 0; max-height: 72px; overflow-y: auto; }
+  .upload-names li { padding: 2px 0; word-break: break-all; }
+  .panel-tools { margin: -4px 0 12px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .card-header-toggle { display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; user-select: none; }
+  .card-header-toggle .card-chev { color: var(--text-3); transition: transform .2s; }
+  .card.is-collapsed .card-body { display: none; }
+  .card.is-collapsed .card-chev { transform: rotate(-90deg); }
+  .proto-modal { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 24px; }
+  .proto-modal[hidden] { display: none !important; }
+  .proto-modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.45); }
+  .proto-modal-dialog { position: relative; width: min(720px, 100%); max-height: min(80vh, 560px); background: #fff; border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; }
+  .proto-modal-header { padding: 14px 18px; font-weight: 600; border-bottom: 1px solid var(--border); }
+  .proto-modal-body { padding: 14px 18px; overflow-y: auto; flex: 1; font-size: 13px; color: var(--text-2); }
+  .proto-modal-footer { padding: 12px 18px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+  .tree-demo { border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; background: #FAFBFC; }
+  .tree-demo .t-node { margin: 4px 0 4px 12px; padding-left: 8px; border-left: 2px solid var(--border); }
+  .tree-demo .t-leaf { padding: 4px 0; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .readonly-field { background: #F7F8FA; border: 1px solid var(--border); border-radius: 4px; padding: 6px 12px; font-size: 13px; color: var(--text-2); height: 32px; display: flex; align-items: center; }
+  .panel-title { font-size: 16px; font-weight: 600; color: var(--text-1); margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+  .panel-hint { font-size: 12px; color: var(--text-3); margin: -8px 0 16px; line-height: 1.5; }
+  .tower-measure-block {
+    border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; margin-bottom: 14px;
+    background: #FAFBFC;
+  }
+  .tower-measure-block .tm-title { font-size: 13px; font-weight: 600; color: var(--text-1); margin-bottom: 10px; }
+  .tower-measure-block .tm-row { margin-bottom: 12px; }
+  .tower-measure-block .tm-row:last-child { margin-bottom: 0; }
+  .tower-measure-block .tm-sub { font-size: 12px; color: var(--text-3); margin-top: 4px; line-height: 1.45; }
+  .entry-subnav-label { color: var(--primary); font-weight: 600; }
+  .panel-section-title { font-size: 13px; font-weight: 600; color: var(--text-1); margin: 16px 0 10px; padding-bottom: 6px; border-bottom: 1px dashed var(--border); }
+  .panel-section-title:first-child { margin-top: 0; }
+</style>
+</head>
+<body>
+<div id="page-content" class="entry-shell">
+
+  <div id="versionReadonlyBanner" style="display:none;margin-bottom:12px;padding:10px 14px;font-size:13px;color:var(--text-2);background:#F0F5FF;border:1px solid #BEDAFF;border-radius:6px;line-height:1.55">
+    <i class="fa-solid fa-clock-rotate-left" style="color:var(--primary)"></i>
+    <span id="versionReadonlyBannerText"></span>
+    <a href="#" id="versionReadonlyBack" class="btn-text" style="margin-left:10px">返回检测记录</a>
+  </div>
+
+  <div class="entry-toolbar">
+    <div class="entry-toolbar-row entry-toolbar-row--head">
+      <div class="tb-left">
+        <a href="../检测任务/pc_task_list.html" class="btn btn-default btn-sm pc-embed-hide"><i class="fa-solid fa-arrow-left"></i> 返回任务</a>
+        <span style="font-size:16px;font-weight:600;color:var(--text-1);" class="pc-embed-hide">检测数据录入</span>
+      </div>
+      <div class="tb-mid" id="saveStatusLine">
+        <strong>DD-202605-T001</strong> · TT-BJ-001 滨江01#单管 · <span id="lastSavedText">尚未保存</span>
+        <span style="color:var(--text-3)"> · </span><span class="entry-subnav-label" id="entrySubNavLabel">检测铁塔录入</span>
+        <span style="font-size:11px;color:var(--text-3);margin-left:4px;" title="支持地址栏 # 锚点直达本子页">#<span id="entrySubNavHash">tower-spec</span></span>
+      </div>
+    </div>
+    <div class="entry-toolbar-row entry-toolbar-row--actions">
+      <div class="tb-right-actions">
+        <button type="button" class="btn btn-default btn-sm" id="btnPrevSection" title="上一录入子页（与左侧导航顺序一致）"><i class="fa-solid fa-chevron-left"></i></button>
+        <button type="button" class="btn btn-default btn-sm" id="btnNextSection" title="下一录入子页"><i class="fa-solid fa-chevron-right"></i></button>
+        <a href="../../模板配置/检测模板/pc_inspect_template_list.html" class="btn btn-default btn-sm" target="_blank" rel="noopener"><i class="fa-solid fa-table-columns"></i> 检测模板</a>
+        <button type="button" class="btn btn-default btn-sm" id="btnItemTree" title="查看任务模板中的检测项结构"><i class="fa-solid fa-sitemap"></i> 检测项预览</button>
+        <button type="button" class="btn btn-default btn-sm" id="btnEntryHelp"><i class="fa-solid fa-circle-question"></i> 录入说明</button>
+        <button type="button" class="btn btn-default btn-sm" id="btnToggleNav" title="收起/展开侧栏"><i class="fa-solid fa-bars"></i> 侧栏</button>
+        <button type="button" class="btn btn-default" id="btnValidate"><i class="fa-solid fa-check-double"></i> 校验</button>
+        <button type="button" class="btn btn-default" id="btnDraft"><i class="fa-solid fa-floppy-disk"></i> 暂存</button>
+        <button type="button" class="btn btn-primary" id="btnSave"><i class="fa-solid fa-save"></i> 保存</button>
+        <button type="button" class="btn btn-default" id="btnSubmit"><i class="fa-solid fa-cloud-arrow-up"></i> 提交数据</button>
+      </div>
+      <div class="tb-pc-mod-boundary" title="当前选中模块的语音备忘（与 APP 模块备忘一致）">
+        <button type="button" class="btn-pc-mod-memo" id="btnPcModuleMemo"><i class="fa-solid fa-microphone"></i> 备忘录</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="entry-body">
+    <aside class="entry-nav" id="entryNav" aria-label="检测数据导航">
+      <button type="button" class="nav-collapse-btn" id="navCollapse" title="收起侧栏"><i class="fa-solid fa-chevron-left"></i></button>
+
+      <div class="entry-nav-doc">
+        <div class="form-group">
+          <label class="form-label">铁塔类型</label>
+          <div class="readonly-field" id="readonlyTowerType">单管塔</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">检测任务模板</label>
+          <div class="readonly-field" id="readonlyInspectTemplate" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="">—</div>
+        </div>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-title">检测铁塔</div>
+        <button type="button" class="nav-leaf active" data-panel="tower-spec" data-entry-page="检测铁塔录入 · 全塔实测信息"><span class="nav-leaf-label">检测铁塔录入</span></button>
+      </div>
+      <div class="nav-group" id="navGroupSegments">
+        <div class="nav-group-heading">
+          <span class="nav-group-title">塔段检测</span>
+          <div class="nav-group-actions">
+            <button type="button" class="btn btn-default" id="btnAddSegment" title="在末尾增加一段">+ 添加塔段</button>
+            <button type="button" class="btn btn-default" id="btnRemoveSegment" title="删除当前选中的塔段">删除塔段</button>
+          </div>
+        </div>
+        <div id="navSegmentLeaves"></div>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-title">其他模块</div>
+        <button type="button" class="nav-leaf" data-panel="foundation" data-entry-page="基础检测 · 承台与地脚"><span class="nav-leaf-label">基础检测</span></button>
+        <button type="button" class="nav-leaf" data-panel="platform" data-entry-page="平台检测 · 走道与护栏"><span class="nav-leaf-label">平台检测</span></button>
+        <button type="button" class="nav-leaf" data-panel="antenna" data-entry-page="天线检测 · 抱杆与支架"><span class="nav-leaf-label">天线检测</span></button>
+        <button type="button" class="nav-leaf" data-panel="other" data-entry-page="其他检测 · 接地与垂直度等"><span class="nav-leaf-label">其他检测</span></button>
+      </div>
+    </aside>
+
+    <main class="entry-main">
+      <!-- 铁塔基本信息（只读，全局上下文） -->
+      <div class="card" style="margin-bottom:20px;" id="cardTowerBasic">
+        <div class="card-header card-header-toggle" id="cardTowerBasicHead" role="button" tabindex="0" aria-expanded="true" aria-controls="cardTowerBasicBody" title="点击收起或展开">
+          <div class="card-title">铁塔基本信息（只读）</div>
+          <i class="fa-solid fa-chevron-up card-chev" aria-hidden="true"></i>
+        </div>
+        <div class="card-body" id="cardTowerBasicBody">
+          <div class="form-grid form-grid-3">
+            <div class="form-group"><label class="form-label">铁塔编号</label><div class="readonly-field">TT-BJ-001</div></div>
+            <div class="form-group"><label class="form-label">铁塔名称</label><div class="readonly-field">滨江01#单管</div></div>
+            <div class="form-group"><label class="form-label">塔型</label><div class="readonly-field">单管塔</div></div>
+            <div class="form-group"><label class="form-label">塔高</label><div class="readonly-field" id="readonlyTowerHeightM">45.0 m</div></div>
+            <div class="form-group"><label class="form-label">塔段数</label><div class="readonly-field" id="readonlySegmentCount">5</div></div>
+            <div class="form-group"><label class="form-label">检测类别</label><div class="readonly-field">安全性鉴定</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 检测铁塔录入（现场实测 + 备注，与需求文档铁塔信息字段对应） -->
+      <div id="panel-tower-spec" class="entry-panel active">
+        <div class="panel-title">检测铁塔录入</div>
+        <p class="panel-hint">每项包含「测量数据」与「备注」：测量数据填现场实测值；备注可说明测量位置、含不含避雷针/外罩等。与下方只读档案对照填写。</p>
+        <div class="panel-tools">
+          <button type="button" class="btn btn-default btn-sm" id="btnFillFromArchive"><i class="fa-solid fa-file-import"></i> 从档案带入对照值</button>
+          <button type="button" class="btn btn-default btn-sm btn-clear-panel" data-panel="tower-spec"><i class="fa-solid fa-eraser"></i> 清空本页实测</button>
+          <button type="button" class="btn btn-default btn-sm btn-open-item-tree"><i class="fa-solid fa-sitemap"></i> 对照检测项</button>
+        </div>
+        <div class="card"><div class="card-body">
+          <div class="tower-measure-block">
+            <div class="tm-title">塔身总高</div>
+            <div class="tm-row">
+              <label class="form-label">测量数据（mm）</label>
+              <input type="number" class="form-input" placeholder="例：法兰面至塔顶主材高度等，单位 mm" value="43000" style="max-width:280px">
+            </div>
+            <div class="tm-row">
+              <label class="form-label">备注</label>
+              <textarea class="form-textarea" rows="3" placeholder="说明测量起止位置；含外罩高度；不含避雷针高度等。"></textarea>
+              <p class="tm-sub">提示：塔身总高一般自法兰上平面量至塔顶主材；若含外护罩、不含避雷针请在备注中写明。</p>
+            </div>
+          </div>
+          <div class="tower-measure-block">
+            <div class="tm-title">场地相对高度</div>
+            <div class="tm-row">
+              <label class="form-label">测量数据（m）</label>
+              <input type="number" class="form-input" id="towerSiteRelHeight" placeholder="相对山顶或屋面高度" step="0.01" style="max-width:280px">
+            </div>
+            <div class="tm-row">
+              <label class="form-label">备注</label>
+              <textarea class="form-textarea" rows="2" placeholder="说明参照面：山顶、屋面、地坪等。"></textarea>
+            </div>
+          </div>
+          <div class="tower-measure-block">
+            <div class="tm-title">杆体截面形状（单管）</div>
+            <div class="tm-row">
+              <label class="form-label">测量数据（边数）</label>
+              <input type="number" class="form-input" placeholder="0 表示圆形；6、8、12… 表示正多边形边数" value="12" style="max-width:280px">
+            </div>
+            <div class="tm-row">
+              <label class="form-label">备注</label>
+              <textarea class="form-textarea" rows="2" placeholder="圆形填 0；多边形填边数：6、8、12、16、18、24、32、48 等。"></textarea>
+            </div>
+          </div>
+          <div class="form-grid form-grid-2" style="margin-top:4px;">
+            <div class="tower-measure-block" style="margin-bottom:0;">
+              <div class="tm-title">单管塔顶径</div>
+              <label class="form-label">测量数据（mm）</label>
+              <input type="number" class="form-input" value="420" placeholder="顶径">
+              <label class="form-label" style="margin-top:10px;">备注</label>
+              <textarea class="form-textarea" rows="2" placeholder="测点位置、测次等"></textarea>
+            </div>
+            <div class="tower-measure-block" style="margin-bottom:0;">
+              <div class="tm-title">单管塔底径</div>
+              <label class="form-label">测量数据（mm）</label>
+              <input type="number" class="form-input" id="towerBottomDiam" placeholder="底径">
+              <label class="form-label" style="margin-top:10px;">备注</label>
+              <textarea class="form-textarea" rows="2" placeholder="测点位置、测次等"></textarea>
+            </div>
+          </div>
+          <div class="tower-measure-block" style="margin-top:14px;">
+            <div class="tm-title">塔段数量 / 塔高相关（按需）</div>
+            <div class="form-grid form-grid-3">
+              <div class="form-group">
+                <label class="form-label">塔段数量（段）</label>
+                <input type="number" class="form-input" id="towerSegmentCountInput" value="5" min="1" title="与左侧塔段数量联动">
+              </div>
+              <div class="form-group">
+                <label class="form-label">设计塔高（m，对照）</label>
+                <input type="text" class="form-input" value="45.0" readonly style="background:#F7F8FA">
+              </div>
+              <div class="form-group full">
+                <label class="form-label">其它铁塔信息备注</label>
+                <textarea class="form-textarea" rows="2" placeholder="根开、壁厚范围等可在此补充；与塔段检测表联动时请在各段中详填。"></textarea>
+              </div>
+            </div>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- 塔段：脚本动态生成 -->
+      <div id="segmentPanelsMount"></div>
+
+      <!-- 其他大类 -->
+      <div id="panel-foundation" class="entry-panel">
+        <div class="panel-title">基础检测</div>
+        <p class="panel-hint">承台、地脚螺栓与周边环境；与任务模板「基础」分组字段对齐。照片用于缺陷与计量佐证。</p>
+        <div class="panel-tools">
+          <button type="button" class="btn btn-default btn-sm btn-fill-demo" data-panel="foundation"><i class="fa-solid fa-wand-magic-sparkles"></i> 填入示例数据</button>
+          <button type="button" class="btn btn-default btn-sm btn-clear-panel" data-panel="foundation"><i class="fa-solid fa-eraser"></i> 清空本模块</button>
+          <button type="button" class="btn btn-default btn-sm btn-open-item-tree"><i class="fa-solid fa-sitemap"></i> 对照检测项</button>
+        </div>
+        <div class="card"><div class="card-body">
+          <div class="panel-section-title">外观与沉降</div>
+          <div class="form-grid form-grid-3">
+            <div class="form-group full"><label class="form-label">基础外观描述</label><textarea id="foundationDesc" class="form-textarea" placeholder="填写基础外观检查结论"></textarea></div>
+            <div class="form-group"><label class="form-label">沉降是否均匀</label>
+              <select id="foundationSettle" class="form-select"><option value="">请选择</option><option>是</option><option>否</option></select></div>
+            <div class="form-group"><label class="form-label">排水是否通畅</label>
+              <select id="foundationDrain" class="form-select"><option value="">请选择</option><option>通畅</option><option>局部积水</option><option>不畅</option></select></div>
+            <div class="form-group full"><label class="form-label">裂缝 / 破损记录</label><textarea id="foundationCrack" class="form-textarea" rows="2" placeholder="无则填「无」"></textarea></div>
+          </div>
+          <div class="panel-section-title">地脚螺栓与影像</div>
+          <div class="form-grid form-grid-3">
+            <div class="form-group"><label class="form-label">规格与设计符合性</label>
+              <select id="foundationBoltFit" class="form-select"><option value="">请选择</option><option>符合</option><option>不符合</option></select></div>
+            <div class="form-group"><label class="form-label">螺栓外露长度 (mm)</label><input type="number" class="form-input" id="foundationExpose" placeholder="抽检值"></div>
+            <div class="form-group full"><label class="form-label">照片</label>
+              <div class="upload-wrap">
+                <input type="file" class="upload-input" multiple accept="image/*,.pdf,.doc,.docx">
+                <div class="upload-area" tabindex="0" role="button" aria-label="上传照片，支持点击或拖拽"><i class="fa-solid fa-cloud-arrow-up"></i> 上传</div>
+                <ul class="upload-names" aria-live="polite"></ul>
+              </div>
+            </div>
+          </div>
+        </div></div>
+      </div>
+
+      <div id="panel-platform" class="entry-panel">
+        <div class="panel-title">平台检测</div>
+        <p class="panel-hint">走道、护栏、踢脚板及平台与塔体连接；登高作业安全相关项在此汇总。</p>
+        <div class="panel-tools">
+          <button type="button" class="btn btn-default btn-sm btn-fill-demo" data-panel="platform"><i class="fa-solid fa-wand-magic-sparkles"></i> 填入示例数据</button>
+          <button type="button" class="btn btn-default btn-sm btn-clear-panel" data-panel="platform"><i class="fa-solid fa-eraser"></i> 清空本模块</button>
+          <button type="button" class="btn btn-default btn-sm btn-open-item-tree"><i class="fa-solid fa-sitemap"></i> 对照检测项</button>
+        </div>
+        <div class="card"><div class="card-body">
+          <div class="panel-section-title">平台概况</div>
+          <div class="form-grid form-grid-3">
+            <div class="form-group"><label class="form-label">平台层数</label><input type="number" class="form-input" id="platformLayers" placeholder="层数" min="0"></div>
+            <div class="form-group"><label class="form-label">护栏高度结论</label>
+              <select id="platformRail" class="form-select"><option value="">请选择</option><option>合规</option><option>存疑</option><option>不合规</option></select></div>
+            <div class="form-group"><label class="form-label">踢脚板 / 挡板</label>
+              <select id="platformKick" class="form-select"><option value="">请选择</option><option>完整</option><option>缺损</option></select></div>
+          </div>
+          <div class="panel-section-title">连接与影像</div>
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label">固定螺栓抽检数量（处）</label><input type="number" class="form-input" id="platformBoltCnt" placeholder="抽检处数" min="0"></div>
+            <div class="form-group full"><label class="form-label">检查记录</label><textarea id="platformNote" class="form-textarea" placeholder="护栏连接、孔洞防护、积水等"></textarea></div>
+            <div class="form-group full"><label class="form-label">照片</label>
+              <div class="upload-wrap">
+                <input type="file" class="upload-input" multiple accept="image/*,.pdf,.doc,.docx">
+                <div class="upload-area" tabindex="0" role="button" aria-label="上传照片，支持点击或拖拽"><i class="fa-solid fa-cloud-arrow-up"></i> 上传</div>
+                <ul class="upload-names" aria-live="polite"></ul>
+              </div>
+            </div>
+          </div>
+        </div></div>
+      </div>
+
+      <div id="panel-antenna" class="entry-panel">
+        <div class="panel-title">天线检测</div>
+        <p class="panel-hint">天线数量、方位、抱杆固定与馈线敷设；与运营商资产盘点衔接。</p>
+        <div class="panel-tools">
+          <button type="button" class="btn btn-default btn-sm btn-fill-demo" data-panel="antenna"><i class="fa-solid fa-wand-magic-sparkles"></i> 填入示例数据</button>
+          <button type="button" class="btn btn-default btn-sm btn-clear-panel" data-panel="antenna"><i class="fa-solid fa-eraser"></i> 清空本模块</button>
+          <button type="button" class="btn btn-default btn-sm btn-open-item-tree"><i class="fa-solid fa-sitemap"></i> 对照检测项</button>
+        </div>
+        <div class="card"><div class="card-body">
+          <div class="form-grid form-grid-3">
+            <div class="form-group"><label class="form-label">天线数量（副）</label><input type="number" class="form-input" id="antennaCount" placeholder="数量" min="0"></div>
+            <div class="form-group"><label class="form-label">方位角参考 (°)</label><input type="text" class="form-input" id="antennaAzimuth" placeholder="例 120"></div>
+            <div class="form-group"><label class="form-label">抱杆垂直度结论</label>
+              <select id="antennaPlumb" class="form-select"><option value="">请选择</option><option>满足</option><option>需调整</option></select></div>
+            <div class="form-group full"><label class="form-label">天线与抱杆检查</label><textarea id="antennaNote" class="form-textarea" placeholder="固定件、馈线防水、防雷接地引下等"></textarea></div>
+            <div class="form-group full"><label class="form-label">照片</label>
+              <div class="upload-wrap">
+                <input type="file" class="upload-input" multiple accept="image/*,.pdf,.doc,.docx">
+                <div class="upload-area" tabindex="0" role="button" aria-label="上传照片，支持点击或拖拽"><i class="fa-solid fa-cloud-arrow-up"></i> 上传</div>
+                <ul class="upload-names" aria-live="polite"></ul>
+              </div>
+            </div>
+          </div>
+        </div></div>
+      </div>
+
+      <div id="panel-other" class="entry-panel">
+        <div class="panel-title">其他检测</div>
+        <p class="panel-hint">接地、塔体垂直度、焊缝与防腐等扩展项；具体子项由任务模板配置驱动。</p>
+        <div class="panel-tools">
+          <button type="button" class="btn btn-default btn-sm btn-fill-demo" data-panel="other"><i class="fa-solid fa-wand-magic-sparkles"></i> 填入示例数据</button>
+          <button type="button" class="btn btn-default btn-sm btn-clear-panel" data-panel="other"><i class="fa-solid fa-eraser"></i> 清空本模块</button>
+          <button type="button" class="btn btn-default btn-sm btn-open-item-tree"><i class="fa-solid fa-sitemap"></i> 对照检测项</button>
+        </div>
+        <div class="card"><div class="card-body">
+          <div class="panel-section-title">电气与垂直度</div>
+          <div class="form-grid form-grid-3">
+            <div class="form-group"><label class="form-label">接地电阻 (Ω)</label><input type="text" class="form-input" id="otherGround" placeholder="例 0.82"></div>
+            <div class="form-group"><label class="form-label">垂直度结论</label>
+              <select id="otherVertical" class="form-select"><option value="">请选择</option><option>满足</option><option>不满足</option></select></div>
+            <div class="form-group"><label class="form-label">垂直度实测偏差 (mm)</label><input type="text" class="form-input" id="otherPlumbDev" placeholder="例 12"></div>
+          </div>
+          <div class="panel-section-title">焊缝与防腐</div>
+          <div class="form-grid form-grid-3">
+            <div class="form-group full"><label class="form-label">焊缝抽检记录</label><textarea id="otherWeld" class="form-textarea" rows="2" placeholder="抽检部位、方法、结论"></textarea></div>
+            <div class="form-group"><label class="form-label">防腐涂层外观</label>
+              <select id="otherCoating" class="form-select"><option value="">请选择</option><option>良好</option><option>局部锈蚀</option><option>严重</option></select></div>
+            <div class="form-group full"><label class="form-label">备注</label><textarea id="otherNote" class="form-textarea" placeholder="回弹、螺栓扭矩等其它项"></textarea></div>
+          </div>
+        </div></div>
+      </div>
+
+      <div class="form-footer" style="margin-top: 24px; border-top: 1px solid var(--border); padding-top: 16px;">
+        <span style="font-size:12px;color:var(--text-3);margin-right:auto;">主要操作已置于顶部固定栏；此处可放扩展操作。</span>
+        <button type="button" class="btn btn-default" id="btnUploadSupervise"><i class="fa-solid fa-cloud-arrow-up"></i> 上传监管平台</button>
+      </div>
+    </main>
+  </div>
+
+  <div id="modalItemTree" class="proto-modal" hidden>
+    <div class="proto-modal-backdrop" data-close-modal="1" title="关闭"></div>
+    <div class="proto-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modalItemTreeTitle">
+      <div class="proto-modal-header" id="modalItemTreeTitle">检测项目配置列表</div>
+      <div class="proto-modal-body">
+        <p style="margin:0 0 10px;">按任务模板汇总的检测项清单。</p>
+        <div class="tree-demo">
+          <div><strong>单管塔（31）</strong></div>
+          <div class="t-node">
+            <div><strong>螺栓连接（7）</strong></div>
+            <div class="t-node">
+              <div class="t-leaf"><span>螺栓缺失/损坏</span><span style="color:var(--text-3)">全数 · 待录</span></div>
+              <div class="t-leaf"><span>以小代大</span><span style="color:var(--text-3)">全数 · 待录</span></div>
+              <div class="t-leaf"><span>螺栓松动</span><span style="color:var(--text-3)">全数 · 待录</span></div>
+              <div class="t-leaf"><span>螺栓反穿</span><span style="color:var(--text-3)">全数 · 待录</span></div>
+            </div>
+            <div style="margin-top:8px;"><strong>构件锈蚀（5）</strong></div>
+            <div class="t-node">
+              <div class="t-leaf"><span>主材锈蚀</span><span style="color:var(--text-3)">抽检 · 待录</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="proto-modal-footer">
+        <button type="button" class="btn btn-default" data-close-modal="1">取消</button>
+        <button type="button" class="btn btn-primary" id="modalItemTreeClose">关闭</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'task_list', breadcrumb:['检测管理','检测任务','检测数据录入']};</script>
+<script>
+/* 须在布局重建之后执行：shared-layout 在 DOMContentLoaded 时用 innerHTML 重建 body，若在此之前绑定事件会绑在已移除的节点上，导致左侧子导航点击无反应。 */
+function initTaskDataEntry() {
+(function () {
+  var nav = document.getElementById('entryNav');
+  var main = document.querySelector('.entry-main');
+  var hashSyncLock = false;
+  var segUid = 10;
+  var SEGMENT_ROWS = [
+    { id: 'seg-1', navLabel: '第1段（0–9m）', entryPage: '第1段 · 0–9m 实测' },
+    { id: 'seg-2', navLabel: '第2段（9–18m）', entryPage: '第2段 · 9–18m 实测' },
+    { id: 'seg-3', navLabel: '第3段（18–27m）', entryPage: '第3段 · 18–27m 实测' },
+    { id: 'seg-4', navLabel: '第4段（27–36m）', entryPage: '第4段 · 27–36m 实测' },
+    { id: 'seg-5', navLabel: '第5段（36–45m）', entryPage: '第5段 · 36–45m 实测' }
+  ];
+
+  var urlParams = new URLSearchParams(location.search);
+  var viewTaskId = urlParams.get('task') || '';
+  var viewVersion = urlParams.get('version') || '';
+  var isVersionReadonly = urlParams.get('readonly') === '1' && viewVersion;
+  // 详情页「检测数据」页签内嵌：只读锁定，但不展示版本横幅
+  var isLockedView = urlParams.get('lock') === '1';
+  var VERSION_SNAPSHOTS = {
+    V1: { towerHeight: '42.3', conclusion: '未见明显异常' },
+    V2: { towerHeight: '42.5', conclusion: '未见明显损伤' },
+    V3: { towerHeight: '38.0', conclusion: '检毕有效版' }
+  };
+
+  if (isVersionReadonly) {
+    var snap = VERSION_SNAPSHOTS[viewVersion] || VERSION_SNAPSHOTS.V1;
+    var banner = document.getElementById('versionReadonlyBanner');
+    var bannerText = document.getElementById('versionReadonlyBannerText');
+    var backVer = document.getElementById('versionReadonlyBack');
+    if (banner && bannerText) {
+      banner.style.display = 'block';
+      bannerText.innerHTML = '正在查看任务 <strong>' + (viewTaskId || '—') + '</strong> · 版本 <strong>' + viewVersion + '</strong> 的<strong>历史检测记录</strong>（只读，不可编辑）。';
+    }
+    if (backVer && viewTaskId) {
+      backVer.href = '../检测任务/pc_task_version_history.html?task=' + encodeURIComponent(viewTaskId);
+    }
+    var hEl = document.getElementById('readonlyTowerHeightM');
+    if (hEl) hEl.textContent = snap.towerHeight + ' m';
+    var saveLine = document.getElementById('saveStatusLine');
+    if (saveLine && viewTaskId) {
+      saveLine.innerHTML = '<strong>' + viewTaskId + '</strong> · ' + viewVersion + ' 历史快照 · <span style="color:var(--warning)">只读</span>';
+    }
+  }
+
+  if (isVersionReadonly || isLockedView) {
+    // 锁定数据：隐藏写操作类按钮 + 把所有输入/选择置只读
+    var hideSelectors = [
+      '#btnValidate', '#btnDraft', '#btnSave', '#btnSubmit',
+      '#btnAddSegment', '#btnRemoveSegment',
+      '#btnFillFromArchive', '#btnPcModuleMemo',
+      '.btn-fill-demo', '.btn-clear-panel', '.btn-copy-prev',
+      '.tb-pc-mod-boundary',
+      '.panel-tools', '.upload-wrap'
+    ];
+    document.querySelectorAll(hideSelectors.join(',')).forEach(function (el) {
+      if (el) el.style.display = 'none';
+    });
+    var lockSaveLine = document.getElementById('saveStatusLine');
+    if (isLockedView && lockSaveLine && !isVersionReadonly) {
+      lockSaveLine.innerHTML = '<i class="fa-solid fa-lock" style="margin-right:6px;color:var(--warning)"></i>查看模式：检测数据已锁定，仅供查看不可修改。';
+    }
+    if (main) {
+      main.querySelectorAll('input.form-input:not([readonly]), textarea.form-textarea, select.form-select').forEach(function (el) {
+        el.setAttribute('readonly', 'readonly');
+        if (el.tagName === 'SELECT') el.setAttribute('disabled', 'disabled');
+        el.style.background = '#F7F8FA';
+        el.style.pointerEvents = 'none';
+      });
+      main.querySelectorAll('input[type="number"], input[type="text"]').forEach(function (el) {
+        el.setAttribute('readonly', 'readonly');
+        el.style.background = '#F7F8FA';
+      });
+    }
+  }
+
+  function getNavOrder() {
+    return ['tower-spec'].concat(SEGMENT_ROWS.map(function (r) { return r.id; })).concat(['foundation', 'platform', 'antenna', 'other']);
+  }
+  function memoModuleIdFor(panelId) {
+    if (/^seg-/.test(panelId)) return 'segment';
+    var map = { 'tower-spec': 'tower', foundation: 'foundation', platform: 'platform', antenna: 'antenna', other: 'other' };
+    return map[panelId] || 'segment';
+  }
+
+  function renumberSegmentLabels() {
+    var hEl = document.getElementById('readonlyTowerHeightM');
+    var h = 45;
+    if (hEl && hEl.textContent) {
+      var m = /([\d.]+)\s*m/i.exec(hEl.textContent);
+      if (m) h = parseFloat(m[1]) || 45;
+    }
+    var k = SEGMENT_ROWS.length || 1;
+    var span = h / k;
+    SEGMENT_ROWS.forEach(function (row, i) {
+      var lo = Math.round(i * span * 10) / 10;
+      var hi = i === k - 1 ? h : Math.round((i + 1) * span * 10) / 10;
+      row.navLabel = '第' + (i + 1) + '段（' + lo + '–' + hi + 'm）';
+      row.entryPage = '第' + (i + 1) + '段 · ' + lo + '–' + hi + 'm 实测';
+    });
+  }
+
+  function buildSegmentPanel(row, index) {
+    var div = document.createElement('div');
+    div.id = 'panel-' + row.id;
+    div.className = 'entry-panel';
+    div.setAttribute('data-segment-panel', '1');
+    var copy = '';
+    if (index > 0) {
+      var prev = SEGMENT_ROWS[index - 1].id;
+      copy =
+        '<button type="button" class="btn btn-default btn-sm btn-copy-prev" data-from="' +
+        prev +
+        '" data-to="' +
+        row.id +
+        '"><i class="fa-solid fa-copy"></i> 自上一段复制</button>';
+    }
+    div.innerHTML =
+      '<div class="panel-title">' +
+      row.navLabel +
+      ' · 实测数据</div>' +
+      '<div class="panel-tools">' +
+      copy +
+      '<button type="button" class="btn btn-default btn-sm btn-clear-panel" data-panel="' +
+      row.id +
+      '"><i class="fa-solid fa-eraser"></i> 清空本段</button>' +
+      '<button type="button" class="btn btn-default btn-sm btn-open-item-tree"><i class="fa-solid fa-sitemap"></i> 对照检测项</button>' +
+      '</div>' +
+      '<div class="card"><div class="card-body">' +
+      '<div class="form-grid">' +
+      '<div class="form-group"><label class="form-label">壁厚 (mm)</label><input type="number" class="form-input" placeholder="壁厚"></div>' +
+      '<div class="form-group"><label class="form-label">锈蚀程度</label><select class="form-select"><option>无</option><option>轻微</option><option>中等</option><option>严重</option></select></div>' +
+      '<div class="form-group"><label class="form-label">法兰间隙 (mm)</label><input type="number" class="form-input" placeholder="法兰间隙"></div>' +
+      '<div class="form-group"><label class="form-label">螺栓松动</label><select class="form-select"><option selected>无</option><option>有</option></select></div>' +
+      '<div class="form-group"><label class="form-label">检测结果</label><select class="form-select inspect-result"><option selected>合格</option><option>不合格</option></select></div>' +
+      '<div class="form-group"><label class="form-label">外表面质量</label><select class="form-select"><option selected>完好</option><option>一般</option><option>差</option></select></div>' +
+      '<div class="form-group"><label class="form-label">焊缝外观</label><select class="form-select"><option selected>无可见缺陷</option><option>轻微缺陷</option><option>需复检</option></select></div>' +
+      '<div class="form-group"><label class="form-label">照片</label><div class="upload-wrap">' +
+      '<input type="file" class="upload-input" multiple accept="image/*,.pdf,.doc,.docx">' +
+      '<div class="upload-area" tabindex="0" role="button" aria-label="上传附件，支持点击或拖拽"><i class="fa-solid fa-cloud-arrow-up"></i> 点击上传或拖拽</div>' +
+      '<ul class="upload-names" aria-live="polite"></ul></div></div>' +
+      '<div class="form-group full"><label class="form-label">备注</label><textarea class="form-textarea" placeholder="备注"></textarea></div>' +
+      '</div></div></div>';
+    return div;
+  }
+
+  function renderSegmentNavAndPanels() {
+    renumberSegmentLabels();
+    var navMount = document.getElementById('navSegmentLeaves');
+    var panelMount = document.getElementById('segmentPanelsMount');
+    if (!navMount || !panelMount) return;
+    navMount.innerHTML = '';
+    panelMount.innerHTML = '';
+    SEGMENT_ROWS.forEach(function (row, index) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'nav-leaf';
+      b.setAttribute('data-panel', row.id);
+      b.setAttribute('data-entry-page', row.entryPage);
+      var span = document.createElement('span');
+      span.className = 'nav-leaf-label';
+      span.textContent = row.navLabel;
+      b.appendChild(span);
+      navMount.appendChild(b);
+      panelMount.appendChild(buildSegmentPanel(row, index));
+    });
+    var cntEl = document.getElementById('readonlySegmentCount');
+    if (cntEl) cntEl.textContent = String(SEGMENT_ROWS.length);
+    var tc = document.getElementById('towerSegmentCountInput');
+    if (tc) tc.value = String(SEGMENT_ROWS.length);
+    bindUploads(panelMount);
+  }
+
+  function showPanel(id) {
+    document.querySelectorAll('.entry-panel').forEach(function (p) {
+      p.classList.toggle('active', p.id === 'panel-' + id);
+    });
+    document.querySelectorAll('.nav-leaf[data-panel]').forEach(function (b) {
+      b.classList.toggle('active', b.getAttribute('data-panel') === id);
+    });
+  }
+
+  function parseHashId() {
+    var raw = (location.hash || '').replace(/^#/, '');
+    var order = getNavOrder();
+    if (order.indexOf(raw) >= 0) return raw;
+    var legacy = /^tower-(\d+)$/.exec(raw);
+    if (legacy) {
+      var ix = parseInt(legacy[1], 10) - 1;
+      if (SEGMENT_ROWS[ix]) return SEGMENT_ROWS[ix].id;
+    }
+    return 'tower-spec';
+  }
+
+  function updateSubNavChrome(id) {
+    var leaf = nav.querySelector('.nav-leaf[data-panel="' + id + '"]');
+    var labelEl = document.getElementById('entrySubNavLabel');
+    var hashEl = document.getElementById('entrySubNavHash');
+    var title = leaf && leaf.getAttribute('data-entry-page');
+    if (labelEl && title) labelEl.textContent = title;
+    if (hashEl) hashEl.textContent = id;
+    var btnMemo = document.getElementById('btnPcModuleMemo');
+    var t = title || id;
+    if (btnMemo) btnMemo.setAttribute('title', '打开「' + t + '」模块备忘录（新标签页）');
+  }
+
+  function showPanelFromNav(id) {
+    var order = getNavOrder();
+    if (order.indexOf(id) < 0) id = 'tower-spec';
+    showPanel(id);
+    updateSubNavChrome(id);
+    var want = '#' + id;
+    if (location.hash !== want) {
+      hashSyncLock = true;
+      location.hash = id;
+      setTimeout(function () { hashSyncLock = false; }, 0);
+    }
+  }
+
+  window.addEventListener('hashchange', function () {
+    if (hashSyncLock) return;
+    var id = parseHashId();
+    showPanel(id);
+    updateSubNavChrome(id);
+  });
+
+  nav.addEventListener('click', function (ev) {
+    var btn = ev.target.closest('.nav-leaf[data-panel]');
+    if (!btn || !nav.contains(btn)) return;
+    var lab = btn.querySelector('.nav-leaf-label');
+    if (lab) btn.setAttribute('title', lab.textContent.trim());
+    showPanelFromNav(btn.getAttribute('data-panel'));
+  });
+
+  document.getElementById('btnAddSegment').addEventListener('click', function () {
+    SEGMENT_ROWS.push({ id: 'seg-' + segUid++ });
+    renderSegmentNavAndPanels();
+    showPanelFromNav(SEGMENT_ROWS[SEGMENT_ROWS.length - 1].id);
+  });
+
+  document.getElementById('btnRemoveSegment').addEventListener('click', function () {
+    var cur = currentNavPanelId();
+    if (!/^seg-/.test(cur)) {
+      alert('请先在左侧「塔段检测」中选中要删除的塔段。');
+      return;
+    }
+    if (SEGMENT_ROWS.length <= 1) {
+      alert('至少保留一个塔段。');
+      return;
+    }
+    SEGMENT_ROWS = SEGMENT_ROWS.filter(function (r) { return r.id !== cur; });
+    renderSegmentNavAndPanels();
+    showPanelFromNav(SEGMENT_ROWS[0] ? SEGMENT_ROWS[0].id : 'tower-spec');
+  });
+
+  function currentNavPanelId() {
+    var active = nav.querySelector('.nav-leaf.active');
+    return active ? active.getAttribute('data-panel') : 'tower-spec';
+  }
+
+  function currentModuleMemoMeta() {
+    var pid = currentNavPanelId();
+    var leaf = nav.querySelector('.nav-leaf[data-panel="' + pid + '"]');
+    var pageTitle = (leaf && leaf.getAttribute('data-entry-page')) || pid;
+    var shortLabel = '';
+    var lab = leaf && leaf.querySelector('.nav-leaf-label');
+    if (lab) shortLabel = lab.textContent.trim();
+    return {
+      panelId: pid,
+      moduleId: memoModuleIdFor(pid),
+      title: pageTitle,
+      shortLabel: shortLabel || pageTitle
+    };
+  }
+
+  function buildModuleMemoUrl() {
+    var m = currentModuleMemoMeta();
+    var base = '../../../APP端/任务/备忘录/app_task_memo.html';
+    var q = new URLSearchParams();
+    q.set('scope', 'module');
+    q.set('moduleId', m.moduleId);
+    q.set('moduleName', m.shortLabel);
+    q.set('return', window.location.href);
+    return base + '?' + q.toString();
+  }
+
+  function goNavByStep(delta) {
+    var cur = currentNavPanelId();
+    var order = getNavOrder();
+    var i = order.indexOf(cur);
+    if (i < 0) i = 0;
+    var ni = Math.max(0, Math.min(order.length - 1, i + delta));
+    showPanelFromNav(order[ni]);
+  }
+
+  document.getElementById('btnPrevSection').addEventListener('click', function () { goNavByStep(-1); });
+  document.getElementById('btnNextSection').addEventListener('click', function () { goNavByStep(1); });
+
+  document.getElementById('btnPcModuleMemo').addEventListener('click', function () {
+    window.open(buildModuleMemoUrl(), '_blank', 'noopener,noreferrer');
+  });
+
+  var TOWER_TYPE_LABELS = {
+    single_pipe: '单管塔',
+    angle: '角钢塔',
+    three_leg: '三管塔',
+    landscape: '景观塔',
+    bionic: '仿生树塔',
+    other: '其他 / 组合'
+  };
+
+  var TEMPLATES_BY_TOWER = {
+    single_pipe: [
+      { value: 'PKG_STOCK_SINGLE_PIPE_20260509', label: '库存单管塔 · 安全性鉴定（PKG_STOCK_SINGLE_PIPE_20260509）' },
+      { value: 'PKG_SP_PERIODIC_20260420', label: '单管塔 · 周期性检测（PKG_SP_PERIODIC_20260420）' }
+    ],
+    angle: [
+      { value: 'PKG_ANGLE_SAFE_20260315', label: '角钢塔 · 安全性鉴定（PKG_ANGLE_SAFE_20260315）' },
+      { value: 'PKG_ANGLE_NET_OPT_20260201', label: '角钢塔 · 网络优化加装复核' }
+    ],
+    three_leg: [
+      { value: 'PKG_THREE_LEG_20260501', label: '三管塔 · 通用检测包（PKG_THREE_LEG_20260501）' }
+    ],
+    landscape: [
+      { value: 'PKG_LANDSCAPE_DUAL_20260410', label: '景观塔 · 隐蔽件与打光' }
+    ],
+    bionic: [
+      { value: 'PKG_BIONIC_COATING_20260325', label: '仿生树塔 · 防腐与外观专项' }
+    ],
+    other: [
+      { value: 'PKG_CUSTOM_MIXED', label: '组合塔型 · 自定义模板库选配' }
+    ]
+  };
+
+  /* 从 URL 参数读取弹窗选择的铁塔类型和检测任务模板，左侧只读展示 */
+  (function initReadonlyTowerAndTemplate() {
+    var towerTypeVal = urlParams.get('towerType') || 'single_pipe';
+    var templateVal = urlParams.get('template') || '';
+
+    var towerLabel = TOWER_TYPE_LABELS[towerTypeVal] || TOWER_TYPE_LABELS.other;
+    var towerEl = document.getElementById('readonlyTowerType');
+    if (towerEl) towerEl.textContent = towerLabel;
+
+    var tplLabel = '—';
+    if (templateVal) {
+      var list = TEMPLATES_BY_TOWER[towerTypeVal] || TEMPLATES_BY_TOWER.other;
+      var found = null;
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].value === templateVal) { found = list[i]; break; }
+      }
+      if (found) tplLabel = found.label;
+    }
+    var tplEl = document.getElementById('readonlyInspectTemplate');
+    if (tplEl) {
+      tplEl.textContent = tplLabel;
+      tplEl.setAttribute('title', tplLabel);
+    }
+  })();
+
+  document.getElementById('navCollapse').addEventListener('click', function () {
+    nav.classList.toggle('collapsed');
+  });
+  document.getElementById('btnToggleNav').addEventListener('click', function () {
+    nav.classList.toggle('collapsed');
+  });
+
+  function touchSave() {
+    var t = new Date();
+    var s = ('0' + t.getHours()).slice(-2) + ':' + ('0' + t.getMinutes()).slice(-2) + ':' + ('0' + t.getSeconds()).slice(-2);
+    document.getElementById('lastSavedText').textContent = '最后保存 ' + s;
+  }
+
+  function getLeafDot(panelKey) {
+    var leaf = nav.querySelector('.nav-leaf[data-panel="' + panelKey + '"]');
+    return leaf ? leaf.querySelector('.seg-dot') : null;
+  }
+
+  function setDot(el, state) {
+    if (!el) return;
+    el.className = 'seg-dot ' + (state || 'empty');
+    var titles = { done: '已完善', warn: '待关注', fail: '须处理', empty: '未填' };
+    el.setAttribute('title', titles[state] || '');
+  }
+
+  function uploadCountInPanel(panelEl) {
+    var n = 0;
+    panelEl.querySelectorAll('.upload-names').forEach(function (ul) {
+      n += ul.querySelectorAll('li').length;
+    });
+    return n;
+  }
+
+  function towerSegmentResult(panelEl) {
+    var ir = panelEl.querySelector('select.inspect-result');
+    return ir ? (ir.value || '') : '';
+  }
+
+  function refreshNavDots() {
+    var pf = document.getElementById('panel-foundation');
+    if (pf) {
+      var ta = document.getElementById('foundationDesc');
+      var sel = document.getElementById('foundationSettle');
+      var drain = document.getElementById('foundationDrain');
+      var ok = ta && ta.value.trim() && sel && sel.value && drain && drain.value;
+      setDot(getLeafDot('foundation'), ok ? 'done' : 'empty');
+    }
+
+    var pp = document.getElementById('panel-platform');
+    if (pp) {
+      var layers = document.getElementById('platformLayers');
+      var note = document.getElementById('platformNote');
+      var rail = document.getElementById('platformRail');
+      var kick = document.getElementById('platformKick');
+      var bolt = document.getElementById('platformBoltCnt');
+      var okP = uploadCountInPanel(pp) > 0 ||
+        (layers && String(layers.value).trim()) ||
+        (note && note.value.trim()) ||
+        (rail && rail.value) ||
+        (kick && kick.value) ||
+        (bolt && String(bolt.value).trim());
+      setDot(getLeafDot('platform'), okP ? 'done' : 'empty');
+    }
+
+    var pa = document.getElementById('panel-antenna');
+    if (pa) {
+      var cnt = document.getElementById('antennaCount');
+      var az = document.getElementById('antennaAzimuth');
+      var pl = document.getElementById('antennaPlumb');
+      var an = document.getElementById('antennaNote');
+      var okA = (cnt && String(cnt.value).trim()) ||
+        (az && az.value.trim()) ||
+        (pl && pl.value) ||
+        (an && an.value.trim()) ||
+        uploadCountInPanel(pa) > 0;
+      setDot(getLeafDot('antenna'), okA ? 'done' : 'empty');
+    }
+
+    var po = document.getElementById('panel-other');
+    if (po) {
+      var g = document.getElementById('otherGround');
+      var v = document.getElementById('otherVertical');
+      var pd = document.getElementById('otherPlumbDev');
+      var w = document.getElementById('otherWeld');
+      var c = document.getElementById('otherCoating');
+      var n = document.getElementById('otherNote');
+      var okO = (g && g.value.trim()) || (v && v.value) || (pd && pd.value.trim()) ||
+        (w && w.value.trim()) || (c && c.value) || (n && n.value.trim());
+      setDot(getLeafDot('other'), okO ? 'done' : 'empty');
+    }
+  }
+
+  function bindUploads(root) {
+    root.querySelectorAll('.upload-wrap').forEach(function (wrap) {
+      var input = wrap.querySelector('.upload-input');
+      var area = wrap.querySelector('.upload-area');
+      var names = wrap.querySelector('.upload-names');
+      if (!input || !area || !names) return;
+
+      function appendFiles(fileList) {
+        if (!fileList || !fileList.length) return;
+        for (var i = 0; i < fileList.length; i++) {
+          var f = fileList[i];
+          var li = document.createElement('li');
+          var kb = Math.max(1, Math.round(f.size / 1024));
+          li.textContent = f.name + '（' + kb + ' KB）';
+          names.appendChild(li);
+        }
+        if (names.querySelectorAll('li').length) area.classList.add('has-files');
+        refreshNavDots();
+      }
+
+      area.addEventListener('click', function () { input.click(); });
+      area.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          input.click();
+        }
+      });
+      input.addEventListener('change', function () {
+        appendFiles(input.files);
+        input.value = '';
+      });
+
+      ['dragenter', 'dragover'].forEach(function (ev) {
+        wrap.addEventListener(ev, function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          area.classList.add('dragover');
+        });
+      });
+      wrap.addEventListener('dragleave', function (e) {
+        e.preventDefault();
+        area.classList.remove('dragover');
+      });
+      wrap.addEventListener('drop', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        area.classList.remove('dragover');
+        appendFiles(e.dataTransfer.files);
+      });
+    });
+  }
+
+  bindUploads(document);
+  renderSegmentNavAndPanels();
+
+  if (main) {
+  main.addEventListener('click', function (ev) {
+    var treeBtn = ev.target.closest('.btn-open-item-tree');
+    if (treeBtn) {
+      var modalEl = document.getElementById('modalItemTree');
+      if (modalEl) {
+        modalEl.removeAttribute('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+      return;
+    }
+    var cp = ev.target.closest('.btn-copy-prev');
+    if (cp) {
+      var from = cp.getAttribute('data-from');
+      var to = cp.getAttribute('data-to');
+      var prev = document.getElementById('panel-' + from);
+      var cur = document.getElementById('panel-' + to);
+      if (!prev || !cur) return;
+      var sel = 'input.form-input[type="number"], select.form-select, textarea.form-textarea';
+      var ps = prev.querySelectorAll(sel);
+      var cs = cur.querySelectorAll(sel);
+      var n = Math.min(ps.length, cs.length);
+      for (var i = 0; i < n; i++) cs[i].value = ps[i].value;
+      refreshNavDots();
+      alert('已从上一塔段复制数值与选项（不含附件列表）。');
+      return;
+    }
+    var cl = ev.target.closest('.btn-clear-panel');
+    if (cl) {
+      var key = cl.getAttribute('data-panel');
+      var p = document.getElementById('panel-' + key);
+      if (!p) return;
+      var titleEl = p.querySelector('.panel-title');
+      var title = titleEl ? titleEl.textContent : key;
+      if (!confirm('确定清空「' + title + '」中的可编辑内容？')) return;
+      p.querySelectorAll('input.form-input:not([readonly]), textarea.form-textarea, select.form-select').forEach(function (el) {
+        if (el.tagName === 'SELECT') el.selectedIndex = 0;
+        else el.value = '';
+      });
+      p.querySelectorAll('.upload-names').forEach(function (ul) { ul.innerHTML = ''; });
+      p.querySelectorAll('.upload-area.has-files').forEach(function (a) { a.classList.remove('has-files'); });
+      refreshNavDots();
+    }
+  });
+  }
+
+  function validatePage() {
+    var lines = [];
+    var site = document.getElementById('towerSiteRelHeight');
+    if (!site || !String(site.value).trim()) {
+      lines.push('· 检测铁塔录入：场地相对高度（m）未填');
+    }
+    SEGMENT_ROWS.forEach(function (row) {
+      var p = document.getElementById('panel-' + row.id);
+      if (!p) return;
+      if (towerSegmentResult(p) === '不合格' && uploadCountInPanel(p) === 0) {
+        lines.push('· 「' + row.navLabel + '」：检测结果为不合格，须上传照片或其它附件');
+      }
+    });
+    var fd = document.getElementById('foundationDesc');
+    var fs = document.getElementById('foundationSettle');
+    var fdr = document.getElementById('foundationDrain');
+    if (fd && (!fd.value.trim() || !fs || !fs.value || !fdr || !fdr.value)) {
+      lines.push('· 基础检测：外观描述、「沉降是否均匀」或「排水」未完善');
+    }
+    if (!lines.length) lines.push('· 当前校验规则均已满足');
+    return lines;
+  }
+
+  document.getElementById('btnValidate').addEventListener('click', function () {
+    refreshNavDots();
+    alert('校验结果：\n' + validatePage().join('\n'));
+  });
+
+  document.getElementById('btnDraft').addEventListener('click', function () {
+    touchSave();
+    refreshNavDots();
+    alert('已暂存');
+  });
+  document.getElementById('btnSave').addEventListener('click', function () {
+    touchSave();
+    refreshNavDots();
+    alert('已保存');
+  });
+  document.getElementById('btnSubmit').addEventListener('click', function () {
+    if (!confirm('确认提交本任务检测数据？提交后可能影响报告编制引用。')) return;
+    touchSave();
+    refreshNavDots();
+    alert('已提交');
+  });
+
+  document.querySelectorAll('.btn-fill-demo').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var key = btn.getAttribute('data-panel');
+      if (key === 'foundation') {
+        document.getElementById('foundationDesc').value = '基础外观完好，无开裂、露筋。';
+        document.getElementById('foundationSettle').selectedIndex = 1;
+        document.getElementById('foundationDrain').selectedIndex = 1;
+        document.getElementById('foundationCrack').value = '无';
+        document.getElementById('foundationBoltFit').selectedIndex = 1;
+        document.getElementById('foundationExpose').value = '85';
+      } else if (key === 'platform') {
+        document.getElementById('platformLayers').value = '3';
+        document.getElementById('platformRail').selectedIndex = 1;
+        document.getElementById('platformKick').selectedIndex = 1;
+        document.getElementById('platformBoltCnt').value = '12';
+        document.getElementById('platformNote').value = '平台护栏固定牢靠，踢脚板完整，无明显锈蚀。';
+      } else if (key === 'antenna') {
+        document.getElementById('antennaCount').value = '6';
+        document.getElementById('antennaAzimuth').value = '120';
+        document.getElementById('antennaPlumb').selectedIndex = 1;
+        document.getElementById('antennaNote').value = '抱杆与支架连接符合设计要求，馈线孔封堵良好。';
+      } else if (key === 'other') {
+        document.getElementById('otherGround').value = '0.82';
+        document.getElementById('otherVertical').selectedIndex = 1;
+        document.getElementById('otherPlumbDev').value = '10';
+        document.getElementById('otherWeld').value = '主焊缝抽检未见裂纹。';
+        document.getElementById('otherCoating').selectedIndex = 1;
+        document.getElementById('otherNote').value = '垂直度抽检满足限值。';
+      }
+      refreshNavDots();
+      alert('已填入示例数据（仅本模块）。');
+    });
+  });
+
+  document.getElementById('btnFillFromArchive').addEventListener('click', function () {
+    var h = document.getElementById('towerSiteRelHeight');
+    if (h && !String(h.value).trim()) h.value = '2.5';
+    var d = document.getElementById('towerBottomDiam');
+    if (d && !String(d.value).trim()) d.value = '1280';
+    refreshNavDots();
+    alert('已按档案填入对照示例：场地相对高度 2.5 m、单管塔底径 1280 mm。请按现场实测核对修改。');
+  });
+
+  var cardBasic = document.getElementById('cardTowerBasic');
+  var cardBasicHead = document.getElementById('cardTowerBasicHead');
+  if (cardBasic && cardBasicHead) {
+    function toggleBasicCard() {
+      cardBasic.classList.toggle('is-collapsed');
+      var collapsed = cardBasic.classList.contains('is-collapsed');
+      cardBasicHead.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+    }
+    cardBasicHead.addEventListener('click', toggleBasicCard);
+    cardBasicHead.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleBasicCard();
+      }
+    });
+  }
+
+  function entryHelpText() {
+    return '【录入说明】\n\n0）左侧栏选择铁塔类型与检测任务模板；模板决定检测项、塔段数量与段内字段。\n\n1）「塔段检测」下「+ 添加塔段 / 删除塔段」可动态增删。\n\n2）地址栏 # 与顶栏 « » 按当前模块 id（如 #seg-1）切换。\n\n3）塔段内为附件上传（非 OCR）；拍照识别请在 APP 完成。\n\n4）「校验」检查必填项。\n\n5）顶栏「备忘录」仅针对当前选中模块。';
+  }
+  document.getElementById('btnEntryHelp').addEventListener('click', function () { alert(entryHelpText()); });
+
+  var modal = document.getElementById('modalItemTree');
+  function openModal() {
+    if (!modal) return;
+    modal.removeAttribute('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    if (!modal) return;
+    modal.setAttribute('hidden', '');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('btnItemTree').addEventListener('click', openModal);
+  if (modal) {
+  modal.querySelectorAll('[data-close-modal]').forEach(function (el) {
+    el.addEventListener('click', function () { closeModal(); });
+  });
+  document.getElementById('modalItemTreeClose').addEventListener('click', closeModal);
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && modal && !modal.hasAttribute('hidden')) closeModal();
+  });
+
+  document.getElementById('btnUploadSupervise').addEventListener('click', function () {
+    touchSave();
+    alert('已向监管平台发起上传队列。');
+  });
+
+  if (main) {
+    main.addEventListener('input', function () { refreshNavDots(); });
+    main.addEventListener('change', function () { refreshNavDots(); });
+  }
+
+  (function initFromHash() {
+    var id = parseHashId();
+    showPanel(id);
+    updateSubNavChrome(id);
+  })();
+
+  refreshNavDots();
+})();
+}
+if (document.readyState === 'loading') {
+  window.addEventListener('DOMContentLoaded', initTaskDataEntry);
+} else {
+  initTaskDataEntry();
+}
+</script>
+</body>
+</html>

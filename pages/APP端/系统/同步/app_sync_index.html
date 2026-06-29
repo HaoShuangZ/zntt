@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>数据同步</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/app-frame.css">
+<link rel="stylesheet" href="../../../../assets/app-embed.css">
+<script src="../../../../assets/app-embed.js" defer></script>
+<script src="../../../../assets/app-inspect-back.js" defer></script>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; background: #F2F3F5; margin: 0; }
+</style>
+</head>
+<body>
+<!-- Status bar -->
+<div id="appStatusBar" style="height:44px; display:flex; align-items:center; justify-content:space-between; padding:0 16px; background:#fff;">
+  <span style="font-size:14px; font-weight:600;">9:41</span>
+  <span style="font-size:12px;"><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+</div>
+<!-- Navigation bar -->
+<div id="appNavBar" style="height:44px; display:flex; align-items:center; padding:0 16px; background:#fff; border-bottom:1px solid #E5E6EB;">
+  <a href="../../任务/填报主页/app_task_inspect_home.html" data-app-inspect-back style="color:#165DFF; text-decoration:none; font-size:14px;"><i class="fa-solid fa-chevron-left"></i> 返回</a>
+  <span style="flex:1; text-align:center; font-size:16px; font-weight:600;">数据同步</span>
+  <span style="width:40px;"></span>
+</div>
+
+<!-- Content area -->
+<div id="appEmbedContent" style="padding:12px 16px 80px; overflow-y:auto; height:calc(100vh - 44px - 44px - 60px);">
+
+  <!-- 网络状态 -->
+  <div style="background:#fff; border-radius:12px; padding:16px; margin-bottom:12px; box-shadow:0 1px 4px rgba(0,0,0,0.06); display:flex; align-items:center; justify-content:space-between;">
+    <div style="display:flex; align-items:center; gap:8px;">
+      <i class="fa-solid fa-wifi" style="font-size:18px; color:#00B42A;"></i>
+      <span style="font-size:14px; font-weight:500; color:#1D2129;">网络状态</span>
+    </div>
+    <span style="padding:4px 12px; border-radius:12px; background:#E8FFEA; color:#00B42A; font-size:13px; font-weight:500;">
+      <i class="fa-solid fa-circle" style="font-size:6px; vertical-align:middle; margin-right:4px;"></i>在线
+    </span>
+  </div>
+
+  <!-- 同步统计 -->
+  <div style="display:flex; gap:12px; margin-bottom:12px;">
+    <div style="flex:1; background:#fff; border-radius:12px; padding:14px; text-align:center; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+      <div style="font-size:24px; font-weight:700; color:#FF7D00;">2</div>
+      <div style="font-size:12px; color:#86909C; margin-top:2px;">待同步</div>
+    </div>
+    <div style="flex:1; background:#fff; border-radius:12px; padding:14px; text-align:center; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+      <div style="font-size:24px; font-weight:700; color:#00B42A;">1</div>
+      <div style="font-size:12px; color:#86909C; margin-top:2px;">已同步</div>
+    </div>
+    <div style="flex:1; background:#fff; border-radius:12px; padding:14px; text-align:center; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+      <div style="font-size:24px; font-weight:700; color:#165DFF;">7.5</div>
+      <div style="font-size:12px; color:#86909C; margin-top:2px;">总计 MB</div>
+    </div>
+  </div>
+
+  <!-- 待同步列表 -->
+  <div style="font-size:14px; font-weight:600; color:#1D2129; margin-bottom:8px;">同步列表</div>
+
+  <!-- Item 1 -->
+  <div style="background:#fff; border-radius:12px; padding:14px; margin-bottom:8px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+      <span style="font-size:14px; font-weight:500; color:#1D2129;">滨江01#单管塔</span>
+      <span style="padding:2px 8px; border-radius:4px; background:#FFF7E8; color:#FF7D00; font-size:11px;">待同步</span>
+    </div>
+    <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; color:#86909C;">
+      <span><i class="fa-solid fa-database" style="margin-right:4px;"></i>2.5 MB</span>
+      <span>最后编辑: 2026-05-08 09:30</span>
+    </div>
+  </div>
+
+  <!-- Item 2 -->
+  <div style="background:#fff; border-radius:12px; padding:14px; margin-bottom:8px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+      <span style="font-size:14px; font-weight:500; color:#1D2129;">城西03#角钢塔</span>
+      <span style="padding:2px 8px; border-radius:4px; background:#FFF7E8; color:#FF7D00; font-size:11px;">待同步</span>
+    </div>
+    <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; color:#86909C;">
+      <span><i class="fa-solid fa-database" style="margin-right:4px;"></i>1.8 MB</span>
+      <span>最后编辑: 2026-05-07 16:20</span>
+    </div>
+  </div>
+
+  <!-- Item 3 -->
+  <div style="background:#fff; border-radius:12px; padding:14px; margin-bottom:8px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+      <span style="font-size:14px; font-weight:500; color:#1D2129;">拱墅05#三管塔</span>
+      <span style="padding:2px 8px; border-radius:4px; background:#E8FFEA; color:#00B42A; font-size:11px;">已同步</span>
+    </div>
+    <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; color:#86909C;">
+      <span><i class="fa-solid fa-database" style="margin-right:4px;"></i>3.2 MB</span>
+      <span>同步时间: 2026-05-07 18:00</span>
+    </div>
+  </div>
+
+  <!-- Progress bar (hidden) -->
+  <div style="background:#fff; border-radius:12px; padding:14px; margin-bottom:8px; box-shadow:0 1px 4px rgba(0,0,0,0.06); display:none;">
+    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+      <span style="font-size:13px; color:#1D2129;">同步中...</span>
+      <span style="font-size:13px; color:#165DFF;">45%</span>
+    </div>
+    <div style="height:6px; background:#F2F3F5; border-radius:3px; overflow:hidden;">
+      <div style="width:45%; height:100%; background:#165DFF; border-radius:3px;"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Bottom button -->
+<div data-app-flow-footer style="position:fixed; bottom:0; left:0; right:0; padding:12px 16px; background:#fff; border-top:1px solid #E5E6EB;">
+  <button style="width:100%; height:44px; background:#165DFF; color:#fff; border:none; border-radius:8px; font-size:16px; font-weight:600; cursor:pointer;">
+    <i class="fa-solid fa-cloud-arrow-up" style="margin-right:6px;"></i>一键同步
+  </button>
+</div>
+</body>
+</html>

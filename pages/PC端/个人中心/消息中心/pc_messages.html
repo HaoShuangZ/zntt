@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>消息中心</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">消息中心</div>
+    </div>
+    <div class="card-body">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <input type="text" class="form-input" placeholder="标题/内容关键词">
+          <select class="form-select">
+            <option value="">全部类型</option>
+            <option>系统通知</option>
+            <option>任务提醒</option>
+            <option>合同提醒</option>
+            <option>任务提醒</option>
+            <option>审批待办</option>
+          </select>
+          <select class="form-select">
+            <option value="">全部状态</option>
+            <option>未读</option>
+            <option>已读</option>
+          </select>
+          <button type="button" class="btn btn-primary">查询</button>
+          <button type="button" class="btn btn-default">重置</button>
+        </div>
+      </div>
+
+      <div class="pc-table-actions">
+        <button type="button" class="btn btn-default"><i class="fa-regular fa-envelope-open"></i> 全部标为已读</button>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>消息标题</th>
+            <th>类型</th>
+            <th>状态</th>
+            <th>发送时间</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><a href="../../合同管理/合同编辑/pc_contract_detail.html?code=HT2026-0512">【收款提醒】杭州移动 2026 年度铁塔检测框架 · 首付款 将于 2026-02-01 到期</a></td>
+            <td><span class="tag tag-orange">合同提醒</span></td>
+            <td><span class="tag tag-orange">未读</span></td>
+            <td>2026-02-01 09:00</td>
+            <td class="col-action"><button type="button" class="btn btn-text">查看</button><button type="button" class="btn btn-text">标为已读</button></td>
+          </tr>
+          <tr>
+            <td><a href="../../铁塔检测业务/检测任务/pc_task_list.html">【任务催办】RW-2026-0521 · 余杭站点角钢塔巡检</a></td>
+            <td><span class="tag tag-green">任务提醒</span></td>
+            <td><span class="tag tag-orange">未读</span></td>
+            <td>2026-05-12 14:00</td>
+            <td class="col-action"><button type="button" class="btn btn-text">查看</button><button type="button" class="btn btn-text">标为已读</button></td>
+          </tr>
+          <tr>
+            <td><a href="../../铁塔检测业务/检测任务/pc_task_list.html">【任务转派】RW-2026-0518 · 江北园区单管塔鉴定</a></td>
+            <td><span class="tag tag-green">任务提醒</span></td>
+            <td><span class="tag tag-orange">未读</span></td>
+            <td>2026-05-13 09:15</td>
+            <td class="col-action"><button type="button" class="btn btn-text">查看</button><button type="button" class="btn btn-text">标为已读</button></td>
+          </tr>
+          <tr>
+            <td>您有一条检测任务待签收：XX 站点角钢塔巡检</td>
+            <td><span class="tag tag-blue">任务提醒</span></td>
+            <td><span class="tag tag-orange">未读</span></td>
+            <td>2026-05-10 09:12</td>
+            <td class="col-action"><button type="button" class="btn btn-text">查看</button><button type="button" class="btn btn-text">标为已读</button></td>
+          </tr>
+          <tr>
+            <td>报告 BG-2026-018 已通过审批，可下载电子版</td>
+            <td><span class="tag tag-green">审批待办</span></td>
+            <td><span class="tag tag-gray">已读</span></td>
+            <td>2026-05-09 16:40</td>
+            <td class="col-action"><button type="button" class="btn btn-text">查看</button></td>
+          </tr>
+          <tr>
+            <td>系统将于 5 月 12 日 02:00–04:00 进行维护</td>
+            <td><span class="tag tag-gray">系统通知</span></td>
+            <td><span class="tag tag-orange">未读</span></td>
+            <td>2026-05-08 10:00</td>
+            <td class="col-action"><button type="button" class="btn btn-text">查看</button><button type="button" class="btn btn-text">标为已读</button></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <span>共 128 条记录</span>
+        <div class="pagination-btns">
+          <button type="button" class="page-btn"><i class="fa-solid fa-chevron-left"></i></button>
+          <button type="button" class="page-btn active">1</button>
+          <button type="button" class="page-btn">2</button>
+          <button type="button" class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'messages', breadcrumb:['个人中心','消息中心']};</script>
+</body>
+</html>

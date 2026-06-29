@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<!-- iPad-TASK_DETAIL v2.1 landscape -->
+<html lang="zh-CN" class="ipad-task-html">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>模板包分步</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/app-frame.css">
+<link rel="stylesheet" href="../../../../assets/ipad-tokens.css">
+<link rel="stylesheet" href="../../../../assets/ipad-frame.css">
+<link rel="stylesheet" href="../../../../assets/ipad-layout.css">
+<link rel="stylesheet" href="../../../../assets/ipad-visual.css">
+<link rel="stylesheet" href="../../../../assets/ipad-embed.css">
+<link rel="stylesheet" href="../../../../assets/ipad-task-shell.css">
+<script src="../../../../assets/ipad-adapt.js" defer></script>
+<script src="../../../../assets/app-embed.js" defer></script>
+</head>
+<body class="ipad-adapt ipad-task-page ipad-task-detail-page">
+
+<div class="header-fixed">
+  <div class="status-bar" aria-hidden="true">
+    <span>9:41</span>
+    <span class="status-icons"><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+  </div>
+  <div class="top">
+    <div class="top-row">
+      <a class="top-back" href="../填报主页/ipad_task_inspect_home.html" id="linkBackHome"><i class="fa-solid fa-chevron-left"></i></a>
+      <h1 class="top-title">模板包分步<span class="top-subtitle" id="topTaskSub"> · 滨江基站01</span></h1>
+    </div>
+  </div>
+</div>
+
+<main class="scroll-main" id="taskDetailScroll">
+  <div class="sec-title">资料与照片</div>
+  <div class="mod-grid mod-grid--steps">
+    <a class="step done" href="../../检测/塔体/ipad_inspect_tower.html">
+      <span class="idx"><i class="fa-solid fa-check" style="font-size:12px"></i></span>
+      <div class="txt">基础信息<span class="sub">检测模块配置；地址、站址编码等可预填</span></div>
+      <i class="fa-solid fa-chevron-right chev-r"></i>
+    </a>
+    <a class="step" href="../../检测/塔体/ipad_inspect_tower_photos.html">
+      <span class="idx">2</span>
+      <div class="txt">上传铁塔照片<span class="sub">仅拍照/相册；清单由检测任务模板展开</span></div>
+      <i class="fa-solid fa-chevron-right chev-r"></i>
+    </a>
+  </div>
+
+  <div class="sec-title">检测大模块</div>
+  <div class="mod-grid mod-grid--steps">
+    <a class="step" href="../../检测/垂直度/ipad_inspect_vertical.html">
+      <span class="idx">3</span>
+      <div class="txt">整体模块<span class="sub">总高、垂直度、外观等模板配置项</span></div>
+      <i class="fa-solid fa-chevron-right chev-r"></i>
+    </a>
+    <a class="step done" href="../../检测/地基/ipad_inspect_foundation.html">
+      <span class="idx"><i class="fa-solid fa-check" style="font-size:12px"></i></span>
+      <div class="txt">基础<span class="sub">尺寸、混凝土、外观等</span></div>
+      <i class="fa-solid fa-chevron-right chev-r"></i>
+    </a>
+    <a class="step" href="../../检测/地基/ipad_inspect_foundation.html">
+      <span class="idx">5</span>
+      <div class="txt">地锚<span class="sub">规格、埋深、拉力等</span></div>
+      <i class="fa-solid fa-chevron-right chev-r"></i>
+    </a>
+    <a class="step" href="../../检测/分段/ipad_inspect_segment.html">
+      <span class="idx">6</span>
+      <div class="txt">塔段（1～N）<span class="sub">当前 N=6 · 字段随模板配置</span></div>
+      <i class="fa-solid fa-chevron-right chev-r"></i>
+    </a>
+    <a class="step" href="../../检测/平台/ipad_inspect_platform.html">
+      <span class="idx">7</span>
+      <div class="txt">平台及设备<span class="sub">天线、馈线、爬梯等</span></div>
+      <i class="fa-solid fa-chevron-right chev-r"></i>
+    </a>
+    <a class="step" href="../../检测/防腐层/ipad_inspect_coating.html">
+      <span class="idx">8</span>
+      <div class="txt">防腐层质量<span class="sub">二维表 / 照片类字段</span></div>
+      <i class="fa-solid fa-chevron-right chev-r"></i>
+    </a>
+    <a class="step" href="../../检测/焊接/ipad_inspect_weld.html">
+      <span class="idx">9</span>
+      <div class="txt">焊接<span class="sub">焊缝抽检与记录</span></div>
+      <i class="fa-solid fa-chevron-right chev-r"></i>
+    </a>
+    <a class="step" href="../../检测/馈线/ipad_inspect_feed.html">
+      <span class="idx">10</span>
+      <div class="txt">馈线门高度<span class="sub">限值与测量</span></div>
+      <i class="fa-solid fa-chevron-right chev-r"></i>
+    </a>
+    <a class="step" href="../../检测/馈线/ipad_inspect_feed.html">
+      <span class="idx">11</span>
+      <div class="txt">馈线孔余量 / 排列 / 爬梯 / 拉线<span class="sub">孔洞余量、直径与排列；爬梯、拉线等</span></div>
+      <i class="fa-solid fa-chevron-right chev-r"></i>
+    </a>
+    <a class="step" href="../../检测/结构图/ipad_inspect_diagram.html">
+      <span class="idx">12</span>
+      <div class="txt">连接质量<span class="sub">螺栓、连接副等</span></div>
+      <i class="fa-solid fa-chevron-right chev-r"></i>
+    </a>
+    <a class="step" href="../../检测/接地/ipad_inspect_ground.html">
+      <span class="idx">13</span>
+      <div class="txt">构建质量与接地避雷<span class="sub">避雷针体、引下线、接地电阻、扁铁等</span></div>
+      <i class="fa-solid fa-chevron-right chev-r"></i>
+    </a>
+    <a class="step" href="../../检测/校验/ipad_inspect_validate.html">
+      <span class="idx">14</span>
+      <div class="txt">校验与提交<span class="sub">必填通过后提交锁定</span></div>
+      <i class="fa-solid fa-chevron-right chev-r"></i>
+    </a>
+  </div>
+</main>
+
+<div class="task-footer" id="taskDetailFooter">
+  <a href="../填报主页/ipad_task_inspect_home.html" class="btn-ghost" id="linkFooterHome">填报主页</a>
+  <a href="../../检测/塔体/ipad_inspect_tower.html" class="btn-primary">继续填报</a>
+</div>
+
+<script>
+(function () {
+  var TITLES = {
+    DD20260506001: '滨江基站01',
+    DD20260507002: '城西枢纽站',
+    DD20260508004: '余杭南枢纽',
+    DD20260505003: '拱墅北环站',
+    DD20260504005: '西湖景区东'
+  };
+  var KEY = 'tower_app_active_inspect_order';
+  var oid = '';
+  try { oid = (new URLSearchParams(location.search).get('order') || '').trim().toUpperCase(); } catch (e) {}
+  if (!oid) { try { oid = (sessionStorage.getItem(KEY) || '').trim().toUpperCase(); } catch (e2) {} }
+  if (!oid) oid = 'DD20260506001';
+  var q = '?order=' + encodeURIComponent(oid);
+  var sub = document.getElementById('topTaskSub');
+  if (sub) sub.textContent = ' · ' + (TITLES[oid] || TITLES.DD20260506001);
+  var linkBack = document.getElementById('linkBackHome');
+  if (linkBack) linkBack.href = '../填报主页/ipad_task_inspect_home.html' + q;
+  try {
+    if (new URLSearchParams(location.search).get('embed') === '1') {
+      document.body.classList.add('ipad-task-detail-embed');
+    }
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>

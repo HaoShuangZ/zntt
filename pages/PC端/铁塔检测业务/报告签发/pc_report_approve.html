@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>报告签发</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .readonly-field { background:#F7F8FA; border:1px solid var(--border); border-radius:4px; padding:6px 12px; font-size:13px; color:var(--text-2); min-height:32px; display:flex; align-items:center; }
+  .readonly-textarea { background:#F7F8FA; border:1px solid var(--border); border-radius:4px; padding:8px 12px; font-size:13px; color:var(--text-2); min-height:80px; line-height:1.6; }
+  .radio-group { display:flex; gap:20px; align-items:center; }
+  .radio-group label { display:flex; align-items:center; gap:6px; font-size:13px; color:var(--text-2); cursor:pointer; }
+</style>
+</head>
+<body>
+<div id="page-content">
+
+  <!-- 报告内容 -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-header"><div class="card-title">报告内容</div></div>
+    <div class="card-body">
+      <div class="form-grid form-grid-3">
+        <div class="form-group">
+          <label class="form-label">报告编号</label>
+          <div class="readonly-field">BG202605003</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">编制</label>
+          <div class="readonly-field">张华</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">编制时间</label>
+          <div class="readonly-field">2026-05-06</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">委托单位</label>
+          <div class="readonly-field">杭州移动通信有限公司</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">铁塔名称</label>
+          <div class="readonly-field">滨江01#单管</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">检测结果/label>
+          <div class="readonly-field" style="color:var(--danger);font-weight:500;">不合</div>
+        </div>
+      </div>
+      <div style="margin-top:16px;">
+        <div class="form-group">
+          <label class="form-label">检测结果描述</label>
+          <div class="readonly-textarea">经检测，滨江01#单管塔共5段，其中第4段发现2颗M24高强螺栓松动，第3段法兰间隙为1.2mm（标准要求≤1.0mm），其余各段检测指标均在正常范围内。塔身整体倾斜率为0.12%，满足规范要求（≤0.2%）。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 审核记录 -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-header"><div class="card-title">审核记录</div></div>
+    <div class="card-body">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>环节</th>
+            <th>处理</th>
+            <th>处理时间</th>
+            <th>意见</th>
+            <th>结果</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>报告编制</td>
+            <td>张华</td>
+            <td>2026-05-06 14:30</td>
+            <td>完成报告编制</td>
+            <td><span class="tag tag-blue">已编制</span></td>
+          </tr>
+          <tr>
+            <td>报告审核</td>
+            <td>王强</td>
+            <td>2026-05-07 10:15</td>
+            <td>检测数据真实可靠，结论准确，同意通过</td>
+            <td><span class="tag tag-green">审核通过</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 签发意见 -->
+  <div class="card">
+    <div class="card-header"><div class="card-title">签发意见</div></div>
+    <div class="card-body">
+      <div class="form-group" style="margin-bottom:16px;">
+        <label class="form-label">签发意见 <span class="required">*</span></label>
+        <textarea class="form-textarea" placeholder="请输入签发意见""""></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">签发结果 <span class="required">*</span></label>
+        <div class="radio-group">
+          <label><input type="radio" name="approve_result" checked> 签发通过</label>
+          <label><input type="radio" name="approve_result"> 驳回修改</label>
+        </div>
+      </div>
+
+      <div class="form-footer">
+        <button class="btn btn-default">返回</button>
+        <button class="btn btn-danger">驳回修改</button>
+        <button class="btn btn-primary">签发通过</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'report_approve', breadcrumb:['检测管理','报告签发']};</script>
+</body>
+</html>
+

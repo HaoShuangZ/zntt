@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>检测模板 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+/* 外层画布：与主布局区形成「底 → 浮层」 */
+.inspect-page-root {
+  margin: -20px -24px;
+  min-height: calc(100vh - 56px);
+  background: linear-gradient(180deg, #EEF1F6 0%, #E4E8EF 100%);
+  padding: 20px 24px 28px;
+}
+.inspect-shell {
+  max-width: 100%;
+  margin: 0 auto;
+}
+.inspect-shell-hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding: 0 4px;
+}
+.inspect-shell-hd .shell-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.inspect-shell-hd .shell-title i {
+  color: var(--primary);
+  font-size: 14px;
+}
+.inspect-shell-hd .shell-hint {
+  font-size: 12px;
+  color: var(--text-3);
+}
+/* 一级浮层：整块工作区 */
+.inspect-workspace {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 8px 24px rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+}
+.inspect-workspace-inner {
+  padding: 16px;
+  background: #F7F8FA;
+}
+.inspect-layout {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  min-height: 520px;
+}
+/* 左侧塔型列（白底黑字，与列表同级平铺） */
+.inspect-tower-panel {
+  width: 140px;
+  flex-shrink: 0;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+}
+.inspect-tower-panel .tower-panel-title {
+  padding: 14px 16px 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-1);
+  border-bottom: 1px solid var(--border);
+}
+.inspect-tower-nav {
+  flex: 1;
+  background: #fff;
+  padding: 8px 10px 12px;
+}
+.inspect-tower-item {
+  display: block;
+  margin: 2px 0;
+  padding: 9px 12px;
+  font-size: 13px;
+  color: var(--text-1);
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.12s, color 0.12s;
+  white-space: nowrap;
+}
+.inspect-tower-item:hover {
+  background: #F2F3F5;
+  color: var(--text-1);
+}
+.inspect-tower-item.active {
+  background: var(--primary-light);
+  color: var(--primary);
+  font-weight: 500;
+}
+/* 二级浮层：右侧列表 */
+.inspect-table-panel {
+  flex: 1;
+  min-width: 0;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.inspect-table-panel .panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  background: #fff;
+}
+.inspect-table-panel .panel-head .card-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+.inspect-table-panel .panel-body {
+  padding: 16px 18px 18px;
+  flex: 1;
+  min-width: 0;
+  background: #FAFBFC;
+  display: flex;
+  flex-direction: column;
+}
+.inspect-table-scroll {
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+}
+.inspect-table-panel .data-table {
+  margin: 0;
+  min-width: 1200px;
+  width: max-content;
+  border: none;
+  border-radius: 0;
+}
+.inspect-table-panel .data-table thead th {
+  background: #F7F8FA;
+  white-space: nowrap;
+}
+.inspect-table-panel .data-table tbody td {
+  white-space: nowrap;
+}
+.inspect-table-panel .pagination {
+  margin-top: 16px;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.tpl-sub-links {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.tpl-sub-links .sep { color: var(--text-4); }
+</style>
+</head>
+<body>
+<div id="page-content" class="inspect-page-root">
+  <div class="inspect-shell">
+    <div class="inspect-shell-hd">
+      <div class="shell-title">
+        <i class="fa-solid fa-layer-group"></i>
+        检测模板工作台
+      </div>
+      <span class="shell-hint">先选择塔型，再管理该塔型下的模板版本与子模板</span>
+    </div>
+    <div class="inspect-workspace">
+      <div class="inspect-workspace-inner">
+        <div class="inspect-layout">
+          <aside class="inspect-tower-panel" aria-label="塔型">
+            <div class="tower-panel-title">塔型</div>
+            <nav class="inspect-tower-nav">
+              <a class="inspect-tower-item active" data-tower="连接单管塔" href="#">连接单管塔</a>
+              <a class="inspect-tower-item" data-tower="法兰单管塔" href="#">法兰单管塔</a>
+              <a class="inspect-tower-item" data-tower="格构塔" href="#">格构塔</a>
+              <a class="inspect-tower-item" data-tower="角钢塔" href="#">角钢塔</a>
+              <a class="inspect-tower-item" data-tower="支柱塔" href="#">支柱塔</a>
+              <a class="inspect-tower-item" data-tower="拉线塔杆" href="#">拉线塔杆</a>
+            </nav>
+          </aside>
+          <section class="inspect-table-panel">
+            <div class="panel-head">
+              <div class="card-title">检测模板</div>
+              <button type="button" class="btn btn-primary btn-sm" id="btnAdd"><i class="fa-solid fa-plus"></i> 新增</button>
+            </div>
+            <div class="panel-body">
+              <div class="inspect-table-scroll">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th style="width:52px">序号</th>
+                    <th>模板编号</th>
+                    <th style="width:72px">模板版本</th>
+                    <th>任务模板</th>
+                    <th>记录模板</th>
+                    <th>报告模板</th>
+                    <th style="width:88px">状态</th>
+                    <th style="width:150px">启用时间</th>
+                    <th style="width:150px">创建时间</th>
+                    <th style="width:72px">创建人</th>
+                    <th class="col-action" style="width:100px">操作</th>
+                  </tr>
+                </thead>
+                <tbody id="tplBody"></tbody>
+              </table>
+              </div>
+              <div class="pagination">
+                <span>共 6 条记录</span>
+                <div class="pagination-btns">
+                  <button class="page-btn" disabled><i class="fa-solid fa-chevron-left"></i></button>
+                  <button class="page-btn active">1</button>
+                  <button class="page-btn">2</button>
+                  <button class="page-btn">3</button>
+                  <button class="page-btn">4</button>
+                  <button class="page-btn">5</button>
+                  <button class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
+                  <span style="font-size:12px;color:var(--text-3);margin-left:8px">跳至 <input type="number" class="form-input" style="width:48px;height:28px;padding:2px 6px" value="1"> 页</span>
+                  <select class="form-select" style="width:100px;height:28px;margin-left:8px"><option>10 条/页</option></select>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>
+window.__layoutConfig = { active: 'inspect_template_list', breadcrumb: ['模板配置', '检测模板'] };
+
+window.__prototypePageInit = function initInspectTemplateListPage() {
+  var rows = [
+    { no: 1, code: 'GD001001-001', ver: 'V9', task: 'configured', record: 'configured', report: 'pending', status: '待启用', enableAt: '—', createdAt: '2012-08-09 12:00:00', creator: '郑飞' },
+    { no: 2, code: 'GD001001-002', ver: 'V8', task: 'view', record: 'view', report: 'view', status: '启用中', enableAt: '2012-08-09 12:00:00', createdAt: '2012-08-09 12:00:00', creator: '郑飞' },
+    { no: 3, code: 'GD001001-003', ver: 'V7', task: 'configure', record: 'configure', report: 'pending', status: '已禁用', enableAt: '2012-08-09 12:00:00', createdAt: '2012-08-09 12:00:00', creator: '郑飞' },
+    { no: 4, code: 'GD001001-004', ver: 'V6', task: 'view', record: 'view', report: 'view', status: '已禁用', enableAt: '2012-08-09 12:00:00', createdAt: '2012-08-09 12:00:00', creator: '郑飞' },
+    { no: 5, code: 'GD001001-005', ver: 'V5', task: 'configure', record: 'configure', report: 'configure', status: '待启用', enableAt: '—', createdAt: '2012-08-09 12:00:00', creator: '郑飞' },
+    { no: 6, code: 'GD001001-006', ver: 'V4', task: 'view', record: 'view', report: 'view', status: '已禁用', enableAt: '2012-08-09 12:00:00', createdAt: '2012-08-09 12:00:00', creator: '郑飞' }
+  ];
+
+  function statusClassFor(status) {
+    if (status === '启用中') return 'tag-green';
+    if (status === '待启用') return 'tag-orange';
+    return 'tag-blue';
+  }
+
+  function syncRowMeta(row) {
+    row.statusClass = statusClassFor(row.status);
+    row.op = row.status === '待启用' ? 'enable' : 'copy';
+  }
+
+  function nowText() {
+    var d = new Date();
+    var p = function (n) { return String(n).padStart(2, '0'); };
+    return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' +
+      p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+  }
+
+  /** 同一塔型下仅允许一条「启用中」 */
+  function normalizeSingleActive() {
+    var active = rows.filter(function (r) { return r.status === '启用中'; });
+    if (active.length <= 1) {
+      rows.forEach(syncRowMeta);
+      return;
+    }
+    active.sort(function (a, b) {
+      return (b.enableAt || '').localeCompare(a.enableAt || '');
+    });
+    active.forEach(function (r, i) {
+      if (i > 0) r.status = '已禁用';
+    });
+    rows.forEach(syncRowMeta);
+  }
+
+  function enableTemplate(code) {
+    var target = rows.find(function (r) { return r.code === code; });
+    if (!target) return;
+    if (target.status !== '待启用') {
+      alert('仅「待启用」状态的模板可执行启用');
+      return;
+    }
+    if (!confirm('启用后，当前塔型下原「启用中」版本将自动变为「已禁用」，且同时仅保留一条启用中记录。确定启用「' + target.code + '」？')) {
+      return;
+    }
+    rows.forEach(function (r) {
+      if (r.status === '启用中') {
+        r.status = '已禁用';
+      }
+    });
+    target.status = '启用中';
+    target.enableAt = nowText();
+    rows.forEach(syncRowMeta);
+    render();
+    alert('已启用「' + target.code + ' · ' + target.ver + '」（原型）');
+  }
+
+  normalizeSingleActive();
+
+  var RECORD_TEMPLATE_CONFIG_URL = 'https://www.kdocs.cn/l/coZBoK9xbMAA';
+
+  function subCol(kind, mode, code, ver, rowStatus) {
+    if (rowStatus === '已禁用') {
+      return '<div class="tpl-sub-links"><button type="button" class="btn-text btn-view">查看</button></div>';
+    }
+    var taskHref = 'pc_inspect_template_task.html?tpl=' + encodeURIComponent(code) + '&ver=' + encodeURIComponent(ver);
+    var reportHref = 'pc_inspect_template_report_edit.html?tpl=' + encodeURIComponent(code) + '&ver=' + encodeURIComponent(ver);
+    if (kind === 'task' && (mode === 'configured' || mode === 'configure')) {
+      var label = mode === 'configured' ? '配置 (已配)' : '配置 (待配)';
+      return '<div class="tpl-sub-links"><a href="' + taskHref + '" class="btn-text">' + label + '</a><span class="sep">|</span><button type="button" class="btn-text btn-preview">预览</button></div>';
+    }
+    if (kind === 'record' && (mode === 'configured' || mode === 'configure' || mode === 'pending')) {
+      var recordLabel = (mode === 'pending' || mode === 'configure') ? '配置 (待配)' : '配置 (已配)';
+      return '<div class="tpl-sub-links"><a href="' + RECORD_TEMPLATE_CONFIG_URL + '" class="btn-text" target="_blank" rel="noopener noreferrer">' + recordLabel + '</a><span class="sep">|</span><button type="button" class="btn-text btn-preview">预览</button><span class="sep">|</span><button type="button" class="btn-text btn-view">查看</button></div>';
+    }
+    if (kind === 'report' && (mode === 'configured' || mode === 'configure' || mode === 'pending')) {
+      var reportLabel = (mode === 'pending' || mode === 'configure') ? '配置 (待配)' : '配置 (已配)';
+      return '<div class="tpl-sub-links"><a href="' + reportHref + '" class="btn-text">' + reportLabel + '</a><span class="sep">|</span><button type="button" class="btn-text btn-preview">预览</button><span class="sep">|</span><button type="button" class="btn-text btn-view">查看</button></div>';
+    }
+    if (mode === 'view') {
+      return '<div class="tpl-sub-links"><button type="button" class="btn-text btn-view">查看</button></div>';
+    }
+    var pending = mode === 'pending' || mode === 'configure';
+    var label2 = pending ? '配置 (待配)' : '配置 (已配)';
+    return '<div class="tpl-sub-links"><button type="button" class="btn-text btn-sub-config" data-kind="' + kind + '">' + label2 + '</button><span class="sep">|</span><button type="button" class="btn-text btn-preview">预览</button><span class="sep">|</span><button type="button" class="btn-text btn-view">查看</button></div>';
+  }
+
+  function render() {
+    var tbody = document.getElementById('tplBody');
+    if (!tbody) return;
+    tbody.innerHTML = rows.map(function (r) {
+      var opHtml = r.op === 'enable'
+        ? '<button type="button" class="btn-text btn-enable">启用</button>'
+        : '<button type="button" class="btn-text btn-copy">复制</button>';
+      return '<tr data-code="' + r.code + '">' +
+        '<td>' + r.no + '</td>' +
+        '<td>' + r.code + '</td>' +
+        '<td>' + r.ver + '</td>' +
+        '<td>' + subCol('task', r.task, r.code, r.ver, r.status) + '</td>' +
+        '<td>' + subCol('record', r.record, r.code, r.ver, r.status) + '</td>' +
+        '<td>' + subCol('report', r.report, r.code, r.ver, r.status) + '</td>' +
+        '<td><span class="tag ' + r.statusClass + '">' + r.status + '</span></td>' +
+        '<td style="font-size:12px;white-space:nowrap">' + r.enableAt + '</td>' +
+        '<td style="font-size:12px;white-space:nowrap">' + r.createdAt + '</td>' +
+        '<td>' + r.creator + '</td>' +
+        '<td class="col-action">' + opHtml + '</td></tr>';
+    }).join('');
+  }
+
+  document.querySelectorAll('.inspect-tower-item').forEach(function (el) {
+    el.addEventListener('click', function (e) {
+      e.preventDefault();
+      document.querySelectorAll('.inspect-tower-item').forEach(function (n) { n.classList.remove('active'); });
+      el.classList.add('active');
+    });
+  });
+
+  var btnAdd = document.getElementById('btnAdd');
+  if (btnAdd) btnAdd.addEventListener('click', function () { alert('新增检测模板（原型）'); });
+
+  var tplBody = document.getElementById('tplBody');
+  if (tplBody) {
+    tplBody.addEventListener('click', function (e) {
+      var t = e.target;
+      if (!(t instanceof Element)) return;
+      if (t.closest('.btn-preview')) return alert('模板预览（原型）');
+      if (t.closest('.btn-view')) return alert('查看模板（原型）');
+      if (t.closest('.btn-sub-config')) {
+        var cfgBtn = t.closest('.btn-sub-config');
+        var kind = cfgBtn && cfgBtn.getAttribute('data-kind');
+        if (kind === 'record') {
+          window.open(RECORD_TEMPLATE_CONFIG_URL, '_blank', 'noopener,noreferrer');
+          return;
+        }
+        if (kind === 'report') {
+          var tr = cfgBtn.closest('tr');
+          if (tr) {
+            var code = tr.getAttribute('data-code') || '';
+            var row = rows.find(function (r) { return r.code === code; });
+            if (row) {
+              location.href = 'pc_inspect_template_report_edit.html?tpl=' + encodeURIComponent(row.code) + '&ver=' + encodeURIComponent(row.ver);
+              return;
+            }
+          }
+        }
+        return alert('子模板配置（原型）');
+      }
+      var enableBtn = t.closest('.btn-enable');
+      if (enableBtn) {
+        var tr = enableBtn.closest('tr');
+        if (tr) enableTemplate(tr.getAttribute('data-code'));
+        return;
+      }
+      if (t.closest('.btn-copy')) return alert('已复制为新版本（原型）');
+    });
+  }
+
+  render();
+};
+</script>
+</body>
+</html>

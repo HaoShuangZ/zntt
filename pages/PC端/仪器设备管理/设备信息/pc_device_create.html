@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新增设备 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+  <div class="page-header">
+    <div style="display:flex;align-items:center;gap:12px">
+      <a href="../../基础数据/设备管理/pc_data_device_list.html" class="btn btn-default btn-sm"><i class="fa-solid fa-arrow-left"></i> 返回设备管理</a>
+      <h1 class="page-title">新增设备</h1>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">设备信息</span>
+    </div>
+    <div class="card-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <span class="form-label">设备类别</span>
+          <select class="form-select" style="width:100%">
+            <option value="">请输入后再选择</option>
+            <option>金属材料实验仪器</option>
+            <option>大取样器</option>
+            <option>测量仪器</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <span class="form-label">设备编号</span>
+          <input class="form-input" readonly value="不填则自动生成">
+        </div>
+        <div class="form-group">
+          <span class="form-label">主设备编号</span>
+          <input class="form-input" placeholder="请输入主设备编号">
+        </div>
+
+        <div class="form-group">
+          <span class="form-label">名称<span class="required">*</span></span>
+          <input class="form-input" placeholder="请输入名称">
+        </div>
+        <div class="form-group">
+          <span class="form-label">规格/型号</span>
+          <input class="form-input" placeholder="请输入规格/型号">
+        </div>
+        <div class="form-group">
+          <span class="form-label">供应商</span>
+          <select class="form-select" style="width:100%">
+            <option value="">请选择</option>
+            <option>杭州精密仪器有限公司</option>
+            <option>浙江光电科技有限公司</option>
+            <option>上海测量设备有限公司</option>
+            <option>南京测控仪器厂</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <span class="form-label">生产厂家</span>
+          <select class="form-select" style="width:100%">
+            <option value="">请输入后再选择</option>
+            <option>南京测控仪器厂</option>
+            <option>上海实验仪器厂</option>
+            <option>杭州精密设备制造有限公司</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <span class="form-label">联系人电话</span>
+          <input class="form-input" placeholder="请输入联系人电话">
+        </div>
+        <div class="form-group">
+          <span class="form-label">出厂编号</span>
+          <input class="form-input" placeholder="请输入出厂编号">
+        </div>
+
+        <div class="form-group">
+          <span class="form-label">所属部门</span>
+          <select class="form-select" style="width:100%">
+            <option value="">请选择</option>
+            <option>检测一组</option>
+            <option>检测二组</option>
+            <option>设备管理部</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <span class="form-label">出厂日期</span>
+          <input class="form-input" type="date">
+        </div>
+        <div class="form-group">
+          <span class="form-label">价格(元)</span>
+          <input class="form-input" type="number" placeholder="请输入价格">
+        </div>
+
+        <div class="form-group">
+          <span class="form-label">每年折旧</span>
+          <input class="form-input" type="number" placeholder="请输入每年折旧">
+        </div>
+        <div class="form-group">
+          <span class="form-label">累计折旧</span>
+          <input class="form-input" type="number" placeholder="请输入累计折旧">
+        </div>
+        <div class="form-group">
+          <span class="form-label">购置日期</span>
+          <input class="form-input" type="date">
+        </div>
+
+        <div class="form-group">
+          <span class="form-label">启用日期</span>
+          <input class="form-input" type="date">
+        </div>
+        <div class="form-group">
+          <span class="form-label">失效日期</span>
+          <input class="form-input" type="date">
+        </div>
+        <div class="form-group">
+          <span class="form-label">开箱日期</span>
+          <input class="form-input" type="date">
+        </div>
+
+        <div class="form-group">
+          <span class="form-label">使用年限</span>
+          <input class="form-input" type="number" placeholder="请输入使用年限">
+        </div>
+        <div class="form-group">
+          <span class="form-label">验收确认人</span>
+          <select class="form-select" style="width:100%">
+            <option value="">请选择</option>
+            <option>张伟</option>
+            <option>李明</option>
+            <option>王强</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <span class="form-label">授权人</span>
+          <select class="form-select" style="width:100%">
+            <option value="">请选择</option>
+            <option>管理员</option>
+            <option>设备管理员</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <span class="form-label">固定资产</span>
+          <select class="form-select" style="width:100%">
+            <option value="">请选择</option>
+            <option>是</option>
+            <option>否</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <span class="form-label">固定资产编号</span>
+          <input class="form-input" placeholder="请输入固定资产编号">
+        </div>
+        <div class="form-group">
+          <span class="form-label">可外借</span>
+          <select class="form-select" style="width:100%">
+            <option value="">请选择</option>
+            <option>是</option>
+            <option>否</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">设备照片</span>
+    </div>
+    <div class="card-body">
+      <div style="border:1px dashed #d9d9d9;border-radius:8px;padding:40px;text-align:center;cursor:pointer;transition:border-color 0.3s" onmouseover="this.style.borderColor='#165DFF'" onmouseout="this.style.borderColor='#d9d9d9'">
+        <i class="fa-solid fa-camera" style="font-size:32px;color:#c0c0c0;margin-bottom:12px;display:block"></i>
+        <span style="color:#666">点击上传设备照片</span>
+      </div>
+      <p style="font-size:12px;color:#999;margin-top:8px">支持 JPG/PNG 格式，单张不超过 5MB</p>
+    </div>
+  </div>
+
+  <div class="form-footer">
+    <button class="btn btn-primary">保存</button>
+    <button class="btn btn-default" onclick="location.href='../../基础数据/设备管理/pc_data_device_list.html'">取消</button>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'data_device', breadcrumb:['基础数据','设备管理','新增设备']};</script>
+</body>
+</html>
+
+

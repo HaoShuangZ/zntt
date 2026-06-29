@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>订单管理 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .ol-modal-mask { position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:2000; display:none; align-items:center; justify-content:center; padding:20px; }
+  .ol-modal-mask.open { display:flex; }
+  .ol-modal-dialog { background:#fff; border-radius:8px; width:min(520px,96vw); max-height:90vh; overflow:auto; box-shadow:0 12px 48px rgba(0,0,0,.18); }
+  .ol-modal-dialog.ol-modal-lg { width:min(920px,96vw); }
+  .ol-batch-toolbar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:10px; font-size:13px; color:var(--text-2); }
+  .ol-batch-toolbar strong { color:var(--text-1); }
+  .ol-modal-head { padding:14px 18px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+  .ol-modal-head h3 { margin:0; font-size:16px; font-weight:600; color:var(--text-1); }
+  .ol-modal-close { border:none; background:transparent; cursor:pointer; color:var(--text-3); padding:4px 8px; font-size:16px; line-height:1; }
+  .ol-modal-body { padding:18px 20px; }
+  .ol-modal-foot { padding:12px 18px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:8px; }
+  .ol-row-urged { background:#FFFBF0; }
+  .ol-table-scroll {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+  .ol-table-scroll .data-table {
+    width: max-content;
+    min-width: 100%;
+    margin: 0;
+  }
+  .ol-table-scroll .ol-cell-ellipsis,
+  .ol-table-scroll tbody td:nth-child(3),
+  .ol-table-scroll tbody td:nth-child(5),
+  .ol-table-scroll tbody td:nth-child(6) {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .ol-table-scroll thead .col-action,
+  .ol-table-scroll tbody .col-action {
+    position: sticky;
+    right: 0;
+    z-index: 2;
+    min-width: 200px;
+    box-shadow: -8px 0 12px rgba(0,0,0,.06);
+  }
+  .ol-table-scroll thead .col-action {
+    z-index: 3;
+    background: #F7F8FA;
+  }
+  .ol-table-scroll tbody .col-action {
+    background: #fff;
+    white-space: normal;
+    vertical-align: middle;
+  }
+  .ol-table-scroll tbody tr.ol-row-urged .col-action { background: #FFFBF0; }
+  .ol-table-scroll tbody tr:hover .col-action { background: #F7F8FA; }
+  .ol-table-scroll tbody tr.ol-row-urged:hover .col-action { background: #FFFBF0; }
+  .ol-table-scroll .col-action {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    align-items: center;
+    align-content: center;
+  }
+  .ol-table-scroll .col-action .btn-text { margin-left: 0 !important; }
+</style>
+</head>
+<body>
+<div id="page-content">
+
+  <div class="card">
+    <div class="card-body">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <input type="text" class="form-input" placeholder="订单名称/编号" style="width:180px">
+          <select class="form-select">
+            <option>全部状态</option>
+            <option>待派单</option>
+            <option>已派单</option>
+            <option>已完成</option>
+          </select>
+          <select class="form-select" title="催办状态">
+            <option>全部催办状态</option>
+            <option>已催办</option>
+            <option>未催办</option>
+          </select>
+          <select class="form-select" title="审核状态">
+            <option>全部审核状态</option>
+            <option>未涉及</option>
+            <option>未提交</option>
+            <option>待审核</option>
+            <option>审核中</option>
+            <option>已通过</option>
+            <option>已驳回</option>
+          </select>
+          <select class="form-select" title="是否过期">
+            <option>全部过期状态</option>
+            <option>正常</option>
+            <option>即将过期</option>
+            <option>已过期</option>
+          </select>
+          <input type="date" class="form-input" style="width:150px" value="2026-05-01">
+          <span style="color:var(--text-4)">至</span>
+          <input type="date" class="form-input" style="width:150px" value="2026-05-08">
+          <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> 查询</button>
+          <button class="btn btn-default"><i class="fa-solid fa-rotate-right"></i> 重置</button>
+        </div>
+      </div>
+
+      <div class="pc-table-actions">
+        <a href="pc_order_create.html" class="btn btn-primary"><i class="fa-solid fa-plus"></i> 新增订单</a>
+        <a href="pc_order_list_import.html" class="btn btn-default"><i class="fa-solid fa-file-import"></i> 导入</a>
+        <a href="pc_order_list_export.html" class="btn btn-default"><i class="fa-solid fa-file-export"></i> 导出</a>
+        <button type="button" class="btn btn-default" id="olBtnBatchDispatch"><i class="fa-solid fa-paper-plane"></i> 批量派单</button>
+      </div>
+
+      <div class="ol-table-scroll">
+      <table class="data-table" id="olOrderTable">
+        <thead>
+          <tr>
+            <th style="width:40px"><input type="checkbox" title="全选"></th>
+            <th style="width:148px">订单编码</th>
+            <th class="ol-cell-ellipsis">订单名称</th>
+            <th style="width:100px">站址编码</th>
+            <th style="width:120px">站点名称</th>
+            <th class="ol-cell-ellipsis">关联工程</th>
+            <th class="ol-cell-ellipsis">检测单位</th>
+            <th style="width:100px">检测类型</th>
+            <th style="width:80px">状态</th>
+            <th style="width:90px">催办状态</th>
+            <th style="width:110px">派单时间</th>
+            <th style="width:110px">截止日期</th>
+            <th style="width:100px">是否过期</th>
+            <th style="width:90px">检测人</th>
+            <th style="width:96px">审核状态</th>
+            <th style="width:100px">审核节点</th>
+            <th style="width:88px">审核人</th>
+            <th style="width:110px">审核时间</th>
+            <th class="col-action">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- 已催办置顶 -->
+          <tr class="ol-row-urged" data-order-code="ZJHC20260505001">
+            <td><input type="checkbox"></td>
+            <td>ZJHC20260505001</td>
+            <td>城西改造项目检</td>
+            <td>ZZ-HZ-CX03</td>
+            <td>城西03#角钢塔站</td>
+            <td>城西区域改造项目</td>
+            <td>华东某外协检测</td>
+            <td>可靠性鉴定</td>
+            <td><span class="tag tag-blue">已派</span></td>
+            <td><span class="tag tag-orange">已催办</span></td>
+            <td>2026-05-05</td>
+            <td>2026-05-20</td>
+            <td><span class="tag tag-green">正常</span></td>
+            <td>李明</td>
+            <td data-audit-col><span class="tag tag-blue">审核中</span></td>
+            <td data-audit-col>技术部主管</td>
+            <td data-audit-col>—</td>
+            <td data-audit-col>—</td>
+            <td class="col-action">
+              <a href="pc_order_detail.html?code=ZJHC20260505001" class="btn-text"><i class="fa-solid fa-eye"></i> 查看</a>
+              <button type="button" class="btn-text btn-pc-audit" style="color:var(--primary)" data-title="城西改造项目检 · ZJHC20260505001" data-node="技术部主管" data-href="../../铁塔检测业务/检测任务/pc_task_detail.html?id=RW202606003"><i class="fa-solid fa-clipboard-check"></i> 审批</button>
+              <button class="btn-text" disabled style="opacity:.45;cursor:not-allowed" title="已催办"><i class="fa-solid fa-bell"></i> 任务催办</button>
+              <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+            </td>
+          </tr>
+          <tr class="ol-row-urged" data-order-code="ZJHYH20260503002">
+            <td><input type="checkbox"></td>
+            <td>ZJHYH20260503002</td>
+            <td>余杭5G升级检测</td>
+            <td>ZZ-YH-12</td>
+            <td>余杭五常站</td>
+            <td>余杭5G升级项目</td>
+            <td>浙江中能检测</td>
+            <td>安全性鉴定</td>
+            <td><span class="tag tag-blue">已派</span></td>
+            <td><span class="tag tag-orange">已催办</span></td>
+            <td>2026-05-03</td>
+            <td>2026-05-15</td>
+            <td><span class="tag tag-orange">即将过期</span></td>
+            <td>王强</td>
+            <td><span class="tag tag-gray">未提交</span></td>
+            <td>—</td>
+            <td>—</td>
+            <td>—</td>
+            <td class="col-action">
+              <a href="pc_order_detail.html?code=ZJHYH20260503002" class="btn-text"><i class="fa-solid fa-eye"></i> 查看</a>
+              <button class="btn-text" disabled style="opacity:.45;cursor:not-allowed" title="已催办"><i class="fa-solid fa-bell"></i> 任务催办</button>
+              <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+            </td>
+          </tr>
+          <tr data-order-code="ZJHBJ20260506001" data-pending="1">
+            <td><input type="checkbox"></td>
+            <td>ZJHBJ20260506001</td>
+            <td>滨江基站安全性鉴定</td>
+            <td>ZZ-HZ-BJ01</td>
+            <td>滨江江南大道站</td>
+            <td>杭州移动铁塔工程</td>
+            <td>浙江中能检测</td>
+            <td>安全性鉴定</td>
+            <td><span class="tag tag-orange">待派</span></td>
+            <td><span class="tag tag-blue">未催办</span></td>
+            <td>2026-05-06</td>
+            <td>2026-06-30</td>
+            <td><span class="tag tag-green">正常</span></td>
+            <td>-</td>
+            <td>—</td>
+            <td>—</td>
+            <td>—</td>
+            <td>—</td>
+            <td class="col-action">
+              <a href="pc_order_detail.html?code=ZJHBJ20260506001" class="btn-text"><i class="fa-solid fa-eye"></i> 查看</a>
+              <a href="pc_order_create.html" class="btn-text"><i class="fa-solid fa-pen-to-square"></i> 编辑</a>
+              <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+              <button type="button" class="btn-text ol-open-dispatch" data-code="ZJHBJ20260506001" data-name="滨江基站安全性鉴定" data-type="安全性鉴定" data-sitecode="ZZ-HZ-BJ01" data-sitename="滨江江南大道站"><i class="fa-solid fa-paper-plane"></i> 派单</button>
+            </td>
+          </tr>
+          <tr data-order-code="ZJHC20260507001">
+            <td><input type="checkbox"></td>
+            <td>ZJHC20260507001</td>
+            <td>江北园区单管塔鉴定</td>
+            <td>ZZ-JB-01</td>
+            <td>江北园区站</td>
+            <td>江北智慧园区工程</td>
+            <td>浙江中能检测</td>
+            <td>安全性鉴定</td>
+            <td><span class="tag tag-blue">已派</span></td>
+            <td><span class="tag tag-blue">未催办</span></td>
+            <td>2026-05-07</td>
+            <td>2026-05-10</td>
+            <td><span class="tag tag-red">已过期</span></td>
+            <td>-</td>
+            <td><span class="tag tag-gray">未提交</span></td>
+            <td>—</td>
+            <td>—</td>
+            <td>—</td>
+            <td class="col-action">
+              <a href="pc_order_detail.html?code=ZJHC20260507001" class="btn-text"><i class="fa-solid fa-eye"></i> 查看</a>
+              <button type="button" class="btn-text ol-open-reassign" style="color:var(--warning)" data-code="ZJHC20260507001" data-name="江北园区单管塔鉴定" data-type="安全性鉴定" data-unit="浙江中能检测"><i class="fa-solid fa-shuffle"></i> 改派订单</button>
+              <button type="button" class="btn-text ol-open-urge" style="color:var(--warning)" data-order="江北园区单管塔鉴定" data-unit="浙江中能检测" data-leader="陈志强（检测单位负责人）"><i class="fa-solid fa-bell"></i> 任务催办</button>
+              <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+            </td>
+          </tr>
+          <tr data-order-code="ZJHG20260504001">
+            <td><input type="checkbox"></td>
+            <td>ZJHG20260504001</td>
+            <td>拱墅区基站检</td>
+            <td>ZZ-HZ-GS05</td>
+            <td>拱墅大关路站</td>
+            <td>拱墅区域项目</td>
+            <td>浙江中能检测</td>
+            <td>安全性鉴定</td>
+            <td><span class="tag tag-green">已完</span></td>
+            <td><span class="tag tag-blue">未催办</span></td>
+            <td>2026-05-04</td>
+            <td>2026-04-28</td>
+            <td><span class="tag tag-red">已过期</span></td>
+            <td>王强</td>
+            <td><span class="tag tag-green">已通过</span></td>
+            <td>已通过</td>
+            <td>周敏</td>
+            <td>2026-05-08 16:20</td>
+            <td class="col-action">
+              <a href="pc_order_detail.html?code=ZJHG20260504001" class="btn-text"><i class="fa-solid fa-eye"></i> 查看</a>
+              <button class="btn-text"><i class="fa-solid fa-file-lines"></i> 报告</button>
+              <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+            </td>
+          </tr>
+          <tr data-order-code="ZJHYH20260503001" data-pending="1">
+            <td><input type="checkbox"></td>
+            <td>ZJHYH20260503001</td>
+            <td>余杭区铁塔安全检</td>
+            <td>ZZ-YH-12</td>
+            <td>余杭五常站</td>
+            <td>余杭5G升级项目</td>
+            <td>-</td>
+            <td>抗震鉴定</td>
+            <td><span class="tag tag-orange">待派</span></td>
+            <td><span class="tag tag-blue">未催办</span></td>
+            <td>2026-05-03</td>
+            <td>2026-05-14</td>
+            <td><span class="tag tag-orange">即将过期</span></td>
+            <td>-</td>
+            <td>—</td>
+            <td>—</td>
+            <td>—</td>
+            <td>—</td>
+            <td class="col-action">
+              <a href="pc_order_detail.html?code=ZJHYH20260503001" class="btn-text"><i class="fa-solid fa-eye"></i> 查看</a>
+              <a href="pc_order_create.html" class="btn-text"><i class="fa-solid fa-pen-to-square"></i> 编辑</a>
+              <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+              <button type="button" class="btn-text ol-open-dispatch" data-code="ZJHYH20260503001" data-name="余杭区铁塔安全检" data-type="抗震鉴定" data-sitecode="ZZ-YH-12" data-sitename="余杭五常站"><i class="fa-solid fa-paper-plane"></i> 派单</button>
+            </td>
+          </tr>
+          <tr data-order-code="ZJHXS20260502001">
+            <td><input type="checkbox"></td>
+            <td>ZJHXS20260502001</td>
+            <td>萧山机场基站鉴定</td>
+            <td>ZZ-XS-08</td>
+            <td>萧山机场站</td>
+            <td>萧山通信保障项目</td>
+            <td>浙江中能检测</td>
+            <td>安全性鉴定</td>
+            <td><span class="tag tag-red">已驳</span></td>
+            <td><span class="tag tag-blue">未催办</span></td>
+            <td>2026-05-02</td>
+            <td>2026-05-25</td>
+            <td><span class="tag tag-green">正常</span></td>
+            <td>张华</td>
+            <td data-audit-col><span class="tag tag-orange">待审核</span></td>
+            <td data-audit-col>技术部主管</td>
+            <td data-audit-col>—</td>
+            <td data-audit-col>—</td>
+            <td class="col-action">
+              <a href="pc_order_detail.html?code=ZJHXS20260502001" class="btn-text"><i class="fa-solid fa-eye"></i> 查看</a>
+              <button type="button" class="btn-text btn-pc-audit" style="color:var(--primary)" data-title="萧山机场基站鉴定 · ZJHXS20260502001" data-node="技术部主管" data-href="../../铁塔检测业务/检测任务/pc_task_detail.html?id=RW202606004"><i class="fa-solid fa-clipboard-check"></i> 审批</button>
+              <a href="pc_order_create.html" class="btn-text"><i class="fa-solid fa-pen-to-square"></i> 编辑</a>
+              <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="pagination">
+        <span>共 128 条</span>
+        <div class="pagination-btns">
+          <button class="page-btn"><i class="fa-solid fa-chevron-left"></i></button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <button class="page-btn">4</button>
+          <button class="page-btn">5</button>
+          <button class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 审批弹层 -->
+  <div class="ol-modal-mask" id="pcAuditModal" aria-hidden="true">
+    <div class="ol-modal-dialog" role="dialog" style="width:min(480px,96vw)">
+      <div class="ol-modal-head">
+        <h3 id="pcAuditModalTitle">审批</h3>
+        <button type="button" class="ol-modal-close" id="pcAuditModalClose" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="ol-modal-body">
+        <p id="pcAuditModalSub" style="font-size:13px;color:var(--text-2);margin:0 0 14px;line-height:1.55"></p>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">审批意见</label>
+          <textarea id="pcAuditRemark" class="form-textarea" style="width:100%;min-height:72px" placeholder="选填；驳回时建议填写原因"></textarea>
+        </div>
+        <a href="#" id="pcAuditGoDetail" class="btn-text" style="font-size:12px;margin-top:10px;display:none"><i class="fa-solid fa-arrow-up-right-from-square"></i> 进入检测任务复核</a>
+      </div>
+      <div class="ol-modal-foot">
+        <button type="button" class="btn btn-default" id="pcAuditCancel">取消</button>
+        <button type="button" class="btn btn-default" id="pcAuditReject" style="color:var(--danger)"><i class="fa-solid fa-xmark"></i> 驳回</button>
+        <button type="button" class="btn btn-primary" id="pcAuditPass"><i class="fa-solid fa-check"></i> 通过</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 须在 #page-content 内：initLayout 仅保留此处 innerHTML -->
+  <div class="ol-modal-mask" id="urgeModal" aria-hidden="true">
+    <div class="ol-modal-dialog" role="dialog" aria-labelledby="urgeModalTitle">
+      <div class="ol-modal-head">
+        <h3 id="urgeModalTitle">任务催办</h3>
+        <button type="button" class="ol-modal-close" id="urgeModalClose" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="ol-modal-body">
+        <p style="font-size:13px;color:var(--text-2);margin:0 0 14px">适用于<strong>未检测任务已审核通过</strong>仍无进展的场景。默认通知对象为当前订单检测单位在<strong>基础数据 → 检测单位</strong>中配置的负责人。</p>
+        <div class="form-group" style="margin-bottom:12px">
+          <label class="form-label">订单</label>
+          <input type="text" id="urgeOrderName" class="form-input" style="width:100%;background:#F7F8FA" readonly>
+        </div>
+        <div class="form-group" style="margin-bottom:12px">
+          <label class="form-label">检测单位</label>
+          <input type="text" id="urgeUnit" class="form-input" style="width:100%;background:#F7F8FA" readonly>
+        </div>
+        <div class="form-group" style="margin-bottom:12px">
+          <label class="form-label">接收人（默认）</label>
+          <input type="text" id="urgeLeader" class="form-input" style="width:100%;background:#F7F8FA" readonly>
+        </div>
+        <div class="form-group">
+          <label class="form-label">催办说明</label>
+          <textarea id="urgeRemark" class="form-textarea" style="width:100%;min-height:88px" placeholder="请填写催办要点（如期望到场时间、资料补充等）"></textarea>
+        </div>
+      </div>
+      <div class="ol-modal-foot">
+        <button type="button" class="btn btn-default" id="urgeModalCancel">取消</button>
+        <button type="button" class="btn btn-primary" id="urgeModalOk"><i class="fa-solid fa-paper-plane"></i> 发送催办</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 批量派单（专用弹层，非系统通用 alert） -->
+  <div class="ol-modal-mask" id="batchModal" aria-hidden="true">
+    <div class="ol-modal-dialog ol-modal-lg" role="dialog" aria-labelledby="batchModalTitle">
+      <div class="ol-modal-head">
+        <h3 id="batchModalTitle">批量派单（检测单位）</h3>
+        <button type="button" class="ol-modal-close" id="batchModalClose" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="ol-modal-body">
+        <p style="font-size:12px;color:var(--text-3);margin:0 0 12px">仅「待派单」订单出现在下表；勾选与列表行联动，将统一指派至同一检测单位。</p>
+        <div class="ol-batch-toolbar">
+          <input type="text" class="form-input" style="width:180px" placeholder="订单编码 / 名称" id="batchFilterInput">
+          <button type="button" class="btn btn-default btn-sm" id="batchFilterBtn"><i class="fa-solid fa-magnifying-glass"></i> 筛选</button>
+          <span>待派单共 <strong id="batchPendingTotal">5</strong> 条，本次已勾选 <strong id="batchCheckedN">0</strong> 条</span>
+        </div>
+        <div style="overflow-x:auto;border:1px solid var(--border);border-radius:6px;max-height:320px;overflow-y:auto">
+          <table class="data-table" style="margin:0">
+            <thead>
+              <tr>
+                <th style="width:44px"><input type="checkbox" id="batchCheckAll" title="全选"></th>
+                <th style="width:148px">订单编码</th>
+                <th>订单名称</th>
+                <th>站址编码</th>
+                <th>站点名称</th>
+                <th>关联工程</th>
+                <th style="width:100px">派单时间</th>
+                <th style="width:100px">截止日期</th>
+              </tr>
+            </thead>
+            <tbody id="batchPendingTbody">
+              <tr data-code="ZJHBJ20260506001" data-default="1"><td><input type="checkbox" class="bd-batch-cb"></td><td>ZJHBJ20260506001</td><td>滨江基站安全性鉴定</td><td>ZZ-HZ-BJ01</td><td>滨江江南大道站</td><td>杭州移动铁塔工程</td><td>2026-05-06</td><td>2026-06-30</td></tr>
+              <tr data-code="ZJHYH20260503001" data-default="1"><td><input type="checkbox" class="bd-batch-cb"></td><td>ZJHYH20260503001</td><td>余杭区铁塔安全检</td><td>ZZ-YH-12</td><td>余杭五常站</td><td>余杭5G升级项目</td><td>2026-05-03</td><td>2026-05-14</td></tr>
+              <tr data-code="ZJHXS20260501001" data-default="1"><td><input type="checkbox" class="bd-batch-cb"></td><td>ZJHXS20260501001</td><td>下沙开发区基站检</td><td>ZZ-XS-02</td><td>下沙开发区站</td><td>下沙通信配套工程</td><td>2026-05-01</td><td>2026-05-28</td></tr>
+              <tr data-code="ZJJD20260508001" data-default="0"><td><input type="checkbox" class="bd-batch-cb"></td><td>ZJJD20260508001</td><td>建德山区单管塔检测</td><td>ZZ-JD-08</td><td>建德山区站</td><td>建德农网补强项目</td><td>2026-05-08</td><td>2026-06-15</td></tr>
+              <tr data-code="ZJTL20260509001" data-default="0"><td><input type="checkbox" class="bd-batch-cb"></td><td>ZJTL20260509001</td><td>桐庐高速沿线塔检</td><td>ZZ-TL-03</td><td>桐庐沿线站</td><td>桐庐沿线整治工程</td><td>2026-05-09</td><td>2026-06-01</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="form-group" style="margin-top:16px;margin-bottom:0">
+          <label class="form-label">选择检测单位 <span class="required">*</span></label>
+          <select class="form-select" id="batchUnitSelect" style="width:100%;max-width:480px">
+            <option value="">请选择（基础数据 → 检测单位）</option>
+            <option selected>浙江中能工程检测有限公司</option>
+            <option>华东某外协检测有限公司</option>
+            <option>浙江华测工程检测有限公司</option>
+          </select>
+        </div>
+      </div>
+      <div class="ol-modal-foot">
+        <button type="button" class="btn btn-default" id="batchModalCancel">取消</button>
+        <button type="button" class="btn btn-primary" id="batchModalOk"><i class="fa-solid fa-paper-plane"></i> 确认派单</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 改派订单（专用弹层） -->
+  <div class="ol-modal-mask" id="reassignModal" aria-hidden="true">
+    <div class="ol-modal-dialog" role="dialog" aria-labelledby="reassignModalTitle">
+      <div class="ol-modal-head">
+        <h3 id="reassignModalTitle">改派订单</h3>
+        <button type="button" class="ol-modal-close" id="reassignModalClose" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="ol-modal-body">
+        <p style="font-size:13px;color:var(--text-2);margin:0 0 14px;padding:12px 14px;background:#FFF7E8;border:1px solid #FFE4BA;border-radius:6px">
+          <i class="fa-solid fa-circle-info" style="color:#D97706"></i>
+          仅当对应检测任务<strong>尚未指定检测人员</strong>时允许改派。
+        </p>
+        <div style="background:#F7F8FA;border-radius:6px;padding:14px;margin-bottom:16px;font-size:13px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div><span style="color:var(--text-3)">订单编码</span><br><strong id="rgCode">—</strong></div>
+          <div><span style="color:var(--text-3)">检测类型</span><br><span id="rgType">—</span></div>
+          <div style="grid-column:1/-1"><span style="color:var(--text-3)">订单名称</span><br><span id="rgName">—</span></div>
+          <div><span style="color:var(--text-3)">当前检测单位</span><br><span id="rgUnit">—</span></div>
+          <div><span style="color:var(--text-3)">任务检测人</span><br><span>未指定</span></div>
+        </div>
+        <div class="form-group" style="margin-bottom:12px">
+          <label class="form-label">改派至检测单位 <span class="required">*</span></label>
+          <select class="form-select" id="rgUnitSelect" style="width:100%">
+            <option value="">请选择（基础数据 → 检测单位）</option>
+            <option>华东某外协检测有限公司</option>
+            <option>浙江华测工程检测有限公司</option>
+            <option>杭州建科结构检测中心</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">改派说明</label>
+          <textarea class="form-textarea" id="rgRemark" style="width:100%;min-height:72px" placeholder="选填"></textarea>
+        </div>
+      </div>
+      <div class="ol-modal-foot">
+        <button type="button" class="btn btn-default" id="reassignModalCancel">取消</button>
+        <button type="button" class="btn btn-primary" id="reassignModalOk"><i class="fa-solid fa-shuffle"></i> 确认改派</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 派单（单条，标准弹层；不含计划完成时间） -->
+  <div class="ol-modal-mask" id="dispatchModal" aria-hidden="true">
+    <div class="ol-modal-dialog" role="dialog" aria-labelledby="dispatchModalTitle">
+      <div class="ol-modal-head">
+        <h3 id="dispatchModalTitle">派单</h3>
+        <button type="button" class="ol-modal-close" id="dispatchModalClose" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="ol-modal-body">
+        <p style="font-size:12px;color:var(--text-3);margin:0 0 14px">将当前订单指派至检测单位（数据来源于<strong>基础数据 → 检测单位</strong>）。</p>
+        <div style="background:#F7F8FA;border-radius:6px;padding:14px;margin-bottom:16px;font-size:13px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div><span style="color:var(--text-3)">订单编码</span><br><strong id="dpCode">—</strong></div>
+          <div><span style="color:var(--text-3)">检测类型</span><br><span id="dpType">—</span></div>
+          <div style="grid-column:1/-1"><span style="color:var(--text-3)">订单名称</span><br><span id="dpName">—</span></div>
+          <div><span style="color:var(--text-3)">站址编码</span><br><span id="dpAddrCode">—</span></div>
+          <div><span style="color:var(--text-3)">站点名称</span><br><span id="dpSiteName">—</span></div>
+        </div>
+        <div class="form-group" style="margin-bottom:12px">
+          <label class="form-label">选择检测单位 <span class="required">*</span></label>
+          <select class="form-select" id="dpUnitSelect" style="width:100%">
+            <option value="">请选择（基础数据 → 检测单位）</option>
+            <option>浙江中能工程检测有限公司</option>
+            <option>华东某外协检测有限公司</option>
+            <option>浙江华测工程检测有限公司</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">备注</label>
+          <textarea class="form-textarea" id="dpRemark" style="width:100%;min-height:72px" placeholder="选填"></textarea>
+        </div>
+      </div>
+      <div class="ol-modal-foot">
+        <button type="button" class="btn btn-default" id="dispatchModalCancel">取消</button>
+        <button type="button" class="btn btn-primary" id="dispatchModalOk"><i class="fa-solid fa-paper-plane"></i> 确认派单</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="../../../../assets/shared-layout.js"></script>
+<script src="../../../../assets/pc-audit-action.js"></script>
+<script>window.__layoutConfig = {active:'order_list', breadcrumb:['营销管理','订单管理']};</script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+  var urgeModal = document.getElementById('urgeModal');
+  var batchModal = document.getElementById('batchModal');
+  var reassignModal = document.getElementById('reassignModal');
+  var dispatchModal = document.getElementById('dispatchModal');
+  var orderTable = document.getElementById('olOrderTable');
+
+  function closeModal(el) {
+    if (!el) return;
+    el.classList.remove('open');
+    el.setAttribute('aria-hidden', 'true');
+  }
+  function closeAllModals() {
+    closeModal(urgeModal);
+    closeModal(batchModal);
+    closeModal(reassignModal);
+    closeModal(dispatchModal);
+  }
+  function openModal(el) {
+    if (!el) return;
+    closeAllModals();
+    el.classList.add('open');
+    el.setAttribute('aria-hidden', 'false');
+  }
+
+  /* —— 任务催办 —— */
+  function openUrge(order, unit, leader) {
+    if (!urgeModal) return;
+    document.getElementById('urgeOrderName').value = order || '';
+    document.getElementById('urgeUnit').value = unit || '';
+    document.getElementById('urgeLeader').value = leader || '';
+    document.getElementById('urgeRemark').value = '';
+    openModal(urgeModal);
+  }
+  if (urgeModal) {
+    document.querySelectorAll('.ol-open-urge').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        openUrge(this.getAttribute('data-order'), this.getAttribute('data-unit'), this.getAttribute('data-leader'));
+      });
+    });
+    document.getElementById('urgeModalClose').addEventListener('click', function () { closeModal(urgeModal); });
+    document.getElementById('urgeModalCancel').addEventListener('click', function () { closeModal(urgeModal); });
+    document.getElementById('urgeModalOk').addEventListener('click', function () { closeModal(urgeModal); });
+    urgeModal.addEventListener('click', function (e) { if (e.target === urgeModal) closeModal(urgeModal); });
+  }
+
+  /* —— 批量派单：与列表勾选同步 —— */
+  var batchRows = function () { return document.querySelectorAll('#batchPendingTbody tr[data-code]'); };
+  var batchCbs = function () { return document.querySelectorAll('.bd-batch-cb'); };
+  var batchCheckAll = document.getElementById('batchCheckAll');
+
+  function syncBatchFromMainTable() {
+    batchRows().forEach(function (mtr) {
+      var code = mtr.getAttribute('data-code');
+      var cb = mtr.querySelector('.bd-batch-cb');
+      var mainTr = orderTable ? orderTable.querySelector('tbody tr[data-order-code="' + code + '"]') : null;
+      if (mainTr) {
+        var mcb = mainTr.querySelector('input[type="checkbox"]');
+        cb.checked = !!(mcb && mcb.checked);
+      } else {
+        cb.checked = mtr.getAttribute('data-default') === '1';
+      }
+    });
+    updateBatchCount();
+    syncBatchCheckAllState();
+  }
+  function updateBatchCount() {
+    var n = 0;
+    batchCbs().forEach(function (c) { if (c.checked) n++; });
+    var el = document.getElementById('batchCheckedN');
+    if (el) el.textContent = String(n);
+    var totalEl = document.getElementById('batchPendingTotal');
+    if (totalEl) totalEl.textContent = String(batchRows().length);
+  }
+  function syncBatchCheckAllState() {
+    if (!batchCheckAll) return;
+    var all = batchCbs();
+    var total = all.length;
+    var on = 0;
+    all.forEach(function (c) { if (c.checked) on++; });
+    batchCheckAll.checked = total > 0 && on === total;
+    batchCheckAll.indeterminate = on > 0 && on < total;
+  }
+
+  function openBatchDispatch() {
+    if (!batchModal) return;
+    syncBatchFromMainTable();
+    openModal(batchModal);
+  }
+
+  var btnBatch = document.getElementById('olBtnBatchDispatch');
+  if (btnBatch) btnBatch.addEventListener('click', openBatchDispatch);
+
+  batchCbs().forEach(function (c) {
+    c.addEventListener('change', function () { updateBatchCount(); syncBatchCheckAllState(); });
+  });
+  if (batchCheckAll) {
+    batchCheckAll.addEventListener('change', function () {
+      batchCbs().forEach(function (c) { c.checked = batchCheckAll.checked; });
+      updateBatchCount();
+    });
+  }
+  if (batchModal) {
+    document.getElementById('batchModalClose').addEventListener('click', function () { closeModal(batchModal); });
+    document.getElementById('batchModalCancel').addEventListener('click', function () { closeModal(batchModal); });
+    batchModal.addEventListener('click', function (e) { if (e.target === batchModal) closeModal(batchModal); });
+    document.getElementById('batchModalOk').addEventListener('click', function () {
+      var unit = document.getElementById('batchUnitSelect');
+      if (!unit || !unit.value) return;
+      var n = 0;
+      batchCbs().forEach(function (c) { if (c.checked) n++; });
+      if (n < 1) return;
+      closeModal(batchModal);
+    });
+  }
+  var batchFilterBtn = document.getElementById('batchFilterBtn');
+  if (batchFilterBtn) {
+    batchFilterBtn.addEventListener('click', function () {
+      var q = (document.getElementById('batchFilterInput').value || '').trim().toLowerCase();
+      batchRows().forEach(function (tr) {
+        var t = tr.innerText.toLowerCase();
+        tr.style.display = !q || t.indexOf(q) >= 0 ? '' : 'none';
+      });
+    });
+  }
+
+  /* —— 改派订单 —— */
+  function openReassign(btn) {
+    if (!reassignModal) return;
+    document.getElementById('rgCode').textContent = btn.getAttribute('data-code') || '—';
+    document.getElementById('rgName').textContent = btn.getAttribute('data-name') || '—';
+    document.getElementById('rgType').textContent = btn.getAttribute('data-type') || '—';
+    document.getElementById('rgUnit').textContent = btn.getAttribute('data-unit') || '—';
+    var sel = document.getElementById('rgUnitSelect');
+    if (sel) sel.selectedIndex = 0;
+    var ta = document.getElementById('rgRemark');
+    if (ta) ta.value = '';
+    openModal(reassignModal);
+  }
+  document.querySelectorAll('.ol-open-reassign').forEach(function (btn) {
+    btn.addEventListener('click', function () { openReassign(this); });
+  });
+  if (reassignModal) {
+    document.getElementById('reassignModalClose').addEventListener('click', function () { closeModal(reassignModal); });
+    document.getElementById('reassignModalCancel').addEventListener('click', function () { closeModal(reassignModal); });
+    reassignModal.addEventListener('click', function (e) { if (e.target === reassignModal) closeModal(reassignModal); });
+    document.getElementById('reassignModalOk').addEventListener('click', function () {
+      var sel = document.getElementById('rgUnitSelect');
+      if (!sel || !sel.value) return;
+      closeModal(reassignModal);
+    });
+  }
+
+  /* —— 派单（单条） —— */
+  function openDispatch(btn) {
+    if (!dispatchModal) return;
+    document.getElementById('dpCode').textContent = btn.getAttribute('data-code') || '—';
+    document.getElementById('dpName').textContent = btn.getAttribute('data-name') || '—';
+    document.getElementById('dpType').textContent = btn.getAttribute('data-type') || '—';
+    document.getElementById('dpAddrCode').textContent = btn.getAttribute('data-sitecode') || '—';
+    document.getElementById('dpSiteName').textContent = btn.getAttribute('data-sitename') || '—';
+    var us = document.getElementById('dpUnitSelect');
+    if (us) us.selectedIndex = 0;
+    var dr = document.getElementById('dpRemark');
+    if (dr) dr.value = '';
+    openModal(dispatchModal);
+  }
+  document.querySelectorAll('.ol-open-dispatch').forEach(function (btn) {
+    btn.addEventListener('click', function () { openDispatch(this); });
+  });
+  if (dispatchModal) {
+    document.getElementById('dispatchModalClose').addEventListener('click', function () { closeModal(dispatchModal); });
+    document.getElementById('dispatchModalCancel').addEventListener('click', function () { closeModal(dispatchModal); });
+    dispatchModal.addEventListener('click', function (e) { if (e.target === dispatchModal) closeModal(dispatchModal); });
+    document.getElementById('dispatchModalOk').addEventListener('click', function () {
+      var sel = document.getElementById('dpUnitSelect');
+      if (!sel || !sel.value) return;
+      closeModal(dispatchModal);
+    });
+  }
+});
+</script>
+</body>
+</html>

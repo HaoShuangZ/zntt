@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>编辑消息模板 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+.var-table { width:100%; font-size:12px; border-collapse:collapse; margin-top:8px; }
+.var-table th, .var-table td { border:1px solid var(--border); padding:6px 8px; text-align:left; }
+.var-table th { background:#F7F8FA; }
+.var-table code { font-size:11px; color:var(--primary); }
+.btn-insert { font-size:11px; padding:2px 8px; margin:2px 4px 2px 0; }
+.offset-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.notify-personnel-wrap { margin-top:4px; padding:12px 14px; background:#F7F8FA; border:1px solid var(--border); border-radius:6px; }
+.personnel-chips { display:flex; flex-wrap:wrap; gap:8px; min-height:32px; align-items:center; }
+.personnel-chip {
+  display:inline-flex; align-items:center; gap:6px; padding:4px 10px;
+  background:#E8F3FF; color:#165DFF; border-radius:4px; font-size:13px; line-height:1.4;
+}
+.personnel-chip .dept { font-size:11px; color:#4E5969; font-weight:400; }
+.personnel-chip button {
+  border:none; background:transparent; color:#86909C; cursor:pointer; padding:0 2px; line-height:1;
+}
+.personnel-chip button:hover { color:#F53F3F; }
+.personnel-empty { font-size:13px; color:var(--text-3); }
+.personnel-add-row { display:flex; align-items:center; gap:8px; margin-top:10px; flex-wrap:wrap; }
+</style>
+</head>
+<body>
+<div id="page-content">
+  <div class="page-header">
+    <div class="page-title" id="pageTitle">编辑消息模板</div>
+    <a href="pc_message_template_list.html" class="btn btn-default"><i class="fa-solid fa-arrow-left"></i> 返回列表</a>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <div class="form-grid form-grid-3">
+        <div class="form-group">
+          <label class="form-label">场景</label>
+          <input type="text" class="form-input" id="fSceneLabel" readonly style="width:100%;background:#F7F8FA">
+        </div>
+        <div class="form-group">
+          <label class="form-label">模板编码</label>
+          <input type="text" class="form-input" id="fSceneCode" readonly style="width:100%;background:#F7F8FA">
+        </div>
+        <div class="form-group">
+          <label class="form-label">状态</label>
+          <select class="form-select" id="fEnabled" style="width:100%">
+            <option value="1">启用</option>
+            <option value="0">停用</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">模板名称</label>
+          <input type="text" class="form-input" id="fName" style="width:100%">
+        </div>
+        <div class="form-group full" id="notifyPersonnelWrap" style="display:none">
+          <label class="form-label">消息接收人员 <span class="required">*</span></label>
+          <div class="notify-personnel-wrap">
+            <p class="field-hint" style="margin:0 0 10px;font-size:12px;color:var(--text-3)">仅被配置的人员可收到本场景消息（写入其 PC / APP 消息中心）；未配置人员不会推送。</p>
+            <div class="personnel-chips" id="personnelChips"></div>
+            <div class="personnel-add-row">
+              <select class="form-select" id="personnelPicker" style="width:280px">
+                <option value="">从系统用户中选择…</option>
+              </select>
+              <button type="button" class="btn btn-default" id="btnAddPersonnel"><i class="fa-solid fa-plus"></i> 添加</button>
+            </div>
+          </div>
+        </div>
+        <div class="form-group full" id="deadlineConfigWrap" style="display:none">
+          <label class="form-label">截止前提醒 <span class="required">*</span></label>
+          <div class="offset-row">
+            <span style="font-size:13px;color:var(--text-2)">距任务截止日期提前</span>
+            <input type="number" class="form-input" id="fOffsetValue" min="1" max="365" value="3" style="width:88px">
+            <select class="form-select" id="fOffsetUnit" style="width:88px">
+              <option value="day">天</option>
+              <option value="hour">小时</option>
+            </select>
+            <span style="font-size:13px;color:var(--text-2)">发送消息（可配置多条规则，此处为默认一条）</span>
+          </div>
+          <p class="field-hint" style="margin-top:6px;font-size:12px;color:var(--text-3)">例：提前 3 天表示在截止日期前 3 天的 09:00 推送；实际触发时间由调度任务计算。</p>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">标题模板</label>
+          <input type="text" class="form-input" id="fTitle" style="width:100%">
+          <div id="titleVarBtns"></div>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">正文模板</label>
+          <textarea class="form-textarea" id="fBody" rows="6" style="width:100%"></textarea>
+          <div id="bodyVarBtns"></div>
+        </div>
+      </div>
+      <p style="font-size:13px;font-weight:600;margin:16px 0 8px">可用转义字段</p>
+      <table class="var-table">
+        <thead><tr><th>中文名称</th><th>转义 key</th><th>说明</th></tr></thead>
+        <tbody id="varTableBody"></tbody>
+      </table>
+      <p id="sceneHint" class="field-hint" style="margin-top:8px;font-size:12px;color:var(--text-3)"></p>
+    </div>
+  </div>
+  <div class="form-footer" style="margin-top:16px">
+    <button type="button" class="btn btn-default" id="btnPreview">预览</button>
+    <button type="button" class="btn btn-primary" id="btnSave"><i class="fa-solid fa-check"></i> 保存</button>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>
+var RECIPIENT_POOL = [
+  { id: 'u_wangmin', name: '王敏', dept: '合同部' },
+  { id: 'u_liuyang', name: '刘洋', dept: '合同部' },
+  { id: 'u_lina', name: '李娜', dept: '合同部' },
+  { id: 'u_zhangwei', name: '张伟', dept: '财务部' },
+  { id: 'u_chenjing', name: '陈静', dept: '财务部' },
+  { id: 'u_zhaolei', name: '赵磊', dept: '管理部' }
+];
+
+var SCENES = {
+  CONTRACT_UP_RECEIPT_REMIND: {
+    label: '对上合同-收款提醒', msgType: '合同提醒', notifyPersonnel: true,
+    recipients: ['u_wangmin', 'u_zhangwei', 'u_chenjing'],
+    name: '对上收款提醒-默认',
+    title: '【收款提醒】{contractName} · {stageName} 将于 {remindTime} 到期',
+    body: '合同 {contractCode} 含税金额 {contractAmountTax}，已累计收款 {cumulativeReceiptAmount}。请安排第 {stageName} 阶段收款。',
+    vars: [
+      { cn: '合同名称', key: '{contractName}', desc: '合同主档' },
+      { cn: '合同编号', key: '{contractCode}', desc: '合同主档' },
+      { cn: '阶段名称', key: '{stageName}', desc: '提醒行' },
+      { cn: '提醒时间', key: '{remindTime}', desc: '提醒行' },
+      { cn: '合同金额（含税）', key: '{contractAmountTax}', desc: '合同主档' },
+      { cn: '合同金额（不含税）', key: '{contractAmountNoTax}', desc: '合同主档' },
+      { cn: '当前累计收款金额', key: '{cumulativeReceiptAmount}', desc: '已登记收款' },
+      { cn: '当前累计付款金额', key: '{cumulativePaymentAmount}', desc: '已登记付款' }
+    ],
+    hint: '到期后按提醒行时间触发；仅「消息接收人员」可收到；写入消息中心，类型「合同提醒」；不进待办。'
+  },
+  CONTRACT_DOWN_PAYMENT_REMIND: {
+    label: '对下合同-付款提醒', msgType: '合同提醒', notifyPersonnel: true,
+    recipients: ['u_liuyang', 'u_lina', 'u_zhangwei'],
+    name: '对下付款提醒-默认',
+    title: '【对下付款提醒】{contractName} · {stageName}',
+    body: '对下合同 {contractCode} 已累计付款 {cumulativePaymentAmount}，提醒时间 {remindTime}。',
+    vars: [
+      { cn: '合同名称', key: '{contractName}', desc: '对下主档' },
+      { cn: '合同编号', key: '{contractCode}', desc: '对下主档' },
+      { cn: '阶段名称', key: '{stageName}', desc: '提醒行' },
+      { cn: '提醒时间', key: '{remindTime}', desc: '提醒行' },
+      { cn: '当前累计付款金额', key: '{cumulativePaymentAmount}', desc: '已登记付款' }
+    ],
+    hint: '到期后按提醒行时间触发；仅「消息接收人员」可收到；写入消息中心，类型「合同提醒」；不进待办。'
+  },
+  TASK_URGE: {
+    label: '任务催办', msgType: '任务提醒',
+    name: '任务催办-默认',
+    title: '【任务催办】{taskNo} · {taskName}',
+    body: '您有一项检测任务待处理：任务编号 {taskNo}，任务名称「{taskName}」。请登录系统尽快办理。',
+    vars: [
+      { cn: '任务编号', key: '{taskNo}', desc: '检测任务' },
+      { cn: '任务名称', key: '{taskName}', desc: '检测任务' }
+    ],
+    hint: '合同部/负责人在任务列表发起催办时推送；写入消息中心，类型「任务提醒」；不进待办。'
+  },
+  TASK_REASSIGN: {
+    label: '任务转派', msgType: '任务提醒',
+    name: '任务转派-默认',
+    title: '【任务转派】{taskNo} · {taskName}',
+    body: '检测任务已转派：任务编号 {taskNo}，任务名称「{taskName}」。前检测人员：{previousInspector}。请登录系统查看并承接任务。',
+    vars: [
+      { cn: '任务编号', key: '{taskNo}', desc: '检测任务' },
+      { cn: '任务名称', key: '{taskName}', desc: '检测任务' },
+      { cn: '前检测人员', key: '{previousInspector}', desc: '转派前的检测人员姓名' }
+    ],
+    hint: '订单/任务改派或转派成功后，向新检测人员推送；写入消息中心，类型「任务提醒」；不进待办。'
+  },
+  TASK_DEADLINE_REMIND: {
+    label: '任务截止提醒', msgType: '任务提醒',
+    name: '任务截止提醒-默认',
+    offsetValue: 3,
+    offsetUnit: 'day',
+    title: '【截止提醒】{taskNo} · {taskName}',
+    body: '任务「{taskName}」（{taskNo}）截止日期为 {deadlineDate}，距截止还有 {offsetDesc}，请抓紧完成检测与提交。',
+    vars: [
+      { cn: '任务编号', key: '{taskNo}', desc: '检测任务' },
+      { cn: '任务名称', key: '{taskName}', desc: '检测任务' },
+      { cn: '截止日期', key: '{deadlineDate}', desc: '任务计划截止' },
+      { cn: '提前时长说明', key: '{offsetDesc}', desc: '如：3天（由上方配置生成）' }
+    ],
+    hint: '按「截止前提醒」配置在截止日期前自动推送；写入消息中心，类型「任务提醒」；不进待办。'
+  }
+};
+
+var currentScene = null;
+var currentSceneKey = '';
+var selectedRecipientIds = [];
+
+function findRecipient(id) {
+  return RECIPIENT_POOL.find(function (u) { return u.id === id; });
+}
+
+function fillPersonnelPicker() {
+  var sel = document.getElementById('personnelPicker');
+  var opts = '<option value="">从系统用户中选择…</option>';
+  RECIPIENT_POOL.forEach(function (u) {
+    if (selectedRecipientIds.indexOf(u.id) >= 0) return;
+    opts += '<option value="' + u.id + '">' + u.name + '（' + u.dept + '）</option>';
+  });
+  sel.innerHTML = opts;
+}
+
+function renderPersonnelChips() {
+  var box = document.getElementById('personnelChips');
+  if (!selectedRecipientIds.length) {
+    box.innerHTML = '<span class="personnel-empty">尚未配置接收人员，请至少添加 1 人</span>';
+    return;
+  }
+  box.innerHTML = selectedRecipientIds.map(function (id) {
+    var u = findRecipient(id);
+    if (!u) return '';
+    return (
+      '<span class="personnel-chip" data-id="' + id + '">' +
+      '<span>' + u.name + '<span class="dept"> · ' + u.dept + '</span></span>' +
+      '<button type="button" title="移除" aria-label="移除 ' + u.name + '"><i class="fa-solid fa-xmark"></i></button>' +
+      '</span>'
+    );
+  }).join('');
+  box.querySelectorAll('.personnel-chip button').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var chip = btn.closest('.personnel-chip');
+      var rid = chip && chip.getAttribute('data-id');
+      if (!rid) return;
+      selectedRecipientIds = selectedRecipientIds.filter(function (x) { return x !== rid; });
+      renderPersonnelChips();
+      fillPersonnelPicker();
+    });
+  });
+}
+
+function setRecipients(ids) {
+  selectedRecipientIds = (ids || []).slice();
+  renderPersonnelChips();
+  fillPersonnelPicker();
+}
+
+function recipientNamesText() {
+  return selectedRecipientIds.map(function (id) {
+    var u = findRecipient(id);
+    return u ? u.name : '';
+  }).filter(Boolean).join('、');
+}
+
+function renderVarTable(vars) {
+  document.getElementById('varTableBody').innerHTML = vars.map(function (v) {
+    return '<tr><td>' + v.cn + '</td><td><code>' + v.key + '</code></td><td>' + v.desc + '</td></tr>';
+  }).join('');
+}
+
+function mkBtns(containerId, targetId, vars) {
+  var box = document.getElementById(containerId);
+  box.innerHTML = '';
+  vars.forEach(function (v) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'btn btn-default btn-insert';
+    b.textContent = v.key;
+    b.addEventListener('click', function () {
+      var el = document.getElementById(targetId);
+      el.value += v.key;
+      el.focus();
+    });
+    box.appendChild(b);
+  });
+}
+
+function applyScene(sceneKey) {
+  var s = SCENES[sceneKey] || SCENES.CONTRACT_UP_RECEIPT_REMIND;
+  currentScene = s;
+  currentSceneKey = sceneKey;
+  document.getElementById('fSceneLabel').value = s.label;
+  document.getElementById('fSceneCode').value = sceneKey;
+  document.getElementById('fName').value = s.name;
+  document.getElementById('fTitle').value = s.title;
+  document.getElementById('fBody').value = s.body;
+  document.getElementById('sceneHint').textContent = s.hint || '';
+  document.getElementById('deadlineConfigWrap').style.display = sceneKey === 'TASK_DEADLINE_REMIND' ? 'block' : 'none';
+  document.getElementById('notifyPersonnelWrap').style.display = s.notifyPersonnel ? 'block' : 'none';
+  if (s.notifyPersonnel) {
+    setRecipients(s.recipients || []);
+  } else {
+    selectedRecipientIds = [];
+  }
+  if (sceneKey === 'TASK_DEADLINE_REMIND') {
+    document.getElementById('fOffsetValue').value = s.offsetValue != null ? s.offsetValue : 3;
+    document.getElementById('fOffsetUnit').value = s.offsetUnit || 'day';
+  }
+  renderVarTable(s.vars);
+  mkBtns('titleVarBtns', 'fTitle', s.vars);
+  mkBtns('bodyVarBtns', 'fBody', s.vars);
+}
+
+function offsetDesc() {
+  var n = document.getElementById('fOffsetValue').value;
+  var u = document.getElementById('fOffsetUnit').value;
+  return n + (u === 'hour' ? '小时' : '天');
+}
+
+function previewText() {
+  var title = document.getElementById('fTitle').value;
+  var body = document.getElementById('fBody').value;
+  var map = {
+    '{contractName}': '杭州移动2026框架',
+    '{contractCode}': 'HT2026-0512',
+    '{stageName}': '首付款',
+    '{remindTime}': '2026-02-01 09:00',
+    '{contractAmountTax}': '2,860,000',
+    '{contractAmountNoTax}': '2,548,672.57',
+    '{cumulativeReceiptAmount}': '1,200,000',
+    '{cumulativePaymentAmount}': '320,000',
+    '{taskNo}': 'RW-2026-0521',
+    '{taskName}': '余杭站点角钢塔巡检',
+    '{previousInspector}': '张三',
+    '{deadlineDate}': '2026-05-25',
+    '{offsetDesc}': offsetDesc()
+  };
+  Object.keys(map).forEach(function (k) {
+    title = title.split(k).join(map[k]);
+    body = body.split(k).join(map[k]);
+  });
+  return { title: title, body: body };
+}
+
+window.__layoutConfig = { active: 'message_template_list', breadcrumb: ['模板配置', '消息模板', '编辑'] };
+window.addEventListener('DOMContentLoaded', function () {
+  var sceneKey = (new URLSearchParams(location.search).get('scene') || 'CONTRACT_UP_RECEIPT_REMIND').trim();
+  applyScene(sceneKey);
+
+  document.getElementById('btnAddPersonnel').addEventListener('click', function () {
+    var sel = document.getElementById('personnelPicker');
+    var id = sel.value;
+    if (!id) { alert('请选择要添加的人员'); return; }
+    if (selectedRecipientIds.indexOf(id) >= 0) return;
+    selectedRecipientIds.push(id);
+    sel.value = '';
+    renderPersonnelChips();
+    fillPersonnelPicker();
+  });
+
+  document.getElementById('btnPreview').addEventListener('click', function () {
+    var p = previewText();
+    var extra = '';
+    if (currentScene && currentScene.notifyPersonnel) {
+      extra = '\n\n【接收人员】' + (recipientNamesText() || '（未配置，将不推送）');
+    }
+    if (sceneKey === 'TASK_DEADLINE_REMIND') {
+      extra += '\n\n【触发配置】截止前提前 ' + offsetDesc();
+    }
+    alert('标题：' + p.title + '\n\n正文：' + p.body + extra);
+  });
+
+  document.getElementById('btnSave').addEventListener('click', function () {
+    if (sceneKey === 'TASK_DEADLINE_REMIND') {
+      var v = Number(document.getElementById('fOffsetValue').value);
+      if (!v || v < 1) { alert('请填写有效的提前提醒时长'); return; }
+    }
+    if (currentScene && currentScene.notifyPersonnel && !selectedRecipientIds.length) {
+      alert('请至少配置 1 名消息接收人员');
+      return;
+    }
+    if (currentScene && currentScene.notifyPersonnel) {
+      currentScene.recipients = selectedRecipientIds.slice();
+    }
+    alert('模板已保存（原型）\n接收人员：' + (recipientNamesText() || '—'));
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="ipad-profile-html">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>订单管理</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../assets/app-frame.css">
+<link rel="stylesheet" href="../../../assets/ipad-tokens.css">
+<link rel="stylesheet" href="../../../assets/ipad-frame.css">
+<link rel="stylesheet" href="../../../assets/ipad-layout.css">
+<link rel="stylesheet" href="../../../assets/ipad-visual.css">
+<link rel="stylesheet" href="../../../assets/ipad-embed.css">
+<link rel="stylesheet" href="../../../assets/ipad-profile-shell.css">
+<script src="../../../assets/ipad-adapt.js" defer></script>
+</head>
+<body class="ipad-adapt ipad-profile-page">
+<div class="page-status" aria-hidden="true"><span>9:41</span><span class="icons"><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span></div>
+<div class="page-nav">
+  <a class="nav-back" href="首页/ipad_profile_index.html"><i class="fa-solid fa-chevron-left"></i> 返回</a>
+  <h1 class="nav-title">订单管理</h1>
+  <a class="nav-action" href="ipad_profile_order_create.html"><i class="fa-solid fa-plus"></i> 新增</a>
+</div>
+<main class="sub-scroll"><div class="sub-inner">
+<p class="page-hint">已催办订单置顶，其余按派单时间倒序。</p>
+<div class="filter-bar">
+  <input type="text" placeholder="订单名称/编号">
+  <select><option>全部状态</option><option>待派单</option><option>已派单</option><option>已完成</option></select>
+  <button type="button" class="btn-search"><i class="fa-solid fa-magnifying-glass"></i> 查询</button>
+</div>
+<div class="card-grid">
+<article class="order-card">
+  <div class="order-card-head"><span class="order-id">ZJHC20260505001</span><span class="tag tag-orange">已催办</span></div>
+  <div class="order-name">城西改造项目检</div>
+  <div class="order-row"><span>站址编码</span><strong>ZZ-HZ-CX03</strong></div><div class="order-row"><span>关联工程</span><strong>城西区域改造项目</strong></div><div class="order-row"><span>检测单位</span><strong>华东某外协检测</strong></div><div class="order-row"><span>检测类型</span><strong>可靠性鉴定</strong></div><div class="order-row"><span>状态</span><strong><span class="tag tag-blue">已派</span></strong></div><div class="order-row"><span>派单 / 截止</span><strong>2026-05-05 · 2026-05-20</strong></div><div class="order-row"><span>是否过期</span><strong><span class="tag tag-green">正常</span></strong></div><div class="order-row"><span>检测人</span><strong>李明</strong></div>
+  <div class="order-foot"><button type="button">查看</button></div>
+</article>
+<article class="order-card">
+  <div class="order-card-head"><span class="order-id">ZJHYH20260503002</span><span class="tag tag-orange">已催办</span></div>
+  <div class="order-name">余杭5G升级检测</div>
+  <div class="order-row"><span>站址编码</span><strong>ZZ-YH-12</strong></div><div class="order-row"><span>关联工程</span><strong>余杭5G升级项目</strong></div><div class="order-row"><span>检测单位</span><strong>浙江中能检测</strong></div><div class="order-row"><span>检测类型</span><strong>安全性鉴定</strong></div><div class="order-row"><span>状态</span><strong><span class="tag tag-blue">已派</span></strong></div><div class="order-row"><span>派单 / 截止</span><strong>2026-05-03 · 2026-05-15</strong></div><div class="order-row"><span>是否过期</span><strong><span class="tag tag-orange">即将过期</span></strong></div><div class="order-row"><span>检测人</span><strong>王强</strong></div>
+  <div class="order-foot"><button type="button">查看</button></div>
+</article>
+<article class="order-card">
+  <div class="order-card-head"><span class="order-id">ZJZN20260508003</span><span class="tag tag-gray">未催办</span></div>
+  <div class="order-name">滨江年检批次二</div>
+  <div class="order-row"><span>站址编码</span><strong>ZZ-HZ-BJ02</strong></div><div class="order-row"><span>关联工程</span><strong>2026年杭州铁塔年检工程</strong></div><div class="order-row"><span>检测单位</span><strong>浙江中能检测</strong></div><div class="order-row"><span>检测类型</span><strong>年度例行检测</strong></div><div class="order-row"><span>状态</span><strong><span class="tag tag-orange" style="background:#fff7e8;color:#ff7d00">待派</span></strong></div><div class="order-row"><span>派单 / 截止</span><strong>— · 2026-06-01</strong></div><div class="order-row"><span>检测人</span><strong>—</strong></div>
+  <div class="order-foot"><button type="button">查看</button></div>
+</article></div></div></main>
+<script src="../../../assets/app-menu-access-log.js"></script>
+<script>document.addEventListener('DOMContentLoaded',function(){if(typeof __logMenuAccess==='function')__logMenuAccess('订单入口');});</script>
+</body></html>

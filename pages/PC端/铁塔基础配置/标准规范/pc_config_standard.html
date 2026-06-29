@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>标准规范</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+
+  <div class="card" style="margin-bottom:16px;border-left:4px solid var(--primary)">
+    <div class="card-body" style="padding:12px 16px;font-size:13px;color:var(--text-2)">
+      现行菜单：<strong>基础数据 → 标准规范</strong>（编码/名称/启用状态）。
+      <a href="../../基础数据/标准规范/pc_data_standard.html" class="btn btn-primary btn-sm" style="margin-left:10px">前往</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">标准规范管理</div>
+    </div>
+    <div class="card-body">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <input type="text" class="form-input" placeholder="标准名称/编号">
+          <select class="form-select">
+            <option value="">全部类型</option>
+            <option>国标</option>
+            <option>行标</option>
+            <option>企标</option>
+          </select>
+          <button class="btn btn-primary">查询</button>
+          <button class="btn btn-default">重置</button>
+        </div>
+      </div>
+
+      <div class="pc-table-actions">
+        <a class="btn btn-primary" href="pc_config_standard_create.html"><i class="fa-solid fa-plus"></i> 新增标准</a>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>标准编号</th>
+            <th>标准名称</th>
+            <th>标准类型</th>
+            <th>发布日期</th>
+            <th>实施日期</th>
+            <th>状态</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>GB/T 51338-2018</td>
+            <td>通信铁塔及桅杆结构安全检测技术规范</td>
+            <td><span class="tag tag-blue">国标</span></td>
+            <td>2018-12-01</td>
+            <td>2019-06-01</td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">编辑</button>
+              <button class="btn btn-text" style="color:var(--danger)">停用</button>
+            </td>
+          </tr>
+          <tr>
+            <td>YD/T 5132-2019</td>
+            <td>通信铁塔工程技术规范</td>
+            <td><span class="tag tag-green">行标</span></td>
+            <td>2019-03-15</td>
+            <td>2019-09-01</td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">编辑</button>
+              <button class="btn btn-text" style="color:var(--danger)">停用</button>
+            </td>
+          </tr>
+          <tr>
+            <td>GB 50135-2019</td>
+            <td>高耸结构设计标准</td>
+            <td><span class="tag tag-blue">国标</span></td>
+            <td>2019-11-20</td>
+            <td>2020-06-01</td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">编辑</button>
+              <button class="btn btn-text" style="color:var(--danger)">停用</button>
+            </td>
+          </tr>
+          <tr>
+            <td>Q/ZTT 1001-2023</td>
+            <td>铁塔公司通信塔检测实施细则</td>
+            <td><span class="tag tag-orange">企标</span></td>
+            <td>2023-05-10</td>
+            <td>2023-08-01</td>
+            <td><span class="tag tag-green">启用</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">编辑</button>
+              <button class="btn btn-text" style="color:var(--danger)">停用</button>
+            </td>
+          </tr>
+          <tr>
+            <td>YD/T 5131-2005</td>
+            <td>移动通信工程钢塔桅结构验收规范</td>
+            <td><span class="tag tag-green">行标</span></td>
+            <td>2005-08-01</td>
+            <td>2006-01-01</td>
+            <td><span class="tag tag-red">停用</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">编辑</button>
+              <button class="btn btn-text" style="color:var(--success)">启用</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <span>共 5 条记录</span>
+        <div class="pagination-btns">
+          <button class="page-btn"><i class="fa-solid fa-chevron-left"></i></button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'config_standard', breadcrumb:['铁塔基础配置','标准规范']};</script>
+</body>
+</html>
+
+

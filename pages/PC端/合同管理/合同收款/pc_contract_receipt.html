@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>对上收款 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .modal-mask { position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:2000; display:none; align-items:center; justify-content:center; padding:20px; }
+  .modal-mask.open { display:flex; }
+  .modal-dialog { background:#fff; border-radius:8px; width:min(720px,96vw); max-height:90vh; overflow:auto; box-shadow:0 12px 48px rgba(0,0,0,.18); }
+  .modal-dialog.order-modal { width:min(1200px,98vw); }
+  .modal-head { padding:14px 18px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+  .modal-head h3 { margin:0; font-size:16px; font-weight:600; color:var(--text-1); }
+  .modal-body { padding:16px 18px; }
+  .modal-foot { padding:12px 18px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:8px; }
+  .modal-close { border:none; background:transparent; color:var(--text-3); cursor:pointer; font-size:18px; line-height:1; padding:4px; }
+  .modal-close:hover { color:var(--text-1); }
+  .order-picker-toolbar { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+  .order-summary { font-size:12px; color:var(--text-2); margin-top:8px; min-height:18px; }
+  .order-echo { margin-top:8px; font-size:12px; color:var(--text-2); line-height:1.6; max-height:72px; overflow:auto; border:1px solid var(--border); border-radius:4px; padding:6px 8px; background:#fafafa; }
+  .sr-only-select { position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden; }
+  .search-select-wrap { position:relative; }
+  .search-select-dropdown { position:absolute; top:calc(100% + 4px); left:0; right:0; z-index:30; background:#fff; border:1px solid var(--border); border-radius:6px; box-shadow:0 6px 18px rgba(0,0,0,.08); max-height:220px; overflow:auto; display:none; }
+  .search-select-dropdown.open { display:block; }
+  .search-select-item { padding:8px 10px; font-size:13px; cursor:pointer; line-height:1.5; }
+  .search-select-item:hover { background:#F2F6FF; }
+  .search-select-empty { padding:8px 10px; font-size:12px; color:var(--text-3); }
+  .order-picker-batch { display:flex; align-items:center; gap:6px; margin-top:10px; font-size:13px; }
+  .order-picker-batch .batch-sep { color:var(--text-4); user-select:none; }
+  #invoicePickMask { z-index:2100; }
+  #invoiceViewMask { z-index:2200; }
+  .detail-grid { display:grid; grid-template-columns:120px 1fr; gap:10px 16px; font-size:13px; }
+  .detail-grid .detail-label { color:var(--text-3); }
+  .detail-grid .detail-value { color:var(--text-1); word-break:break-all; }
+</style>
+</head>
+<body>
+<div id="page-content">
+  <div class="page-header">
+    <div class="page-title">对上收款</div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <input type="text" class="form-input" placeholder="收款单号 / 合同编号" style="width:200px">
+          <input type="text" class="form-input" placeholder="合同名称关键词" style="width:160px">
+          <input type="date" class="form-input" style="width:150px">
+          <span style="color:var(--text-4)">至</span>
+          <input type="date" class="form-input" style="width:150px">
+          <button type="button" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> 查询</button>
+          <button type="button" class="btn btn-default"><i class="fa-solid fa-rotate-right"></i> 重置</button>
+        </div>
+      </div>
+
+      <div class="pc-table-actions">
+        <button type="button" class="btn btn-primary" id="btnOpenAdd"><i class="fa-solid fa-plus"></i> 新增收款</button>
+          <button type="button" class="btn btn-default"><i class="fa-solid fa-file-export"></i> 导出</button>
+        <a href="../合同列表/pc_contract_list.html" class="btn btn-default"><i class="fa-solid fa-arrow-left"></i> 返回对上合同</a>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>收款单号</th>
+            <th>合同编号</th>
+            <th>合同名称</th>
+            <th>收款金额</th>
+            <th>收款日期</th>
+            <th>方式</th>
+            <th>登记人</th>
+            <th class="col-action" style="width:100px">操作</th>
+          </tr>
+        </thead>
+        <tbody id="listBody">
+          <tr>
+            <td>SK-202605-0018</td>
+            <td>HT2026-0512</td>
+            <td>杭州移动 2026 年度铁塔检测框架</td>
+            <td>¥ 500,000.00</td>
+            <td>2026-05-08</td>
+            <td>银行转账</td>
+            <td>张伟</td>
+            <td class="col-action"><button type="button" class="btn-text"><i class="fa-solid fa-eye"></i> 查看</button> <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button></td>
+          </tr>
+          <tr>
+            <td>SK-202605-0012</td>
+            <td>HT2026-0428</td>
+            <td>城西改造专项检测分包</td>
+            <td>¥ 80,000.00</td>
+            <td>2026-05-02</td>
+            <td>银行转账</td>
+            <td>李娜</td>
+            <td class="col-action"><button type="button" class="btn-text"><i class="fa-solid fa-eye"></i> 查看</button> <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="pagination" style="margin-top:16px">
+        <span>共 2 条</span>
+        <div class="pagination-btns">
+          <button type="button" class="page-btn active">1</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-mask" id="modalMask" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-dialog">
+    <div class="modal-head">
+      <h3 id="modalTitle">新增收款</h3>
+      <button type="button" class="modal-close" id="btnModalX" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <p class="toolbar-note" style="margin:-4px 0 14px">选择对上合同后带出合同金额与累计已收；填写本次实收金额。</p>
+      <div class="form-grid form-grid-3">
+        <div class="form-group full">
+          <label class="form-label">关联对上合同 <span class="required">*</span></label>
+          <div class="search-select-wrap">
+            <input class="form-input" style="width:100%" id="mContractSearch" placeholder="搜索合同编号/名称并选择">
+            <div class="search-select-dropdown" id="mContractDropdown"></div>
+          </div>
+          <select class="form-select sr-only-select" style="width:100%" id="mContract">
+            <option value="">请选择对上合同</option>
+            <option value="HT2026-0512" data-name="杭州移动 2026 年度铁塔检测框架" data-amt="2860000" data-rcv="1200000">HT2026-0512 · 杭州移动 2026 年度铁塔检测框架</option>
+            <option value="HT2026-0428" data-name="城西改造专项检测分包" data-amt="480000" data-rcv="160000">HT2026-0428 · 城西改造专项检测分包</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">关联发票</label>
+          <button type="button" class="btn btn-default btn-sm" id="btnPickInvoices"><i class="fa-solid fa-file-invoice"></i> 选择发票</button>
+          <div class="order-summary" id="mInvoiceSummary">未关联发票</div>
+          <div class="order-echo" id="mInvoiceEcho">—</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">合同金额(含税，只读)</label>
+          <input type="text" class="form-input" id="mContractAmt" readonly style="width:100%;background:#F7F8FA">
+        </div>
+        <div class="form-group">
+          <label class="form-label">累计已收(只读)</label>
+          <input type="text" class="form-input" id="mReceivedSum" readonly style="width:100%;background:#F7F8FA">
+        </div>
+        <div class="form-group">
+          <label class="form-label">本次收款金额(元) <span class="required">*</span></label>
+          <input type="number" class="form-input" id="mAmount" style="width:100%" placeholder="含税实收" min="0" step="0.01">
+        </div>
+        <div class="form-group">
+          <label class="form-label">收款日期 <span class="required">*</span></label>
+          <input type="date" class="form-input" id="mDate" style="width:100%">
+        </div>
+        <div class="form-group">
+          <label class="form-label">收款方式 <span class="required">*</span></label>
+          <select class="form-select" id="mMethod" style="width:100%">
+            <option>银行转账</option>
+            <option>银行承兑汇票</option>
+            <option>现金</option>
+            <option>其他</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">备注</label>
+          <input type="text" class="form-input" id="mRemark" style="width:100%" placeholder="可选：发票号、分期说明等">
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-default" id="btnModalCancel">取消</button>
+      <button type="button" class="btn btn-primary" id="btnModalSave"><i class="fa-solid fa-check"></i> 确定</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-mask" id="invoicePickMask" role="dialog" aria-modal="true" aria-labelledby="invoicePickTitle">
+  <div class="modal-dialog order-modal">
+    <div class="modal-head">
+      <h3 id="invoicePickTitle">选择发票</h3>
+      <button type="button" class="modal-close" id="btnInvoicePickX" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="order-picker-toolbar">
+        <input type="text" class="form-input" id="invoiceFilterKeyword" placeholder="发票票号 / 站点名称" style="width:240px">
+        <button type="button" class="btn btn-primary btn-sm" id="btnInvoiceFilterSearch"><i class="fa-solid fa-magnifying-glass"></i> 筛选</button>
+        <button type="button" class="btn btn-default btn-sm" id="btnInvoiceFilterReset"><i class="fa-solid fa-rotate-right"></i> 重置</button>
+      </div>
+      <p class="toolbar-note" id="invoiceDefaultHint" style="margin:0 0 10px;font-size:12px;color:var(--text-3)"></p>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width:50px">选择</th>
+            <th style="width:160px">发票票号</th>
+            <th style="width:120px">开票日期</th>
+            <th style="width:130px">发票金额</th>
+            <th>此发票包含的站点名称</th>
+            <th class="col-action" style="width:90px">操作</th>
+          </tr>
+        </thead>
+        <tbody id="invoicePickBody"></tbody>
+      </table>
+      <div class="order-picker-batch">
+        <button type="button" class="btn-text" id="btnInvoiceSelectAll">全选</button>
+        <span class="batch-sep">|</span>
+        <button type="button" class="btn-text" id="btnInvoiceInvert">反选</button>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-default" id="btnInvoicePickCancel">取消</button>
+      <button type="button" class="btn btn-primary" id="btnInvoicePickOk"><i class="fa-solid fa-check"></i> 确定</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-mask" id="invoiceViewMask" role="dialog" aria-modal="true" aria-labelledby="invoiceViewTitle">
+  <div class="modal-dialog">
+    <div class="modal-head">
+      <h3 id="invoiceViewTitle">查看发票</h3>
+      <button type="button" class="modal-close" id="btnInvoiceViewX" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body" id="invoiceViewBody"></div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-default" id="btnInvoiceViewClose">关闭</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<script src="../../../../assets/shared-layout.js"></script>
+<script>
+window.__layoutConfig = { active: 'contract_receipt', breadcrumb: ['合同管理', '对上收款'] };
+
+window.addEventListener('DOMContentLoaded', function () {
+  var INVOICE_MOCK = [
+    { id: 'inv-1', contractCode: 'HT2026-0512', customer: '中国移动通信集团浙江有限公司', invoiceCode: '12345678901234', invoiceTime: '2026-05-08', siteNames: '余杭五常基站,临安重点加固站', amount: 120000, receiptStatus: '待收款', attachmentName: '发票-12345678901234.pdf' },
+    { id: 'inv-2', contractCode: 'HT2026-0428', customer: '浙江某建设集团有限公司', invoiceCode: '98765432109876', invoiceTime: '2026-05-10', siteNames: '城西15#复检站', amount: 45000, receiptStatus: '待收款', attachmentName: '发票-98765432109876.pdf' },
+    { id: 'inv-3', contractCode: 'HT2026-0512', customer: '中国移动通信集团浙江有限公司', invoiceCode: '11112222333344', invoiceTime: '2026-05-15', siteNames: '萧山复测站', amount: 80000, receiptStatus: '待收款', attachmentName: '' },
+    { id: 'inv-4', contractCode: 'HT2026-0512', customer: '中国移动通信集团浙江有限公司', invoiceCode: '55556666777788', invoiceTime: '2026-04-20', siteNames: '余杭五常基站', amount: 50000, receiptStatus: '已收款', attachmentName: '发票-55556666777788.pdf' }
+  ];
+  var invoiceViewMask = document.getElementById('invoiceViewMask');
+  var mask = document.getElementById('modalMask');
+  var btnOpen = document.getElementById('btnOpenAdd');
+  if (!mask || !btnOpen) return;
+
+  var mContract = document.getElementById('mContract');
+  var mContractSearch = document.getElementById('mContractSearch');
+  var mContractDropdown = document.getElementById('mContractDropdown');
+  var mAmt = document.getElementById('mContractAmt');
+  var mRcv = document.getElementById('mReceivedSum');
+  var listBody = document.getElementById('listBody');
+  var mInvoiceSummary = document.getElementById('mInvoiceSummary');
+  var mInvoiceEcho = document.getElementById('mInvoiceEcho');
+  var invoicePickMask = document.getElementById('invoicePickMask');
+  var invoicePickBody = document.getElementById('invoicePickBody');
+  var btnPickInvoices = document.getElementById('btnPickInvoices');
+  var invoiceFilterKeyword = document.getElementById('invoiceFilterKeyword');
+  var invoiceDefaultHint = document.getElementById('invoiceDefaultHint');
+  var selectedInvoiceIds = [];
+  var draftInvoiceIds = [];
+  var contractItems = [];
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function fmtMoney(n) {
+    if (n == null || n === '') return '';
+    var x = Number(n);
+    if (isNaN(x)) return '';
+    return '¥ ' + x.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function setSearchValueFromSelect() {
+    var opt = mContract.options[mContract.selectedIndex];
+    mContractSearch.value = opt && opt.value ? (opt.value + ' · ' + (opt.dataset.name || '')) : '';
+  }
+
+  function buildContractItems() {
+    contractItems = [];
+    for (var i = 0; i < mContract.options.length; i++) {
+      var opt = mContract.options[i];
+      if (!opt.value) continue;
+      contractItems.push({
+        value: opt.value,
+        name: opt.dataset.name || '',
+        text: opt.value + ' · ' + (opt.dataset.name || '')
+      });
+    }
+  }
+
+  function matchContractFromSearch(text) {
+    var input = String(text || '').trim().toLowerCase();
+    if (!input) return '';
+    for (var i = 0; i < contractItems.length; i++) {
+      var item = contractItems[i];
+      var full = item.text.toLowerCase();
+      var byCode = item.value.toLowerCase();
+      if (full === input || byCode === input || full.indexOf(input) >= 0) return item.value;
+    }
+    return '';
+  }
+
+  function renderContractDropdown(filterText) {
+    if (!mContractDropdown) return;
+    var f = String(filterText || '').trim().toLowerCase();
+    var rows = contractItems.filter(function (item) {
+      if (!f) return true;
+      return item.text.toLowerCase().indexOf(f) >= 0 ||
+        item.value.toLowerCase().indexOf(f) >= 0 ||
+        item.name.toLowerCase().indexOf(f) >= 0;
+    });
+    if (!rows.length) {
+      mContractDropdown.innerHTML = '<div class="search-select-empty">无匹配合同</div>';
+      return;
+    }
+    mContractDropdown.innerHTML = rows.map(function (item) {
+      return '<div class="search-select-item" data-value="' + item.value + '">' + item.text + '</div>';
+    }).join('');
+  }
+
+  function openContractDropdown() {
+    renderContractDropdown(mContractSearch.value);
+    mContractDropdown.classList.add('open');
+  }
+
+  function closeContractDropdown() {
+    mContractDropdown.classList.remove('open');
+  }
+
+  function openModal() {
+    mask.classList.add('open');
+    mContract.value = '';
+    mContractSearch.value = '';
+    mAmt.value = '';
+    mRcv.value = '';
+    selectedInvoiceIds = [];
+    draftInvoiceIds = [];
+    if (mInvoiceSummary) mInvoiceSummary.textContent = '未关联发票';
+    if (mInvoiceEcho) mInvoiceEcho.textContent = '—';
+    document.getElementById('mAmount').value = '';
+    document.getElementById('mRemark').value = '';
+    var d = document.getElementById('mDate');
+    if (d && !d.value) d.valueAsDate = new Date();
+  }
+  function closeModal() {
+    mask.classList.remove('open');
+  }
+
+  function getCurrentContractCode() {
+    return (mContract.value || '').trim();
+  }
+
+  function renderInvoiceSummary() {
+    if (!mInvoiceSummary) return;
+    if (!selectedInvoiceIds.length) {
+      mInvoiceSummary.textContent = '未关联发票';
+      if (mInvoiceEcho) mInvoiceEcho.textContent = '—';
+      return;
+    }
+    var selected = INVOICE_MOCK.filter(function (inv) { return selectedInvoiceIds.indexOf(inv.id) >= 0; });
+    var codes = selected.map(function (inv) { return inv.invoiceCode; }).join('，');
+    mInvoiceSummary.textContent = '已关联 ' + selected.length + ' 张发票：' + codes;
+    if (mInvoiceEcho) {
+      mInvoiceEcho.innerHTML = selected.map(function (inv) {
+        return inv.invoiceCode + ' · ' + inv.invoiceTime + ' · ' + (inv.siteNames || '—');
+      }).join('<br>');
+    }
+  }
+
+  function filterInvoices() {
+    var contractCode = getCurrentContractCode();
+    var kw = String(invoiceFilterKeyword && invoiceFilterKeyword.value || '').trim().toLowerCase();
+    return INVOICE_MOCK.filter(function (inv) {
+      if (inv.contractCode !== contractCode) return false;
+      if (inv.receiptStatus !== '待收款') return false;
+      if (!kw) return true;
+      return inv.invoiceCode.toLowerCase().indexOf(kw) >= 0 ||
+        (inv.siteNames || '').toLowerCase().indexOf(kw) >= 0;
+    });
+  }
+
+  function getVisibleInvoiceIds() {
+    return filterInvoices().map(function (inv) { return inv.id; });
+  }
+
+  function renderInvoiceViewDetail(inv) {
+    var body = document.getElementById('invoiceViewBody');
+    if (!body || !inv) return;
+    var items = [
+      ['关联客户', inv.customer || '—'],
+      ['关联合同', inv.contractCode || '—'],
+      ['发票票号', inv.invoiceCode],
+      ['开票日期', inv.invoiceTime],
+      ['发票金额', fmtMoney(inv.amount)],
+      ['收款状态', inv.receiptStatus || '—'],
+      ['此发票包含的站点名称', inv.siteNames || '—'],
+      ['附件', inv.attachmentName || '未上传']
+    ];
+    body.innerHTML = '<div class="detail-grid">' + items.map(function (pair) {
+      return '<div class="detail-label">' + esc(pair[0]) + '</div><div class="detail-value">' + esc(pair[1]) + '</div>';
+    }).join('') + '</div>';
+  }
+
+  function openInvoiceViewModal(inv) {
+    if (!inv || !invoiceViewMask) return;
+    renderInvoiceViewDetail(inv);
+    invoiceViewMask.classList.add('open');
+  }
+
+  function closeInvoiceViewModal() {
+    if (invoiceViewMask) invoiceViewMask.classList.remove('open');
+  }
+
+  function renderInvoicePickRows() {
+    if (!invoicePickBody) return;
+    var rows = filterInvoices();
+    if (!rows.length) {
+      invoicePickBody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-3)">无匹配发票</td></tr>';
+      return;
+    }
+    invoicePickBody.innerHTML = rows.map(function (inv) {
+      var checked = draftInvoiceIds.indexOf(inv.id) >= 0 ? ' checked' : '';
+      return '<tr data-invoice-id="' + inv.id + '">' +
+        '<td><input type="checkbox" class="js-invoice-check"' + checked + '></td>' +
+        '<td>' + esc(inv.invoiceCode) + '</td>' +
+        '<td>' + esc(inv.invoiceTime) + '</td>' +
+        '<td>' + esc(fmtMoney(inv.amount)) + '</td>' +
+        '<td>' + esc(inv.siteNames || '—') + '</td>' +
+        '<td class="col-action"><button type="button" class="btn-text js-invoice-view" data-invoice-id="' + esc(inv.id) + '"><i class="fa-solid fa-eye"></i> 查看</button></td></tr>';
+    }).join('');
+  }
+
+  function openInvoicePickModal() {
+    var contractCode = getCurrentContractCode();
+    if (!contractCode) {
+      alert('请先选择对上合同');
+      return;
+    }
+    draftInvoiceIds = selectedInvoiceIds.slice();
+    if (invoiceFilterKeyword) invoiceFilterKeyword.value = '';
+    if (invoiceDefaultHint) {
+      invoiceDefaultHint.textContent = '默认展示：与当前合同「' + contractCode + '」关联且收款状态为「待收款」的开票记录。';
+    }
+    renderInvoicePickRows();
+    invoicePickMask.classList.add('open');
+  }
+
+  function closeInvoicePickModal() {
+    invoicePickMask.classList.remove('open');
+  }
+
+  mContract.addEventListener('change', function () {
+    var opt = mContract.options[mContract.selectedIndex];
+    if (!opt || !opt.dataset.amt) {
+      mAmt.value = '';
+      mRcv.value = '';
+      selectedInvoiceIds = [];
+      draftInvoiceIds = [];
+      renderInvoiceSummary();
+      return;
+    }
+    mAmt.value = fmtMoney(opt.dataset.amt);
+    mRcv.value = fmtMoney(opt.dataset.rcv);
+    setSearchValueFromSelect();
+    selectedInvoiceIds = [];
+    draftInvoiceIds = [];
+    renderInvoiceSummary();
+  });
+
+  buildContractItems();
+  mContractSearch.addEventListener('focus', function () {
+    openContractDropdown();
+  });
+  mContractSearch.addEventListener('input', function () {
+    openContractDropdown();
+  });
+  mContractSearch.addEventListener('change', function () {
+    var matched = matchContractFromSearch(mContractSearch.value);
+    if (matched) {
+      mContract.value = matched;
+      mContract.dispatchEvent(new Event('change'));
+    }
+    closeContractDropdown();
+  });
+  mContractSearch.addEventListener('blur', function () {
+    setTimeout(function () {
+      var matched = matchContractFromSearch(mContractSearch.value);
+      if (matched) {
+        mContract.value = matched;
+        mContract.dispatchEvent(new Event('change'));
+      }
+      closeContractDropdown();
+    }, 120);
+  });
+  mContractDropdown.addEventListener('mousedown', function (e) {
+    var t = e.target;
+    if (!(t instanceof Element)) return;
+    var item = t.closest('.search-select-item');
+    if (!item) return;
+    var value = item.getAttribute('data-value') || '';
+    if (!value) return;
+    mContract.value = value;
+    mContract.dispatchEvent(new Event('change'));
+    closeContractDropdown();
+  });
+
+  btnOpen.addEventListener('click', openModal);
+
+  try {
+    var preCode = (new URLSearchParams(location.search).get('contractCode') || '').trim();
+    if (preCode) {
+      openModal();
+      mContract.value = preCode;
+      mContract.dispatchEvent(new Event('change'));
+      setSearchValueFromSelect();
+    }
+  } catch (e) {}
+  if (btnPickInvoices) btnPickInvoices.addEventListener('click', openInvoicePickModal);
+  document.getElementById('btnInvoicePickX').addEventListener('click', closeInvoicePickModal);
+  document.getElementById('btnInvoicePickCancel').addEventListener('click', closeInvoicePickModal);
+  document.getElementById('btnInvoiceFilterSearch').addEventListener('click', renderInvoicePickRows);
+  document.getElementById('btnInvoiceFilterReset').addEventListener('click', function () {
+    if (invoiceFilterKeyword) invoiceFilterKeyword.value = '';
+    renderInvoicePickRows();
+  });
+  document.getElementById('btnInvoiceSelectAll').addEventListener('click', function () {
+    getVisibleInvoiceIds().forEach(function (id) {
+      if (draftInvoiceIds.indexOf(id) < 0) draftInvoiceIds.push(id);
+    });
+    renderInvoicePickRows();
+  });
+  document.getElementById('btnInvoiceInvert').addEventListener('click', function () {
+    getVisibleInvoiceIds().forEach(function (id) {
+      var idx = draftInvoiceIds.indexOf(id);
+      if (idx >= 0) draftInvoiceIds.splice(idx, 1);
+      else draftInvoiceIds.push(id);
+    });
+    renderInvoicePickRows();
+  });
+  invoicePickBody.addEventListener('click', function (e) {
+    var t = e.target;
+    if (!(t instanceof Element)) return;
+    var viewBtn = t.closest('.js-invoice-view');
+    if (!viewBtn) return;
+    e.preventDefault();
+    var id = viewBtn.getAttribute('data-invoice-id');
+    var inv = INVOICE_MOCK.filter(function (x) { return x.id === id; })[0];
+    if (inv) openInvoiceViewModal(inv);
+  });
+  document.getElementById('btnInvoiceViewX').addEventListener('click', closeInvoiceViewModal);
+  document.getElementById('btnInvoiceViewClose').addEventListener('click', closeInvoiceViewModal);
+  if (invoiceViewMask) {
+    invoiceViewMask.addEventListener('click', function (e) {
+      if (e.target === invoiceViewMask) closeInvoiceViewModal();
+    });
+  }
+  invoicePickBody.addEventListener('change', function (e) {
+    var target = e.target;
+    if (!(target instanceof HTMLInputElement) || !target.classList.contains('js-invoice-check')) return;
+    var tr = target.closest('tr');
+    if (!tr) return;
+    var id = tr.getAttribute('data-invoice-id');
+    if (!id) return;
+    if (target.checked) {
+      if (draftInvoiceIds.indexOf(id) < 0) draftInvoiceIds.push(id);
+    } else {
+      draftInvoiceIds = draftInvoiceIds.filter(function (x) { return x !== id; });
+    }
+  });
+  document.getElementById('btnInvoicePickOk').addEventListener('click', function () {
+    selectedInvoiceIds = draftInvoiceIds.slice();
+    renderInvoiceSummary();
+    closeInvoicePickModal();
+  });
+  invoicePickMask.addEventListener('click', function (e) {
+    if (e.target === invoicePickMask) closeInvoicePickModal();
+  });
+  document.getElementById('btnModalX').addEventListener('click', closeModal);
+  document.getElementById('btnModalCancel').addEventListener('click', closeModal);
+  mask.addEventListener('click', function (e) {
+    if (e.target === mask) closeModal();
+  });
+
+  document.getElementById('btnModalSave').addEventListener('click', function () {
+    var opt = mContract.options[mContract.selectedIndex];
+    var amount = document.getElementById('mAmount').value;
+    var dt = document.getElementById('mDate').value;
+    if (!opt || !opt.value) {
+      alert('请选择对上合同');
+      return;
+    }
+    if (!amount || Number(amount) <= 0) {
+      alert('请输入有效的收款金额');
+      return;
+    }
+    if (!dt) {
+      alert('请选择收款日期');
+      return;
+    }
+    var no = 'SK-' + dt.replace(/-/g, '').slice(2) + '-' + String(Math.floor(Math.random() * 900) + 100);
+    function esc(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/"/g, '&quot;');
+    }
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td>' + esc(no) + '</td>' +
+      '<td>' + esc(opt.value) + '</td>' +
+      '<td>' + esc(opt.dataset.name || '') + '</td>' +
+      '<td>' + esc(fmtMoney(amount)) + '</td>' +
+      '<td>' + esc(dt) + '</td>' +
+      '<td>' + esc(document.getElementById('mMethod').value) + '</td>' +
+      '<td>当前用户</td>' +
+      '<td class="col-action"><button type="button" class="btn-text"><i class="fa-solid fa-eye"></i> 查看</button> <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button></td>';
+    listBody.insertBefore(tr, listBody.firstChild);
+    closeModal();
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>改派订单 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+
+  <div class="page-header">
+    <div class="page-title">改派订单</div>
+  </div>
+
+  <div class="card" style="max-width:640px">
+    <div class="card-header">
+      <div class="card-title">改派检测单位</div>
+    </div>
+    <div class="card-body">
+
+      <p style="font-size:13px;color:var(--text-2);margin:0 0 16px;padding:12px 14px;background:#FFF7E8;border:1px solid #FFE4BA;border-radius:6px">
+        <i class="fa-solid fa-circle-info" style="color:#D97706"></i>
+        仅当本订单对应检测任务<strong>尚未指定检测人员</strong>时允许改派；已指定人员的任务需先解除指派后再改派。
+      </p>
+
+      <div style="background:#F7F8FA;border-radius:6px;padding:16px;margin-bottom:20px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px">
+          <div>
+            <span style="color:var(--text-3)">订单编码</span><br>
+            <span style="color:var(--text-1);font-weight:500">ZJHC20260507001</span>
+          </div>
+          <div>
+            <span style="color:var(--text-3)">检测类型</span><br>
+            <span style="color:var(--text-1)">安全性鉴定</span>
+          </div>
+          <div style="grid-column:1/-1">
+            <span style="color:var(--text-3)">订单名称</span><br>
+            <span style="color:var(--text-1)">江北园区单管塔鉴定</span>
+          </div>
+          <div>
+            <span style="color:var(--text-3)">当前检测单位</span><br>
+            <span style="color:var(--text-1)">浙江中能检测</span>
+          </div>
+          <div>
+            <span style="color:var(--text-3)">任务检测人</span><br>
+            <span style="color:var(--text-1)">未指定</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:16px">
+        <label class="form-label">改派至检测单位 <span class="required">*</span></label>
+        <select class="form-select" style="width:100%">
+          <option value="">请选择（来源于基础数据 → 检测单位）</option>
+          <option>华东某外协检测有限公司</option>
+          <option>浙江华测工程检测有限公司</option>
+          <option>杭州建科结构检测中心</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">改派说明</label>
+        <textarea class="form-textarea" style="width:100%;min-height:88px" placeholder="选填：改派原因、交接说明等"></textarea>
+      </div>
+
+    </div>
+    <div class="form-footer">
+      <a href="../订单管理/pc_order_list.html" class="btn btn-default">取消</a>
+      <button type="button" class="btn btn-primary"><i class="fa-solid fa-shuffle"></i> 确认改派</button>
+    </div>
+  </div>
+
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'order_list', breadcrumb:['营销管理','订单管理','改派订单']};</script>
+</body>
+</html>

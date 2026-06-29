@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>设备入库 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+  <div class="page-header">
+    <h1 class="page-title">设备入库</h1>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">入库信息</span>
+    </div>
+    <div class="card-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <span class="form-label">入库单号</span>
+          <input class="form-input" readonly value="RK20260508-0001">
+        </div>
+        <div class="form-group">
+          <span class="form-label">入库日期</span>
+          <input class="form-input" type="date" value="2026-05-08">
+        </div>
+        <div class="form-group">
+          <span class="form-label">关联出库单<span class="required">*</span></span>
+          <select class="form-select">
+            <option value="">请选择关联出库单</option>
+            <option selected>CK20260505-0001</option>
+            <option>CK20260503-0002</option>
+            <option>CK20260501-0003</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <span class="form-label">归还人</span>
+          <input class="form-input" readonly value="李明 - 检测一组">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">归还设备</span>
+    </div>
+    <div class="card-body">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>设备编号</th>
+            <th>设备名称</th>
+            <th>规格型号</th>
+            <th>出库日期</th>
+            <th>设备状况</th>
+            <th>备注</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>SB-CL-202601-0002</td>
+            <td>钢筋锈蚀</td>
+            <td>PS-6</td>
+            <td>2026-05-05</td>
+            <td>
+              <select class="form-select" style="min-width:100px">
+                <option>完好</option>
+                <option>损坏</option>
+                <option>遗失</option>
+              </select>
+            </td>
+            <td><input class="form-input" style="width:150px" placeholder="备注"></td>
+          </tr>
+          <tr>
+            <td>SB-QY-202602-0001</td>
+            <td>回弹</td>
+            <td>ZC3-A</td>
+            <td>2026-05-05</td>
+            <td>
+              <select class="form-select" style="min-width:100px">
+                <option>完好</option>
+                <option>损坏</option>
+                <option>遗失</option>
+              </select>
+            </td>
+            <td><input class="form-input" style="width:150px" placeholder="备注"></td>
+          </tr>
+          <tr>
+            <td>SB-SY-202601-0001</td>
+            <td>全站</td>
+            <td>TS06</td>
+            <td>2026-05-05</td>
+            <td>
+              <select class="form-select" style="min-width:100px">
+                <option>完好</option>
+                <option>损坏</option>
+                <option>遗失</option>
+              </select>
+            </td>
+            <td><input class="form-input" style="width:150px" placeholder="备注"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="form-footer">
+    <button class="btn btn-primary">确认入库</button>
+    <button class="btn btn-default">取消</button>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'', breadcrumb:['仪器设备管理','设备入库（历史）','新增入库']};</script>
+</body>
+</html>
+
+

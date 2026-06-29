@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>通知公告</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">通知公告</div>
+    </div>
+    <div class="card-body">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <input type="text" class="form-input" placeholder="标题关键词">
+          <select class="form-select">
+            <option value="">全部类型</option>
+            <option>通知</option>
+            <option>公告</option>
+          </select>
+          <select class="form-select">
+            <option value="">全部状态</option>
+            <option>已发布</option>
+            <option>草稿</option>
+            <option>已下线</option>
+          </select>
+          <button type="button" class="btn btn-primary">查询</button>
+          <button type="button" class="btn btn-default">重置</button>
+        </div>
+      </div>
+
+      <div class="pc-table-actions">
+        <button type="button" class="btn btn-primary"><i class="fa-solid fa-plus"></i> 发布公告</button>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>标题</th>
+            <th>类型</th>
+            <th>发布范围</th>
+            <th>发布时间</th>
+            <th>状态</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>关于加强汛期铁塔巡检安全的通知</td>
+            <td><span class="tag tag-blue">通知</span></td>
+            <td>全员</td>
+            <td>2026-05-08 14:00</td>
+            <td><span class="tag tag-green">已发布</span></td>
+            <td class="col-action"><button type="button" class="btn btn-text">查看</button><button type="button" class="btn btn-text">编辑</button></td>
+          </tr>
+          <tr>
+            <td>检测数据录入字段调整说明（2026Q2）</td>
+            <td><span class="tag tag-orange">公告</span></td>
+            <td>检测部</td>
+            <td>2026-05-06 09:30</td>
+            <td><span class="tag tag-green">已发布</span></td>
+            <td class="col-action"><button type="button" class="btn btn-text">查看</button></td>
+          </tr>
+          <tr>
+            <td>五一劳动节值班安排（草稿）</td>
+            <td><span class="tag tag-blue">通知</span></td>
+            <td>管理人员</td>
+            <td>—</td>
+            <td><span class="tag tag-gray">草稿</span></td>
+            <td class="col-action"><button type="button" class="btn btn-text">编辑</button><button type="button" class="btn btn-text">发布</button></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <span>共 36 条记录</span>
+        <div class="pagination-btns">
+          <button type="button" class="page-btn"><i class="fa-solid fa-chevron-left"></i></button>
+          <button type="button" class="page-btn active">1</button>
+          <button type="button" class="page-btn">2</button>
+          <button type="button" class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'', breadcrumb:['个人中心','通知公告']};</script>
+</body>
+</html>

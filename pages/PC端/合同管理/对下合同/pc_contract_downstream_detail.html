@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>对下合同详情 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+.detail-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:16px}
+.detail-tabs .tab{padding:10px 16px;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.detail-tabs .tab.on{color:var(--primary);font-weight:600;border-bottom-color:var(--primary)}
+.tab-panel{display:none}.tab-panel.on{display:block}
+.fund-bar{display:flex;flex-wrap:wrap;gap:20px;padding:12px 14px;background:#F7F8FA;border-radius:6px;margin-bottom:16px;font-size:13px}
+.field-hint{font-size:12px;color:var(--text-3);margin-top:4px}
+.btn-row-del{color:var(--danger);border:none;background:transparent;cursor:pointer;font-size:12px}
+.modal-mask{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:2000;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-mask.open{display:flex}
+.modal-dialog{background:#fff;border-radius:8px;width:min(720px,96vw);max-height:90vh;overflow:auto;box-shadow:0 12px 48px rgba(0,0,0,.18)}
+.modal-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.modal-head h3{margin:0;font-size:16px;font-weight:600}
+.modal-body{padding:16px 18px}
+.modal-foot{padding:12px 18px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+.modal-close{border:none;background:transparent;color:var(--text-3);cursor:pointer;font-size:18px}
+.edit-only-rem{display:none}
+body.is-editing .edit-only-rem{display:inline-block}
+body.is-editing #remindTable .col-edit{display:table-cell}
+body:not(.is-editing) #remindTable .col-edit{display:none}
+.pick-row{cursor:pointer}
+.pick-row:hover,.pick-row.on{background:#f3f7ff}
+#btnPickUpstream{display:none}
+body.is-editing #btnPickUpstream{display:inline-flex;align-items:center;gap:4px}
+</style>
+</head>
+<body>
+<div id="page-content">
+  <div class="page-header">
+    <div class="page-title" id="pageTitle">对下合同详情</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <a href="pc_contract_downstream_list.html" class="btn btn-default"><i class="fa-solid fa-arrow-left"></i> 返回列表</a>
+      <span id="hdrActions"></span>
+      <a href="../合同付款/pc_contract_payment.html" class="btn btn-primary btn-sm" id="btnPay"><i class="fa-solid fa-coins"></i> 登记付款</a>
+    </div>
+  </div>
+  <p style="font-size:12px;color:var(--text-3);margin:-8px 0 14px">付款提醒到期后仅发<strong>消息中心</strong>（模板：对下合同-付款提醒）；审批走<strong>基础平台</strong>（若启用独立流程）。</p>
+  <div class="fund-bar" id="fundBar"></div>
+  <div class="card"><div class="card-body">
+    <div class="detail-tabs" id="tabBar">
+      <button type="button" class="tab on" data-tab="basic">基础信息</button>
+      <button type="button" class="tab" data-tab="link">关联对上</button>
+      <button type="button" class="tab" data-tab="remind">付款提醒</button>
+      <button type="button" class="tab" data-tab="flow">付款流水</button>
+      <button type="button" class="tab" data-tab="attach">附件备注</button>
+    </div>
+    <div class="tab-panel on" id="panel-basic">
+      <div class="form-grid form-grid-3">
+        <div class="form-group full"><label class="form-label">合同名称</label><input class="form-input" id="fName" style="width:100%"></div>
+        <div class="form-group"><label class="form-label">合同编码</label><input class="form-input" id="fCode" readonly style="background:#F7F8FA;width:100%"></div>
+        <div class="form-group"><label class="form-label">合同类型</label><select class="form-select" id="fType" style="width:100%"><option>劳务分包</option><option>协作检测</option></select></div>
+        <div class="form-group"><label class="form-label">检测单位</label><select class="form-select" id="fUnit" style="width:100%"><option>杭州某某检测技术有限公司</option><option>外协协作单位</option></select></div>
+        <div class="form-group"><label class="form-label">合同金额(元)</label><input type="number" class="form-input" id="fAmount" style="width:100%"></div>
+        <div class="form-group"><label class="form-label">合同起始</label><input type="date" class="form-input" id="fStart" style="width:100%"></div>
+        <div class="form-group"><label class="form-label">合同截止</label><input type="date" class="form-input" id="fEnd" style="width:100%"></div>
+      </div>
+    </div>
+    <div class="tab-panel" id="panel-link">
+      <p style="font-size:13px;margin:0 0 10px">已关联：<strong id="upCodeLbl">—</strong>
+        <a href="../合同编辑/pc_contract_detail.html" id="upLink" class="btn-text" style="display:none">查看对上合同</a>
+        <button type="button" class="btn btn-text" id="btnPickUpstream"><i class="fa-solid fa-link"></i> 选择对上合同</button>
+      </p>
+      <div class="form-grid form-grid-3">
+        <div class="form-group full"><label class="form-label">对上合同名称（带出）</label><input class="form-input" id="fUpName" readonly style="background:#F7F8FA;width:100%"></div>
+        <div class="form-group full"><label class="form-label">所属客户（带出）</label><input class="form-input" id="fCustomer" readonly style="background:#F7F8FA;width:100%"></div>
+        <div class="form-group"><label class="form-label">对上金额含税（带出）</label><input class="form-input" id="fUpTax" readonly style="background:#F7F8FA;width:100%"></div>
+        <div class="form-group"><label class="form-label">分包比例（带出）</label><input class="form-input" id="fSubRate" readonly style="background:#F7F8FA;width:100%"></div>
+      </div>
+    </div>
+    <div class="tab-panel" id="panel-remind">
+      <p style="font-size:12px;color:var(--text-3);margin:0 0 10px">到期后按「对下合同-付款提醒」消息模板推送至消息中心（不进待办）</p>
+      <table class="data-table" id="remindTable">
+        <thead>
+          <tr>
+            <th class="col-edit edit-only-rem" style="width:56px">操作</th>
+            <th>阶段名称</th>
+            <th style="width:220px">提醒时间</th>
+          </tr>
+        </thead>
+        <tbody id="remindBody"></tbody>
+      </table>
+      <button type="button" class="btn btn-default btn-sm edit-only-rem" id="btnAddRemRow" style="margin-top:12px"><i class="fa-solid fa-plus"></i> 增加一行</button>
+    </div>
+    <div class="tab-panel" id="panel-flow">
+      <p style="font-size:12px;color:var(--text-3);margin:0 0 10px">本对下合同已登记付款记录，累计计入顶部「累计付款」及消息模板「当前累计付款金额」</p>
+      <table class="data-table">
+        <thead><tr><th>付款单号</th><th>日期</th><th>金额</th><th>方式</th><th class="col-action" style="width:72px">操作</th></tr></thead>
+        <tbody id="payBody"></tbody>
+      </table>
+      <button type="button" class="btn btn-primary btn-sm" id="btnAddPaymentFlow" style="margin-top:12px"><i class="fa-solid fa-plus"></i> 登记付款</button>
+      <p class="field-hint" id="payFlowHint" style="margin-top:8px;display:none">请先保存合同生成编码后再登记付款</p>
+    </div>
+    <div class="tab-panel" id="panel-attach">
+      <div class="form-group"><label class="form-label">合同附件</label><input type="file" class="form-input" multiple></div>
+      <div class="form-group" style="margin-top:12px"><label class="form-label">备注</label><textarea class="form-textarea" id="fRemark" rows="3" style="width:100%"></textarea></div>
+    </div>
+  </div></div>
+  <div class="form-footer edit-only" id="formFooter" style="margin-top:16px">
+    <button type="button" class="btn btn-primary" id="btnSave"><i class="fa-solid fa-check"></i> 保存</button>
+  </div>
+
+  <div class="modal-mask" id="payModalMask" role="dialog" aria-modal="true">
+    <div class="modal-dialog">
+      <div class="modal-head">
+        <h3>登记对下付款</h3>
+        <button type="button" class="modal-close" id="payModalClose"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grid form-grid-3">
+          <div class="form-group full">
+            <label class="form-label">关联对下合同</label>
+            <input type="text" class="form-input" id="mPayContract" readonly style="width:100%;background:#F7F8FA">
+          </div>
+          <div class="form-group">
+            <label class="form-label">合同金额(只读)</label>
+            <input type="text" class="form-input" id="mPayContractAmt" readonly style="width:100%;background:#F7F8FA">
+          </div>
+          <div class="form-group">
+            <label class="form-label">累计已付(只读)</label>
+            <input type="text" class="form-input" id="mPayPaidSum" readonly style="width:100%;background:#F7F8FA">
+          </div>
+          <div class="form-group">
+            <label class="form-label">本次付款金额(元) <span class="required">*</span></label>
+            <input type="number" class="form-input" id="mPayAmount" min="0" step="0.01" style="width:100%">
+          </div>
+          <div class="form-group">
+            <label class="form-label">付款日期 <span class="required">*</span></label>
+            <input type="date" class="form-input" id="mPayDate" style="width:100%">
+          </div>
+          <div class="form-group">
+            <label class="form-label">付款方式 <span class="required">*</span></label>
+            <select class="form-select" id="mPayMethod" style="width:100%">
+              <option>银行转账</option><option>银行承兑汇票</option><option>现金</option><option>其他</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <label class="form-label">备注</label>
+            <input type="text" class="form-input" id="mPayRemark" style="width:100%" placeholder="可选">
+          </div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-default" id="payModalCancel">取消</button>
+        <button type="button" class="btn btn-primary" id="payModalSave"><i class="fa-solid fa-check"></i> 确定</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-mask" id="upstreamPickMask" role="dialog" aria-modal="true">
+    <div class="modal-dialog">
+      <div class="modal-head">
+        <h3>选择对上合同</h3>
+        <button type="button" class="modal-close" id="upstreamPickClose"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="field-hint" style="margin-top:0">数据来自「对上合同」列表。单击一行高亮后点「确定」，或双击快速选定；选定后自动带出名称、客户、金额与分包比例。</p>
+        <div class="toolbar" style="margin-bottom:10px">
+          <input type="text" class="form-input" id="upstreamPickSearch" placeholder="筛选合同编号/名称/客户" style="width:260px">
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width:130px">合同编号</th>
+              <th>合同名称</th>
+              <th>所属客户</th>
+              <th style="width:120px">金额(含税)</th>
+            </tr>
+          </thead>
+          <tbody id="upstreamPickBody"></tbody>
+        </table>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-default" id="upstreamPickCancel">取消</button>
+        <button type="button" class="btn btn-primary" id="upstreamPickOk"><i class="fa-solid fa-check"></i> 确定</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>
+var UPSTREAM_CONTRACTS = [
+  { code:'HT2026-0512', name:'杭州移动 2026 年度铁塔检测框架', customer:'中国移动通信集团浙江有限公司', upTax:'¥ 2,860,000', subRate:'—' },
+  { code:'HT2026-0428', name:'城西改造专项检测分包', customer:'浙江某建设集团有限公司', upTax:'¥ 480,000', subRate:'35%' },
+  { code:'HT2026-0310', name:'嘉兴铁塔抽检服务合同', customer:'中国铁塔股份有限公司嘉兴市分公司', upTax:'¥ 128,000', subRate:'—' }
+];
+var MOCK = {
+  'DX2026-0101': { code:'DX2026-0101', name:'单站检测外协服务包', type:'劳务分包', unit:'杭州某某检测技术有限公司', amount:120000, cumPay:45000, start:'2026-01-01', end:'2026-12-31', up:'HT2026-0512', upName:'杭州移动 2026 年度铁塔检测框架', customer:'中国移动…', upTax:'¥ 2,860,000', subRate:'—', workflow:'已通过', remark:'', payRem:[{name:'进度款',time:'2026-06-01T09:00',st:'待发送',at:'—'}], payments:[{no:'FK-202605-0009',date:'2026-05-06',amt:'45,000',m:'银行转账'}] },
+  'DX2026-0102': { code:'DX2026-0102', name:'塔身焊缝抽检协作', type:'协作检测', unit:'外协协作单位', amount:96000, cumPay:22000, start:'2026-04-01', end:'2026-09-30', up:'HT2026-0428', upName:'城西改造专项检测分包', customer:'浙江某建设…', upTax:'¥ 480,000', subRate:'35%', workflow:'审核中', remark:'待审批', payRem:[{name:'签约款',time:'2026-04-15T10:00',st:'待发送',at:'—'}], payments:[] }
+};
+window.__layoutConfig = { active: 'contract_downstream', breadcrumb: ['合同管理', '对下合同', '详情'] };
+window.addEventListener('DOMContentLoaded', function () {
+  var p = new URLSearchParams(location.search);
+  var code = p.get('code') || 'DX2026-0101';
+  var mode = p.get('mode') || 'view';
+  var isEdit = mode === 'edit' || mode === 'create';
+  var d = mode === 'create' ? { code:'（保存后生成）', name:'', amount:0, cumPay:0, up:'', upName:'', customer:'', upTax:'', subRate:'', workflow:'未提交', remark:'', payRem:[{ name:'', time:'', st:'待发送', at:'—' }], payments:[] } : (MOCK[code] || MOCK['DX2026-0101']);
+  document.getElementById('pageTitle').textContent = (mode === 'create' ? '新建对下合同' : ((isEdit ? '编辑' : '详情') + ' · ' + d.code));
+  if (mode === 'create') window.__layoutConfig.breadcrumb[2] = '新建合同';
+  document.getElementById('fName').value = d.name;
+  document.getElementById('fCode').value = d.code;
+  document.getElementById('fAmount').value = d.amount;
+  document.getElementById('fStart').value = d.start || '';
+  document.getElementById('fEnd').value = d.end || '';
+  document.getElementById('fRemark').value = d.remark || '';
+  function refreshUpstreamUI() {
+    document.getElementById('upCodeLbl').textContent = d.up || '未关联';
+    var upLink = document.getElementById('upLink');
+    if (d.up) {
+      upLink.href = '../合同编辑/pc_contract_detail.html?code=' + encodeURIComponent(d.up);
+      upLink.style.display = '';
+    } else {
+      upLink.href = '#';
+      upLink.style.display = 'none';
+    }
+    document.getElementById('fUpName').value = d.upName || '';
+    document.getElementById('fCustomer').value = d.customer || '';
+    document.getElementById('fUpTax').value = d.upTax || '';
+    document.getElementById('fSubRate').value = d.subRate || '';
+  }
+  refreshUpstreamUI();
+
+  var upstreamPickIdx = -1;
+  function renderUpstreamPickTable(filter) {
+    var tb = document.getElementById('upstreamPickBody');
+    if (!tb) return;
+    var f = (filter || '').trim().toLowerCase();
+    tb.innerHTML = '';
+    UPSTREAM_CONTRACTS.forEach(function (c, idx) {
+      if (f && c.code.toLowerCase().indexOf(f) < 0 && c.name.toLowerCase().indexOf(f) < 0 && c.customer.toLowerCase().indexOf(f) < 0) return;
+      var tr = document.createElement('tr');
+      tr.className = 'pick-row';
+      tr.dataset.idx = String(idx);
+      tr.innerHTML = '<td>' + c.code + '</td><td>' + c.name + '</td><td>' + c.customer + '</td><td>' + c.upTax + '</td>';
+      tr.addEventListener('click', function () {
+        tb.querySelectorAll('.pick-row').forEach(function (r) { r.classList.remove('on'); });
+        tr.classList.add('on');
+        upstreamPickIdx = idx;
+      });
+      tr.addEventListener('dblclick', function () {
+        upstreamPickIdx = idx;
+        applyUpstreamPick();
+        closeUpstreamPick();
+      });
+      tb.appendChild(tr);
+    });
+    if (!tb.children.length) {
+      tb.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-3)">无匹配合同</td></tr>';
+    }
+  }
+  function applyUpstreamPick() {
+    if (upstreamPickIdx < 0 || upstreamPickIdx >= UPSTREAM_CONTRACTS.length) {
+      alert('请先单击选择一条对上合同');
+      return false;
+    }
+    var c = UPSTREAM_CONTRACTS[upstreamPickIdx];
+    d.up = c.code;
+    d.upName = c.name;
+    d.customer = c.customer;
+    d.upTax = c.upTax;
+    d.subRate = c.subRate;
+    refreshUpstreamUI();
+    return true;
+  }
+  function openUpstreamPick() {
+    var mask = document.getElementById('upstreamPickMask');
+    upstreamPickIdx = -1;
+    document.getElementById('upstreamPickSearch').value = '';
+    renderUpstreamPickTable('');
+    mask.classList.add('open');
+  }
+  function closeUpstreamPick() {
+    document.getElementById('upstreamPickMask').classList.remove('open');
+  }
+  if (isEdit) {
+    document.getElementById('btnPickUpstream').onclick = openUpstreamPick;
+    document.getElementById('upstreamPickClose').onclick = closeUpstreamPick;
+    document.getElementById('upstreamPickCancel').onclick = closeUpstreamPick;
+    document.getElementById('upstreamPickOk').onclick = function () {
+      if (applyUpstreamPick()) closeUpstreamPick();
+    };
+    document.getElementById('upstreamPickSearch').oninput = function () {
+      renderUpstreamPickTable(this.value);
+    };
+    document.getElementById('upstreamPickMask').onclick = function (e) {
+      if (e.target.id === 'upstreamPickMask') closeUpstreamPick();
+    };
+  }
+  document.getElementById('fundBar').innerHTML = '<div>合同金额 <strong>¥ ' + Number(d.amount).toLocaleString() + '</strong></div><div>累计付款 <strong>¥ ' + Number(d.cumPay).toLocaleString() + '</strong></div><div>平台审批 <strong>' + d.workflow + '</strong></div>';
+  function renderRemindRows(list) {
+    var tbody = document.getElementById('remindBody');
+    tbody.innerHTML = '';
+    var rows = list && list.length ? list : (isEdit ? [{ name: '', time: '', st: '待发送', at: '—' }] : []);
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="' + (isEdit ? 3 : 2) + '" style="text-align:center;color:var(--text-3)">暂无，可点击下方「增加一行」</td></tr>';
+      return;
+    }
+    rows.forEach(function (r) {
+      var tr = document.createElement('tr');
+      if (isEdit) {
+        tr.innerHTML =
+          '<td class="col-edit edit-only-rem"><button type="button" class="btn-row-del js-del-rem">删除</button></td>' +
+          '<td><input type="text" class="form-input js-rem-name" style="width:100%" placeholder="如：首付款、进度款" value="' + (r.name || '').replace(/"/g, '&quot;') + '"></td>' +
+          '<td><input type="datetime-local" class="form-input js-rem-time" style="width:100%" value="' + (r.time || '') + '"></td>';
+        tr.querySelector('.js-del-rem').onclick = function () {
+          if (tbody.querySelectorAll('tr').length <= 1) { alert('至少保留一行'); return; }
+          tr.remove();
+        };
+      } else {
+        tr.innerHTML = '<td>' + r.name + '</td><td>' + r.time + '</td>';
+      }
+      tbody.appendChild(tr);
+    });
+  }
+  renderRemindRows(d.payRem);
+  if (isEdit) document.body.classList.add('is-editing');
+  if (mode === 'create') {
+    var linkTab = document.querySelector('#tabBar .tab[data-tab="link"]');
+    if (linkTab) {
+      document.querySelectorAll('#tabBar .tab').forEach(function (x) { x.classList.toggle('on', x === linkTab); });
+      document.querySelectorAll('.tab-panel').forEach(function (p) {
+        p.classList.toggle('on', p.id === 'panel-link');
+      });
+    }
+  }
+  var btnAddRem = document.getElementById('btnAddRemRow');
+  if (btnAddRem) {
+    btnAddRem.onclick = function () {
+      var tbody = document.getElementById('remindBody');
+      if (tbody.querySelector('td[colspan]')) tbody.innerHTML = '';
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td class="col-edit edit-only-rem"><button type="button" class="btn-row-del js-del-rem">删除</button></td>' +
+        '<td><input type="text" class="form-input js-rem-name" style="width:100%" placeholder="如：首付款、进度款"></td>' +
+        '<td><input type="datetime-local" class="form-input js-rem-time" style="width:100%"></td>';
+      tr.querySelector('.js-del-rem').onclick = function () {
+        if (tbody.querySelectorAll('tr').length <= 1) { alert('至少保留一行'); return; }
+        tr.remove();
+      };
+      tbody.appendChild(tr);
+    };
+  }
+  var paymentsList = d.payments ? d.payments.slice() : [];
+  function renderPayments() {
+    document.getElementById('payBody').innerHTML = paymentsList.map(function (x) {
+      return '<tr><td>' + x.no + '</td><td>' + x.date + '</td><td>¥ ' + x.amt + '</td><td>' + x.m + '</td><td class="col-action"><button type="button" class="btn-text">查看</button></td></tr>';
+    }).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--text-3)">暂无付款记录，请点击下方「登记付款」</td></tr>';
+  }
+  renderPayments();
+
+  var contractSaved = d.code && d.code.indexOf('保存') < 0;
+  function payPageUrl() { return '../合同付款/pc_contract_payment.html?contractCode=' + encodeURIComponent(d.code) + '&openAdd=1'; }
+  document.getElementById('btnPay').href = contractSaved ? payPageUrl() : '#';
+  document.getElementById('btnPay').onclick = contractSaved ? null : function (e) { e.preventDefault(); alert('请先保存合同'); };
+
+  var btnFlow = document.getElementById('btnAddPaymentFlow');
+  var payHint = document.getElementById('payFlowHint');
+  if (!contractSaved) {
+    payHint.style.display = 'block';
+    btnFlow.onclick = function () { alert('请先保存合同，生成对下合同编码后再登记付款'); };
+  } else {
+    payHint.style.display = 'none';
+    var payMask = document.getElementById('payModalMask');
+    function openPayModal() {
+      document.getElementById('mPayContract').value = d.code + ' · ' + (d.name || '');
+      document.getElementById('mPayContractAmt').value = '¥ ' + Number(d.amount).toLocaleString();
+      document.getElementById('mPayPaidSum').value = '¥ ' + Number(d.cumPay).toLocaleString();
+      document.getElementById('mPayAmount').value = '';
+      document.getElementById('mPayRemark').value = '';
+      document.getElementById('mPayDate').valueAsDate = new Date();
+      payMask.classList.add('open');
+    }
+    function closePayModal() { payMask.classList.remove('open'); }
+    btnFlow.onclick = openPayModal;
+    document.getElementById('payModalClose').onclick = closePayModal;
+    document.getElementById('payModalCancel').onclick = closePayModal;
+    payMask.onclick = function (e) { if (e.target === payMask) closePayModal(); };
+    document.getElementById('payModalSave').onclick = function () {
+      var amt = document.getElementById('mPayAmount').value;
+      var dt = document.getElementById('mPayDate').value;
+      if (!amt || Number(amt) <= 0) { alert('请输入有效付款金额'); return; }
+      if (!dt) { alert('请选择付款日期'); return; }
+      var no = 'FK-' + dt.replace(/-/g, '').slice(0, 6) + '-' + String(Math.floor(Math.random() * 900) + 100);
+      paymentsList.push({ no: no, date: dt, amt: Number(amt).toLocaleString(), m: document.getElementById('mPayMethod').value });
+      d.cumPay = (Number(d.cumPay) || 0) + Number(amt);
+      document.getElementById('fundBar').innerHTML = '<div>合同金额 <strong>¥ ' + Number(d.amount).toLocaleString() + '</strong></div><div>累计付款 <strong>¥ ' + Number(d.cumPay).toLocaleString() + '</strong></div><div>平台审批 <strong>' + d.workflow + '</strong></div>';
+      renderPayments();
+      closePayModal();
+      alert('付款已登记（原型演示）');
+    };
+  }
+  var hdr = document.getElementById('hdrActions');
+  if (d.workflow === '审核中') hdr.innerHTML = '<a href="../../工作台/流程中心/pc_workflow_approve.html?bizType=contract_down&bizId=' + d.code + '" class="btn btn-primary btn-sm">审批(平台)</a>';
+  else if (d.workflow === '未提交') hdr.innerHTML = '<button type="button" class="btn btn-primary btn-sm" onclick="alert(\'提交基础平台审批\')">提交审批</button>';
+  else hdr.innerHTML = '<a href="../../工作台/流程中心/pc_workflow_approve.html?bizType=contract_down&bizId=' + d.code + '" class="btn btn-default btn-sm">审批记录(平台)</a>';
+  if (!isEdit) { document.getElementById('formFooter').style.display = 'none'; hdr.innerHTML += ' <a href="pc_contract_downstream_detail.html?code=' + encodeURIComponent(d.code) + '&mode=edit" class="btn btn-default btn-sm">编辑</a>'; }
+  function initTabs() {
+    var tabBar = document.getElementById('tabBar');
+    if (!tabBar || tabBar.dataset.bound === '1') return;
+    tabBar.dataset.bound = '1';
+    tabBar.addEventListener('click', function (e) {
+      var t = e.target.closest('.tab');
+      if (!t) return;
+      tabBar.querySelectorAll('.tab').forEach(function (x) { x.classList.toggle('on', x === t); });
+      document.querySelectorAll('.tab-panel').forEach(function (p) {
+        p.classList.toggle('on', p.id === 'panel-' + t.getAttribute('data-tab'));
+      });
+    });
+  }
+  initTabs();
+  setTimeout(initTabs, 0);
+  document.getElementById('btnSave').onclick = function () { alert('已保存'); location.href = 'pc_contract_downstream_detail.html?code=' + encodeURIComponent(d.code); };
+});
+</script>
+</body>
+</html>

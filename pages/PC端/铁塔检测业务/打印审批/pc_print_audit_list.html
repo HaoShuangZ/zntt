@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>打印审批列表</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">打印审批列表</div>
+    </div>
+    <div class="card-body">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <input class="form-input" placeholder="搜索申请单号/报告编号/申请人">
+          <select class="form-select">
+            <option value="">全部审批状态</option>
+            <option>待审批</option>
+            <option>已同意</option>
+            <option>已拒绝</option>
+          </select>
+          <input type="date" class="form-input" title="审批开始日期">
+          <input type="date" class="form-input" title="审批结束日期">
+          <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> 查询</button>
+          <button class="btn btn-default">重置</button>
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>申请单号</th>
+            <th>报告编号</th>
+            <th>铁塔编号/名称</th>
+            <th>申请人</th>
+            <th>申请时间</th>
+            <th>份数</th>
+            <th>审批状态</th>
+            <th>审批人</th>
+            <th>审批时间</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>DY202605001</td>
+            <td>BG202605003</td>
+            <td>TT-BJ-001 / 滨江01#塔</td>
+            <td>张华</td>
+            <td>2026-05-08 10:00</td>
+            <td>3</td>
+            <td><span class="tag tag-orange">待审批</span></td>
+            <td>—</td>
+            <td>—</td>
+            <td class="col-action">
+              <a href="pc_print_audit.html" class="btn btn-text">审批</a>
+            </td>
+          </tr>
+          <tr>
+            <td>DY202605002</td>
+            <td>BG202605002</td>
+            <td>TT-BJ-002 / 滨江02#塔</td>
+            <td>王强</td>
+            <td>2026-05-07 17:20</td>
+            <td>2</td>
+            <td><span class="tag tag-green">已同意</span></td>
+            <td>刘七</td>
+            <td>2026-05-07 18:03</td>
+            <td class="col-action">
+              <a href="pc_print_audit.html" class="btn btn-text">查看</a>
+            </td>
+          </tr>
+          <tr>
+            <td>DY202605003</td>
+            <td>BG202605004</td>
+            <td>TT-YH-001 / 余杭01#塔</td>
+            <td>赵六</td>
+            <td>2026-05-06 14:30</td>
+            <td>1</td>
+            <td><span class="tag tag-red">已拒绝</span></td>
+            <td>刘七</td>
+            <td>2026-05-06 15:10</td>
+            <td class="col-action">
+              <a href="pc_print_audit.html" class="btn btn-text">查看</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <span>共 3 条记录</span>
+        <div class="pagination-btns">
+          <button class="page-btn"><i class="fa-solid fa-chevron-left"></i></button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'report_generate', breadcrumb:['检测管理','报告编制','打印审批','审批列表']};</script>
+</body>
+</html>

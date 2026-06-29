@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<!-- iPad-INSPECT_INDEX v2.0 landscape -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>现场检测</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/app-frame.css">
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; background: #F2F3F5; margin: 0; }
+</style>
+</head>
+<body>
+<!-- Status bar -->
+<div style="height:44px; display:flex; align-items:center; justify-content:space-between; padding:0 16px; background:#fff;">
+  <span style="font-size:14px; font-weight:600;">9:41</span>
+  <span style="font-size:12px;"><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+</div>
+<!-- Navigation bar -->
+<div style="height:44px; display:flex; align-items:center; padding:0 16px; background:#fff; border-bottom:1px solid #E5E6EB;">
+  <span style="width:40px;"></span>
+  <span style="flex:1; text-align:center; font-size:16px; font-weight:600;">现场检测</span>
+  <span style="width:40px;"></span>
+</div>
+<div style="padding:8px 16px 0; background:#F2F3F5;">
+  <a href="../ipad_inspect_shell.html" style="font-size:13px; color:#165DFF; text-decoration:none; font-weight:600;">进入检测工作台</a>
+</div>
+
+<!-- Task info banner -->
+<div style="margin:12px 16px 0; background:linear-gradient(135deg, #165DFF 0%, #4080FF 100%); border-radius:12px; padding:14px; color:#fff;">
+  <div style="font-size:14px; font-weight:600; margin-bottom:4px;">滨江区01#单管塔</div>
+  <div style="font-size:12px; opacity:0.8;">年度常规检测 · DD20260506001</div>
+</div>
+
+<!-- Content area -->
+<div style="padding:12px 16px 70px; overflow-y:auto;">
+
+  <!-- 2-column grid -->
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
+
+    <a href="../../检测/塔体/ipad_inspect_tower.html" style="text-decoration:none; color:inherit;">
+      <div style="background:#fff; border-radius:12px; padding:16px; text-align:center; box-shadow:0 1px 4px rgba(0,0,0,0.06); position:relative;">
+        <i class="fa-solid fa-tower-broadcast" style="font-size:28px; color:#165DFF; margin-bottom:8px; display:block;"></i>
+        <div style="font-size:13px; font-weight:500; color:#1D2129;">铁塔信息</div>
+        <span style="position:absolute; top:8px; right:8px; width:8px; height:8px; border-radius:50%; background:#00B42A;"></span>
+      </div>
+    </a>
+
+    <a href="../../检测/地基/ipad_inspect_foundation.html" style="text-decoration:none; color:inherit;">
+      <div style="background:#fff; border-radius:12px; padding:16px; text-align:center; box-shadow:0 1px 4px rgba(0,0,0,0.06); position:relative;">
+        <i class="fa-solid fa-monument" style="font-size:28px; color:#165DFF; margin-bottom:8px; display:block;"></i>
+        <div style="font-size:13px; font-weight:500; color:#1D2129;">基础及地锚</div>
+        <span style="position:absolute; top:8px; right:8px; width:8px; height:8px; border-radius:50%; background:#00B42A;"></span>
+      </div>
+    </a>
+
+    <a href="../../检测/结构图/ipad_inspect_diagram.html" style="text-decoration:none; color:inherit;">
+      <div style="background:#fff; border-radius:12px; padding:16px; text-align:center; box-shadow:0 1px 4px rgba(0,0,0,0.06); position:relative;">
+        <i class="fa-solid fa-diagram-project" style="font-size:28px; color:#165DFF; margin-bottom:8px; display:block;"></i>
+        <div style="font-size:13px; font-weight:500; color:#1D2129;">结构简图</div>
+        <span style="position:absolute; top:8px; right:8px; width:8px; height:8px; border-radius:50%; background:#00B42A;"></span>
+      </div>
+    </a>
+
+    <a href="../../检测/分段/ipad_inspect_segment.html" style="text-decoration:none; color:inherit;">
+      <div style="background:#fff; border-radius:12px; padding:16px; text-align:center; box-shadow:0 1px 4px rgba(0,0,0,0.06); position:relative;">
+        <i class="fa-solid fa-layer-group" style="font-size:28px; color:#165DFF; margin-bottom:8px; display:block;"></i>
+        <div style="font-size:13px; font-weight:500; color:#1D2129;">塔段检测</div>
+        <span style="position:absolute; top:8px; right:8px; width:8px; height:8px; border-radius:50%; background:#00B42A;"></span>
+      </div>
+    </a>
+
+    <a href="../../检测/平台/ipad_inspect_platform.html" style="text-decoration:none; color:inherit;">
+      <div style="background:#fff; border-radius:12px; padding:16px; text-align:center; box-shadow:0 1px 4px rgba(0,0,0,0.06); position:relative;">
+        <i class="fa-solid fa-satellite-dish" style="font-size:28px; color:#165DFF; margin-bottom:8px; display:block;"></i>
+        <div style="font-size:13px; font-weight:500; color:#1D2129;">平台/天线</div>
+        <span style="position:absolute; top:8px; right:8px; width:8px; height:8px; border-radius:50%; background:#FF7D00;"></span>
+      </div>
+    </a>
+
+    <a href="../../检测/馈线/ipad_inspect_feed.html" style="text-decoration:none; color:inherit;">
+      <div style="background:#fff; border-radius:12px; padding:16px; text-align:center; box-shadow:0 1px 4px rgba(0,0,0,0.06); position:relative;">
+        <i class="fa-solid fa-ethernet" style="font-size:28px; color:#165DFF; margin-bottom:8px; display:block;"></i>
+        <div style="font-size:13px; font-weight:500; color:#1D2129;">馈线检测</div>
+        <span style="position:absolute; top:8px; right:8px; width:8px; height:8px; border-radius:50%; background:#00B42A;"></span>
+      </div>
+    </a>
+
+    <a href="../../检测/回弹/ipad_inspect_rebound.html" style="text-decoration:none; color:inherit;">
+      <div style="background:#fff; border-radius:12px; padding:16px; text-align:center; box-shadow:0 1px 4px rgba(0,0,0,0.06); position:relative;">
+        <i class="fa-solid fa-hammer" style="font-size:28px; color:#165DFF; margin-bottom:8px; display:block;"></i>
+        <div style="font-size:13px; font-weight:500; color:#1D2129;">回弹强度</div>
+        <span style="position:absolute; top:8px; right:8px; width:8px; height:8px; border-radius:50%; background:#00B42A;"></span>
+      </div>
+    </a>
+
+    <a href="../../检测/接地/ipad_inspect_ground.html" style="text-decoration:none; color:inherit;">
+      <div style="background:#fff; border-radius:12px; padding:16px; text-align:center; box-shadow:0 1px 4px rgba(0,0,0,0.06); position:relative;">
+        <i class="fa-solid fa-bolt" style="font-size:28px; color:#165DFF; margin-bottom:8px; display:block;"></i>
+        <div style="font-size:13px; font-weight:500; color:#1D2129;">接地电阻</div>
+        <span style="position:absolute; top:8px; right:8px; width:8px; height:8px; border-radius:50%; background:#00B42A;"></span>
+      </div>
+    </a>
+
+    <a href="../../检测/垂直度/ipad_inspect_vertical.html" style="text-decoration:none; color:inherit;">
+      <div style="background:#fff; border-radius:12px; padding:16px; text-align:center; box-shadow:0 1px 4px rgba(0,0,0,0.06); position:relative;">
+        <i class="fa-solid fa-ruler-vertical" style="font-size:28px; color:#165DFF; margin-bottom:8px; display:block;"></i>
+        <div style="font-size:13px; font-weight:500; color:#1D2129;">垂直度</div>
+        <span style="position:absolute; top:8px; right:8px; width:8px; height:8px; border-radius:50%; background:#00B42A;"></span>
+      </div>
+    </a>
+
+    <a href="../../检测/备注/ipad_inspect_note.html" style="text-decoration:none; color:inherit;">
+      <div style="background:#fff; border-radius:12px; padding:16px; text-align:center; box-shadow:0 1px 4px rgba(0,0,0,0.06); position:relative;">
+        <i class="fa-solid fa-note-sticky" style="font-size:28px; color:#165DFF; margin-bottom:8px; display:block;"></i>
+        <div style="font-size:13px; font-weight:500; color:#1D2129;">快捷手记</div>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- Action buttons -->
+  <div style="display:flex; gap:12px; margin-bottom:16px;">
+    <a href="../../检测/校验/ipad_inspect_validate.html" style="flex:1; display:block; height:44px; background:#fff; border:1px solid #165DFF; color:#165DFF; border-radius:8px; font-size:14px; font-weight:600; text-decoration:none; text-align:center; line-height:44px;">
+      <i class="fa-solid fa-check-double"></i> 数据校验
+    </a>
+    <a href="../../系统/同步/ipad_sync_index.html" style="flex:1; display:block; height:44px; background:#165DFF; color:#fff; border-radius:8px; font-size:14px; font-weight:600; text-decoration:none; text-align:center; line-height:44px;">
+      <i class="fa-solid fa-cloud-arrow-up"></i> 数据同步
+    </a>
+  </div>
+
+</div>
+
+</body>
+</html>

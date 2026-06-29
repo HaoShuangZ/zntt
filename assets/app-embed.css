@@ -1,0 +1,28 @@
+/* 嵌入检测 Shell（?embed=1）：隐藏顶栏，由外层 Shell 承载导航与三操作 */
+html.app-embed #appStatusBar,
+html.app-embed #appNavBar {
+  display: none !important;
+}
+html.app-embed #appTabBar {
+  display: none !important;
+}
+html.app-embed body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+}
+html.app-embed #appSegmentTabBar {
+  flex-shrink: 0;
+}
+html.app-embed #appEmbedContent {
+  flex: 1;
+  min-height: 0 !important;
+  height: auto !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  box-sizing: border-box;
+}
+html.app-embed [data-app-flow-footer] {
+  display: none !important;
+}

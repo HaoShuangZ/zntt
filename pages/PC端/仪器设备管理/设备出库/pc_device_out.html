@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>设备出库 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+  <div class="page-header">
+    <h1 class="page-title">设备出库</h1>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">关联检测任务</span>
+    </div>
+    <div class="card-body">
+      <p style="font-size:12px;color:var(--text-3);margin:0 0 14px;line-height:1.55;">设备出库须绑定现场执行的<strong>检测任务</strong>，便于设备台账与任务、报告追溯。可从检测任务列表选择进行中的任务。</p>
+      <div class="form-grid form-grid-3">
+        <div class="form-group">
+          <span class="form-label">检测任务<span class="required">*</span></span>
+          <select class="form-select" id="taskRelSelect">
+            <option value="">请选择检测任务</option>
+            <option value="DD-202605-T001">DD-202605-T001 · 滨江01#单管 · 进行中</option>
+            <option value="DD-202605-T002">DD-202605-T002 · 科技园二期角钢塔 · 待进场</option>
+            <option value="DD-202604-T018">DD-202604-T018 · 城北景观塔 · 进行中</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <span class="form-label">任务状态</span>
+          <input class="form-input" id="taskRelStatus" readonly placeholder="选择任务后自动带出" style="background:var(--bg-page, #F7F8FA)">
+        </div>
+        <div class="form-group">
+          <span class="form-label">计划完成日期</span>
+          <input class="form-input" id="taskRelPlanEnd" type="text" readonly placeholder="—" style="background:var(--bg-page, #F7F8FA)">
+        </div>
+        <div class="form-group">
+          <span class="form-label">铁塔编号</span>
+          <input class="form-input" id="taskRelTowerCode" readonly placeholder="选择任务后自动带出" style="background:var(--bg-page, #F7F8FA)">
+        </div>
+        <div class="form-group">
+          <span class="form-label">铁塔名称</span>
+          <input class="form-input" id="taskRelTowerName" readonly placeholder="选择任务后自动带出" style="background:var(--bg-page, #F7F8FA)">
+        </div>
+        <div class="form-group">
+          <span class="form-label">检测类别</span>
+          <input class="form-input" id="taskRelInspectType" readonly placeholder="选择任务后自动带出" style="background:var(--bg-page, #F7F8FA)">
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <span class="form-label">站点 / 工程位置</span>
+          <input class="form-input" id="taskRelSite" readonly placeholder="选择任务后自动带出" style="background:var(--bg-page, #F7F8FA)">
+        </div>
+      </div>
+      <div style="margin-top:12px;">
+        <a href="../../铁塔检测业务/检测任务/pc_task_list.html" class="btn btn-default btn-sm" target="_blank" rel="noopener"><i class="fa-solid fa-list-check"></i> 打开检测任务列表</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">出库信息</span>
+    </div>
+    <div class="card-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <span class="form-label">出库单号</span>
+          <input class="form-input" readonly value="CK20260508-0001">
+        </div>
+        <div class="form-group">
+          <span class="form-label">出库日期<span class="required">*</span></span>
+          <input class="form-input" type="date" value="2026-05-08">
+        </div>
+        <div class="form-group">
+          <span class="form-label">选择借用人<span class="required">*</span></span>
+          <select class="form-select">
+            <option value="">请选择借用人</option>
+            <option>李明（检测一组）- 已借3件</option>
+            <option>王强（检测二组）- 已借1件</option>
+            <option>张华（检测三组）- 已借0件</option>
+            <option>赵刚（检测四组）- 已借2件</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <span class="form-label">计划归还日期<span class="required">*</span></span>
+          <input class="form-input" type="date">
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <span class="form-label">备注</span>
+          <textarea class="form-textarea" placeholder="请输入备注信息"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">选择设备</span>
+    </div>
+    <div class="card-body">
+      <div style="display:flex;gap:16px;align-items:stretch">
+        <div style="flex:0 0 45%;border:1px solid #e8e8e8;border-radius:8px;padding:16px">
+          <div style="font-weight:500;margin-bottom:12px;color:#333">可用设备</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+              <input type="checkbox">
+              <span>SB-CL-202601-0001 超声波测厚仪 (DM4E)</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+              <input type="checkbox">
+              <span>SB-QY-202602-0001 回弹仪(ZC3-A)</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+              <input type="checkbox">
+              <span>SB-SY-202601-0002 经纬仪(DTM-322)</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+              <input type="checkbox">
+              <span>SB-CL-202604-0001 裂缝测宽仪(ZBL-F120)</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+              <input type="checkbox">
+              <span>SB-CL-202605-0001 钢尺 (5m)</span>
+            </label>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;justify-content:center;gap:8px">
+          <button class="btn btn-default btn-sm"><i class="fa-solid fa-arrow-right"></i></button>
+          <button class="btn btn-default btn-sm"><i class="fa-solid fa-arrow-left"></i></button>
+        </div>
+
+        <div style="flex:0 0 45%;border:1px solid #e8e8e8;border-radius:8px;padding:16px">
+          <div style="font-weight:500;margin-bottom:12px;color:#333">已选设备</div>
+          <div style="color:#999;text-align:center;padding:40px 0">请从左侧选择设备</div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;padding:12px 16px;background:#f7f8fa;border-radius:6px;font-size:14px;color:#666">
+        已选 <strong>0</strong> 件设备      </div>
+    </div>
+  </div>
+
+  <div class="form-footer">
+    <button class="btn btn-primary">确认出库</button>
+    <button class="btn btn-default">取消</button>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'', breadcrumb:['仪器设备管理','设备出库（历史）','新增出库']};</script>
+<script>
+(function () {
+  var TASK_META = {
+    'DD-202605-T001': { status: '进行中', planEnd: '2026-05-20', towerCode: 'TT-BJ-001', towerName: '滨江01#单管', inspectType: '安全性鉴定', site: '杭州市滨江区××路与××路交叉口东北侧' },
+    'DD-202605-T002': { status: '待进场', planEnd: '2026-05-25', towerCode: 'TT-HZ-112', towerName: '科技园二期角钢塔', inspectType: '定期检测', site: '杭州市西湖区××科技园B区' },
+    'DD-202604-T018': { status: '进行中', planEnd: '2026-05-15', towerCode: 'TT-NB-008', towerName: '城北景观塔', inspectType: '安全性鉴定', site: '宁波市××区景观带' }
+  };
+  function fillTaskRel() {
+    var sel = document.getElementById('taskRelSelect');
+    if (!sel) return;
+    var id = sel.value;
+    var m = TASK_META[id];
+    function set(id2, v) { var el = document.getElementById(id2); if (el) el.value = v || ''; }
+    if (!m) {
+      set('taskRelStatus', ''); set('taskRelPlanEnd', ''); set('taskRelTowerCode', ''); set('taskRelTowerName', ''); set('taskRelInspectType', ''); set('taskRelSite', '');
+      return;
+    }
+    set('taskRelStatus', m.status);
+    set('taskRelPlanEnd', m.planEnd);
+    set('taskRelTowerCode', m.towerCode);
+    set('taskRelTowerName', m.towerName);
+    set('taskRelInspectType', m.inspectType);
+    set('taskRelSite', m.site);
+  }
+  function boot() {
+    var sel = document.getElementById('taskRelSelect');
+    if (!sel) return;
+    sel.addEventListener('change', fillTaskRel);
+  }
+  if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+})();
+</script>
+</body>
+</html>
+
+

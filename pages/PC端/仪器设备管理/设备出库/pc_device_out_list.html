@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>设备出库列表 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+</head>
+<body>
+<div id="page-content">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">设备出库列表</div>
+    </div>
+    <div class="card-body">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <input type="text" class="form-input" placeholder="出库单号 / 借用人">
+          <input type="text" class="form-input" placeholder="检测任务编号" title="如 DD-202605-T001">
+          <select class="form-select">
+            <option value="">全部状态</option>
+            <option>待归还</option>
+            <option>已归还</option>
+            <option>逾期未还</option>
+          </select>
+          <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> 查询</button>
+          <button class="btn btn-default">重置</button>
+        </div>
+      </div>
+
+      <div class="pc-table-actions">
+        <a href="pc_device_out.html" class="btn btn-primary"><i class="fa-solid fa-plus"></i> 新增出库</a>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>出库单号</th>
+            <th>检测任务编号</th>
+            <th>铁塔名称</th>
+            <th>借用人</th>
+            <th>借用部门</th>
+            <th>出库日期</th>
+            <th>计划归还日期</th>
+            <th>设备数量</th>
+            <th>状态</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>CK20260508-0001</td>
+            <td><a href="../../铁塔检测业务/检测数据录入/pc_task_data.html#tower-spec" class="btn btn-text" style="padding:0" title="进入该任务检测数据录入">DD-202605-T001</a></td>
+            <td>滨江01#单管</td>
+            <td>李明</td>
+            <td>检测一组</td>
+            <td>2026-05-08</td>
+            <td>2026-05-12</td>
+            <td>3</td>
+            <td><span class="tag tag-orange">待归还</span></td>
+            <td class="col-action">
+              <a href="pc_device_out.html" class="btn btn-text">办理</a>
+              <button class="btn btn-text">查看</button>
+            </td>
+          </tr>
+          <tr>
+            <td>CK20260505-0002</td>
+            <td>DD-202604-T018</td>
+            <td>城北景观塔</td>
+            <td>王强</td>
+            <td>检测二组</td>
+            <td>2026-05-05</td>
+            <td>2026-05-10</td>
+            <td>2</td>
+            <td><span class="tag tag-green">已归还</span></td>
+            <td class="col-action">
+              <button class="btn btn-text">查看</button>
+            </td>
+          </tr>
+          <tr>
+            <td>CK20260501-0003</td>
+            <td>—</td>
+            <td>—</td>
+            <td>赵刚</td>
+            <td>检测四组</td>
+            <td>2026-05-01</td>
+            <td>2026-05-03</td>
+            <td>4</td>
+            <td><span class="tag tag-red">逾期未还</span></td>
+            <td class="col-action">
+              <a href="../设备入库/pc_device_in.html" class="btn btn-text">催还登记</a>
+              <button class="btn btn-text">查看</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <span>共 3 条记录</span>
+        <div class="pagination-btns">
+          <button class="page-btn"><i class="fa-solid fa-chevron-left"></i></button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'', breadcrumb:['仪器设备管理','设备出库（历史）','出库列表']};</script>
+</body>
+</html>

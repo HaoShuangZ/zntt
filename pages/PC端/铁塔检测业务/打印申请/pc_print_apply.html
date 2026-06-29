@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>打印申请</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .readonly-field { background:#F7F8FA; border:1px solid var(--border); border-radius:4px; padding:6px 12px; font-size:13px; color:var(--text-2); height:32px; display:flex; align-items:center; }
+</style>
+</head>
+<body>
+<div id="page-content">
+
+  <!-- 打印申请 -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-header"><div class="card-title">打印申请</div></div>
+    <div class="card-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">关联报告 <span class="required">*</span></label>
+          <select class="form-select" style="width:100%">
+            <option value="">请选择报告</option>
+            <option selected>BG202605003 - 滨江01#单管塔检测报告</option>
+            <option>BG202604012 - 西湖01#三管塔检测报告</option>
+            <option>BG202604008 - 余杭01#四管塔检测报告</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">报告编号</label>
+          <div class="readonly-field">BG202605003</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">打印份数 <span class="required">*</span></label>
+          <input type="number" class="form-input" style="width:100%" value="3" min="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">打印用途<span class="required">*</span></label>
+          <select class="form-select" style="width:100%">
+            <option>客户交付</option>
+            <option>档案归档</option>
+            <option>其他</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">申请说明</label>
+          <textarea class="form-textarea" placeholder="请输入申请说明">杭州移动要求提交3份纸质检测报告，其中2份交付客户，1份存档。</textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 报告信息 -->
+  <div class="card">
+    <div class="card-header"><div class="card-title">报告信息</div></div>
+    <div class="card-body">
+      <div class="form-grid form-grid-3">
+        <div class="form-group">
+          <label class="form-label">报告名称</label>
+          <div class="readonly-field">滨江01#单管塔检测报</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">检测类</label>
+          <div class="readonly-field">安全性鉴</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">编制</label>
+          <div class="readonly-field">张华</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">签发</label>
+          <div class="readonly-field">刘七</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">签发时间</label>
+          <div class="readonly-field">2026-05-08 09:30</div>
+        </div>
+      </div>
+
+      <div class="form-footer">
+        <a href="pc_print_apply_list.html" class="btn btn-default">返回列表</a>
+        <button class="btn btn-primary">提交申请</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig = {active:'report_generate', breadcrumb:['检测管理','报告编制','打印申请']};</script>
+</body>
+</html>
+

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<!-- iPad-ORDER_CREATE v2.1 landscape -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>添加订单</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/app-frame.css">
+<link rel="stylesheet" href="../../../../assets/ipad-tokens.css">
+<link rel="stylesheet" href="../../../../assets/ipad-frame.css">
+<link rel="stylesheet" href="../../../../assets/ipad-layout.css">
+<link rel="stylesheet" href="../../../../assets/ipad-visual.css">
+<link rel="stylesheet" href="../../../../assets/ipad-embed.css">
+<script src="../../../../assets/ipad-adapt.js" defer></script>
+<style>
+html, body.ipad-order-form-page { height: 100%; margin: 0; overflow: hidden; }
+body.ipad-order-form-page {
+  display: flex; flex-direction: column;
+  font-family: var(--ipad-font, -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif);
+  background: var(--ipad-bg-page, #f2f3f5);
+}
+.page-status {
+  flex-shrink: 0; height: 44px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 var(--ipad-space-2, 20px);
+  background: linear-gradient(135deg, #165dff 0%, #4080ff 100%); color: #fff; font-size: 14px; font-weight: 600;
+}
+.page-nav {
+  flex-shrink: 0; height: 48px; display: flex; align-items: center; padding: 0 var(--ipad-space-2, 20px);
+  background: #fff; border-bottom: 1px solid #e5e6eb;
+}
+.page-nav a { color: #165dff; text-decoration: none; font-size: 14px; }
+.page-nav .title { flex: 1; text-align: center; font-size: 16px; font-weight: 600; }
+.page-scroll {
+  flex: 1; min-height: 0; overflow-y: auto; padding: var(--ipad-space-2, 20px);
+  padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)); box-sizing: border-box;
+}
+.form-wrap { max-width: var(--ipad-content-max, 1180px); margin: 0 auto; }
+.tip {
+  font-size: 12px; color: #92400e; background: #fffbeb; border: 1px solid #fde68a;
+  border-radius: var(--ipad-radius-md, 8px); padding: 10px 14px; margin-bottom: var(--ipad-space-2, 20px);
+  line-height: 1.5;
+}
+.sec {
+  background: #fff; border-radius: var(--ipad-radius-lg, 12px); padding: var(--ipad-space-2, 20px);
+  border: 1px solid #e5e6eb; box-shadow: var(--ipad-shadow-card, 0 0 5px rgba(0, 0, 0, 0.3));
+}
+.sec h3 { margin: 0 0 var(--ipad-space-2, 20px); font-size: 16px; font-weight: 600; padding-bottom: 10px; border-bottom: 1px solid #f2f3f5; }
+.form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 20px; }
+.fld.span-2 { grid-column: 1 / -1; }
+.lbl { display: block; font-size: 13px; color: #86909c; margin-bottom: 6px; font-weight: 500; }
+.req::after { content: " *"; color: #f53f3f; }
+.inp, .ta, select.inp {
+  width: 100%; box-sizing: border-box; height: 44px; padding: 0 14px;
+  border: 1px solid #e5e6eb; border-radius: 8px; font-size: 14px; font-family: inherit;
+}
+.ta { height: auto; min-height: 88px; padding: 10px 14px; resize: vertical; }
+.inp:focus, .ta:focus { outline: none; border-color: #165dff; box-shadow: 0 0 0 2px rgba(22, 93, 255, 0.12); }
+body.ipad-order-form-page .fixb {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+  width: 100% !important;
+  padding: 12px 20px calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+  background: rgba(255, 255, 255, 0.96);
+  border-top: 1px solid #e5e6eb;
+  box-shadow: 0 -1px 0 #e5e6eb, 0 -4px 16px rgba(0, 0, 0, 0.06);
+  display: flex; justify-content: flex-end;
+}
+body.ipad-order-form-page .fixb-inner {
+  width: 100%; max-width: 1180px; margin: 0 auto;
+  display: flex; justify-content: flex-end; gap: 10px;
+}
+body.ipad-order-form-page .fixb .btn-save {
+  flex: 0 0 auto; min-width: 140px; height: 44px; padding: 0 24px;
+  border: none; border-radius: 8px; font-size: 14px; font-weight: 600;
+  font-family: inherit; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  background: #165dff; color: #fff;
+  box-shadow: 0 2px 6px rgba(22, 93, 255, 0.22);
+}
+body.ipad-order-form-page .fixb .btn-save:active { transform: scale(0.98); }
+@media (max-width: 640px) { .form-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body class="ipad-adapt ipad-order-form-page">
+<div class="page-status" aria-hidden="true">
+  <span>9:41</span>
+  <span style="font-size:12px;"><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+</div>
+<div class="page-nav">
+  <a href="../../工作台/首页/ipad_workbench_index.html#orders"><i class="fa-solid fa-chevron-left"></i> 取消</a>
+  <span class="title">添加订单</span>
+  <span style="width:48px;"></span>
+</div>
+<main class="page-scroll">
+  <div class="form-wrap">
+    <p class="tip">现场补录场景：若企业规定仅合同部 PC 建单，可在权限配置中隐藏本入口。</p>
+    <section class="sec">
+      <h3>订单信息</h3>
+      <div class="form-grid">
+        <div class="fld span-2"><label class="lbl req">订单名称</label><input type="text" class="inp" placeholder="请输入订单名称"></div>
+        <div class="fld"><label class="lbl req">站址编码</label><input type="text" class="inp" placeholder="如：ZZ-HZ-BJ01"></div>
+        <div class="fld"><label class="lbl req">塔型</label>
+          <select class="inp" style="appearance:auto;"><option value="">请选择</option><option>单管塔</option><option>角钢塔</option><option>三管塔</option><option>四管塔</option></select>
+        </div>
+        <div class="fld"><label class="lbl req">经度</label><input type="text" class="inp" placeholder="如 120.2126" inputmode="decimal"></div>
+        <div class="fld"><label class="lbl req">纬度</label><input type="text" class="inp" placeholder="如 30.2084" inputmode="decimal"></div>
+        <div class="fld"><label class="lbl req">联系人</label><input type="text" class="inp" placeholder="姓名"></div>
+        <div class="fld"><label class="lbl req">联系电话</label><input type="tel" class="inp" placeholder="11位手机号"></div>
+        <div class="fld"><label class="lbl req">所属项目</label><input type="text" class="inp" placeholder="工程/项目名称"></div>
+        <div class="fld"><label class="lbl req">省份地市</label><input type="text" class="inp" placeholder="如：浙江省杭州市"></div>
+        <div class="fld span-2"><label class="lbl req">检测需求</label><textarea class="ta" rows="3" placeholder="简要说明检测范围与要求"></textarea></div>
+      </div>
+    </section>
+  </div>
+</main>
+<footer class="fixb">
+  <div class="fixb-inner">
+    <button type="button" class="btn-save" id="btnSave"><i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> 保存订单</button>
+  </div>
+</footer>
+<script>
+document.getElementById('btnSave').addEventListener('click', function () {
+  alert('订单已保存，将出现在待办列表');
+  location.href = '../../工作台/首页/ipad_workbench_index.html#orders';
+});
+</script>
+</body>
+</html>

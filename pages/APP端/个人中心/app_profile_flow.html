@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>流程中心</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../assets/app-frame.css">
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; background: #F2F3F5; margin: 0; padding-bottom: 24px; }
+.nav-bar { height: 44px; display: flex; align-items: center; padding: 0 12px; background: #fff; border-bottom: 1px solid #E5E6EB; position: sticky; top: 0; z-index: 10; }
+.card { background: #fff; border-radius: 12px; margin: 10px 16px; padding: 14px; border: 1px solid #E5E6EB; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; background: #FFF7E8; color: #FF7D00; font-weight: 600; }
+.row { font-size: 12px; color: #86909C; margin-top: 6px; }
+.row b { color: #1D2129; font-weight: 500; }
+</style>
+<script src="../../../assets/app-menu-access-log.js" defer></script>
+</head>
+<body>
+<div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:#165DFF;">
+  <span style="font-size:14px;font-weight:600;color:#fff;">9:41</span>
+  <span style="font-size:12px;color:#fff;"><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
+</div>
+<div class="nav-bar">
+  <a href="首页/app_profile_index.html" style="color:#165DFF;text-decoration:none;font-size:14px;"><i class="fa-solid fa-chevron-left"></i></a>
+  <span style="flex:1;text-align:center;font-size:16px;font-weight:600;">流程中心</span>
+  <span style="width:28px;"></span>
+</div>
+<p style="font-size:12px;color:#86909C;padding:10px 16px;margin:0;line-height:1.5;">展示当前账号<strong>待审批</strong>事项。</p>
+
+<div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+    <span class="badge">检测报告审核</span>
+    <span style="font-size:12px;color:#86909C;">2026-05-12 10:20</span>
+  </div>
+  <div style="font-size:15px;font-weight:600;color:#1D2129;">滨江区单管塔年度检测报告 V1</div>
+  <div class="row">发起人：<b>张华（检测三组）</b></div>
+  <div class="row">关联订单：<b>DD20260506001</b></div>
+  <div style="margin-top:12px;display:flex;gap:10px;justify-content:flex-end;">
+    <button type="button" style="border:1px solid #E5E6EB;background:#fff;color:#4E5969;padding:8px 14px;border-radius:8px;font-size:14px;">查看</button>
+    <button type="button" style="border:none;background:#165DFF;color:#fff;padding:8px 14px;border-radius:8px;font-size:14px;font-weight:600;">办理</button>
+  </div>
+</div>
+
+<div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+    <span class="badge" style="background:#E8F7FF;color:#165DFF;">检测数据复核</span>
+    <span style="font-size:12px;color:#86909C;">2026-05-11 16:05</span>
+  </div>
+  <div style="font-size:15px;font-weight:600;color:#1D2129;">城西区铁塔专项 · 数据提交</div>
+  <div class="row">发起人：<b>李某某</b></div>
+  <div class="row">关联任务：<b>RW202606004</b></div>
+  <div style="margin-top:12px;display:flex;gap:10px;justify-content:flex-end;">
+    <button type="button" style="border:1px solid #E5E6EB;background:#fff;color:#4E5969;padding:8px 14px;border-radius:8px;font-size:14px;">查看</button>
+    <button type="button" style="border:none;background:#165DFF;color:#fff;padding:8px 14px;border-radius:8px;font-size:14px;font-weight:600;">办理</button>
+  </div>
+</div>
+
+<div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+    <span class="badge" style="background:#F0E8FF;color:#722ED1;">改派申请</span>
+    <span style="font-size:12px;color:#86909C;">2026-05-10 09:00</span>
+  </div>
+  <div style="font-size:15px;font-weight:600;color:#1D2129;">余杭季度巡检 · 检测人员改派</div>
+  <div class="row">发起人：<b>营销部 · 王芳</b></div>
+  <div style="margin-top:12px;display:flex;gap:10px;justify-content:flex-end;">
+    <button type="button" style="border:1px solid #E5E6EB;background:#fff;color:#4E5969;padding:8px 14px;border-radius:8px;font-size:14px;">查看</button>
+    <button type="button" style="border:none;background:#165DFF;color:#fff;padding:8px 14px;border-radius:8px;font-size:14px;font-weight:600;">办理</button>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  if (typeof __logMenuAccess === 'function') __logMenuAccess('流程中心');
+});
+</script>
+</body>
+</html>

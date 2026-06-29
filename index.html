@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>通信铁塔检测系统 - PC端</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #F2F3F5; }
+.module-title { font-size: 14px; font-weight: 600; color: #1D2129; padding: 8px 0; border-bottom: 2px solid #165DFF; margin-bottom: 12px; display: inline-block; }
+.page-link { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; background: #fff; border: 1px solid #E5E6EB; border-radius: 4px; color: #4E5969; font-size: 13px; text-decoration: none; transition: all 0.15s; }
+.page-link:hover { border-color: #165DFF; color: #165DFF; }
+.page-link i { font-size: 12px; color: #86909C; }
+</style>
+</head>
+<body>
+<div style="max-width:1200px; margin:0 auto; padding:40px 24px;">
+  <div style="display:flex; align-items:center; gap:16px; margin-bottom:8px;">
+    <i class="fa-solid fa-tower-broadcast" style="font-size:32px; color:#165DFF;"></i>
+    <div>
+      <h1 style="font-size:24px; font-weight:700; color:#1D2129; margin:0;">通信铁塔检测系统</h1>
+      <p style="font-size:13px; color:#86909C; margin:4px 0 0;">浙江中能工程检测有限公司</p>
+    </div>
+  </div>
+  <div style="display:flex; flex-wrap:wrap; gap:12px; margin:16px 0 32px;">
+    <a href="app-index.html" style="display:inline-flex; align-items:center; gap:6px; padding:8px 20px; background:#165DFF; color:#fff; border-radius:4px; text-decoration:none; font-size:13px;"><i class="fa-solid fa-mobile-screen"></i>查看APP端</a>
+    <a href="ipad-index.html" style="display:inline-flex; align-items:center; gap:6px; padding:8px 20px; background:#4080FF; color:#fff; border-radius:4px; text-decoration:none; font-size:13px;"><i class="fa-solid fa-tablet-screen-button"></i>查看iPad端</a>
+    <a href="pages/PC端/系统管理/登录页/pc_login.html" style="display:inline-flex; align-items:center; gap:6px; padding:8px 20px; background:#fff; border:1px solid #E5E6EB; color:#4E5969; border-radius:4px; text-decoration:none; font-size:13px;"><i class="fa-solid fa-right-to-bracket"></i>从登录页开始</a>
+  </div>
+
+  <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(380px,1fr)); gap:24px;">
+    <div style="background:#fff; border-radius:6px; border:1px solid #E5E6EB; padding:20px;">
+      <div class="module-title"><i class="fa-solid fa-user" style="margin-right:6px;"></i>个人中心</div>
+      <div style="display:flex; flex-wrap:wrap; gap:8px;">
+        <a href="pages/PC端/个人中心/我的信息/pc_profile.html" class="page-link"><i class="fa-solid fa-id-card"></i>我的信息</a>
+        <a href="pages/PC端/个人中心/消息中心/pc_messages.html" class="page-link"><i class="fa-solid fa-envelope"></i>消息中心</a>
+        <a href="pages/PC端/个人中心/登录日志/pc_logs.html" class="page-link"><i class="fa-solid fa-clock-rotate-left"></i>登录日志</a>
+      </div>
+    </div>
+    <div style="background:#fff; border-radius:6px; border:1px solid #E5E6EB; padding:20px;">
+      <div class="module-title"><i class="fa-solid fa-file-signature" style="margin-right:6px;"></i>合同管理</div>
+      <div style="display:flex; flex-wrap:wrap; gap:8px;">
+        <a href="pages/PC端/合同管理/合同列表/pc_contract_list.html" class="page-link"><i class="fa-solid fa-list"></i>对上合同</a>
+        <a href="pages/PC端/合同管理/对下合同/pc_contract_downstream_list.html" class="page-link"><i class="fa-solid fa-list"></i>对下合同列表</a>
+        <a href="pages/PC端/合同管理/对下合同/pc_contract_downstream_edit.html" class="page-link"><i class="fa-solid fa-file-circle-plus"></i>对下合同新增</a>
+        <a href="pages/PC端/合同管理/合同编辑/pc_contract_edit.html" class="page-link"><i class="fa-solid fa-pen-to-square"></i>合同编辑（完整页）</a>
+        <a href="pages/PC端/合同管理/合同收款/pc_contract_receipt.html" class="page-link"><i class="fa-solid fa-sack-dollar"></i>对上收款</a>
+        <a href="pages/PC端/合同管理/合同付款/pc_contract_payment.html" class="page-link"><i class="fa-solid fa-money-bill-transfer"></i>对下付款</a>
+      </div>
+    </div>
+    <div style="background:#fff; border-radius:6px; border:1px solid #E5E6EB; padding:20px;">
+      <div class="module-title"><i class="fa-solid fa-handshake" style="margin-right:6px;"></i>营销管理</div>
+      <div style="display:flex; flex-wrap:wrap; gap:8px;">
+        <a href="pages/PC端/营销管理/客户管理/pc_customer_list.html" class="page-link"><i class="fa-solid fa-building"></i>客户管理</a>
+        <a href="pages/PC端/营销管理/客户管理/pc_customer_create.html" class="page-link"><i class="fa-solid fa-plus"></i>客户录入</a>
+        <a href="pages/PC端/营销管理/工程管理/pc_project_list.html" class="page-link"><i class="fa-solid fa-diagram-project"></i>工程管理</a>
+        <a href="pages/PC端/营销管理/工程管理/pc_project_create.html" class="page-link"><i class="fa-solid fa-plus"></i>工程录入</a>
+        <a href="pages/PC端/合同部管理/订单管理/pc_order_list.html" class="page-link"><i class="fa-solid fa-list"></i>订单管理</a>
+        <a href="pages/PC端/合同部管理/订单管理/pc_order_create.html" class="page-link"><i class="fa-solid fa-plus"></i>订单录入</a>
+        <a href="pages/PC端/合同部管理/订单管理/pc_order_list_import.html" class="page-link"><i class="fa-solid fa-file-import"></i>导入订单</a>
+        <a href="pages/PC端/合同部管理/订单管理/pc_order_list_export.html" class="page-link"><i class="fa-solid fa-file-export"></i>导出订单</a>
+        <a href="pages/PC端/营销管理/检测单位管理/pc_company_info.html" class="page-link" style="opacity:.75"><i class="fa-solid fa-certificate"></i>检测单位（历史页）</a>
+      </div>
+    </div>
+    <div style="background:#fff; border-radius:6px; border:1px solid #E5E6EB; padding:20px;">
+      <div class="module-title"><i class="fa-solid fa-tower-broadcast" style="margin-right:6px;"></i>检测管理</div>
+      <div style="display:flex; flex-wrap:wrap; gap:8px;">
+        <a href="pages/PC端/铁塔检测业务/检测任务/pc_task_list.html" class="page-link"><i class="fa-solid fa-clipboard-check"></i>检测任务</a>
+        <a href="pages/PC端/铁塔检测业务/检测任务/pc_task_detail.html?id=RW202606004" class="page-link"><i class="fa-solid fa-file-lines"></i>任务详情（数据复核）</a>
+        <a href="pages/PC端/铁塔检测业务/检测任务/pc_task_version_history.html?task=RW202606004" class="page-link"><i class="fa-solid fa-clock-rotate-left"></i>检测记录</a>
+        <a href="pages/PC端/铁塔检测业务/报告编制/report-list.html" class="page-link"><i class="fa-solid fa-file-lines"></i>报告编制</a>
+      </div>
+    </div>
+    <div style="background:#fff; border-radius:6px; border:1px solid #E5E6EB; padding:20px;">
+      <div class="module-title"><i class="fa-solid fa-chart-column" style="margin-right:6px;"></i>统计分析</div>
+      <div style="display:flex; flex-wrap:wrap; gap:8px;">
+        <a href="pages/PC端/统计分析/订单统计/pc_order_stats.html" class="page-link"><i class="fa-solid fa-chart-column"></i>订单统计</a>
+        <a href="pages/PC端/合同部管理/报告查阅/pc_order_reports.html" class="page-link"><i class="fa-solid fa-eye"></i>报告查询</a>
+      </div>
+    </div>
+    <div style="background:#fff; border-radius:6px; border:1px solid #E5E6EB; padding:20px;">
+      <div class="module-title"><i class="fa-solid fa-sliders" style="margin-right:6px;"></i>模板配置</div>
+      <p style="font-size:12px;color:#86909C;margin:0 0 10px;">标准规范、铁塔类型、区域风压已迁至<strong>基础数据</strong>；任务/记录/报告/评定等级子模板在<strong>检测模板</strong>中统一配置。</p>
+      <div style="display:flex; flex-wrap:wrap; gap:8px;">
+        <a href="pages/PC端/铁塔基础配置/标准规范/pc_config_standard.html" class="page-link" style="opacity:.75"><i class="fa-solid fa-scale-balanced"></i>标准规范（历史）</a>
+        <a href="pages/PC端/铁塔基础配置/铁塔类型/pc_config_tower_type.html" class="page-link" style="opacity:.75"><i class="fa-solid fa-tower-broadcast"></i>铁塔类型（历史）</a>
+        <a href="pages/PC端/铁塔基础配置/区域风压/pc_config_wind.html" class="page-link" style="opacity:.75"><i class="fa-solid fa-wind"></i>区域风压（历史）</a>
+        <a href="pages/PC端/模板配置/检测模板/pc_inspect_template_list.html" class="page-link"><i class="fa-solid fa-table-columns"></i>检测模板</a>
+        <a href="pages/PC端/消息模板配置/消息模板管理/pc_message_template_list.html" class="page-link"><i class="fa-solid fa-envelope"></i>消息模板</a>
+      </div>
+    </div>
+    <div style="background:#fff; border-radius:6px; border:1px solid #E5E6EB; padding:20px;">
+      <div class="module-title"><i class="fa-solid fa-database" style="margin-right:6px;"></i>基础数据</div>
+      <p style="font-size:12px;color:#86909C;margin:0 0 10px;">检测单位、设备、铁塔类型与规范等主数据；天线等字段以塔/站点维度在业务流程中关联维护。</p>
+      <div style="display:flex; flex-wrap:wrap; gap:8px;">
+        <a href="pages/PC端/基础数据/检测单位/pc_data_inspection_unit.html" class="page-link"><i class="fa-solid fa-building"></i>检测单位</a>
+        <a href="pages/PC端/基础数据/设备管理/pc_data_device_list.html" class="page-link"><i class="fa-solid fa-microscope"></i>设备管理</a>
+        <a href="pages/PC端/基础数据/铁塔类型/pc_data_tower_type.html" class="page-link"><i class="fa-solid fa-tower-broadcast"></i>铁塔类型</a>
+        <a href="pages/PC端/基础数据/区域风压/pc_data_wind.html" class="page-link"><i class="fa-solid fa-wind"></i>区域风压</a>
+        <a href="pages/PC端/基础数据/标准规范/pc_data_standard.html" class="page-link"><i class="fa-solid fa-scale-balanced"></i>标准规范</a>
+        <a href="pages/PC端/基础数据/规范组/pc_data_standard_group.html" class="page-link"><i class="fa-solid fa-folder-tree"></i>规范组</a>
+        <a href="pages/PC端/基础数据/设备类型/pc_data_device_type.html" class="page-link"><i class="fa-solid fa-tags"></i>设备类型</a>
+        <a href="pages/PC端/基础数据/检测类型/pc_data_inspect_type.html" class="page-link"><i class="fa-solid fa-list-check"></i>检测类型</a>
+        <a href="pages/PC端/基础数据/天线数据/pc_data_antenna.html" class="page-link" style="opacity:.75"><i class="fa-solid fa-satellite-dish"></i>天线数据（已弃用）</a>
+        <a href="pages/PC端/基础数据/塔段样式管理/pc_data_segment_style.html" class="page-link"><i class="fa-solid fa-layer-group"></i>塔段样式信息</a>
+      </div>
+    </div>
+    <div style="background:#fff; border-radius:6px; border:1px solid #E5E6EB; padding:20px;">
+      <div class="module-title"><i class="fa-solid fa-gear" style="margin-right:6px;"></i>系统管理</div>
+      <div style="display:flex; flex-wrap:wrap; gap:8px;">
+        <a href="pages/PC端/系统管理/登录页/pc_login.html" class="page-link"><i class="fa-solid fa-right-to-bracket"></i>登录页</a>
+        <a href="pages/PC端/系统管理/用户管理/pc_system_users.html" class="page-link"><i class="fa-solid fa-users"></i>用户管理</a>
+        <a href="pages/PC端/系统管理/角色管理/pc_system_roles.html" class="page-link"><i class="fa-solid fa-user-shield"></i>角色管理</a>
+        <a href="pages/PC端/系统管理/操作日志/pc_system_logs.html" class="page-link"><i class="fa-solid fa-scroll"></i>操作日志</a>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center; margin-top:40px; padding:20px; color:#86909C; font-size:12px;">
+    浙江中能工程检测有限公司 · 通信铁塔检测系统
+  </div>
+</div>
+</body>
+</html>
