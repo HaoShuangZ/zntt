@@ -103,6 +103,30 @@
 .modal-x { background:none; border:none; font-size:18px; color:var(--text-3); cursor:pointer; }
 .modal-x:hover { color:var(--text-1); }
 .modal-bd { padding:18px 20px; }
+
+/* ---- 新增模板弹窗专用 ---- */
+.required { color:var(--danger); margin-left:2px; }
+.form-input[readonly] { background:#f7f8fa; color:var(--text-3); cursor:not-allowed; }
+.upload-area-wrap {
+  border:1px dashed var(--border); border-radius:6px; padding:28px 16px;
+  text-align:center; cursor:pointer; background:#FAFBFC; transition:all .15s;
+}
+.upload-area-wrap:hover { border-color:var(--primary); background:#F0F5FF; }
+.upload-area-wrap .upload-icon { font-size:28px; color:var(--text-3); margin-bottom:8px; }
+.upload-area-wrap .upload-title { font-size:13px; font-weight:500; color:var(--text-1); }
+.upload-area-wrap .upload-hint { font-size:12px; color:var(--text-3); margin-top:4px; }
+.upload-area-wrap.uploaded { border-color:#00B42A; background:#E8FFEA; }
+.upload-area-wrap.uploaded .upload-title { color:#00B42A; }
+.upload-area-wrap.uploaded .upload-hint { color:#00B42A; }
+.invalid-feedback { font-size:12px; color:var(--danger); margin-top:4px; display:none; }
+.alert-success-bar {
+  background:#E8FFEA; color:#00B42A; border-radius:6px; padding:10px 14px;
+  font-size:13px; margin-bottom:16px; display:none;
+}
+.code-badge {
+  display:inline-block; background:#EEEDFE; color:#534AB7;
+  font-size:12px; font-weight:500; padding:2px 8px; border-radius:4px;
+}
 .snap-table { width:100%; border-collapse:collapse; font-size:12px; }
 .snap-table th { background:#f7f8fa; padding:7px 8px; text-align:left; font-weight:500; color:var(--text-2); border-bottom:1px solid var(--border); }
 .snap-table td { padding:7px 8px; border-bottom:1px solid #f2f3f5; color:var(--text-1); }
@@ -110,7 +134,6 @@
 </style>
 </head>
 <body>
-<script>location.replace('../../模板配置/检测模板/pc_inspect_template_list.html');</script>
 <div id="page-content">
 
   <div class="card" style="margin-bottom:16px;border:1px solid #CFE1FF;background:#F7FAFF;">
@@ -147,7 +170,7 @@
       </div>
 
       <div class="pc-table-actions">
-        <a href="pc_task_template_create.html" class="btn btn-primary"><i class="fa-solid fa-plus"></i> 新增模板</a>
+        <button class="btn btn-primary" id="btn-add-template"><i class="fa-solid fa-plus"></i> 新增模板</button>
       </div>
 
       <table class="data-table" id="tpl-table">
@@ -484,12 +507,208 @@
     </div>
   </div>
 </div>
+<!-- 新增模板弹窗 -->
+<div class="modal-mask" id="modal-add-template">
+  <div class="modal-box">
+    <div class="modal-hd"><h3>新增检测模板</h3><button class="modal-x" data-close="modal-add-template">&times;</button></div>
+    <div class="modal-bd">
+      <!-- 阶段一：表单 -->
+      <div id="add-template-form">
+        <div class="form-group" style="margin-bottom:14px;">
+          <label class="form-label">模板编号</label>
+          <input type="text" class="form-input" id="add-tpl-code" readonly placeholder="保存后系统自动生成" style="width:100%;">
+        </div>
+        <div class="form-group" style="margin-bottom:14px;">
+          <label class="form-label">检测类型 <span class="required">*</span></label>
+          <select class="form-select" id="add-inspect-type" style="width:100%;">
+            <option value="">请选择检测类型</option>
+            <option value="safety">安全性鉴定</option>
+            <option value="reliability">可靠性鉴定</option>
+            <option value="seismic">抗震鉴定</option>
+            <option value="routine">常规检测</option>
+            <option value="net_opt">网络优化加装复核</option>
+          </select>
+          <div class="invalid-feedback" id="fb-type">请选择检测类型</div>
+        </div>
+        <div class="form-group" style="margin-bottom:14px;">
+          <label class="form-label">上传记录模板 <span class="required">*</span></label>
+          <div class="upload-area-wrap" id="upload-record-zone" onclick="window._toggleUpload('record')">
+            <div class="upload-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+            <div class="upload-title">点击或拖拽上传记录模板</div>
+            <div class="upload-hint">支持 docx，最大 500M</div>
+          </div>
+          <div class="invalid-feedback" id="fb-record">请上传记录模板</div>
+        </div>
+        <div class="form-group" style="margin-bottom:14px;">
+          <label class="form-label">上传报告模板 <span class="required">*</span></label>
+          <div class="upload-area-wrap" id="upload-report-zone" onclick="window._toggleUpload('report')">
+            <div class="upload-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+            <div class="upload-title">点击或拖拽上传报告模板</div>
+            <div class="upload-hint">支持 docx，最大 500M</div>
+          </div>
+          <div class="invalid-feedback" id="fb-report">请上传报告模板</div>
+        </div>
+      </div>
+      <!-- 阶段二：保存成功 -->
+      <div id="add-template-result" style="display:none;">
+        <div class="alert-success-bar" style="display:block;" id="result-alert">
+          <i class="fa-solid fa-circle-check"></i> 模板创建成功！系统已自动分配编号
+        </div>
+        <div style="padding:6px 0;">
+          <div style="display:flex;align-items:center;padding:10px 0;border-bottom:1px solid #f2f3f5;">
+            <span style="font-size:12px;color:var(--text-3);min-width:72px;">模板编号</span>
+            <span style="font-size:13px;font-weight:500;color:var(--text-1);"><span class="code-badge" id="result-code">—</span></span>
+          </div>
+          <div style="display:flex;align-items:center;padding:10px 0;border-bottom:1px solid #f2f3f5;">
+            <span style="font-size:12px;color:var(--text-3);min-width:72px;">检测类型</span>
+            <span style="font-size:13px;font-weight:500;color:var(--text-1);" id="result-type">—</span>
+          </div>
+          <div style="display:flex;align-items:center;padding:10px 0;border-bottom:1px solid #f2f3f5;">
+            <span style="font-size:12px;color:var(--text-3);min-width:72px;">记录模板</span>
+            <span style="font-size:13px;font-weight:500;color:#00B42A;" id="result-record">—</span>
+          </div>
+          <div style="display:flex;align-items:center;padding:10px 0;">
+            <span style="font-size:12px;color:var(--text-3);min-width:72px;">报告模板</span>
+            <span style="font-size:13px;font-weight:500;color:#00B42A;" id="result-report">—</span>
+          </div>
+        </div>
+      </div>
+      <!-- 按钮区 -->
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:18px;border-top:1px solid var(--border);padding-top:14px;">
+        <button class="btn btn-default" data-close="modal-add-template" id="btn-add-cancel">取消</button>
+        <button class="btn btn-primary" id="btn-add-save"><i class="fa-solid fa-check"></i> 保存</button>
+        <button class="btn btn-default" id="btn-add-back" style="display:none;">返回列表</button>
+        <button class="btn btn-primary" id="btn-add-fields" style="display:none;">配置字段</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script src="../../../../assets/shared-layout.js"></script>
 <script>window.__layoutConfig = {active:'task_template_list', breadcrumb:['模板配置','任务模板管理']};</script>
 <script>
+/* ====== 新增模板弹窗逻辑 ====== */
 (function(){
+  var _recordUploaded = false;
+  var _reportUploaded = false;
+  var _mockFiles = {
+    record: { name: '单管塔检测记录模板_V2.1.docx', size: '2.8M' },
+    report: { name: '单管塔检测报告模板_V2.1.docx', size: '3.1M' }
+  };
 
+  function _resetAddModal(){
+    _recordUploaded = false; _reportUploaded = false;
+    document.getElementById('add-tpl-code').value = '';
+    document.getElementById('add-inspect-type').value = '';
+    document.getElementById('fb-type').style.display = 'none';
+    document.getElementById('fb-record').style.display = 'none';
+    document.getElementById('fb-report').style.display = 'none';
+    var rz = document.getElementById('upload-record-zone');
+    rz.classList.remove('uploaded');
+    rz.querySelector('.upload-title').textContent = '点击或拖拽上传记录模板';
+    rz.querySelector('.upload-hint').textContent = '支持 docx，最大 500M';
+    var rp = document.getElementById('upload-report-zone');
+    rp.classList.remove('uploaded');
+    rp.querySelector('.upload-title').textContent = '点击或拖拽上传报告模板';
+    rp.querySelector('.upload-hint').textContent = '支持 docx，最大 500M';
+    document.getElementById('add-template-form').style.display = 'block';
+    document.getElementById('add-template-result').style.display = 'none';
+    document.getElementById('btn-add-cancel').style.display = '';
+    document.getElementById('btn-add-save').style.display = '';
+    document.getElementById('btn-add-back').style.display = 'none';
+    document.getElementById('btn-add-fields').style.display = 'none';
+  }
+
+  function _doOpenAddModal(){
+    _resetAddModal();
+    var m = document.getElementById('modal-add-template');
+    if(m) m.classList.add('show');
+  }
+
+  function _doCloseAddModal(){
+    var m = document.getElementById('modal-add-template');
+    if(m) m.classList.remove('show');
+  }
+
+  window._toggleUpload = function(type){
+    var zone = document.getElementById(type==='record'?'upload-record-zone':'upload-report-zone');
+    var fb = document.getElementById(type==='record'?'fb-record':'fb-report');
+    if(type==='record'){
+      _recordUploaded = !_recordUploaded;
+      if(_recordUploaded){
+        zone.classList.add('uploaded');
+        zone.querySelector('.upload-icon').innerHTML = '<i class="fa-solid fa-file-lines"></i>';
+        zone.querySelector('.upload-title').textContent = '已上传: ' + _mockFiles.record.name;
+        zone.querySelector('.upload-hint').textContent = _mockFiles.record.size + ' — 点击重新上传';
+        fb.style.display = 'none';
+      } else {
+        zone.classList.remove('uploaded');
+        zone.querySelector('.upload-icon').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i>';
+        zone.querySelector('.upload-title').textContent = '点击或拖拽上传记录模板';
+        zone.querySelector('.upload-hint').textContent = '支持 docx，最大 500M';
+      }
+    } else {
+      _reportUploaded = !_reportUploaded;
+      if(_reportUploaded){
+        zone.classList.add('uploaded');
+        zone.querySelector('.upload-icon').innerHTML = '<i class="fa-solid fa-file-lines"></i>';
+        zone.querySelector('.upload-title').textContent = '已上传: ' + _mockFiles.report.name;
+        zone.querySelector('.upload-hint').textContent = _mockFiles.report.size + ' — 点击重新上传';
+        fb.style.display = 'none';
+      } else {
+        zone.classList.remove('uploaded');
+        zone.querySelector('.upload-icon').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i>';
+        zone.querySelector('.upload-title').textContent = '点击或拖拽上传报告模板';
+        zone.querySelector('.upload-hint').textContent = '支持 docx，最大 500M';
+      }
+    }
+  };
+
+  window._saveAddTemplate = function(){
+    var type = document.getElementById('add-inspect-type').value;
+    var hasErr = false;
+    if(!type){ document.getElementById('fb-type').style.display = 'block'; hasErr = true; }
+    else document.getElementById('fb-type').style.display = 'none';
+    if(!_recordUploaded){ document.getElementById('fb-record').style.display = 'block'; hasErr = true; }
+    if(!_reportUploaded){ document.getElementById('fb-report').style.display = 'block'; hasErr = true; }
+    if(hasErr) return;
+
+    // 模拟生成编号
+    var codes = ['GD0001001-007','GD0001001-008','GD0001001-009','GD0001001-010'];
+    var newCode = codes[Math.floor(Math.random()*codes.length)];
+    var typeLabels = {safety:'安全性鉴定',reliability:'可靠性鉴定',seismic:'抗震鉴定',routine:'常规检测',net_opt:'网络优化加装复核'};
+
+    document.getElementById('result-code').textContent = newCode;
+    document.getElementById('result-type').textContent = typeLabels[type] || type;
+    document.getElementById('result-record').innerHTML = '<i class="fa-solid fa-check"></i> ' + _mockFiles.record.name;
+    document.getElementById('result-report').innerHTML = '<i class="fa-solid fa-check"></i> ' + _mockFiles.report.name;
+
+    document.getElementById('add-template-form').style.display = 'none';
+    document.getElementById('add-template-result').style.display = 'block';
+    document.getElementById('btn-add-cancel').style.display = 'none';
+    document.getElementById('btn-add-save').style.display = 'none';
+    document.getElementById('btn-add-back').style.display = '';
+    document.getElementById('btn-add-fields').style.display = '';
+  };
+
+  // 使用事件委托（与页面其他交互保持一致），不直接 addEventListener 到按钮
+  document.addEventListener('click',function(e){
+    // 打开新增弹窗
+    if(e.target.closest('#btn-add-template')){ e.preventDefault(); _doOpenAddModal(); return; }
+    // 新增弹窗内：保存按钮
+    if(e.target.closest('#btn-add-save')){ e.preventDefault(); window._saveAddTemplate(); return; }
+    // 新增弹窗内：返回列表
+    if(e.target.closest('#btn-add-back')){ _doCloseAddModal(); return; }
+    // 新增弹窗内：配置字段
+    if(e.target.closest('#btn-add-fields')){ _doCloseAddModal(); location.href = 'pc_task_template_fields.html'; return; }
+    // 新增弹窗内：取消 / 关闭按钮
+    if(e.target.closest('#btn-add-cancel') || (e.target.closest('[data-close]') && e.target.closest('[data-close]').getAttribute('data-close')==='modal-add-template')){
+      _doCloseAddModal(); return;
+    }
+  });
+})();
+
+(function(){
   /* ====== 模板数据 ====== */
   var templates = [
     {code:'RWMB-001',name:'单管塔安全性检测模板',tower:'单管塔',type:'安全性鉴定',ver:'V2.0',items:18,status:'已发布'},
