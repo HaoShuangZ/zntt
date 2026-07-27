@@ -72,34 +72,74 @@ body{
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;
-  padding:12px 14px calc(16px + env(safe-area-inset-bottom, 0px));
+  padding:12px 14px calc(90px + env(safe-area-inset-bottom, 0px));
   background:#F2F3F5;
 }
 .prog-h{display:flex;justify-content:space-between;font-size:12px;color:#86909C;margin-bottom:6px}
 .prog-bar{height:6px;background:#E5E6EB;border-radius:99px;overflow:hidden;margin-bottom:14px}
 .prog-in{height:100%;width:38%;background:linear-gradient(90deg,#52C41A,#95DE64);border-radius:99px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.mod{position:relative;display:block;background:#fff;border-radius:14px;padding:12px 10px;text-decoration:none;color:inherit;border:1px solid #E5E6EB;box-shadow:0 2px 8px rgba(0,0,0,.04);transition:transform .15s, border-color .2s, box-shadow .2s}
+.mod{position:relative;display:block;background:#fff;border-radius:14px;padding:12px 10px;text-decoration:none;color:inherit;border:2px solid #E5E6EB;box-shadow:0 2px 8px rgba(0,0,0,.04);transition:transform .15s, border-color .2s, box-shadow .2s}
 .mod:active{transform:scale(.98)}
-.mod-done-badge{
-  position:absolute;top:8px;right:8px;
-  font-size:10px;font-weight:700;color:#00B42A;
-  background:#E8FFEA;border:1px solid #AFF0B5;border-radius:6px;
-  padding:2px 6px;line-height:1.2;letter-spacing:0.02em;
+.mod-state-dot{
+  position:absolute;
+  top:12px;
+  right:12px;
+  width:13px;
+  height:13px;
+  border-radius:50%;
+  box-sizing:border-box;
 }
-.mod-done-badge i{font-size:9px;margin-right:2px;vertical-align:0}
-.mod-complete{
-  border-color:#B7EB8F;
-  background:linear-gradient(165deg,#f6ffed 0%,#fff 45%);
-  box-shadow:0 2px 10px rgba(0,180,66,.08);
+.mod-state-not-started{border-color:#F53F3F}
+.mod-state-not-started .mod-state-dot{
+  background:#F53F3F;
+  box-shadow:0 0 0 3px rgba(245,63,63,.12);
 }
-.mod-complete .ic{background:#E8FFEA;color:#00B42A}
-.mod-complete .t{color:#135200}
-.mod-complete .s{color:#389e0d}
+.mod-state-in-progress{border-color:#FF7D00}
+.mod-state-in-progress .mod-state-dot{
+  background:#FF7D00;
+  box-shadow:0 0 0 3px rgba(255,125,0,.13);
+}
+.mod-state-confirmed{border-color:#00B42A}
+.mod-state-confirmed .mod-state-dot{
+  background:#00B42A;
+  box-shadow:0 0 0 3px rgba(0,180,42,.12);
+}
 .mod .t{font-size:13px;font-weight:600;color:#1D2129;line-height:1.3}
 .mod .s{font-size:11px;color:#86909C;margin-top:4px;line-height:1.35}
 .mod .ic{width:36px;height:36px;border-radius:10px;background:#F5F9FF;color:#165DFF;display:flex;align-items:center;justify-content:center;margin-bottom:8px;font-size:15px}
 .sec-title{font-size:12px;font-weight:600;color:#86909C;margin:14px 0 8px;padding-left:2px}
+.submit-bar{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  z-index:90;
+  padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));
+  background:rgba(255,255,255,.98);
+  border-top:1px solid #E5E6EB;
+  box-shadow:0 -5px 18px rgba(29,33,41,.08);
+  box-sizing:border-box;
+}
+.submit-btn{
+  width:100%;
+  height:44px;
+  border:0;
+  border-radius:10px;
+  background:#C9CDD4;
+  color:#fff;
+  font-size:15px;
+  font-weight:600;
+  font-family:inherit;
+  cursor:not-allowed;
+  transition:background .2s, opacity .15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.submit-btn.is-ready{
+  background:#165DFF;
+  cursor:pointer;
+}
+.submit-btn.is-ready:active{opacity:.82}
 /* 分享：底部 action sheet */
 .export-sheet-mask{
   display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.45);
@@ -176,13 +216,12 @@ body{
 
   <div class="sec-title">资料与照片</div>
   <div class="grid2">
-    <a class="mod mod-complete" href="../../检测/塔体/app_inspect_tower.html">
-      <span class="mod-done-badge" title="该模块必填项已全部完成"><i class="fa-solid fa-check"></i>100%</span>
+    <a class="mod" data-module-key="basic-info" data-submit-required="1" data-default-state="confirmed" href="../../检测/塔体/app_inspect_tower.html">
       <div class="ic"><i class="fa-solid fa-id-card"></i></div>
       <div class="t">基础信息</div>
       <div class="s">检测模块配置的基础信息；地址、站址编码等可预填</div>
     </a>
-    <a class="mod" href="../../检测/塔体/app_inspect_tower_photos.html">
+    <a class="mod" data-module-key="tower-photos" data-submit-required="1" data-default-state="not-started" href="../../检测/塔体/app_inspect_tower_photos.html">
       <div class="ic"><i class="fa-solid fa-camera-retro"></i></div>
       <div class="t">上传铁塔照片</div>
       <div class="s">必拍项由检测任务模板展开，与模板同步。</div>
@@ -191,58 +230,57 @@ body{
 
   <div class="sec-title">检测大模块</div>
   <div class="grid2">
-    <a class="mod" href="../../检测/垂直度/app_inspect_vertical.html">
+    <a class="mod" data-module-key="overall" data-submit-required="1" data-default-state="in-progress" href="../../检测/垂直度/app_inspect_vertical.html">
       <div class="ic"><i class="fa-solid fa-ruler-combined"></i></div>
       <div class="t">整体模块</div>
       <div class="s">总高、垂直度、外观等</div>
     </a>
-    <a class="mod mod-complete" href="../../检测/地基/app_inspect_foundation.html">
-      <span class="mod-done-badge" title="该模块必填项已全部完成"><i class="fa-solid fa-check"></i>100%</span>
+    <a class="mod" data-module-key="foundation" data-submit-required="1" data-default-state="confirmed" href="../../检测/地基/app_inspect_foundation.html">
       <div class="ic"><i class="fa-solid fa-monument"></i></div>
       <div class="t">基础</div>
       <div class="s">检测模板中「基础」配置项（尺寸、混凝土、外观等）</div>
     </a>
-    <a class="mod" href="../../检测/地基/app_inspect_foundation.html">
+    <a class="mod" data-module-key="anchor" data-submit-required="1" data-default-state="not-started" href="../../检测/地基/app_inspect_foundation.html">
       <div class="ic"><i class="fa-solid fa-anchor"></i></div>
       <div class="t">地锚</div>
       <div class="s">与基础同页分块</div>
     </a>
-    <a class="mod" href="../../检测/分段/app_inspect_segment.html">
+    <a class="mod" data-module-key="segment" data-submit-required="1" data-default-state="not-started" href="../../检测/分段/app_inspect_segment.html">
       <div class="ic"><i class="fa-solid fa-layer-group"></i></div>
       <div class="t">塔段</div>
       <div class="s">按塔段数量展示多段；每段字段随检测模板配置。</div>
     </a>
-    <a class="mod" href="../../检测/平台/app_inspect_platform.html">
+    <a class="mod" data-module-key="platform-equipment" data-submit-required="1" data-default-state="not-started" href="../../检测/平台/app_inspect_platform.html">
       <div class="ic"><i class="fa-solid fa-satellite-dish"></i></div>
       <div class="t">平台及设备</div>
       <div class="s">天线、馈线、爬梯、平台附属等模板配置项</div>
     </a>
-    <a class="mod" href="../../检测/防腐层/app_inspect_coating.html">
+    <a class="mod" data-module-key="coating" data-submit-required="1" data-default-state="not-started" href="../../检测/防腐层/app_inspect_coating.html">
       <div class="ic"><i class="fa-solid fa-paint-roller"></i></div>
       <div class="t">防腐层质量</div>
       <div class="s">与模板二维表 / 照片类字段同源（逻辑同检测模块配置）</div>
     </a>
-    <a class="mod" href="../../检测/焊接/app_inspect_weld.html">
+    <a class="mod" data-module-key="weld" data-submit-required="1" data-default-state="not-started" href="../../检测/焊接/app_inspect_weld.html">
       <div class="ic"><i class="fa-solid fa-wrench"></i></div>
       <div class="t">焊接</div>
       <div class="s">焊缝抽检、记录表</div>
     </a>
-    <a class="mod" href="../../检测/馈线/app_inspect_feed.html">
+    <a class="mod" data-module-key="feed-height" data-submit-required="1" data-default-state="not-started" href="../../检测/馈线/app_inspect_feed.html">
       <div class="ic"><i class="fa-solid fa-door-open"></i></div>
       <div class="t">馈线门高度</div>
       <div class="s">模板中馈线门相关限值与测量项</div>
     </a>
-    <a class="mod" href="../../检测/馈线/app_inspect_feed.html">
+    <a class="mod" data-module-key="feed-layout" data-submit-required="1" data-default-state="not-started" href="../../检测/馈线/app_inspect_feed.html">
       <div class="ic"><i class="fa-solid fa-ruler-horizontal"></i></div>
       <div class="t">馈线孔余量 / 排列 / 爬梯 / 拉线</div>
       <div class="s">馈线孔空间余量、直径与排列宽度；爬梯规格、拉线等（模板配置）</div>
     </a>
-    <a class="mod" href="../../检测/结构图/app_inspect_diagram.html">
+    <a class="mod" data-module-key="connection" data-submit-required="1" data-default-state="not-started" href="../../检测/结构图/app_inspect_diagram.html">
       <div class="ic"><i class="fa-solid fa-link"></i></div>
       <div class="t">连接质量</div>
       <div class="s">螺栓扭矩、连接副等模板配置项</div>
     </a>
-    <a class="mod" href="../../检测/接地/app_inspect_ground.html">
+    <a class="mod" data-module-key="ground-lightning" data-submit-required="1" data-default-state="not-started" href="../../检测/接地/app_inspect_ground.html">
       <div class="ic"><i class="fa-solid fa-bolt"></i></div>
       <div class="t">构建质量与接地避雷</div>
       <div class="s">构建质量检测、基础情况、避雷针体、引下线、接地电阻、接地装置、扁铁等</div>
@@ -263,6 +301,10 @@ body{
     </a>
   </div>
 </main>
+
+<div class="submit-bar">
+  <button type="button" class="submit-btn" id="btnSubmitTask" disabled aria-disabled="true">提交检测任务</button>
+</div>
 
 <div class="export-sheet-mask" id="exportSheetMask" role="dialog" aria-modal="true" aria-labelledby="exportSheetTitle">
   <div class="export-sheet" id="exportSheetPanel" role="document">
@@ -309,6 +351,125 @@ body{
   if (!oid) oid = 'DD20260506001';
   var titleEl = document.getElementById('topTaskTitle');
   if (titleEl) titleEl.textContent = TITLES[oid] || TITLES.DD20260506001;
+
+  var MODULE_STATE_STORAGE_KEY = 'tower_app_inspect_module_states:' + oid;
+  var MODULE_STATE_LABELS = {
+    'not-started': '未开始填写',
+    'in-progress': '未填写完成，尚未保存',
+    'confirmed': '已全部填写并二次确认保存'
+  };
+  var moduleCards = Array.prototype.slice.call(document.querySelectorAll('.mod[data-module-key]'));
+  var requiredModuleCards = moduleCards.filter(function (card) {
+    return card.getAttribute('data-submit-required') === '1';
+  });
+  var btnSubmitTask = document.getElementById('btnSubmitTask');
+  var moduleStates = {};
+
+  function readModuleStates() {
+    try {
+      var saved = JSON.parse(localStorage.getItem(MODULE_STATE_STORAGE_KEY) || '{}');
+      return saved && typeof saved === 'object' ? saved : {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function saveModuleStates() {
+    try {
+      localStorage.setItem(MODULE_STATE_STORAGE_KEY, JSON.stringify(moduleStates));
+    } catch (e) {}
+  }
+
+  function normalizeModuleStates() {
+    var changed = false;
+    moduleCards.forEach(function (card) {
+      var key = card.getAttribute('data-module-key');
+      var state = moduleStates[key];
+      if (!MODULE_STATE_LABELS[state]) {
+        moduleStates[key] = card.getAttribute('data-default-state') || 'not-started';
+        changed = true;
+      }
+    });
+    if (changed) saveModuleStates();
+  }
+
+  function updateSubmitState() {
+    if (!btnSubmitTask) return;
+    var allConfirmed = requiredModuleCards.length > 0 && requiredModuleCards.every(function (card) {
+      return moduleStates[card.getAttribute('data-module-key')] === 'confirmed';
+    });
+    btnSubmitTask.disabled = !allConfirmed;
+    btnSubmitTask.setAttribute('aria-disabled', allConfirmed ? 'false' : 'true');
+    btnSubmitTask.classList.toggle('is-ready', allConfirmed);
+  }
+
+  function renderModuleStates() {
+    moduleCards.forEach(function (card) {
+      var key = card.getAttribute('data-module-key');
+      var state = moduleStates[key] || 'not-started';
+      var label = MODULE_STATE_LABELS[state] || MODULE_STATE_LABELS['not-started'];
+      card.classList.remove('mod-state-not-started', 'mod-state-in-progress', 'mod-state-confirmed');
+      card.classList.add('mod-state-' + state);
+      card.setAttribute('data-module-state', state);
+      card.setAttribute('aria-label', (card.querySelector('.t') ? card.querySelector('.t').textContent + '，' : '') + label);
+
+      var dot = card.querySelector('.mod-state-dot');
+      if (!dot) {
+        dot = document.createElement('span');
+        dot.className = 'mod-state-dot';
+        dot.setAttribute('role', 'img');
+        card.appendChild(dot);
+      }
+      dot.setAttribute('aria-label', label);
+      dot.title = label;
+    });
+    updateSubmitState();
+  }
+
+  function setModuleState(moduleKey, state) {
+    if (!MODULE_STATE_LABELS[state]) return false;
+    var exists = moduleCards.some(function (card) {
+      return card.getAttribute('data-module-key') === moduleKey;
+    });
+    if (!exists) return false;
+    moduleStates[moduleKey] = state;
+    saveModuleStates();
+    renderModuleStates();
+    return true;
+  }
+
+  moduleStates = readModuleStates();
+  normalizeModuleStates();
+  renderModuleStates();
+
+  moduleCards.forEach(function (card) {
+    card.addEventListener('click', function () {
+      var key = card.getAttribute('data-module-key');
+      if (moduleStates[key] === 'not-started') setModuleState(key, 'in-progress');
+    });
+  });
+
+  window.setInspectModuleState = setModuleState;
+  window.INSPECT_MODULE_STATE_STORAGE_KEY = MODULE_STATE_STORAGE_KEY;
+  window.addEventListener('pageshow', function () {
+    moduleStates = readModuleStates();
+    normalizeModuleStates();
+    renderModuleStates();
+  });
+  window.addEventListener('storage', function (e) {
+    if (e.key !== MODULE_STATE_STORAGE_KEY) return;
+    moduleStates = readModuleStates();
+    normalizeModuleStates();
+    renderModuleStates();
+  });
+
+  if (btnSubmitTask) {
+    btnSubmitTask.addEventListener('click', function () {
+      if (btnSubmitTask.disabled) return;
+      if (!confirm('所有检测模块均已完成并二次确认保存，确认提交检测任务吗？')) return;
+      alert('检测任务已提交（原型演示）。');
+    });
+  }
 
   var exportMask = document.getElementById('exportSheetMask');
   function openExportSheet() {
