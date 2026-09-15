@@ -11,6 +11,7 @@ const MENU = [
   { id:'htgl', label:'合同管理', icon:'fa-file-signature', items:[
     {id:'contract_list', label:'对上合同', href:'../../合同管理/合同列表/pc_contract_list.html'},
     {id:'contract_downstream', label:'对下合同', href:'../../合同管理/对下合同/pc_contract_downstream_list.html'},
+    {id:'contract_change', label:'合同变更', href:'../../合同管理/合同变更/pc_contract_change_list.html'},
     {id:'contract_receipt', label:'对上收款', href:'../../合同管理/合同收款/pc_contract_receipt.html'},
     {id:'contract_payment', label:'对下付款', href:'../../合同管理/合同付款/pc_contract_payment.html'},
     {id:'invoice_manage', label:'开票管理', href:'../../合同管理/开票管理/pc_invoice_manage.html'},
