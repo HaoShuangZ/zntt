@@ -25,6 +25,8 @@
 .field-hint{font-size:12px;color:var(--text-3);margin:4px 0 0}
 .attach-list{margin:6px 0 0;padding:0;list-style:none;font-size:12px}
 .view-only .form-input,.view-only .form-select,.view-only .form-textarea{background:#F7F8FA;pointer-events:none}
+.contract-lock-note{display:none;padding:10px 14px;margin-bottom:16px;border:1px solid #BEDAFF;border-radius:4px;background:#F0F5FF;color:#2458B3;font-size:12px}
+.contract-lock-note.show{display:block}
 </style>
 </head>
 <body>
@@ -39,6 +41,7 @@
   </div>
 
   <div class="fund-bar" id="fundBar"></div>
+  <div class="contract-lock-note" id="contractLockNote">该合同已审批通过，原合同全部字段均为只读。如需修改，请前往左侧「合同变更」模块发起变更。</div>
 
   <div class="card">
     <div class="card-body">
@@ -49,6 +52,7 @@
         <button type="button" class="tab" data-tab="flow">收款流水</button>
         <button type="button" class="tab" data-tab="attach">附件与备注</button>
         <button type="button" class="tab" data-tab="relate">关联</button>
+        <button type="button" class="tab" data-tab="change">变更记录</button>
       </div>
 
       <div class="tab-panel on" id="panel-basic">
@@ -111,6 +115,17 @@
         <table class="data-table"><thead><tr><th>编码</th><th>名称</th><th>检测单位</th><th>金额</th><th>操作</th></tr></thead><tbody id="downTbody"></tbody></table>
         <p class="contract-sec">关联工程</p>
         <table class="data-table"><thead><tr><th>工程编号</th><th>工程名称</th><th>状态</th><th>操作</th></tr></thead><tbody id="projTbody"></tbody></table>
+      </div>
+
+      <div class="tab-panel" id="panel-change">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <strong style="font-size:14px">已生效合同变更</strong>
+          <span class="field-hint">仅展示审批通过且已到达计划生效日期的记录</span>
+        </div>
+        <table class="data-table">
+          <thead><tr><th>变更编号</th><th>变更主题</th><th>变更内容摘要</th><th>计划生效日期</th><th>实际生效时间</th><th>发起人</th><th>操作</th></tr></thead>
+          <tbody id="changeHistoryBody"></tbody>
+        </table>
       </div>
     </div>
   </div>

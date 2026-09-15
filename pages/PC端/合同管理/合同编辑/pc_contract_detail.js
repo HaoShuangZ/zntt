@@ -21,7 +21,11 @@ var CONTRACT_MOCK = {
       { no: 'FK-202603-0015', downCode: 'DX2026-0101', downName: '单站检测外协服务包', unit: '杭州某某检测技术有限公司', date: '2026-03-18', amt: '200,000', method: '银行转账' }
     ],
     downstream: [{ code: 'DX2026-0101', name: '单站检测外协服务包', unit: '杭州某某检测', amt: '120,000' }],
-    projects: [{ code: 'GC2026-0088', name: '杭州移动余杭站点包', status: '履行中' }]
+    projects: [{ code: 'GC2026-0088', name: '杭州移动余杭站点包', status: '履行中' }],
+    changeHistory: [
+      { no:'BG202600100001', title:'合同金额及单价调整', summary:'合同金额（含税）、合同金额（不含税）、单价明细', plan:'2026-07-01', actual:'2026-07-01 00:00', creator:'张伟' },
+      { no:'BG2025001000027', title:'合同期限延期', summary:'合同截止日期', plan:'2025-12-01', actual:'2025-12-03 15:26', creator:'李娜' }
+    ]
   },
   'HT2026-0428': {
     code: 'HT2026-0428', name: '城西改造专项检测分包', customer: '浙江某建设集团有限公司',
@@ -34,7 +38,8 @@ var CONTRACT_MOCK = {
     receipts: [{ no: 'SK20260410001', date: '2026-04-10', amt: '160,000', method: '银行转账', stage: '首款' }],
     payments: [{ no: 'FK-202604-0021', downCode: 'DX2026-0102', downName: '塔身焊缝抽检协作', unit: '外协协作单位', date: '2026-04-22', amt: '45,000', method: '银行转账' }],
     downstream: [{ code: 'DX2026-0102', name: '塔身焊缝抽检协作', unit: '外协协作单位', amt: '96,000' }],
-    projects: []
+    projects: [],
+    changeHistory: []
   }
 };
 
@@ -70,7 +75,7 @@ function syncHdrActions(d) {
   } else {
     hdr.innerHTML = '<a href="' + platformWorkflowUrl(d.code) + '" class="btn btn-default btn-sm"><i class="fa-solid fa-clock-rotate-left"></i> 审批记录（平台）</a>';
   }
-  if (!isEdit && wf !== '未提交') {
+  if (!isEdit && wf !== '已通过') {
     hdr.innerHTML += ' <a href="pc_contract_detail.html?code=' + encodeURIComponent(d.code) + '&mode=edit" class="btn btn-default btn-sm"><i class="fa-solid fa-pen"></i> 编辑</a>';
   }
 }
@@ -204,6 +209,14 @@ function loadContract(d) {
   document.getElementById('projTbody').innerHTML = (d.projects || []).map(function (p) {
     return '<tr><td>' + p.code + '</td><td>' + p.name + '</td><td>' + p.status + '</td><td><a href="../../营销管理/工程管理/pc_project_list.html" class="btn-text">查看</a></td></tr>';
   }).join('') || '<tr><td colspan="4" style="text-align:center;color:var(--text-3)">暂无，审核通过后可新建工程</td></tr>';
+  var changeBody = document.getElementById('changeHistoryBody');
+  if (changeBody) {
+    changeBody.innerHTML = (d.changeHistory || []).map(function (x) {
+      return '<tr><td><a class="btn-text" href="../合同变更/pc_contract_change_detail.html?no=' + encodeURIComponent(x.no) + '">' + x.no + '</a></td><td>' + x.title + '</td><td>' + x.summary + '</td><td>' + x.plan + '</td><td>' + x.actual + '</td><td>' + x.creator + '</td><td><a class="btn-text" href="../合同变更/pc_contract_change_detail.html?no=' + encodeURIComponent(x.no) + '">查看详情</a></td></tr>';
+    }).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--text-3)">暂无已生效变更记录</td></tr>';
+  }
+  var lockNote = document.getElementById('contractLockNote');
+  if (lockNote) lockNote.classList.toggle('show', d.workflowStatus === '已通过');
   syncHdrActions(d);
   syncBizUi();
   applyViewMode();
@@ -290,7 +303,12 @@ function bootContractDetailPage() {
     window.__layoutConfig.breadcrumb[2] = '新建合同';
   } else {
     if (!code || !CONTRACT_MOCK[code]) code = 'HT2026-0512';
-    loadContract(JSON.parse(JSON.stringify(CONTRACT_MOCK[code])));
+    var loaded = JSON.parse(JSON.stringify(CONTRACT_MOCK[code]));
+    if (isEdit && loaded.workflowStatus === '已通过') {
+      isEdit = false;
+      setTimeout(function () { alert('该合同已审批通过，原合同全部字段不可直接编辑。请前往「合同变更」模块发起变更。'); }, 0);
+    }
+    loadContract(loaded);
   }
 }
 
