@@ -65,9 +65,8 @@
             <td>120万 / 286万 (42%)</td>
             <td class="col-action">
               <a href="../合同编辑/pc_contract_detail.html?code=HT2026-0512" class="btn-text">详情</a>
-              <a href="../合同编辑/pc_contract_detail.html?code=HT2026-0512&mode=edit" class="btn-text">编辑</a>
               <a href="../合同收款/pc_contract_receipt.html?contractCode=HT2026-0512" class="btn-text">收款</a>
-              <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+              <button type="button" class="btn btn-text btn-contract-delete" data-related="收款流水2条、对下合同1份、已生效变更2条" style="color:var(--danger)">删除</button>
             </td>
           </tr>
           <tr data-code="HT2026-0428" data-name="城西改造专项检测分包">
@@ -84,7 +83,7 @@
               <a href="../合同编辑/pc_contract_detail.html?code=HT2026-0428" class="btn-text">详情</a>
               <a href="../../工作台/流程中心/pc_workflow_approve.html?bizType=contract_up&bizId=HT2026-0428" class="btn-text" style="color:var(--primary)">审批(平台)</a>
               <a href="../合同编辑/pc_contract_detail.html?code=HT2026-0428&mode=edit" class="btn-text">编辑</a>
-              <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+              <button type="button" class="btn btn-text btn-contract-delete" data-active-change="BG202600100002（审批中）" style="color:var(--danger)">删除</button>
             </td>
           </tr>
         </tbody>
@@ -98,5 +97,26 @@
 </div>
 <script src="../../../../assets/shared-layout.js"></script>
 <script>window.__layoutConfig = { active: 'contract_list', breadcrumb: ['合同管理', '对上合同'] };</script>
+<script>
+document.addEventListener('click', function (e) {
+  var btn = e.target.closest('.btn-contract-delete');
+  if (!btn) return;
+  var tr = btn.closest('tr');
+  var code = tr ? tr.dataset.code : '该合同';
+  var activeChange = btn.dataset.activeChange;
+  if (activeChange) {
+    alert('该合同存在未完成的合同变更：' + activeChange + '。请先处理合同变更后再删除原合同。');
+    return;
+  }
+  var related = btn.dataset.related || '无';
+  var reason = prompt('合同将执行逻辑删除，历史审批、收付款和变更记录继续保留。\n关联数据：' + related + '\n\n请输入删除原因：');
+  if (reason === null) return;
+  if (!reason.trim()) { alert('请输入删除原因'); return; }
+  if (confirm('确定删除合同「' + code + '」吗？')) {
+    if (tr) tr.style.display = 'none';
+    alert('合同已逻辑删除（原型演示）');
+  }
+});
+</script>
 </body>
 </html>
