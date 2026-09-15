@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>合同变更 - 通信铁塔检测系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+.detail-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.detail-title{font-size:18px;font-weight:600;color:var(--text-1)}
+.head-actions{display:flex;gap:8px}.summary-card{background:#fff;border-radius:6px;padding:13px 16px;margin-bottom:12px;display:flex;gap:30px;align-items:center;flex-wrap:wrap}
+.summary-item{font-size:13px;color:var(--text-2)}.summary-item strong{margin-left:7px;color:var(--text-1)}.notice{padding:10px 14px;border:1px solid #BEDAFF;background:#F0F5FF;color:#2458B3;border-radius:4px;margin-bottom:14px;font-size:12px}
+.notice.warning{border-color:#FFD591;background:#FFF7E8;color:#A15C00}.tabs{display:flex;border-bottom:1px solid var(--border);margin:-2px 0 18px}.tab{padding:12px 16px;color:var(--text-2);cursor:pointer;border-bottom:2px solid transparent}.tab.on{color:var(--primary);border-bottom-color:var(--primary);font-weight:500}
+.tab-panel{display:none}.tab-panel.on{display:block}.section-title{font-size:14px;font-weight:600;padding-bottom:10px;border-bottom:1px solid var(--border);margin:18px 0 14px}.section-title:first-child{margin-top:0}
+.form-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 18px}.form-item.full{grid-column:1/-1}.form-label{font-size:12px;color:var(--text-2);margin-bottom:6px}.required{color:var(--danger)}
+.form-control{width:100%;height:34px;border:1px solid var(--border);border-radius:4px;padding:0 10px;background:#fff;color:var(--text-1)}textarea.form-control{height:76px;padding:8px 10px;resize:vertical}.form-control:focus{outline:0;border-color:var(--primary);box-shadow:0 0 0 2px rgba(22,93,255,.08)}
+.form-control[disabled],.form-control[readonly]{background:#F7F8FA;color:var(--text-3)}.change-content-list{border:1px solid var(--border);border-radius:5px;overflow:hidden}.change-pair{display:grid;grid-template-columns:1fr 1fr;gap:22px;padding:14px 16px;border-bottom:1px solid #F2F3F5}.change-pair:last-child{border-bottom:0}.change-field .form-label{font-size:13px;color:var(--text-2)}.change-field.after .form-label{color:var(--text-1);font-weight:500}.change-field.after .form-control:not([disabled]){border-color:#A9C5FF}.change-field.after .form-control:not([disabled]):focus{border-color:var(--primary)}
+.price-toolbar{display:flex;align-items:center;justify-content:space-between;margin:8px 0}.price-summary{display:flex;justify-content:flex-end;gap:24px;margin-top:12px;padding:12px;background:#F7F8FA;font-size:13px}.price-summary strong{color:var(--primary);font-size:15px}.mismatch{display:none;color:var(--warning);font-size:12px;margin-top:8px;text-align:right}.mismatch.show{display:block}
+.flow{display:grid;grid-template-columns:repeat(4,1fr);background:#F7F8FA;padding:16px;border-radius:5px}.flow-node{position:relative;padding-left:25px;color:var(--text-2);font-size:12px}.flow-node:before{content:"";position:absolute;width:9px;height:9px;border-radius:50%;background:#00B42A;left:5px;top:5px}.flow-node.pending:before{background:#FF7D00}.flow-node.muted:before{background:#C9CDD4}.flow-node:not(:last-child):after{content:"";position:absolute;height:1px;background:#C9CDD4;left:14px;right:-7px;top:9px}.flow-node strong{display:block;color:var(--text-1);font-weight:500}.flow-node span{display:block;margin-top:3px;color:var(--text-3)}
+.file-box{border:1px dashed var(--border);padding:18px;border-radius:5px;text-align:center;color:var(--text-3)}.file-list{margin-top:10px;text-align:left}.footer-actions{position:sticky;bottom:0;background:#fff;border-top:1px solid var(--border);padding:12px 16px;display:flex;justify-content:flex-end;gap:8px;z-index:4;margin:20px -16px -16px}
+.view-value{height:34px;background:#F7F8FA;border:1px solid #E5E6EB;border-radius:4px;padding:7px 10px;color:var(--text-2)}.view-value.long{height:auto;min-height:64px}.field-empty{text-align:center;color:var(--text-3);padding:40px}.permission-tip{font-size:12px;color:var(--text-3);margin-left:8px}
+@media(max-width:900px){.form-grid{grid-template-columns:1fr 1fr}.flow{grid-template-columns:1fr 1fr;gap:16px}.form-item.full{grid-column:1/-1}.change-pair{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="page-content">
+  <div class="detail-head"><div class="detail-title" id="pageTitle">新增合同变更</div><div class="head-actions" id="headActions"><a class="btn btn-default" href="pc_contract_change_list.html"><i class="fa-solid fa-arrow-left"></i> 返回列表</a></div></div>
+  <div class="summary-card" id="summaryCard"></div>
+  <div class="notice" id="statusNotice"></div>
+  <div class="card"><div class="card-body">
+    <div class="tabs"><div class="tab on" data-panel="contentPanel">变更内容</div><div class="tab" data-panel="approvalPanel">审批记录</div><div class="tab" data-panel="attachmentPanel">变更附件</div></div>
+    <section class="tab-panel on" id="contentPanel">
+      <div class="section-title">变更申请信息</div>
+      <div class="form-grid">
+        <div class="form-item"><div class="form-label">变更编号</div><input id="changeNo" class="form-control" readonly placeholder="保存草稿后自动生成"></div>
+        <div class="form-item"><div class="form-label">关联合同</div><input id="contractCode" class="form-control" readonly></div>
+        <div class="form-item"><div class="form-label">合同类型</div><input id="contractTypeText" class="form-control" readonly></div>
+        <div class="form-item"><div class="form-label">变更主题 <span class="required">*</span></div><input id="changeTitle" class="form-control editable" placeholder="请输入本次变更主题"></div>
+        <div class="form-item"><div class="form-label">计划生效日期 <span class="required">*</span></div><input id="effectiveDate" type="date" class="form-control editable"></div>
+        <div class="form-item"><div class="form-label">发起人</div><input class="form-control" value="张伟" readonly></div>
+        <div class="form-item full"><div class="form-label">变更原因 <span class="required">*</span></div><textarea id="changeReason" class="form-control editable" placeholder="请说明变更原因"></textarea></div>
+      </div>
+      <div class="section-title">变更内容 <span id="fieldCount" style="font-size:12px;color:var(--text-3);font-weight:400"></span></div>
+      <div class="change-content-list" id="fieldBody"></div>
+      <div id="priceArea" style="display:none">
+        <div class="section-title">单价明细</div>
+        <div class="price-toolbar"><span style="font-size:12px;color:var(--text-3)">明细金额默认自动汇总至合同金额，允许手动修改合同金额。</span><button id="btnAddPrice" type="button" class="btn btn-default editable-action"><i class="fa-solid fa-plus"></i> 新增明细</button></div>
+        <table class="data-table"><thead><tr><th>检测项目</th><th>单位</th><th>数量</th><th>含税单价（元）</th><th>税率</th><th>含税小计（元）</th><th class="editable-column">操作</th></tr></thead><tbody id="priceBody"></tbody></table>
+        <div class="price-summary"><span>含税合计：<strong id="sumTax">0.00</strong> 元</span><span>不含税合计：<strong id="sumNoTax">0.00</strong> 元</span></div>
+        <div class="mismatch" id="mismatchTip"><i class="fa-solid fa-triangle-exclamation"></i> 手动填写的合同金额与单价明细汇总不一致，请确认后再提交审批。</div>
+      </div>
+      <div class="section-title" id="progressTitle">审批与生效进度</div>
+      <div class="flow" id="flowBox"></div>
+      <div class="footer-actions" id="footerActions">
+        <a class="btn btn-default" href="pc_contract_change_list.html">取消</a>
+        <button type="button" id="btnSave" class="btn btn-default editable-action">保存草稿</button>
+        <button type="button" id="btnSubmit" class="btn btn-primary editable-action">提交审批</button>
+      </div>
+    </section>
+    <section class="tab-panel" id="approvalPanel">
+      <div class="section-title">审批记录</div>
+      <table class="data-table"><thead><tr><th>节点</th><th>处理人</th><th>处理结果</th><th>处理意见</th><th>处理时间</th></tr></thead><tbody id="approvalBody"></tbody></table>
+      <div style="text-align:right;margin-top:14px"><a id="workflowLink" class="btn-text" href="#">查看基础平台审批详情 <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+    </section>
+    <section class="tab-panel" id="attachmentPanel">
+      <div class="section-title">变更附件</div>
+      <div class="file-box"><div class="editable-action"><i class="fa-solid fa-cloud-arrow-up" style="font-size:28px;color:var(--primary)"></i><div style="margin-top:8px">点击上传或拖拽变更依据附件至此处（原型演示）</div><button id="btnUpload" type="button" class="btn btn-default" style="margin-top:10px">选择文件</button></div><div class="file-list" id="fileList"></div></div>
+    </section>
+  </div></div>
+</div>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>
+window.__layoutConfig={active:'contract_change',breadcrumb:['合同管理','合同变更','变更详情']};
+var params=new URLSearchParams(location.search),mode=params.get('mode')||'view',type=params.get('type')||'',code=params.get('code')||'',no=params.get('no')||'',queryStatus=params.get('status')||'',selected=(params.get('fields')||'').split(',').filter(Boolean);
+var CONTRACTS={
+  up:{
+    'HT2026-0512':{name:'杭州移动2026年度铁塔检测框架',status:'履行中',customer:'中国移动通信集团浙江有限公司',amtTax:'2860000.00',amtNoTax:'2698113.21',type:'框架合同',subRate:'32%',start:'2026-01-01',end:'2026-12-31'},
+    'HT2026-0428':{name:'城西改造专项检测分包',status:'履行中',customer:'浙江某建设集团有限公司',amtTax:'480000.00',amtNoTax:'452830.19',type:'专项合同',subRate:'25%',start:'2026-03-01',end:'2026-10-31'},
+    'HT2025-0197':{name:'2025年度塔桅检测服务合同',status:'已结束',customer:'中国铁塔股份有限公司',amtTax:'980000.00',amtNoTax:'924528.30',type:'年度合同',subRate:'30%',start:'2025-01-01',end:'2025-12-31'}
+  },
+  down:{
+    'DX2026-0101':{name:'单站检测外协服务包',type:'劳务分包',unit:'杭州某某检测技术有限公司',amount:'120000.00',start:'2026-03-01',end:'2026-08-31',upstream:'HT2026-0512'},
+    'DX2026-0102':{name:'塔身焊缝抽检协作',type:'专业分包',unit:'外协协作单位',amount:'96000.00',start:'2026-04-01',end:'2026-11-30',upstream:'HT2026-0428'},
+    'DX2025-0088':{name:'年度检测劳务协作合同',type:'劳务分包',unit:'杭州检测协作有限公司',amount:'260000.00',start:'2025-01-01',end:'2025-12-31',upstream:'HT2025-0197'}
+  }
+};
+var FIELD_META={
+  up:{status:'合同状态',name:'合同名称',customer:'所属客户',amtTax:'合同金额（含税）',amtNoTax:'合同金额（不含税）',type:'合同类型',subRate:'分包比例',start:'合同起始日期',end:'合同截止日期',price:'单价明细'},
+  down:{name:'合同名称',type:'合同类型',unit:'检测单位',amount:'合同金额',start:'合同起始日期',end:'合同截止日期',upstream:'关联对上合同'}
+};
+var RECORDS={
+  'BG202600100001':{type:'up',code:'HT2026-0512',status:'已生效',title:'合同金额及单价调整',effective:'2026-07-01',actual:'2026-07-01 00:00',reason:'因年度检测范围扩大，调整合同金额及对应单价明细。',fields:['amtTax','amtNoTax','price'],values:{amtTax:'3200000.00',amtNoTax:'3018867.92'},creator:'张伟'},
+  'BG202600200001':{type:'down',code:'DX2026-0101',status:'待生效',title:'合同延期及金额调整',effective:'2026-09-30',reason:'项目实施范围扩大，调整合同金额、截止日期及关联对上合同。',fields:['amount','end','upstream'],values:{amount:'168000.00',end:'2027-03-31',upstream:'HT2026-0428'},creator:'李娜'},
+  'BG202600100002':{type:'up',code:'HT2026-0428',status:'审批中',title:'合同期限变更',effective:'2026-10-01',reason:'项目工期发生调整，申请延长合同截止日期。',fields:['end'],values:{end:'2027-01-31'},creator:'张伟'},
+  'BG202600200002':{type:'down',code:'DX2026-0102',status:'草稿',title:'检测单位变更',effective:'2026-10-15',reason:'原检测单位资源调整，申请变更检测单位。',fields:['unit'],values:{unit:'浙江中测检测技术有限公司'},creator:'张伟'},
+  'BG202600100003':{type:'up',code:'HT2025-0197',status:'已驳回',title:'合同延期',effective:'2026-11-01',reason:'补充项目延期执行，申请延长合同期限。',fields:['end'],values:{end:'2026-12-31'},creator:'张伟'}
+};
+var record=no&&RECORDS[no]?RECORDS[no]:null;
+if(record){type=record.type;code=record.code;if(!selected.length)selected=record.fields.slice();}
+if(record&&mode==='edit'&&record.status!=='草稿'&&record.status!=='已驳回')mode='view';
+if(!type)type=no&&no.indexOf('BG2026002')===0?'down':'up';
+if(!code)code=type==='up'?'HT2026-0512':'DX2026-0101';
+if(!selected.length)selected=type==='up'?['amtTax','end']:['amount','end'];
+var original=(CONTRACTS[type]&&CONTRACTS[type][code])||{},isEditable=mode==='create'||mode==='edit',manualAmount=false;
+function esc(v){return String(v==null?'':v).replace(/[&<>\"]/g,function(s){return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[s];});}
+function displayValue(id,v){if(id==='amtTax'||id==='amtNoTax'||id==='amount')return '¥ '+Number(v||0).toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2});return v||'—';}
+function fieldInput(id,value){
+  var disabled=isEditable?'':' disabled';
+  if(id==='status')return '<select class="form-control js-new" data-field="'+id+'"'+disabled+'><option>履行中</option><option>已结束</option><option>已终止</option></select>';
+  if(id==='type')return '<select class="form-control js-new" data-field="'+id+'"'+disabled+'><option>'+esc(value||'框架合同')+'</option><option>框架合同</option><option>专项合同</option><option>年度合同</option><option>劳务分包</option><option>专业分包</option></select>';
+  if(id==='upstream')return '<select class="form-control js-new" data-field="'+id+'"'+disabled+'><option value="HT2026-0512">HT2026-0512 杭州移动2026年度铁塔检测框架</option><option value="HT2026-0428">HT2026-0428 城西改造专项检测分包</option><option value="HT2025-0197">HT2025-0197 2025年度塔桅检测服务合同</option></select>';
+  var inputType=(id==='start'||id==='end')?'date':((id==='amtTax'||id==='amtNoTax'||id==='amount')?'number':'text');
+  return '<input class="form-control js-new" data-field="'+id+'" type="'+inputType+'" value="'+esc(value)+'"'+disabled+'>';
+}
+function renderFields(){
+  var meta=FIELD_META[type],values=(record&&record.values)||{};
+  document.getElementById('fieldCount').textContent='（本次共选择 '+selected.length+' 项）';
+  document.getElementById('fieldBody').innerHTML=selected.filter(function(id){return id!=='price';}).map(function(id){var label=meta[id]||id,old=original[id]||'',nv=values[id]!=null?values[id]:old;return '<div class="change-pair"><div class="change-field before"><div class="form-label">变更前'+esc(label)+'</div><input class="form-control" value="'+esc(displayValue(id,old))+'" readonly></div><div class="change-field after"><div class="form-label">变更后'+esc(label)+'</div>'+fieldInput(id,nv)+'</div></div>';}).join('')||'<div class="field-empty">本次仅变更单价明细</div>';
+  document.querySelectorAll('.js-new').forEach(function(el){var id=el.dataset.field,val=values[id]!=null?values[id]:original[id];el.value=val||'';if(id==='amtTax'||id==='amtNoTax'||id==='amount'){el.addEventListener('input',function(){manualAmount=true;checkMismatch();});}});
+  document.getElementById('priceArea').style.display=selected.indexOf('price')>=0?'':'none';if(selected.indexOf('price')>=0)renderPrice();
+}
+var priceRows=[{item:'塔身垂直度检测',unit:'座',qty:400,price:2800,tax:6},{item:'焊缝超声波检测',unit:'处',qty:3200,price:650,tax:6}];
+function renderPrice(){
+  document.getElementById('priceBody').innerHTML=priceRows.map(function(r,i){var cells=isEditable?'<input class="form-control js-price" data-i="'+i+'" data-k="item" value="'+esc(r.item)+'">':'<span>'+esc(r.item)+'</span>';return '<tr><td>'+cells+'</td><td>'+(isEditable?'<input class="form-control js-price" data-i="'+i+'" data-k="unit" value="'+esc(r.unit)+'">':esc(r.unit))+'</td><td>'+(isEditable?'<input type="number" min="0" class="form-control js-price" data-i="'+i+'" data-k="qty" value="'+r.qty+'">':r.qty)+'</td><td>'+(isEditable?'<input type="number" min="0" class="form-control js-price" data-i="'+i+'" data-k="price" value="'+r.price+'">':Number(r.price).toFixed(2))+'</td><td>'+(isEditable?'<input type="number" min="0" class="form-control js-price" data-i="'+i+'" data-k="tax" value="'+r.tax+'">':r.tax+'%')+'</td><td class="js-sub">0.00</td><td class="editable-column">'+(isEditable?'<button type="button" class="btn-text js-del-price" data-i="'+i+'" style="color:var(--danger)">删除</button>':'—')+'</td></tr>';}).join('');
+  document.querySelectorAll('.js-price').forEach(function(el){el.oninput=function(){var r=priceRows[Number(el.dataset.i)],k=el.dataset.k;r[k]=(k==='item'||k==='unit')?el.value:Number(el.value||0);recalcPrice();};});
+  document.querySelectorAll('.js-del-price').forEach(function(b){b.onclick=function(){if(priceRows.length===1){alert('至少保留一条单价明细');return;}priceRows.splice(Number(b.dataset.i),1);renderPrice();};});recalcPrice();
+}
+function recalcPrice(){
+  var taxSum=0,noTaxSum=0;document.querySelectorAll('#priceBody tr').forEach(function(tr,i){var r=priceRows[i],sub=Number(r.qty||0)*Number(r.price||0);taxSum+=sub;noTaxSum+=sub/(1+Number(r.tax||0)/100);var c=tr.querySelector('.js-sub');if(c)c.textContent=sub.toFixed(2);});
+  document.getElementById('sumTax').textContent=taxSum.toFixed(2);document.getElementById('sumNoTax').textContent=noTaxSum.toFixed(2);
+  if(!manualAmount&&isEditable){var tax=document.querySelector('[data-field="amtTax"]'),noTax=document.querySelector('[data-field="amtNoTax"]'),amount=document.querySelector('[data-field="amount"]');if(tax)tax.value=taxSum.toFixed(2);if(noTax)noTax.value=noTaxSum.toFixed(2);if(amount)amount.value=taxSum.toFixed(2);}checkMismatch();
+}
+function checkMismatch(){var tax=Number(document.getElementById('sumTax').textContent||0),input=document.querySelector('[data-field="amtTax"]')||document.querySelector('[data-field="amount"]');document.getElementById('mismatchTip').classList.toggle('show',!!input&&Math.abs(Number(input.value||0)-tax)>.01);}
+function renderFlow(status){
+  var data=[['保存草稿','张伟','2026-09-12 16:44','done'],['提交审批','张伟',status==='草稿'?'待提交':'2026-09-13 09:20',status==='草稿'?'muted':'done'],['审批通过','合同审批人',(status==='审批中'||status==='已驳回')?'处理中':(status==='草稿'?'待处理':'2026-09-14 11:18'),(status==='审批中'||status==='已驳回')?'pending':(status==='草稿'?'muted':'done')],[(status==='已生效'?'已生效':'等待生效'),'计划生效',record&&record.actual?record.actual:(record&&record.effective?record.effective:'审批通过后确定'),status==='已生效'?'done':(status==='待生效'?'pending':'muted')]];
+  document.getElementById('flowBox').innerHTML=data.map(function(x){return '<div class="flow-node '+(x[3]==='pending'?'pending':x[3]==='muted'?'muted':'')+'"><strong>'+x[0]+'</strong><span>'+x[1]+'</span><span>'+x[2]+'</span></div>';}).join('');
+}
+function renderApproval(status){var rows=[];if(status!=='草稿')rows.push(['提交审批','张伟','已提交','请审批本次合同变更','2026-09-13 09:20']);if(status==='已生效'||status==='待生效')rows.push(['部门负责人审批','王经理','审批通过','同意，按计划生效日期执行','2026-09-14 11:18']);if(status==='已驳回')rows.push(['部门负责人审批','王经理','驳回','请补充延期依据后重新提交','2026-09-14 10:30']);document.getElementById('approvalBody').innerHTML=rows.map(function(r){return '<tr>'+r.map(function(c){return '<td>'+esc(c)+'</td>';}).join('')+'</tr>';}).join('')||'<tr><td colspan="5" class="field-empty">尚未提交审批</td></tr>';}
+function statusTag(status){var cls=status==='已生效'?'tag-green':status==='待生效'?'tag-orange':status==='审批中'?'tag-blue':status==='已驳回'?'tag-red':'tag-gray';return '<span class="tag '+cls+'">'+status+'</span>';}
+function init(){
+  var status=record?record.status:(queryStatus==='reviewing'?'审批中':(mode==='create'?'新建':'草稿')),title=mode==='create'?'新增合同变更':(isEditable?'编辑合同变更':'合同变更详情 · '+no);
+  document.title=title+' - 通信铁塔检测系统';document.getElementById('pageTitle').textContent=title;
+  document.getElementById('summaryCard').innerHTML='<div class="summary-item">变更状态 <strong>'+statusTag(status)+'</strong></div><div class="summary-item">合同类型 <strong>'+(type==='up'?'对上合同':'对下合同')+'</strong></div><div class="summary-item">关联合同 <strong style="color:var(--primary)">'+esc(code)+'</strong></div><div class="summary-item">合同名称 <strong>'+esc(original.name||'—')+'</strong></div>'+(record?'<div class="summary-item">计划生效日期 <strong>'+esc(record.effective)+'</strong></div>':'');
+  var notice=status==='待生效'?'该变更已审批通过，将于 '+record.effective+' 自动生效并同步更新原合同。具备“合同变更作废”权限的人员可在生效前作废。':status==='已生效'?'该变更已生效，变更结果已同步至原合同；本页面仅展示当前变更内容。':status==='已驳回'?'审批已驳回，创建人可补充修改后使用原变更编号再次提交。':status==='审批中'?'该变更正在通过基础平台审批，审批期间不可编辑。':'保存草稿不会影响原合同；审批通过且到达计划生效日期后才会同步更新原合同。';
+  document.getElementById('statusNotice').textContent=notice;
+  document.getElementById('changeNo').value=no||'';document.getElementById('contractCode').value=code;document.getElementById('contractTypeText').value=type==='up'?'对上合同':'对下合同';document.getElementById('changeTitle').value=record?record.title:'';document.getElementById('effectiveDate').value=record?record.effective:'';document.getElementById('changeReason').value=record?record.reason:'';
+  renderFields();renderFlow(status);renderApproval(status);document.getElementById('workflowLink').href='../../工作台/流程中心/pc_workflow_approve.html?bizType=contract_change&bizId='+encodeURIComponent(no||'DRAFT');
+  if(!isEditable){document.querySelectorAll('.editable').forEach(function(x){x.disabled=true;});document.querySelectorAll('.editable-action,.editable-column').forEach(function(x){x.style.display='none';});document.getElementById('footerActions').innerHTML='<a class="btn btn-default" href="pc_contract_change_list.html">返回列表</a>';}
+  if(status==='待生效'){var b=document.createElement('button');b.className='btn btn-danger';b.innerHTML='<i class="fa-regular fa-circle-xmark"></i> 作废';b.onclick=voidChange;document.getElementById('headActions').appendChild(b);}
+  if(status==='审批中'){var a=document.createElement('a');a.className='btn btn-primary';a.href=document.getElementById('workflowLink').href;a.textContent='查看审批进度';document.getElementById('headActions').appendChild(a);}
+}
+function validate(){if(!document.getElementById('changeTitle').value.trim()){alert('请输入变更主题');return false;}if(!document.getElementById('effectiveDate').value){alert('请选择计划生效日期');return false;}if(!document.getElementById('changeReason').value.trim()){alert('请输入变更原因');return false;}var s=document.querySelector('[data-field="start"]'),e=document.querySelector('[data-field="end"]');if(s&&e&&s.value&&e.value&&s.value>e.value){alert('合同起始日期不能晚于合同截止日期');return false;}return true;}
+function ensureNo(){if(!no){no=type==='up'?'BG202600100004':'BG202600200003';document.getElementById('changeNo').value=no;}return no;}
+function saveDraft(){if(!document.getElementById('changeTitle').value.trim()){alert('请至少填写变更主题后再保存草稿');return;}ensureNo();alert('草稿已保存，变更编号为 '+no+'（原型演示）');history.replaceState(null,'','?mode=edit&no='+no+'&type='+type+'&code='+encodeURIComponent(code)+'&fields='+encodeURIComponent(selected.join(',')));}
+function submitApproval(){if(!validate())return;if(document.getElementById('mismatchTip').classList.contains('show')&&!confirm('合同金额与单价明细汇总不一致，仍要提交审批吗？'))return;ensureNo();if(confirm('提交后将进入基础平台审批，审批期间不可编辑。确定提交吗？')){alert('已提交审批（原型演示）');location.href='pc_contract_change_detail.html?no='+encodeURIComponent(no)+'&status=reviewing&type='+type+'&code='+encodeURIComponent(code)+'&fields='+encodeURIComponent(selected.join(','));}}
+function voidChange(){var reason=prompt('请输入作废原因：');if(reason===null)return;if(!reason.trim()){alert('请输入作废原因');return;}if(confirm('作废后该变更将不再生效，且会保留完整审计记录。确定继续吗？')){alert('合同变更已作废（原型演示）');location.href='pc_contract_change_list.html';}}
+document.querySelectorAll('.tab').forEach(function(t){t.onclick=function(){document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('on');});document.querySelectorAll('.tab-panel').forEach(function(x){x.classList.remove('on');});t.classList.add('on');document.getElementById(t.dataset.panel).classList.add('on');};});
+document.getElementById('btnAddPrice').onclick=function(){priceRows.push({item:'',unit:'座',qty:1,price:0,tax:6});renderPrice();};
+document.getElementById('btnSave').onclick=saveDraft;document.getElementById('btnSubmit').onclick=submitApproval;
+document.getElementById('btnUpload').onclick=function(){document.getElementById('fileList').innerHTML='<div><i class="fa-regular fa-file-lines" style="color:var(--primary)"></i> 合同变更依据说明.pdf <span style="color:var(--success)">上传成功</span></div>';};
+init();
+</script>
+</body>
+</html>
