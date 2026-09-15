@@ -58,8 +58,7 @@
             <td>4.5万 / 12万</td>
             <td class="col-action">
               <a href="pc_contract_downstream_detail.html?code=DX2026-0101" class="btn-text">详情</a>
-              <a href="pc_contract_downstream_detail.html?code=DX2026-0101&mode=edit" class="btn-text">编辑</a>
-              <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+              <button type="button" class="btn btn-text btn-contract-delete" data-active-change="BG202600200001（待生效）" style="color:var(--danger)">删除</button>
             </td>
           </tr>
           <tr data-code="DX2026-0102" data-name="塔身焊缝抽检协作">
@@ -73,7 +72,7 @@
             <td class="col-action">
               <a href="pc_contract_downstream_detail.html?code=DX2026-0102" class="btn-text">详情</a>
               <a href="../../工作台/流程中心/pc_workflow_approve.html?bizType=contract_down&bizId=DX2026-0102" class="btn-text" style="color:var(--primary)">审批(平台)</a>
-              <button type="button" class="btn btn-text btn-row-delete" style="color:var(--danger)">删除</button>
+              <button type="button" class="btn btn-text btn-contract-delete" data-active-change="BG202600200002（草稿）" style="color:var(--danger)">删除</button>
             </td>
           </tr>
         </tbody>
@@ -83,5 +82,25 @@
 </div>
 <script src="../../../../assets/shared-layout.js"></script>
 <script>window.__layoutConfig = { active: 'contract_downstream', breadcrumb: ['合同管理', '对下合同'] };</script>
+<script>
+document.addEventListener('click', function (e) {
+  var btn = e.target.closest('.btn-contract-delete');
+  if (!btn) return;
+  var tr = btn.closest('tr');
+  var code = tr ? tr.dataset.code : '该合同';
+  var activeChange = btn.dataset.activeChange;
+  if (activeChange) {
+    alert('该合同存在未完成的合同变更：' + activeChange + '。请先删除草稿、完成审批或作废待生效变更后再删除原合同。');
+    return;
+  }
+  var reason = prompt('合同将执行逻辑删除，历史审批、付款和变更记录继续保留。\n\n请输入删除原因：');
+  if (reason === null) return;
+  if (!reason.trim()) { alert('请输入删除原因'); return; }
+  if (confirm('确定删除合同「' + code + '」吗？')) {
+    if (tr) tr.style.display = 'none';
+    alert('合同已逻辑删除（原型演示）');
+  }
+});
+</script>
 </body>
 </html>

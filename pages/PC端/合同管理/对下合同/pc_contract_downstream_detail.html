@@ -31,6 +31,9 @@ body:not(.is-editing) #remindTable .col-edit{display:none}
 .pick-row:hover,.pick-row.on{background:#f3f7ff}
 #btnPickUpstream{display:none}
 body.is-editing #btnPickUpstream{display:inline-flex;align-items:center;gap:4px}
+body.view-only .form-input,body.view-only .form-select,body.view-only .form-textarea{background:#F7F8FA;pointer-events:none}
+.contract-lock-note{display:none;padding:10px 14px;margin-bottom:16px;border:1px solid #BEDAFF;border-radius:4px;background:#F0F5FF;color:#2458B3;font-size:12px}
+.contract-lock-note.show{display:block}
 </style>
 </head>
 <body>
@@ -45,6 +48,7 @@ body.is-editing #btnPickUpstream{display:inline-flex;align-items:center;gap:4px}
   </div>
   <p style="font-size:12px;color:var(--text-3);margin:-8px 0 14px">付款提醒到期后仅发<strong>消息中心</strong>（模板：对下合同-付款提醒）；审批走<strong>基础平台</strong>（若启用独立流程）。</p>
   <div class="fund-bar" id="fundBar"></div>
+  <div class="contract-lock-note" id="contractLockNote">该合同已审批通过，原合同全部字段均为只读。如需修改，请前往左侧「合同变更」模块发起变更。</div>
   <div class="card"><div class="card-body">
     <div class="detail-tabs" id="tabBar">
       <button type="button" class="tab on" data-tab="basic">基础信息</button>
@@ -52,6 +56,7 @@ body.is-editing #btnPickUpstream{display:inline-flex;align-items:center;gap:4px}
       <button type="button" class="tab" data-tab="remind">付款提醒</button>
       <button type="button" class="tab" data-tab="flow">付款流水</button>
       <button type="button" class="tab" data-tab="attach">附件备注</button>
+      <button type="button" class="tab" data-tab="change">变更记录</button>
     </div>
     <div class="tab-panel on" id="panel-basic">
       <div class="form-grid form-grid-3">
@@ -102,6 +107,16 @@ body.is-editing #btnPickUpstream{display:inline-flex;align-items:center;gap:4px}
     <div class="tab-panel" id="panel-attach">
       <div class="form-group"><label class="form-label">合同附件</label><input type="file" class="form-input" multiple></div>
       <div class="form-group" style="margin-top:12px"><label class="form-label">备注</label><textarea class="form-textarea" id="fRemark" rows="3" style="width:100%"></textarea></div>
+    </div>
+    <div class="tab-panel" id="panel-change">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <strong style="font-size:14px">已生效合同变更</strong>
+        <span class="field-hint">仅展示审批通过且已到达计划生效日期的记录</span>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>变更编号</th><th>变更主题</th><th>变更内容摘要</th><th>计划生效日期</th><th>实际生效时间</th><th>发起人</th><th>操作</th></tr></thead>
+        <tbody id="changeHistoryBody"></tbody>
+      </table>
     </div>
   </div></div>
   <div class="form-footer edit-only" id="formFooter" style="margin-top:16px">
@@ -193,8 +208,8 @@ var UPSTREAM_CONTRACTS = [
   { code:'HT2026-0310', name:'嘉兴铁塔抽检服务合同', customer:'中国铁塔股份有限公司嘉兴市分公司', upTax:'¥ 128,000', subRate:'—' }
 ];
 var MOCK = {
-  'DX2026-0101': { code:'DX2026-0101', name:'单站检测外协服务包', type:'劳务分包', unit:'杭州某某检测技术有限公司', amount:120000, cumPay:45000, start:'2026-01-01', end:'2026-12-31', up:'HT2026-0512', upName:'杭州移动 2026 年度铁塔检测框架', customer:'中国移动…', upTax:'¥ 2,860,000', subRate:'—', workflow:'已通过', remark:'', payRem:[{name:'进度款',time:'2026-06-01T09:00',st:'待发送',at:'—'}], payments:[{no:'FK-202605-0009',date:'2026-05-06',amt:'45,000',m:'银行转账'}] },
-  'DX2026-0102': { code:'DX2026-0102', name:'塔身焊缝抽检协作', type:'协作检测', unit:'外协协作单位', amount:96000, cumPay:22000, start:'2026-04-01', end:'2026-09-30', up:'HT2026-0428', upName:'城西改造专项检测分包', customer:'浙江某建设…', upTax:'¥ 480,000', subRate:'35%', workflow:'审核中', remark:'待审批', payRem:[{name:'签约款',time:'2026-04-15T10:00',st:'待发送',at:'—'}], payments:[] }
+  'DX2026-0101': { code:'DX2026-0101', name:'单站检测外协服务包', type:'劳务分包', unit:'杭州某某检测技术有限公司', amount:120000, cumPay:45000, start:'2026-01-01', end:'2026-12-31', up:'HT2026-0512', upName:'杭州移动 2026 年度铁塔检测框架', customer:'中国移动…', upTax:'¥ 2,860,000', subRate:'—', workflow:'已通过', remark:'', payRem:[{name:'进度款',time:'2026-06-01T09:00',st:'待发送',at:'—'}], payments:[{no:'FK-202605-0009',date:'2026-05-06',amt:'45,000',m:'银行转账'}], changeHistory:[{no:'BG202600200003',title:'检测单位及合同期限变更',summary:'检测单位、合同截止日期',plan:'2026-05-01',actual:'2026-05-01 00:00',creator:'张伟'},{no:'BG2025002000027',title:'合同金额调整',summary:'合同金额',plan:'2025-11-15',actual:'2025-11-18 10:32',creator:'李娜'}] },
+  'DX2026-0102': { code:'DX2026-0102', name:'塔身焊缝抽检协作', type:'协作检测', unit:'外协协作单位', amount:96000, cumPay:22000, start:'2026-04-01', end:'2026-09-30', up:'HT2026-0428', upName:'城西改造专项检测分包', customer:'浙江某建设…', upTax:'¥ 480,000', subRate:'35%', workflow:'审核中', remark:'待审批', payRem:[{name:'签约款',time:'2026-04-15T10:00',st:'待发送',at:'—'}], payments:[], changeHistory:[] }
 };
 window.__layoutConfig = { active: 'contract_downstream', breadcrumb: ['合同管理', '对下合同', '详情'] };
 window.addEventListener('DOMContentLoaded', function () {
@@ -203,6 +218,10 @@ window.addEventListener('DOMContentLoaded', function () {
   var mode = p.get('mode') || 'view';
   var isEdit = mode === 'edit' || mode === 'create';
   var d = mode === 'create' ? { code:'（保存后生成）', name:'', amount:0, cumPay:0, up:'', upName:'', customer:'', upTax:'', subRate:'', workflow:'未提交', remark:'', payRem:[{ name:'', time:'', st:'待发送', at:'—' }], payments:[] } : (MOCK[code] || MOCK['DX2026-0101']);
+  if (mode === 'edit' && d.workflow === '已通过') {
+    isEdit = false;
+    setTimeout(function () { alert('该合同已审批通过，原合同全部字段不可直接编辑。请前往「合同变更」模块发起变更。'); }, 0);
+  }
   document.getElementById('pageTitle').textContent = (mode === 'create' ? '新建对下合同' : ((isEdit ? '编辑' : '详情') + ' · ' + d.code));
   if (mode === 'create') window.__layoutConfig.breadcrumb[2] = '新建合同';
   document.getElementById('fName').value = d.name;
@@ -295,6 +314,14 @@ window.addEventListener('DOMContentLoaded', function () {
     };
   }
   document.getElementById('fundBar').innerHTML = '<div>合同金额 <strong>¥ ' + Number(d.amount).toLocaleString() + '</strong></div><div>累计付款 <strong>¥ ' + Number(d.cumPay).toLocaleString() + '</strong></div><div>平台审批 <strong>' + d.workflow + '</strong></div>';
+  var lockNote = document.getElementById('contractLockNote');
+  if (lockNote) lockNote.classList.toggle('show', d.workflow === '已通过');
+  var changeBody = document.getElementById('changeHistoryBody');
+  if (changeBody) {
+    changeBody.innerHTML = (d.changeHistory || []).map(function (x) {
+      return '<tr><td><a class="btn-text" href="../合同变更/pc_contract_change_detail.html?no=' + encodeURIComponent(x.no) + '">' + x.no + '</a></td><td>' + x.title + '</td><td>' + x.summary + '</td><td>' + x.plan + '</td><td>' + x.actual + '</td><td>' + x.creator + '</td><td><a class="btn-text" href="../合同变更/pc_contract_change_detail.html?no=' + encodeURIComponent(x.no) + '">查看详情</a></td></tr>';
+    }).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--text-3)">暂无已生效变更记录</td></tr>';
+  }
   function renderRemindRows(list) {
     var tbody = document.getElementById('remindBody');
     tbody.innerHTML = '';
@@ -322,6 +349,7 @@ window.addEventListener('DOMContentLoaded', function () {
   }
   renderRemindRows(d.payRem);
   if (isEdit) document.body.classList.add('is-editing');
+  else document.body.classList.add('view-only');
   if (mode === 'create') {
     var linkTab = document.querySelector('#tabBar .tab[data-tab="link"]');
     if (linkTab) {
@@ -401,7 +429,10 @@ window.addEventListener('DOMContentLoaded', function () {
   if (d.workflow === '审核中') hdr.innerHTML = '<a href="../../工作台/流程中心/pc_workflow_approve.html?bizType=contract_down&bizId=' + d.code + '" class="btn btn-primary btn-sm">审批(平台)</a>';
   else if (d.workflow === '未提交') hdr.innerHTML = '<button type="button" class="btn btn-primary btn-sm" onclick="alert(\'提交基础平台审批\')">提交审批</button>';
   else hdr.innerHTML = '<a href="../../工作台/流程中心/pc_workflow_approve.html?bizType=contract_down&bizId=' + d.code + '" class="btn btn-default btn-sm">审批记录(平台)</a>';
-  if (!isEdit) { document.getElementById('formFooter').style.display = 'none'; hdr.innerHTML += ' <a href="pc_contract_downstream_detail.html?code=' + encodeURIComponent(d.code) + '&mode=edit" class="btn btn-default btn-sm">编辑</a>'; }
+  if (!isEdit) {
+    document.getElementById('formFooter').style.display = 'none';
+    if (d.workflow !== '已通过') hdr.innerHTML += ' <a href="pc_contract_downstream_detail.html?code=' + encodeURIComponent(d.code) + '&mode=edit" class="btn btn-default btn-sm">编辑</a>';
+  }
   function initTabs() {
     var tabBar = document.getElementById('tabBar');
     if (!tabBar || tabBar.dataset.bound === '1') return;
