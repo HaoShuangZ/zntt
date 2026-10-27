@@ -7,6 +7,14 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .rect-btn-disabled{color:var(--text-4)!important;cursor:not-allowed!important;pointer-events:none;opacity:.72}
+  .rect-modal{position:fixed;inset:0;z-index:2200;background:rgba(15,23,42,.52);display:none;align-items:center;justify-content:center;padding:24px}.rect-modal.open{display:flex}
+  .rect-dialog{width:min(1160px,96vw);max-height:90vh;background:#fff;border-radius:10px;box-shadow:0 22px 65px rgba(15,23,42,.24);display:flex;flex-direction:column;overflow:hidden}
+  .rect-head,.rect-foot{display:flex;align-items:center;padding:15px 20px}.rect-head{justify-content:space-between;border-bottom:1px solid var(--border)}.rect-foot{justify-content:flex-end;gap:10px;border-top:1px solid var(--border)}.rect-body{padding:18px 20px;overflow:auto}
+  .rect-meta{display:flex;gap:34px;flex-wrap:wrap;font-size:13px;color:var(--text-2);margin-bottom:12px}.rect-tip{padding:10px 13px;border:1px solid #bfdbfe;background:#eff6ff;color:#1d4ed8;border-radius:6px;font-size:13px;margin-bottom:14px}
+  .rect-table{width:100%;border-collapse:collapse}.rect-table th,.rect-table td{border:1px solid var(--border);padding:10px;vertical-align:top;font-size:13px}.rect-table th{background:#f7f8fa;color:var(--text-2);font-weight:600}.rect-table textarea{width:100%;min-height:70px;resize:vertical}.rect-table select{width:100%}.rect-count{text-align:right;font-size:12px;color:var(--text-3);margin-top:3px}.rect-error{color:var(--danger);font-size:12px;min-height:17px;margin-top:3px}.rect-close{border:0;background:transparent;color:var(--text-3);font-size:18px;cursor:pointer}
+</style>
 </head>
 <body>
 <div id="page-content">
@@ -99,7 +107,20 @@
       </div>
     </div>
   </div>
+
+  <div class="rect-modal" id="rectificationModal" aria-hidden="true">
+    <div class="rect-dialog" role="dialog" aria-modal="true" aria-labelledby="rectTitle">
+      <div class="rect-head"><h3 class="card-title" id="rectTitle">整改意见</h3><button class="rect-close" id="rectClose" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button></div>
+      <div class="rect-body">
+        <div class="rect-meta"><span>报告编号：<strong id="rectReportNo"></strong></span><span>站点名称：<strong id="rectTowerName"></strong></span><span>报告状态：<strong id="rectStatus"></strong></span></div>
+        <div class="rect-tip"><i class="fa-solid fa-circle-info"></i> 仅展示存在问题描述的检测项目；整改意见必填，隐患风险等级选填。标准意见选中后仍可修改，修改内容仅保存到当前报告。</div>
+        <table class="rect-table"><thead><tr><th style="width:58px">序号</th><th style="width:150px">检测项目</th><th style="width:240px">问题描述</th><th style="width:150px">隐患风险等级（选填）</th><th>整改意见</th></tr></thead><tbody id="rectBody"></tbody></table>
+      </div>
+      <div class="rect-foot"><span style="margin-right:auto;color:var(--text-3);font-size:12px">保存后请点击“编辑报告”模拟更新 WPS 对应整改意见区域。</span><button class="btn btn-default" id="rectCancel">取消</button><button class="btn btn-primary" id="rectSave">保存</button></div>
+    </div>
+  </div>
 </div>
+<script src="../../../../assets/rectification-data.js"></script>
 <script src="../../../../assets/shared-layout.js"></script>
 <script src="../../../../assets/pc-audit-action.js"></script>
 <script>window.__layoutConfig = {active:'report_generate', breadcrumb:['检测管理','报告编制','报告列表']};</script>
@@ -207,6 +228,7 @@
     }
 
     function loadReports() {
+      if (window.RectificationStore) return window.RectificationStore.getReports();
       try {
         return JSON.parse(localStorage.getItem(REPORT_KEY) || '[]');
       } catch (e) {
@@ -247,8 +269,10 @@
       tbody.innerHTML = pageRows.map(function (r) {
         const detailBtn = '<a href="report-detail.html?reportId=' + encodeURIComponent(r.id) + '" class="btn btn-text">查看详情</a>';
         const editBtn = (r.status === '待编制' || r.status === '编制中')
-          ? '<a href="report-edit.html?reportId=' + encodeURIComponent(r.id) + '" class="btn btn-text">' + (r.status === '待编制' ? '发起编制' : '编辑') + '</a>'
+          ? '<button type="button" class="btn btn-text btn-edit-report" data-id="' + r.id + '">' + (r.status === '待编制' ? '发起编制' : '编辑报告') + '</button>'
           : '';
+        const rectDisabled = window.RectificationStore && RectificationStore.isApprovalInProgress(r);
+        const rectificationBtn = '<button type="button" class="btn btn-text btn-rectification ' + (rectDisabled ? 'rect-btn-disabled' : '') + '" data-id="' + r.id + '" ' + (rectDisabled ? 'disabled aria-disabled="true" title="报告审批中，请先撤回或退回后再维护整改意见"' : '') + '>整改意见</button>';
         const exportBtn = r.status === '已出报告' ? '<button class="btn btn-text btn-export" data-id="' + r.id + '">导出PDF</button>' : '';
         const problemSetBtn = r.status === '已出报告' ? '<button type="button" class="btn btn-text btn-problem-set" data-id="' + r.id + '">问题集</button>' : '';
         const canAudit = r.auditStatus === '待审核' || r.auditStatus === '审核中';
@@ -270,7 +294,7 @@
           '<td data-audit-col style="font-size:12px;color:var(--text-2);max-width:140px;">' + (r.auditNode || '—') + '</td>' +
           '<td data-audit-col>' + (r.auditor || '—') + '</td>' +
           '<td data-audit-col style="font-size:12px;white-space:nowrap;">' + (r.auditAt || '—') + '</td>' +
-          '<td class="col-action">' + auditBtn + detailBtn + editBtn + exportBtn + problemSetBtn + '</td>' +
+          '<td class="col-action">' + auditBtn + detailBtn + rectificationBtn + editBtn + exportBtn + problemSetBtn + '</td>' +
           '</tr>';
       }).join('');
 
@@ -331,6 +355,7 @@
           r.auditNode = '已完成';
           r.auditor = r.auditor && r.auditor !== '—' ? r.auditor : '合同部-批量审核';
           r.auditAt = nowText();
+          r.auditApprovedAt = r.auditAt;
           r.submitTime = nowText();
           syncTaskStatusByReport(r, '报告已出具');
         }
@@ -366,6 +391,10 @@
         if (!(target instanceof Element)) return;
         const exportBtn = target.closest('.btn-export');
         const problemSetBtn = target.closest('.btn-problem-set');
+        const rectBtn = target.closest('.btn-rectification');
+        const editReportBtn = target.closest('.btn-edit-report');
+        if (rectBtn && !rectBtn.disabled) openRectification(rectBtn.getAttribute('data-id'));
+        if (editReportBtn) openReportEditor(editReportBtn.getAttribute('data-id'));
         if (exportBtn) {
           alert('报告已导出 PDF');
         }
@@ -376,6 +405,86 @@
           window.location.href = 'report-detail.html?reportId=' + encodeURIComponent(id);
         }
       });
+      document.getElementById('rectClose').addEventListener('click', closeRectification);
+      document.getElementById('rectCancel').addEventListener('click', closeRectification);
+      document.getElementById('rectSave').addEventListener('click', saveRectification);
+      document.getElementById('rectBody').addEventListener('change', function (e) {
+        var select = e.target.closest('.rect-standard');
+        if (!select || !select.value) return;
+        var idx = select.getAttribute('data-index');
+        var text = document.querySelector('.rect-opinion[data-index="' + idx + '"]');
+        if (text) { text.value = select.value; updateCount(text); }
+      });
+      document.getElementById('rectBody').addEventListener('input', function (e) {
+        if (e.target.classList.contains('rect-opinion')) updateCount(e.target);
+      });
+    }
+
+    var rectReportId = '';
+    var rectDirty = false;
+    function esc(value) { return String(value == null ? '' : value).replace(/[&<>"']/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+    function updateCount(textarea) {
+      var idx = textarea.getAttribute('data-index');
+      var counter = document.querySelector('.rect-count[data-index="' + idx + '"]');
+      if (counter) counter.textContent = textarea.value.length + '/100';
+      rectDirty = true;
+    }
+    function openRectification(id) {
+      var report = allData.find(function (r) { return r.id === id; });
+      if (!report || !window.RectificationStore) return;
+      if (RectificationStore.isApprovalInProgress(report)) return alert('报告审批中，请先撤回或退回后再维护整改意见。');
+      var needsConfirm = RectificationStore.isApproved(report) || (report.rectification && report.rectification.boundVersion > 0);
+      if (needsConfirm && !confirm('该报告已审批通过或已绑定 WPS。继续维护将使报告转为“编制中”，需要重新提交审批；保存后还需点击“编辑报告”更新 WPS 对应整改意见区域。是否继续？')) return;
+      if (needsConfirm) {
+        report.status = '编制中'; report.auditStatus = '未提交'; report.auditNode = '未发起审核'; report.auditor = '—'; report.submitTime = nowText();
+        saveReports(allData);
+      } else if (report.status === '待编制') {
+        report.status = '编制中'; report.auditStatus = '未提交'; report.auditNode = '未发起审核'; saveReports(allData);
+      }
+      rectReportId = id; rectDirty = false;
+      document.getElementById('rectReportNo').textContent = report.reportNo;
+      document.getElementById('rectTowerName').textContent = report.towerName;
+      document.getElementById('rectStatus').textContent = report.status;
+      var rows = RectificationStore.mergeProblemRows(report);
+      document.getElementById('rectBody').innerHTML = rows.map(function (row, idx) {
+        var standards = RectificationStore.standardOpinions(row.project);
+        return '<tr data-problem-id="' + esc(row.problemId) + '"><td>' + (idx+1) + '</td><td><strong>' + esc(row.project) + '</strong></td><td style="text-align:left;line-height:1.7">' + esc(row.description) + '</td><td><select class="form-select rect-risk" data-index="' + idx + '"><option value="">请选择</option><option ' + (row.riskLevel==='A类'?'selected':'') + '>A类</option><option ' + (row.riskLevel==='B类'?'selected':'') + '>B类</option><option ' + (row.riskLevel==='C类'?'selected':'') + '>C类</option></select></td><td><select class="form-select rect-standard" data-index="' + idx + '"><option value="">选择标准整改意见（可选）</option>' + standards.map(function (x) { return '<option value="' + esc(x.opinion) + '">' + esc(x.opinion) + '</option>'; }).join('') + '</select>' + (!standards.length ? '<div style="font-size:12px;color:var(--text-3);margin:5px 0">暂无可用标准意见，请手动填写</div>' : '') + '<textarea class="form-textarea rect-opinion" maxlength="100" data-index="' + idx + '" placeholder="请输入整改意见">' + esc(row.opinion) + '</textarea><div class="rect-count" data-index="' + idx + '">' + String(row.opinion || '').length + '/100</div><div class="rect-error" data-index="' + idx + '"></div></td></tr>';
+      }).join('') || '<tr><td colspan="5" style="padding:36px;color:var(--text-3)">当前报告没有存在问题描述的检测项目，无需维护整改意见。</td></tr>';
+      document.getElementById('rectificationModal').classList.add('open');
+      render();
+    }
+    function closeRectification() {
+      if (rectDirty && !confirm('当前修改尚未保存，确定关闭吗？')) return;
+      document.getElementById('rectificationModal').classList.remove('open'); rectReportId=''; rectDirty=false;
+    }
+    function saveRectification() {
+      var report = allData.find(function (r) { return r.id === rectReportId; });
+      if (!report) return;
+      var result = [], ok = true;
+      document.querySelectorAll('#rectBody tr[data-problem-id]').forEach(function (tr, idx) {
+        var text = tr.querySelector('.rect-opinion'), error = tr.querySelector('.rect-error'), opinion = (text.value || '').trim(); error.textContent='';
+        if (!opinion) { error.textContent='请填写整改意见'; ok=false; }
+        else if (opinion.length > 100) { error.textContent='整改意见不能超过100字'; ok=false; }
+        result.push({problemId:tr.getAttribute('data-problem-id'),project:report.problems[idx].project,description:report.problems[idx].description,riskLevel:tr.querySelector('.rect-risk').value,opinion:opinion});
+      });
+      if (!ok) return alert('请完善所有问题行的整改意见后再保存。');
+      var rect = report.rectification || {version:0,boundVersion:0,wpsState:'未绑定'};
+      rect.version = Number(rect.version || 0) + 1; rect.rows=result; rect.updatedAt=nowText(); rect.wpsState = rect.boundVersion ? '待更新' : '未绑定';
+      report.rectification=rect; report.status='编制中'; report.auditStatus='未提交'; report.auditNode='未发起审核'; report.submitTime=nowText(); saveReports(allData);
+      rectDirty=false; document.getElementById('rectificationModal').classList.remove('open'); applyFilters();
+      alert('整改意见已保存。当前为原型演示：请点击“编辑报告”模拟填充或更新 WPS 对应区域。');
+    }
+    function openReportEditor(id) {
+      var report = allData.find(function (r) { return r.id === id; }); if (!report) return;
+      if (!window.RectificationStore || !RectificationStore.hasProblems(report)) { location.href='report-edit.html?reportId='+encodeURIComponent(id); return; }
+      if (!RectificationStore.rectificationComplete(report)) { alert('该报告仍有问题项未完整填写整改意见，请先完善整改意见。风险等级可不填。'); openRectification(id); return; }
+      var rect=report.rectification||{};
+      if (rect.boundVersion===rect.version && rect.wpsState==='已绑定') { location.href='report-edit.html?reportId='+encodeURIComponent(id); return; }
+      var first=!rect.boundVersion;
+      var message=first?'进入编辑报告后，当前整改意见将绑定并锁定。后续在WPS中的修改不会同步至系统整改意见及问题汇总。是否继续？':'本次更新将覆盖WPS对应整改意见区域的手动修改，仅更新对应区域，不覆盖整份报告。是否继续？';
+      if (!confirm(message)) return;
+      rect.boundVersion=rect.version; rect.wpsState='已绑定'; rect.boundAt=nowText(); report.rectification=rect; saveReports(allData);
+      alert((first?'首次填充':'更新')+'成功（原型演示），已绑定整改意见版本 V'+rect.version+'。'); location.href='report-edit.html?reportId='+encodeURIComponent(id);
     }
 
     function initRoleUi() {

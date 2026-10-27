@@ -28,6 +28,7 @@ const MENU = [
   { id:'tjfx', label:'统计分析', icon:'fa-chart-column', items:[
     {id:'order_stats', label:'订单统计', href:'../../统计分析/订单统计/pc_order_stats.html'},
     {id:'order_reports', label:'报告查询', href:'../../合同部管理/报告查阅/pc_order_reports.html'},
+    {id:'problem_summary', label:'问题汇总', href:'../../统计分析/问题汇总/pc_problem_summary.html'},
   ]},
   { id:'ttjcpz', label:'模板配置', icon:'fa-sliders', items:[
     {id:'inspect_template_list', label:'检测模板', href:'../../模板配置/检测模板/pc_inspect_template_list.html'},
@@ -43,6 +44,7 @@ const MENU = [
     {id:'data_device_type', label:'设备类型', href:'../../基础数据/设备类型/pc_data_device_type.html'},
     {id:'data_inspect_type', label:'检测类型', href:'../../基础数据/检测类型/pc_data_inspect_type.html'},
     {id:'data_segment_style', label:'塔段样式信息', href:'../../基础数据/塔段样式管理/pc_data_segment_style.html'},
+    {id:'data_rectification', label:'整改意见', href:'../../基础数据/整改意见/pc_data_rectification_opinion.html'},
   ]},
   { id:'xtgl', label:'系统管理', icon:'fa-gear', items:[
     {id:'system_users', label:'用户管理', href:'../../系统管理/用户管理/pc_system_users.html'},

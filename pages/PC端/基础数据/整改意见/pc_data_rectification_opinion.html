@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>整改意见</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .ro-modal{position:fixed;inset:0;z-index:2100;background:rgba(15,23,42,.48);display:none;align-items:center;justify-content:center;padding:24px}.ro-modal.open{display:flex}
+  .ro-dialog{width:min(620px,96vw);background:#fff;border-radius:10px;box-shadow:0 18px 55px rgba(15,23,42,.22);overflow:hidden}.ro-head,.ro-foot{display:flex;align-items:center;padding:16px 20px}.ro-head{justify-content:space-between;border-bottom:1px solid var(--border)}.ro-foot{justify-content:flex-end;gap:10px;border-top:1px solid var(--border)}.ro-body{padding:20px 24px}
+  .ro-close{border:0;background:transparent;color:var(--text-3);cursor:pointer;font-size:18px}.ro-help{font-size:12px;color:var(--text-3);margin-top:6px}.ro-error{font-size:12px;color:var(--danger);min-height:18px;margin-top:4px}.ro-counter{text-align:right;font-size:12px;color:var(--text-3);margin-top:4px}.ro-hidden{display:none!important}
+  .ro-feedback{display:none;margin-bottom:14px;padding:10px 14px;border-radius:6px;font-size:13px}.ro-feedback.show{display:block}.ro-feedback.ok{background:#ecfdf3;color:#047857;border:1px solid #a7f3d0}.ro-feedback.warn{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa}
+  .ro-status{display:inline-flex;align-items:center;gap:7px}.ro-status:before{content:"";width:9px;height:9px;border-radius:50%;background:#9ca3af}.ro-status.on:before{background:#22c55e}
+  .ro-import-result{margin-top:12px;font-size:13px;line-height:1.8}.ro-modal textarea{min-height:110px;resize:vertical}
+</style>
+</head>
+<body>
+<div id="page-content">
+  <div class="card">
+    <div class="card-header"><div class="card-title">整改意见</div></div>
+    <div class="card-body">
+      <div class="toolbar"><div class="toolbar-left">
+        <input id="filterProject" class="form-input" placeholder="请输入检测项目名称">
+        <select id="filterStatus" class="form-select"><option value="">全部状态</option><option value="1">启用</option><option value="0">禁用</option></select>
+        <button class="btn btn-primary" id="btnQuery"><i class="fa-solid fa-magnifying-glass"></i> 查询</button>
+        <button class="btn btn-default" id="btnReset"><i class="fa-solid fa-rotate-left"></i> 重置</button>
+      </div></div>
+      <div id="feedback" class="ro-feedback" role="status"></div>
+      <div class="pc-table-actions">
+        <button class="btn btn-primary" id="btnAdd"><i class="fa-solid fa-plus"></i> 新增</button>
+        <button class="btn btn-danger" id="btnDelete"><i class="fa-regular fa-trash-can"></i> 删除</button>
+        <button class="btn btn-default" id="btnImport"><i class="fa-solid fa-file-arrow-up"></i> 导入</button>
+        <button class="btn btn-default" id="btnExport"><i class="fa-solid fa-file-arrow-down"></i> 导出</button>
+        <input id="importFile" type="file" accept=".xlsx,.xls,.csv" hidden>
+      </div>
+      <table class="data-table">
+        <thead><tr><th style="width:46px"><input id="checkAll" type="checkbox" aria-label="全选"></th><th style="width:70px">序号</th><th style="width:210px">检测项目</th><th>整改意见</th><th style="width:110px">状态</th><th class="col-action" style="width:230px">操作</th></tr></thead>
+        <tbody id="opinionBody"></tbody>
+      </table>
+      <div class="pagination"><span id="totalText">共 0 条记录</span><div class="pagination-btns"><button class="page-btn" id="prevPage"><i class="fa-solid fa-chevron-left"></i></button><button class="page-btn active" id="pageNo">1</button><button class="page-btn" id="nextPage"><i class="fa-solid fa-chevron-right"></i></button></div></div>
+    </div>
+  </div>
+
+  <div class="ro-modal" id="editModal" aria-hidden="true">
+    <div class="ro-dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="ro-head"><h3 class="card-title" id="modalTitle">新增整改意见</h3><button class="ro-close" data-close aria-label="关闭"><i class="fa-solid fa-xmark"></i></button></div>
+      <div class="ro-body">
+        <div class="form-group">
+          <label class="form-label">检测项目 <span class="required">*</span></label>
+          <select id="projectSelect" class="form-select" style="width:100%"></select>
+          <div id="projectError" class="ro-error"></div>
+        </div>
+        <div class="form-group ro-hidden" id="customProjectGroup">
+          <label class="form-label">项目名称 <span class="required">*</span></label>
+          <input id="customProject" class="form-input" maxlength="30" style="width:100%" placeholder="请输入具体检测项目名称">
+          <div class="ro-help">仅保存至整改意见库，不同步检测项目字典。</div>
+          <div id="customProjectError" class="ro-error"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">整改意见 <span class="required">*</span></label>
+          <textarea id="opinionText" class="form-textarea" maxlength="50" style="width:100%" placeholder="请输入整改意见，最多50字"></textarea>
+          <div class="ro-counter"><span id="opinionCount">0</span>/50</div><div id="opinionError" class="ro-error"></div>
+        </div>
+        <div class="form-group"><span class="form-label">状态</span><label style="margin-right:24px"><input type="radio" name="enabled" value="1" checked> 启用</label><label><input type="radio" name="enabled" value="0"> 禁用</label></div>
+      </div>
+      <div class="ro-foot"><button class="btn btn-default" data-close>取消</button><button class="btn btn-primary" id="btnSave">保存</button></div>
+    </div>
+  </div>
+
+  <div class="ro-modal" id="importModal" aria-hidden="true">
+    <div class="ro-dialog" role="dialog" aria-modal="true" aria-labelledby="importTitle">
+      <div class="ro-head"><h3 class="card-title" id="importTitle">导入整改意见</h3><button class="ro-close" data-import-close aria-label="关闭"><i class="fa-solid fa-xmark"></i></button></div>
+      <div class="ro-body">
+        <p style="font-size:13px;color:var(--text-2);line-height:1.8">模板字段固定为“检测项目、整改意见”。有效行导入，错误行跳过；未知项目名称、空值、超过50字或完全重复的记录会失败。</p>
+        <button class="btn btn-text" id="btnTemplate"><i class="fa-solid fa-download"></i> 下载标准模板</button>
+        <div class="ro-import-result" id="importResult">请选择 .xlsx、.xls 或 .csv 文件。</div>
+      </div>
+      <div class="ro-foot"><button class="btn btn-default" data-import-close>关闭</button><button class="btn btn-primary" id="btnChooseFile">选择文件并导入</button></div>
+    </div>
+  </div>
+</div>
+<script src="../../../../assets/rectification-data.js"></script>
+<script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig={active:'data_rectification',breadcrumb:['基础数据','整改意见']};</script>
+<script>
+(function(){
+  var store=window.RectificationStore, rows=[], filtered=[], page=1, pageSize=20, editingId='';
+  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function feedback(text,type){var el=document.getElementById('feedback');el.textContent=text;el.className='ro-feedback show '+(type||'ok');setTimeout(function(){el.className='ro-feedback';},4500);}
+  function load(){rows=store.getOpinions();applyFilters();}
+  function applyFilters(){var kw=document.getElementById('filterProject').value.trim().toLowerCase(),st=document.getElementById('filterStatus').value;filtered=rows.filter(function(r){return(!kw||r.project.toLowerCase().indexOf(kw)>-1)&&(!st||String(Number(r.enabled))===st);});page=1;render();}
+  function render(){var max=Math.max(1,Math.ceil(filtered.length/pageSize));if(page>max)page=max;var start=(page-1)*pageSize;document.getElementById('opinionBody').innerHTML=filtered.slice(start,start+pageSize).map(function(r,i){return '<tr><td><input class="row-check" type="checkbox" data-id="'+r.id+'"></td><td>'+(start+i+1)+'</td><td>'+esc(r.project)+'</td><td style="text-align:left">'+esc(r.opinion)+'</td><td><span class="ro-status '+(r.enabled?'on':'')+'">'+(r.enabled?'启用':'禁用')+'</span></td><td class="col-action"><button class="btn btn-text edit" data-id="'+r.id+'"><i class="fa-regular fa-pen-to-square"></i> 编辑</button><button class="btn btn-text toggle" data-id="'+r.id+'">'+(r.enabled?'禁用':'启用')+'</button><button class="btn btn-text remove" data-id="'+r.id+'" style="color:'+(r.enabled?'var(--text-4)':'var(--danger)')+'" '+(r.enabled?'disabled title="仅禁用数据允许删除"':'')+'>删除</button></td></tr>';}).join('')||'<tr><td colspan="6" style="padding:42px;color:var(--text-3)">暂无符合条件的数据</td></tr>';document.getElementById('totalText').textContent='共 '+filtered.length+' 条记录';document.getElementById('pageNo').textContent=page;document.getElementById('prevPage').disabled=page<=1;document.getElementById('nextPage').disabled=page>=max;document.getElementById('checkAll').checked=false;}
+  function openEdit(id){editingId=id||'';var row=rows.find(function(x){return x.id===id;});document.getElementById('modalTitle').textContent=row?'编辑整改意见':'新增整改意见';fillProjectOptions(row?row.project:'');document.getElementById('opinionText').value=row?row.opinion:'';document.querySelector('input[name="enabled"][value="'+(row&& !row.enabled?'0':'1')+'"]').checked=true;document.getElementById('opinionCount').textContent=(row?row.opinion:'').length;toggleCustom();document.getElementById('editModal').classList.add('open');}
+  function closeEdit(){document.getElementById('editModal').classList.remove('open');editingId='';clearErrors();}
+  function fillProjectOptions(value){var list=store.projectNames.slice();if(value&&list.indexOf(value)<0)list.push(value);document.getElementById('projectSelect').innerHTML='<option value="">请选择检测项目</option>'+list.map(function(x){return '<option '+(x===value?'selected':'')+'>'+esc(x)+'</option>';}).join('')+'<option value="__other__">其他</option>';document.getElementById('customProject').value='';}
+  function toggleCustom(){document.getElementById('customProjectGroup').classList.toggle('ro-hidden',document.getElementById('projectSelect').value!=='__other__');}
+  function clearErrors(){['projectError','customProjectError','opinionError'].forEach(function(id){document.getElementById(id).textContent='';});}
+  function save(){clearErrors();var selected=document.getElementById('projectSelect').value,project=selected,opinion=document.getElementById('opinionText').value.trim();if(selected==='__other__')project=document.getElementById('customProject').value.trim();var ok=true;if(!project){document.getElementById(selected==='__other__'?'customProjectError':'projectError').textContent='请选择或填写检测项目';ok=false;}if(!opinion){document.getElementById('opinionError').textContent='请填写整改意见';ok=false;}if(opinion.length>50){document.getElementById('opinionError').textContent='整改意见不能超过50字';ok=false;}if(!ok)return;var duplicate=rows.some(function(r){return r.id!==editingId&&r.project===project&&r.opinion===opinion;});if(duplicate)return document.getElementById('opinionError').textContent='同一项目下已存在完全相同的整改意见';var enabled=document.querySelector('input[name="enabled"]:checked').value==='1';var row=rows.find(function(x){return x.id===editingId;});if(row){row.project=project;row.opinion=opinion;row.enabled=enabled;}else{rows.unshift({id:'OP'+Date.now(),project:project,opinion:opinion,enabled:enabled,createdAt:store.nowText()});}store.saveOpinions(rows);closeEdit();applyFilters();feedback(row?'整改意见已更新':'整改意见已新增');}
+  function deleteSelected(){var ids=Array.from(document.querySelectorAll('.row-check:checked')).map(function(x){return x.dataset.id;});if(!ids.length)return alert('请先选择需要删除的记录');var selected=rows.filter(function(r){return ids.indexOf(r.id)>-1;});if(selected.some(function(r){return r.enabled;}))return alert('所选记录包含启用状态数据。仅禁用数据允许删除，本次未删除任何记录。');if(!confirm('确定删除选中的 '+ids.length+' 条整改意见吗？'))return;rows=rows.filter(function(r){return ids.indexOf(r.id)<0;});store.saveOpinions(rows);applyFilters();feedback('已删除 '+ids.length+' 条禁用记录');}
+  function workbookDownload(name,data){if(window.XLSX){var ws=XLSX.utils.json_to_sheet(data),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'整改意见');XLSX.writeFile(wb,name);return true;}return false;}
+  function exportRows(){if(!filtered.length)return alert('暂无数据');var data=filtered.map(function(r){return {'检测项目':r.project,'整改意见':r.opinion,'状态':r.enabled?'启用':'禁用'};});if(!workbookDownload('整改意见_'+new Date().toISOString().slice(0,10)+'.xlsx',data))store.downloadCsv('整改意见.csv',['检测项目','整改意见','状态'],data.map(function(x){return [x['检测项目'],x['整改意见'],x['状态']];}));feedback('已按当前筛选范围导出 '+data.length+' 条记录');}
+  function template(){var data=[{'检测项目':'螺栓缺失','整改意见':'按照设计规格补齐缺失螺栓。'}];if(!workbookDownload('整改意见导入模板.xlsx',data))store.downloadCsv('整改意见导入模板.csv',['检测项目','整改意见'],[['螺栓缺失','按照设计规格补齐缺失螺栓。']]);}
+  function handleImport(file){var reader=new FileReader();reader.onload=function(e){try{if(!window.XLSX)throw new Error('Excel解析组件未加载，请联网刷新页面后重试');var wb=XLSX.read(e.target.result,{type:'array'}),sheet=wb.Sheets[wb.SheetNames[0]],data=XLSX.utils.sheet_to_json(sheet,{defval:''}),errors=[],added=0;data.forEach(function(x,i){var project=String(x['检测项目']||'').trim(),opinion=String(x['整改意见']||'').trim(),reason='';if(!project)reason='检测项目不能为空';else if(store.projectNames.indexOf(project)<0&&!rows.some(function(r){return r.project===project;}))reason='检测项目名称不存在';else if(!opinion)reason='整改意见不能为空';else if(opinion.length>50)reason='整改意见超过50字';else if(rows.some(function(r){return r.project===project&&r.opinion===opinion;}))reason='完全重复记录';if(reason)errors.push([i+2,project,opinion,reason]);else{rows.push({id:'OP'+Date.now()+i,project:project,opinion:opinion,enabled:true,createdAt:store.nowText()});added++;}});store.saveOpinions(rows);applyFilters();document.getElementById('importResult').innerHTML='导入完成：成功 <strong>'+added+'</strong> 条，失败 <strong>'+errors.length+'</strong> 条。'+(errors.length?'<br><button class="btn btn-text" id="downloadErrors">下载失败明细</button>':'');if(errors.length)document.getElementById('downloadErrors').onclick=function(){store.downloadCsv('整改意见导入失败明细.csv',['原始行号','检测项目','整改意见','失败原因'],errors);};feedback('导入处理完成，成功 '+added+' 条，失败 '+errors.length+' 条',errors.length?'warn':'ok');}catch(err){document.getElementById('importResult').textContent='导入失败：'+err.message;} };reader.readAsArrayBuffer(file);}
+  document.addEventListener('DOMContentLoaded',function(){
+    document.getElementById('btnQuery').onclick=applyFilters;document.getElementById('btnReset').onclick=function(){document.getElementById('filterProject').value='';document.getElementById('filterStatus').value='';applyFilters();};document.getElementById('btnAdd').onclick=function(){openEdit('');};document.getElementById('btnDelete').onclick=deleteSelected;document.getElementById('btnExport').onclick=exportRows;document.getElementById('btnImport').onclick=function(){document.getElementById('importModal').classList.add('open');};document.getElementById('btnTemplate').onclick=template;document.getElementById('btnChooseFile').onclick=function(){document.getElementById('importFile').click();};document.getElementById('importFile').onchange=function(){if(this.files[0])handleImport(this.files[0]);this.value='';};document.getElementById('projectSelect').onchange=toggleCustom;document.getElementById('opinionText').oninput=function(){document.getElementById('opinionCount').textContent=this.value.length;};document.getElementById('btnSave').onclick=save;document.getElementById('checkAll').onchange=function(e){document.querySelectorAll('.row-check').forEach(function(x){x.checked=e.target.checked;});};document.getElementById('prevPage').onclick=function(){page--;render();};document.getElementById('nextPage').onclick=function(){page++;render();};document.querySelectorAll('[data-close]').forEach(function(x){x.onclick=closeEdit;});document.querySelectorAll('[data-import-close]').forEach(function(x){x.onclick=function(){document.getElementById('importModal').classList.remove('open');};});document.getElementById('opinionBody').onclick=function(e){var b=e.target.closest('button');if(!b)return;var id=b.dataset.id,row=rows.find(function(x){return x.id===id;});if(b.classList.contains('edit'))openEdit(id);if(b.classList.contains('toggle')){row.enabled=!row.enabled;store.saveOpinions(rows);applyFilters();feedback(row.enabled?'已启用该意见':'已禁用该意见');}if(b.classList.contains('remove')&&!row.enabled){if(confirm('确定删除该禁用整改意见吗？')){rows=rows.filter(function(x){return x.id!==id;});store.saveOpinions(rows);applyFilters();feedback('已删除该禁用整改意见');}}};load();
+  });
+})();
+</script>
+</body>
+</html>

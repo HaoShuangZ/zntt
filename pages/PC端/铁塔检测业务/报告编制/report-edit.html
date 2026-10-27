@@ -34,7 +34,7 @@
   <div class="card" style="margin-bottom:16px;border:1px solid #bfdbfe;background:#eff6ff;">
     <div class="card-body" style="padding:10px 16px;font-size:13px;color:#1e3a8a;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
       <span><i class="fa-solid fa-book"></i> 报告数据来自检测任务<strong>检毕通过后的自动复制</strong>，与任务主数据分离；<strong>保存草稿</strong>后状态为「编制中」；<strong>发起报告审核</strong>后进入「已编制」并按流程抄送（详见详情页）。</span>
-      <span id="auto-save-tip" style="font-size:12px;color:#1d4ed8;">自动保存：未开始</span>
+      <span style="display:flex;gap:14px;align-items:center"><span id="wps-status-tip" style="font-size:12px;color:#1d4ed8;">WPS整改意见：无问题项</span><span id="auto-save-tip" style="font-size:12px;color:#1d4ed8;">自动保存：未开始</span></span>
     </div>
   </div>
 
@@ -183,6 +183,7 @@
     </div>
   </div>
 </div>
+<script src="../../../../assets/rectification-data.js"></script>
 <script src="../../../../assets/shared-layout.js"></script>
 <script>window.__layoutConfig = {active:'report_generate', breadcrumb:['检测管理','报告编制','报告编辑']};</script>
 <script>
@@ -217,6 +218,7 @@
     }
 
     function loadReportsMigrate() {
+      if (window.RectificationStore) return RectificationStore.getReports().map(migrateReportRow);
       var list;
       try { list = JSON.parse(localStorage.getItem(REPORT_KEY) || '[]'); } catch (e) { list = []; }
       var needSave = false;
@@ -332,7 +334,7 @@
       }
 
       var clearDeclare = mode === 'draft' && prevStatus === '待编制';
-      const report = {
+      const report = Object.assign({}, base, {
         id: base.id || ('R' + Date.now()),
         reportNo: base.reportNo || toReportNo(),
         towerCode: base.towerCode || '',
@@ -364,7 +366,7 @@
         conclusion: getValue('conclusion'),
         inspectorSign: getValue('inspectorSign'),
         auditorSign: getValue('auditorSign')
-      };
+      });
       const idx = reports.findIndex(function (r) { return r.id === report.id; });
       if (idx >= 0) reports[idx] = report; else reports.unshift(report);
       saveReports(reports);
@@ -409,6 +411,15 @@
       setValue('inspectorSign', report.inspectorSign);
       setValue('auditorSign', report.auditorSign);
       renderItems(report.items);
+      renderWpsStatus(report);
+    }
+
+    function renderWpsStatus(report) {
+      var tip = document.getElementById('wps-status-tip');
+      if (!window.RectificationStore || !RectificationStore.hasProblems(report)) { tip.textContent='WPS整改意见：无问题项'; return; }
+      var rect=report.rectification||{};
+      tip.textContent='WPS整改意见：'+(rect.wpsState||'未绑定')+' · 系统版本 V'+(rect.version||0)+' · 绑定版本 V'+(rect.boundVersion||0)+'（原型演示）';
+      tip.style.color=rect.wpsState==='已绑定'?'#047857':'#c2410c';
     }
 
     function fillByTask(t) {
@@ -449,6 +460,24 @@
             return;
           }
           currentReport = report;
+          if (window.RectificationStore && RectificationStore.isApprovalInProgress(report)) {
+            alert('报告审批中不能进入编辑，请先在审批流程中撤回或退回。');
+            location.replace('report-list.html');
+            return;
+          }
+          if (window.RectificationStore && RectificationStore.hasProblems(report)) {
+            if (!RectificationStore.rectificationComplete(report)) {
+              alert('该报告存在未完整维护的整改意见，请先返回报告列表维护。');
+              location.replace('report-list.html');
+              return;
+            }
+            var rect=report.rectification||{};
+            if (rect.boundVersion!==rect.version || rect.wpsState!=='已绑定') {
+              alert('整改意见尚未成功绑定或更新到 WPS，请从报告列表点击“编辑报告”完成确认。');
+              location.replace('report-list.html');
+              return;
+            }
+          }
           fillByReport(report);
           return;
         }
@@ -465,6 +494,11 @@
         upsertReport('draft', false);
       });
       document.getElementById('btn-submit-review').addEventListener('click', function () {
+        if (window.RectificationStore && currentReport && RectificationStore.hasProblems(currentReport)) {
+          var rect=currentReport.rectification||{};
+          if (!RectificationStore.rectificationComplete(currentReport)) return alert('整改意见未完整保存，暂不能发起审批。');
+          if (rect.wpsState!=='已绑定' || rect.boundVersion!==rect.version) return alert('整改意见尚未成功更新到 WPS，暂不能发起审批。');
+        }
         if (!validate()) return;
         const report = upsertReport('submit', false);
         if (report) location.href = 'report-detail.html?reportId=' + encodeURIComponent(report.id);

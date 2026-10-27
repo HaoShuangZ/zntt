@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>问题汇总</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../../../../assets/pc-layout.css">
+<style>
+  .ps-filter{display:grid;grid-template-columns:150px 150px minmax(270px,1fr) minmax(270px,1fr) auto;gap:14px;align-items:end}.ps-range{display:grid;grid-template-columns:1fr 20px 1fr;gap:6px;align-items:center}.ps-note{margin:14px 0;background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:11px 14px;color:#1d4ed8;font-size:13px}.ps-link{color:var(--primary);font-weight:600;text-decoration:underline;text-underline-offset:3px}.ps-label{display:block;font-size:12px;color:var(--text-2);margin-bottom:6px}@media(max-width:1200px){.ps-filter{grid-template-columns:repeat(2,minmax(240px,1fr))}.ps-filter .ps-actions{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<div id="page-content"><div class="card"><div class="card-header"><div class="card-title">问题汇总</div></div><div class="card-body">
+  <div class="ps-filter">
+    <label><span class="ps-label">省</span><select class="form-select" id="province" style="width:100%"><option value="">全部省份</option></select></label>
+    <label><span class="ps-label">市</span><select class="form-select" id="city" style="width:100%"><option value="">全部城市</option></select></label>
+    <div><span class="ps-label">检测任务创建时间</span><div class="ps-range"><input class="form-input" type="date" id="taskStart"><span>至</span><input class="form-input" type="date" id="taskEnd"></div></div>
+    <div><span class="ps-label">报告审批通过时间</span><div class="ps-range"><input class="form-input" type="date" id="approvalStart"><span>至</span><input class="form-input" type="date" id="approvalEnd"></div></div>
+    <div class="ps-actions"><button class="btn btn-primary" id="query"><i class="fa-solid fa-magnifying-glass"></i> 查询</button> <button class="btn btn-default" id="reset"><i class="fa-solid fa-rotate-left"></i> 重置</button></div>
+  </div>
+  <div class="ps-note"><i class="fa-solid fa-circle-info"></i> 统计说明：问题数量指当前审批通过且存在问题描述的铁塔检测报告数量，同一份报告仅计一次。退回、撤回审批、作废、删除或重新进入编制中后不再计入；重新审批通过后再次纳入。两个时间条件同时填写时取交集。</div>
+  <table class="data-table"><thead><tr><th>省</th><th>市</th><th>问题数量</th></tr></thead><tbody id="summaryBody"></tbody></table>
+  <div class="pagination"><span id="total">共 0 条记录</span><div class="pagination-btns"><button class="page-btn" id="prev"><i class="fa-solid fa-chevron-left"></i></button><button class="page-btn active" id="page">1</button><button class="page-btn" id="next"><i class="fa-solid fa-chevron-right"></i></button></div></div>
+</div></div></div>
+<script src="../../../../assets/rectification-data.js"></script><script src="../../../../assets/shared-layout.js"></script>
+<script>window.__layoutConfig={active:'problem_summary',breadcrumb:['统计分析','问题汇总']};</script>
+<script>
+(function(){var S=RectificationStore,page=1,pageSize=20,groups=[];function esc(v){return String(v||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}function filters(){return{province:province.value,city:city.value,taskStart:taskStart.value,taskEnd:taskEnd.value,approvalStart:approvalStart.value,approvalEnd:approvalEnd.value};}function setOptions(){var reports=S.getReports(),p=[].concat.apply([],reports.map(function(r){return r.province?[r.province]:[];})).filter(function(v,i,a){return a.indexOf(v)===i;}),pv=province.value;province.innerHTML='<option value="">全部省份</option>'+p.map(function(x){return '<option>'+esc(x)+'</option>';}).join('');province.value=pv;updateCities();}function updateCities(){var pv=province.value,old=city.value,c=S.getReports().filter(function(r){return !pv||r.province===pv;}).map(function(r){return r.city;}).filter(function(v,i,a){return v&&a.indexOf(v)===i;});city.innerHTML='<option value="">全部城市</option>'+c.map(function(x){return '<option>'+esc(x)+'</option>';}).join('');city.value=c.indexOf(old)>-1?old:'';}function run(resetPage){var f=filters(),rows=S.filterSummaryReports(f),map={};rows.forEach(function(r){var key=r.province+'|'+r.city;if(!map[key])map[key]={province:r.province,city:r.city,count:0};map[key].count++;});groups=Object.keys(map).map(function(k){return map[k];});if(resetPage)page=1;S.saveSummaryState({filters:f,page:page});render();}function render(){var max=Math.max(1,Math.ceil(groups.length/pageSize));if(page>max)page=max;var start=(page-1)*pageSize;summaryBody.innerHTML=groups.slice(start,start+pageSize).map(function(g){var q=new URLSearchParams(Object.assign(filters(),{province:g.province,city:g.city}));return '<tr><td>'+esc(g.province)+'</td><td>'+esc(g.city)+'</td><td><a class="ps-link" href="pc_problem_summary_detail.html?'+q.toString()+'">'+g.count+'</a></td></tr>';}).join('')||'<tr><td colspan="3" style="padding:42px;color:var(--text-3)">当前条件下暂无符合统计口径的问题报告</td></tr>';total.textContent='共 '+groups.length+' 条记录';document.getElementById('page').textContent=page;prev.disabled=page<=1;next.disabled=page>=max;S.saveSummaryState({filters:filters(),page:page});}document.addEventListener('DOMContentLoaded',function(){setOptions();var st=S.getSummaryState();if(st.filters){Object.keys(st.filters).forEach(function(k){if(document.getElementById(k))document.getElementById(k).value=st.filters[k]||'';});updateCities();city.value=st.filters.city||'';page=Number(st.page)||1;}province.onchange=updateCities;query.onclick=function(){run(true);};reset.onclick=function(){['province','city','taskStart','taskEnd','approvalStart','approvalEnd'].forEach(function(id){document.getElementById(id).value='';});updateCities();run(true);};prev.onclick=function(){page--;render();};next.onclick=function(){page++;render();};run(false);});})();
+</script></body></html>

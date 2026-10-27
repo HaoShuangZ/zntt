@@ -103,6 +103,7 @@
     <div class="form-footer" id="actionBar"></div>
   </div>
 </div>
+<script src="../../../../assets/rectification-data.js"></script>
 <script src="../../../../assets/shared-layout.js"></script>
 <script>window.__layoutConfig = {active:'report_generate', breadcrumb:['检测管理','报告编制','报告详情']};</script>
 <script>
@@ -153,6 +154,7 @@
     }
 
     function loadReportsMigrate() {
+      if (window.RectificationStore) return RectificationStore.getReports();
       var list;
       try { list = JSON.parse(localStorage.getItem(REPORT_KEY) || '[]'); } catch (e) { list = []; }
       var needSave = false;
@@ -371,6 +373,7 @@
             r.auditNode = '已完成';
             r.auditor = r.auditor && r.auditor !== '—' ? r.auditor : '终审-张伟';
             r.auditAt = nowText();
+            r.auditApprovedAt = r.auditAt;
           });
           touchTaskSync(report.taskId, '报告已出具');
           location.reload();
