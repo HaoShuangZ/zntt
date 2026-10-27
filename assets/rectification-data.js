@@ -38,6 +38,15 @@
     ]}
   };
 
+  // 统一演示报告数据。统计页面可独立打开，不再依赖用户先访问“报告编制”页面。
+  var seedReports = [
+    { id:'R1', reportNo:'BG202605001', towerCode:'TT-BJ-001', towerName:'滨江01#塔', inspectType:'安全性鉴定', contractNo:'HT2026-001', inspector:'李明', compiler:'—', submitTime:'2026-05-10 09:00', inspectDate:'2026-05-04', status:'待编制', taskId:'RW202605001', rejectReason:'', auditStep:'', auditStatus:'未涉及', auditNode:'—', auditor:'—', auditAt:'—', declareFailed:false, extraSign:false, sourceNote:'检毕自动生成' },
+    { id:'R2', reportNo:'BG202605002', towerCode:'TT-BJ-002', towerName:'滨江02#塔', inspectType:'常规检测', contractNo:'HT2026-002', inspector:'王强', compiler:'—', submitTime:'2026-05-09 14:20', inspectDate:'2026-05-05', status:'待编制', taskId:'RW202605002', rejectReason:'', auditStep:'', auditStatus:'未涉及', auditNode:'—', auditor:'—', auditAt:'—', declareFailed:true, declareFailReason:'监管平台申报失败：签名证书过期', extraSign:false, sourceNote:'检毕自动生成' },
+    { id:'R3', reportNo:'BG202605003', towerCode:'TT-XH-001', towerName:'西湖01#塔', inspectType:'可靠性鉴定', contractNo:'HT2026-003', inspector:'张华', compiler:'李明', submitTime:'2026-05-08 16:30', inspectDate:'2026-05-06', status:'编制中', taskId:'RW202605003', rejectReason:'', auditStep:'', auditStatus:'未提交', auditNode:'未发起审核', auditor:'—', auditAt:'—', declareFailed:false, extraSign:false, sourceNote:'检毕自动生成' },
+    { id:'R4', reportNo:'BG202605004', towerCode:'TT-YH-001', towerName:'余杭01#塔', inspectType:'安全性鉴定', contractNo:'HT2026-004', inspector:'赵六', compiler:'王强', submitTime:'2026-05-08 18:00', inspectDate:'2026-05-07', status:'已编制', taskId:'RW202605004', rejectReason:'', auditStep:'待技术部门主管审核', auditStatus:'审核中', auditNode:'待技术部门主管审核', auditor:'—', auditAt:'—', declareFailed:false, extraSign:true, sourceNote:'检毕自动生成' },
+    { id:'R5', reportNo:'BG202605005', towerCode:'TT-XS-002', towerName:'萧山02#塔', inspectType:'常规检测', contractNo:'HT2026-005', inspector:'李明', compiler:'张华', submitTime:'2026-05-07 11:00', inspectDate:'2026-05-06', status:'已出报告', taskId:'RW202605005', rejectReason:'', auditStep:'已完成', auditStatus:'已通过', auditNode:'已完成', auditor:'李娜', auditAt:'2026-05-08 09:40', declareFailed:false, extraSign:false, sourceNote:'检毕自动生成' }
+  ];
+
   function safeParse(value, fallback) {
     try { return JSON.parse(value); } catch (_e) { return fallback; }
   }
@@ -80,8 +89,9 @@
     }
     return report;
   }
-  function getReports() {
+  function ensureDemoReports() {
     var rows = load(KEYS.reports, []);
+    if (!Array.isArray(rows) || !rows.length) rows = save(KEYS.reports, clone(seedReports));
     var changed = false;
     rows.forEach(function (r) {
       var before = JSON.stringify(r);
@@ -91,6 +101,7 @@
     if (changed) save(KEYS.reports, rows);
     return rows;
   }
+  function getReports() { return ensureDemoReports(); }
   function saveReports(rows) { rows.forEach(ensureReport); return save(KEYS.reports, rows); }
   function isApprovalInProgress(report) {
     return report.status === '已编制' || ['待审核','审核中'].indexOf(report.auditStatus) >= 0;
@@ -157,6 +168,7 @@
     standardOpinions:standardOpinions,
     ensureReport:ensureReport,
     getReports:getReports,
+    ensureDemoReports:ensureDemoReports,
     saveReports:saveReports,
     isApprovalInProgress:isApprovalInProgress,
     isApproved:isApproved,
