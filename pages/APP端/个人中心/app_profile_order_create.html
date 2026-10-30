@@ -2,155 +2,62 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>新增订单</title>
-<script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="../../../assets/app-frame.css">
 <style>
-body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; background: #F2F3F5; margin: 0; padding-bottom: 100px; }
-.nav-bar { height: 44px; display: flex; align-items: center; padding: 0 12px; background: #fff; border-bottom: 1px solid #E5E6EB; position: sticky; top: 0; z-index: 10; }
-.sec { background: #fff; margin: 12px 16px; border-radius: 12px; padding: 14px; border: 1px solid #E5E6EB; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
-.sec h3 { margin: 0 0 12px; font-size: 15px; font-weight: 600; color: #1D2129; }
-.lbl { font-size: 13px; color: #86909C; margin-bottom: 6px; display: block; }
-.req { color: #F53F3F; }
-.inp { width: 100%; height: 44px; border: 1px solid #E5E6EB; border-radius: 10px; padding: 0 12px; font-size: 15px; box-sizing: border-box; }
-.ta { width: 100%; min-height: 88px; border: 1px solid #E5E6EB; border-radius: 10px; padding: 10px 12px; font-size: 15px; box-sizing: border-box; resize: vertical; }
-.hint { font-size: 11px; color: #86909C; margin-top: 6px; line-height: 1.45; }
-.fixb { position: fixed; left: 0; right: 0; bottom: 0; padding: 12px 16px calc(12px + env(safe-area-inset-bottom,0)); background: #fff; border-top: 1px solid #E5E6EB; display: flex; gap: 10px; }
-.fixb a, .fixb button { flex: 1; text-align: center; padding: 12px; border-radius: 10px; font-size: 15px; font-weight: 600; font-family: inherit; text-decoration: none; border: none; cursor: pointer; }
-.btn-d { background: #fff; color: #4E5969; border: 1px solid #E5E6EB !important; }
-.btn-p { background: #165DFF; color: #fff; }
-.mask { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 100; align-items: flex-end; justify-content: center; }
-.mask.on { display: flex; }
-.sheet { width: 100%; max-height: 70vh; background: #fff; border-radius: 16px 16px 0 0; padding: 16px; box-sizing: border-box; overflow-y: auto; }
-.pick { display: block; width: 100%; text-align: left; padding: 12px; margin-bottom: 8px; border: 1px solid #E5E6EB; border-radius: 10px; background: #fff; font-size: 14px; cursor: pointer; font-family: inherit; }
-.pick:active { background: #F7F8FA; }
+*{box-sizing:border-box} body{margin:0;background:#F2F3F5;color:#1D2129;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;padding-bottom:calc(88px + env(safe-area-inset-bottom,0px))}.statusbar{height:44px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;background:#165DFF;color:#fff;font-size:12px}.statusbar b{font-size:14px}.nav{position:sticky;top:0;z-index:20;height:48px;padding:0 12px;display:grid;grid-template-columns:56px 1fr 56px;align-items:center;background:#fff;border-bottom:1px solid #E5E6EB}.nav button{min-height:44px;border:0;background:none;color:#165DFF;font:14px inherit;text-align:left}.nav h1{margin:0;text-align:center;font-size:16px}.section{margin:12px 16px;padding:15px 14px;background:#fff;border:1px solid #E5E6EB;border-radius:12px;box-shadow:0 2px 8px rgba(29,33,41,.04)}.section h2{margin:0 0 14px;font-size:15px}.field{margin-top:13px}.field:first-of-type{margin-top:0}.label{display:block;margin-bottom:7px;color:#4E5969;font-size:13px}.req{color:#F53F3F}.input,.textarea{display:block;width:100%;border:1px solid #C9CDD4;border-radius:9px;background:#fff;color:#1D2129;font:15px inherit;outline:none}.input{height:44px;padding:0 11px}.textarea{min-height:92px;padding:10px 11px;resize:vertical}.input:focus,.textarea:focus{border-color:#165DFF;box-shadow:0 0 0 2px rgba(22,93,255,.1)}.input[readonly]{background:#F7F8FA;color:#86909C}.hint{margin:6px 0 0;color:#86909C;font-size:11px;line-height:1.5}.error{display:none;margin:5px 0 0;color:#F53F3F;font-size:12px}.field.is-error .input,.field.is-error .textarea{border-color:#F53F3F}.field.is-error .error{display:block}.pick-row{display:flex;gap:8px}.pick-row .input{min-width:0;flex:1}.pick-btn{min-width:72px;height:44px;border:0;border-radius:9px;background:#165DFF;color:#fff;font:600 14px inherit}.footer{position:fixed;z-index:30;left:0;right:0;bottom:0;display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));background:#fff;border-top:1px solid #E5E6EB}.footer button{min-height:46px;border-radius:9px;font:600 15px inherit}.cancel{border:1px solid #C9CDD4;background:#fff;color:#4E5969}.save{border:0;background:#165DFF;color:#fff}.save:disabled{background:#94BFFF}.mask{display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.45);align-items:flex-end}.mask.is-on{display:flex}.sheet{width:100%;max-height:78vh;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));overflow:auto;border-radius:16px 16px 0 0;background:#fff}.sheet-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.sheet-head h3{margin:0;font-size:17px}.sheet-head button{width:44px;height:44px;border:0;background:none;color:#86909C;font-size:22px}.project-list{margin-top:10px}.project{width:100%;min-height:66px;margin:8px 0;padding:11px;border:1px solid #E5E6EB;border-radius:9px;background:#fff;text-align:left;color:#1D2129;font:500 14px inherit}.project small{display:block;margin-top:5px;color:#86909C;font-size:11px}.empty-project{display:none;padding:28px;text-align:center;color:#86909C;font-size:13px}.prototype-note{margin:0 16px 12px;padding:9px 11px;border:1px solid #BEDAFF;border-radius:8px;background:#E8F3FF;color:#165DFF;font-size:11px;line-height:1.5}
 </style>
 </head>
 <body>
-<div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:#165DFF;">
-  <span style="font-size:14px;font-weight:600;color:#fff;">9:41</span>
-  <span style="font-size:12px;color:#fff;"><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span>
-</div>
-<div class="nav-bar">
-  <a href="app_profile_orders.html" style="color:#165DFF;text-decoration:none;font-size:14px;"><i class="fa-solid fa-chevron-left"></i></a>
-  <span style="flex:1;text-align:center;font-size:16px;font-weight:600;">新增订单</span>
-  <span style="width:28px;"></span>
-</div>
-<div class="sec">
-  <h3>基本信息</h3>
-  <label class="lbl">订单名称 <span class="req">*</span></label>
-  <input type="text" class="inp" placeholder="请输入订单名称">
-  <label class="lbl" style="margin-top:12px;">订单编码（系统自动生成）</label>
-  <input type="text" class="inp" style="background:#F7F8FA" readonly placeholder="选填工程并填派单日期后预览">
-  <p class="hint">规则同 PC：有工程时用工程地址拼音缩写 + 派单日期 YYYYMMDD + 3 位流水；未选工程时编码规则以系统为准。</p>
-  <label class="lbl" style="margin-top:12px;">派单日期 <span class="req">*</span></label>
-  <input type="date" class="inp" value="2026-05-14">
-  <label class="lbl" style="margin-top:12px;">截止日期 <span class="req">*</span></label>
-  <input type="date" class="inp" value="2026-06-14">
-</div>
-
-<div class="sec">
-  <h3>关联信息</h3>
-  <label class="lbl">所属工程</label>
-  <div style="display:flex;gap:8px;align-items:center;">
-    <input type="text" id="projDisp" class="inp" style="flex:1;background:#F7F8FA" readonly placeholder="选填，请点击选择工程">
-    <button type="button" id="btnPick" style="flex-shrink:0;height:44px;padding:0 14px;background:#165DFF;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;">选择</button>
-  </div>
-  <p class="hint">非必填：新建时可不选；提交审核前须关联。数据通过检测单位对下合同，关联对上合同下的工程列表（营销管理 · 工程）。关联后自动带出客户简称与「关联合同」回显。</p>
-  <label class="lbl" style="margin-top:12px;">关联合同（只读回显）</label>
-  <input type="text" id="orderContractShow" class="inp" style="background:#F7F8FA" readonly placeholder="选择工程后带出对下合同编号及名称">
-  <label class="lbl" style="margin-top:12px;">客户简称</label>
-  <input type="text" id="custShort" class="inp" style="background:#F7F8FA" readonly placeholder="选择工程后带出">
-</div>
-
-<div class="sec">
-  <h3>站点信息</h3>
-  <p class="hint" style="margin-top:0">站址、经纬度等与现场检测站址相关字段在<strong>订单</strong>维度维护。</p>
-  <label class="lbl">所属省 <span class="req">*</span></label>
-  <select class="inp" id="orderSiteProvince" style="appearance:auto;">
-    <option value="">请选择</option>
-    <option selected>浙江省</option>
-    <option>江苏省</option>
-  </select>
-  <label class="lbl" style="margin-top:12px;">所属市 <span class="req">*</span></label>
-  <select class="inp" id="orderSiteCity" style="appearance:auto;">
-    <option value="">请选择</option>
-    <option selected>杭州市</option>
-    <option>宁波市</option>
-  </select>
-  <label class="lbl" style="margin-top:12px;">站址编码</label>
-  <input type="text" id="orderSiteAddrCode" class="inp" placeholder="请输入站址编码">
-  <label class="lbl" style="margin-top:12px;">经度</label>
-  <input type="text" id="orderSiteLng" class="inp" placeholder="例 120.153576">
-  <label class="lbl" style="margin-top:12px;">纬度</label>
-  <input type="text" id="orderSiteLat" class="inp" placeholder="例 30.287459">
-  <label class="lbl" style="margin-top:12px;">自定义扩展字段（可选）</label>
-  <input type="text" id="orderSiteExt" class="inp" placeholder="按企业字典配置">
-</div>
-
-<div class="sec">
-  <h3>检测要求</h3>
-  <label class="lbl">检测类型 <span class="req">*</span></label>
-  <select class="inp" style="appearance:auto;">
-    <option value="">请选择</option>
-    <option>安全性鉴定</option>
-    <option>可靠性鉴定</option>
-    <option>抗震鉴定</option>
-    <option>年度例行检测</option>
-    <option>专项检测</option>
-  </select>
-  <label class="lbl" style="margin-top:12px;">检测规范组</label>
-  <select class="inp" style="appearance:auto;">
-    <option value="">非必填</option>
-    <option>存量铁塔-单管类附表套件</option>
-    <option>存量铁塔-角钢格构附表套件</option>
-    <option>通用安全性鉴定规范组 A</option>
-  </select>
-  <label class="lbl" style="margin-top:12px;">检测需求说明</label>
-  <textarea class="ta" placeholder="选填：检测范围、现场条件、客户特殊要求等"></textarea>
-</div>
-
-<div class="fixb">
-  <a href="app_profile_orders.html" class="btn-d">取消</a>
-  <button type="button" class="btn-p" id="btnSave">保存</button>
-</div>
-
-<div id="mask" class="mask" role="dialog" aria-modal="true">
-  <div class="sheet">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-      <span style="font-size:16px;font-weight:600;">选择关联工程</span>
-      <button type="button" id="mClose" style="border:none;background:none;font-size:20px;color:#86909C;">×</button>
-    </div>
-    <input type="text" placeholder="工程名称 / 站址编码" style="width:100%;height:40px;border:1px solid #E5E6EB;border-radius:8px;padding:0 10px;margin-bottom:10px;box-sizing:border-box;">
-    <button type="button" class="pick" data-p="2026年杭州铁塔年检工程|中国铁塔杭州分公司|HT2026-0512 · 杭州移动年度框架|ZZ-HZ-BJ02">2026年杭州铁塔年检工程<br><span style="font-size:12px;color:#86909C;">站址编码：ZZ-HZ-BJ02</span></button>
-    <button type="button" class="pick" data-p="城西区域改造项目|中国铁塔杭州分公司|HT2026-0428 · 城西改造专项|ZZ-HZ-CX03">城西区域改造项目<br><span style="font-size:12px;color:#86909C;">站址编码：ZZ-HZ-CX03</span></button>
-  </div>
-</div>
-
+<div class="statusbar"><b>9:41</b><span><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> <i class="fa-solid fa-battery-full"></i></span></div>
+<header class="nav"><button id="backBtn" type="button"><i class="fa-solid fa-chevron-left"></i> 返回</button><h1>新增订单</h1><span></span></header>
+<p class="prototype-note">原型模拟：订单及权限保存在本机浏览器，生产环境编码、鉴权与派单须由服务端校验。</p>
+<form id="orderForm" novalidate>
+  <section class="section"><h2>基本信息</h2>
+    <div class="field" data-field="orderName"><label class="label">订单名称 <span class="req">*</span></label><input id="orderName" class="input" maxlength="80" placeholder="请输入订单名称"><p class="error">请输入订单名称</p></div>
+    <div class="field"><label class="label">订单编码</label><input id="orderCode" class="input" readonly placeholder="保存时生成演示编码"><p class="hint">已选工程时按既有格式预览；未选工程仅生成带 DEMO 标识的原型临时编码，正式编码由服务端生成。</p></div>
+    <div class="field" data-field="dispatchDate"><label class="label">派单日期 <span class="req">*</span></label><input id="dispatchDate" type="date" class="input"><p class="error">请选择派单日期</p></div>
+    <div class="field" data-field="deadlineDate"><label class="label">截止日期 <span class="req">*</span></label><input id="deadlineDate" type="date" class="input"><p class="error">请选择截止日期，且不能早于派单日期</p></div>
+  </section>
+  <section class="section"><h2>工程关联</h2>
+    <div class="field"><label class="label">所属工程</label><div class="pick-row"><input id="projectName" class="input" readonly placeholder="新建时选填，提交审核前必填"><button id="projectBtn" class="pick-btn" type="button">选择</button></div><p class="hint">通过检测单位对下合同关联对上合同下的工程列表。</p></div>
+    <div class="field"><label class="label">对下合同</label><input id="contractShow" class="input" readonly placeholder="选择工程后自动带出"></div>
+    <div class="field"><label class="label">客户简称</label><input id="customerShort" class="input" readonly placeholder="选择工程后自动带出"></div>
+  </section>
+  <section class="section"><h2>站点信息</h2>
+    <div class="field" data-field="province"><label class="label">所属省 <span class="req">*</span></label><select id="province" class="input"><option value="">请选择</option><option>浙江省</option><option>江苏省</option><option>湖北省</option></select><p class="error">请选择所属省</p></div>
+    <div class="field" data-field="city"><label class="label">所属市 <span class="req">*</span></label><select id="city" class="input"><option value="">请先选择省份</option></select><p class="error">请选择所属市</p></div>
+    <div class="field"><label class="label">站点名称</label><input id="stationName" class="input" maxlength="60" placeholder="选填，历史缺失时列表显示—"></div>
+    <div class="field"><label class="label">站址编码</label><input id="siteCode" class="input" maxlength="50" placeholder="选填；选择工程时仅在此处为空时补入"></div>
+    <div class="field" data-field="longitude"><label class="label">经度</label><input id="longitude" inputmode="decimal" class="input" placeholder="−180 至 180"><p class="error">经度须为 −180 至 180 的数值</p></div>
+    <div class="field" data-field="latitude"><label class="label">纬度</label><input id="latitude" inputmode="decimal" class="input" placeholder="−90 至 90"><p class="error">纬度须为 −90 至 90 的数值</p></div>
+  </section>
+  <section class="section"><h2>检测要求</h2>
+    <div class="field" data-field="inspectionType"><label class="label">检测类型 <span class="req">*</span></label><select id="inspectionType" class="input"><option value="">请选择</option><option>安全性鉴定</option><option>可靠性鉴定</option><option>抗震鉴定</option><option>年度例行检测</option><option>专项检测</option></select><p class="error">请选择检测类型</p></div>
+    <div class="field"><label class="label">检测规范组</label><select id="standardGroup" class="input"><option value="">非必填</option><option>存量铁塔-单管类附表套件</option><option>存量铁塔-角钢格构附表套件</option><option>通用安全性鉴定规范组 A</option></select></div>
+    <div class="field"><label class="label">检测需求说明</label><textarea id="requirements" class="textarea" maxlength="500" placeholder="选填：检测范围、现场条件、客户特殊要求等"></textarea></div>
+  </section>
+</form>
+<footer class="footer"><button id="cancelBtn" class="cancel" type="button">取消</button><button id="saveBtn" class="save" type="button">保存</button></footer>
+<div id="projectMask" class="mask" role="dialog" aria-modal="true" aria-labelledby="projectTitle"><div class="sheet"><div class="sheet-head"><h3 id="projectTitle">选择所属工程</h3><button id="closeProject" type="button" aria-label="关闭">×</button></div><input id="projectSearch" class="input" placeholder="搜索工程名称或站址编码"><div id="projectList" class="project-list"></div><div id="projectEmpty" class="empty-project">暂无匹配工程</div></div></div>
+<script src="../../../assets/app-order-v11.js"></script>
 <script>
-(function () {
-  var mask = document.getElementById('mask');
-  document.getElementById('btnPick').addEventListener('click', function () { mask.classList.add('on'); });
-  document.getElementById('mClose').addEventListener('click', function () { mask.classList.remove('on'); });
-  mask.addEventListener('click', function (e) { if (e.target === mask) mask.classList.remove('on'); });
-  document.querySelectorAll('.pick').forEach(function (b) {
-    b.addEventListener('click', function () {
-      var p = (b.getAttribute('data-p') || '').split('|');
-      document.getElementById('projDisp').value = p[0] || '';
-      document.getElementById('custShort').value = p[1] || '';
-      document.getElementById('orderContractShow').value = p[2] || '';
-      var ac = document.getElementById('orderSiteAddrCode');
-      if (ac && p[3] && !ac.value) ac.value = p[3];
-      mask.classList.remove('on');
-    });
-  });
-  document.getElementById('btnSave').addEventListener('click', function () {
-    alert('已保存订单草稿。');
-    location.href = 'app_profile_orders.html';
-  });
+(function(){
+  var perms=OrderV11.getPermissions(); if(!perms.canViewOrders||!perms.canCreateOrder){alert('当前角色没有新增订单权限。');location.replace('../工作台/首页/app_workbench_index.html');return;}
+  var projects=[{id:'project-bj',name:'2026年杭州铁塔年检工程',abbr:'HZTT',siteCode:'ZZ-HZ-BJ02',contractCode:'DX2026-0512',contractName:'杭州铁塔年度检测框架',customer:'杭州铁塔'},{id:'project-cx',name:'城西区域改造项目',abbr:'CXGZ',siteCode:'ZZ-HZ-CX03',contractCode:'DX2026-0428',contractName:'城西改造专项检测分包',customer:'杭州建投'},{id:'project-yh',name:'余杭5G升级项目',abbr:'YH5G',siteCode:'ZZ-YH-12',contractCode:'DX2026-0516',contractName:'余杭5G升级检测服务',customer:'杭州移动'}];
+  var cities={'浙江省':['杭州市','宁波市','绍兴市'],'江苏省':['南京市','苏州市'],'湖北省':['武汉市','襄阳市']}; var selected=null,dirty=false,saving=false;
+  function el(id){return document.getElementById(id)} function val(id){return el(id).value.trim()}
+  function back(){if(dirty&&!confirm('当前内容尚未保存，确定放弃并返回吗？'))return;location.href='../工作台/首页/app_workbench_index.html#orders'}
+  function renderCities(){var p=val('province'),c=el('city'),old=c.value;c.innerHTML='<option value="">请选择</option>'+(cities[p]||[]).map(function(x){return '<option>'+x+'</option>'}).join('');c.value=(cities[p]||[]).indexOf(old)>=0?old:''}
+  function updateCode(){el('orderCode').value=OrderV11.createDemoCode(selected&&selected.abbr,val('dispatchDate'))}
+  function renderProjects(){var q=val('projectSearch').toLowerCase(),items=projects.filter(function(p){return !q||(p.name+' '+p.siteCode).toLowerCase().indexOf(q)>=0});el('projectList').innerHTML=items.map(function(p){return '<button type="button" class="project" data-id="'+p.id+'">'+p.name+'<small>站址编码：'+p.siteCode+' · 合同：'+p.contractCode+'</small></button>'}).join('');el('projectEmpty').style.display=items.length?'none':'block'}
+  function choose(id){selected=projects.find(function(p){return p.id===id});el('projectName').value=selected.name;el('contractShow').value=selected.contractCode+' · '+selected.contractName;el('customerShort').value=selected.customer;if(!val('siteCode'))el('siteCode').value=selected.siteCode;updateCode();el('projectMask').classList.remove('is-on');dirty=true}
+  function invalid(id,test){var wrap=document.querySelector('[data-field="'+id+'"]');var bad=!!test;wrap.classList.toggle('is-error',bad);return bad}
+  function validate(){document.querySelectorAll('.field.is-error').forEach(function(n){n.classList.remove('is-error')});var bad=false;bad=invalid('orderName',!val('orderName'))||bad;bad=invalid('dispatchDate',!val('dispatchDate'))||bad;bad=invalid('deadlineDate',!val('deadlineDate')||val('deadlineDate')<val('dispatchDate'))||bad;bad=invalid('province',!val('province'))||bad;bad=invalid('city',!val('city'))||bad;bad=invalid('inspectionType',!val('inspectionType'))||bad;var lng=val('longitude'),lat=val('latitude');bad=invalid('longitude',lng!==''&&(!isFinite(Number(lng))||Number(lng)<-180||Number(lng)>180))||bad;bad=invalid('latitude',lat!==''&&(!isFinite(Number(lat))||Number(lat)<-90||Number(lat)>90))||bad;if(bad){document.querySelector('.field.is-error').scrollIntoView({behavior:'smooth',block:'center'});return false}return true}
+  function save(){if(saving||!validate())return;saving=true;el('saveBtn').disabled=true;el('saveBtn').textContent='保存中…';setTimeout(function(){var code=val('orderCode')||OrderV11.createDemoCode(selected&&selected.abbr,val('dispatchDate'));var order={orderId:OrderV11.createId(),orderCode:code,orderName:val('orderName'),projectId:selected?selected.id:'',projectName:selected?selected.name:'',contractCode:selected?selected.contractCode:'',contractName:selected?selected.contractName:'',customerShort:selected?selected.customer:'',province:val('province'),city:val('city'),stationName:val('stationName'),siteCode:val('siteCode'),longitude:val('longitude'),latitude:val('latitude'),inspectionType:val('inspectionType'),standardGroup:val('standardGroup'),requirements:val('requirements'),dispatchDate:val('dispatchDate'),deadlineDate:val('deadlineDate'),createdAt:OrderV11.nowText(),status:'draft',draft:true,approved:false,urged:false,assignedTo:'',taskId:''};OrderV11.saveOrder(order);OrderV11.setFlash({type:'created',orderId:order.orderId,message:'已保存订单草稿；创建订单不会生成执行任务。'});dirty=false;location.href='../工作台/首页/app_workbench_index.html#orders'},350)}
+  el('orderForm').addEventListener('input',function(e){dirty=true;var f=e.target.closest('.field');if(f&&e.target.value.trim())f.classList.remove('is-error')});el('orderForm').addEventListener('change',function(e){var f=e.target.closest('.field');if(f&&e.target.value)f.classList.remove('is-error')});el('province').addEventListener('change',function(){renderCities();dirty=true});el('dispatchDate').addEventListener('change',updateCode);el('projectBtn').onclick=function(){renderProjects();el('projectMask').classList.add('is-on');el('projectSearch').focus()};el('closeProject').onclick=function(){el('projectMask').classList.remove('is-on')};el('projectMask').onclick=function(e){if(e.target===this)this.classList.remove('is-on')};el('projectSearch').oninput=renderProjects;el('projectList').onclick=function(e){var b=e.target.closest('[data-id]');if(b)choose(b.dataset.id)};el('backBtn').onclick=back;el('cancelBtn').onclick=back;el('saveBtn').onclick=save;window.addEventListener('beforeunload',function(e){if(dirty){e.preventDefault();e.returnValue=''}});renderCities();updateCode();
 })();
 </script>
-</body>
-</html>
+</body></html>

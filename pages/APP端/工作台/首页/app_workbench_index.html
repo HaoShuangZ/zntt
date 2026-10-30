@@ -7,6 +7,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="../../../../assets/app-frame.css">
+<link rel="stylesheet" href="../../../../assets/app-order-v11.css">
 <script src="../../../../assets/app-menu-access-log.js"></script>
 <style>
 body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; background: #F2F3F5; margin: 0; }
@@ -25,21 +26,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif
   color: #F53F3F;
   background: #FFECE8;
   border: 1px solid rgba(245, 63, 63, 0.35);
-  flex-shrink: 0;
-}
-.tag-rejected {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: 700;
-  line-height: 1.2;
-  color: #FF7D00;
-  background: #FFF7E8;
-  border: 1px solid #FF7D00;
-  box-sizing: border-box;
   flex-shrink: 0;
 }
 .order-card[data-urged="1"] .order-card-inner {
@@ -301,64 +287,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif
   font-variant-numeric: tabular-nums;
   box-shadow: 0 0 0 1px #fff;
 }
-.app-bottom-nav {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 90;
-  height: calc(76px + env(safe-area-inset-bottom, 0px));
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  align-items: start;
-  padding: 8px 16px calc(10px + env(safe-area-inset-bottom, 0px));
-  background: rgba(255, 255, 255, 0.98);
-  border-top: 1px solid #E5E6EB;
-  box-shadow: 0 -5px 18px rgba(29, 33, 41, 0.06);
-  box-sizing: border-box;
-}
-.app-bottom-nav__item {
-  position: relative;
-  height: 56px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  color: #4E5969;
-  font-size: 11px;
-  font-weight: 500;
-  line-height: 1;
-  text-align: center;
-  text-decoration: none;
-  -webkit-tap-highlight-color: transparent;
-}
-.app-bottom-nav__item svg {
-  width: 23px;
-  height: 23px;
-  display: block;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.9;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.app-bottom-nav__item:active { opacity: 0.72; }
-.app-bottom-nav__item.is-active {
-  color: #165DFF;
-  font-weight: 600;
-}
-.app-bottom-nav__item.is-active::before {
-  content: "";
-  position: absolute;
-  top: -8px;
-  left: 50%;
-  width: 30px;
-  height: 3px;
-  transform: translateX(-50%);
-  border-radius: 0 0 3px 3px;
-  background: #165DFF;
-}
+.app-bottom-nav{position:fixed;z-index:80;left:0;right:0;bottom:0;height:72px;display:grid;grid-template-columns:repeat(4,1fr);padding:7px 8px calc(8px + env(safe-area-inset-bottom,0px));background:rgba(255,255,255,.98);border-top:1px solid #E5E6EB;box-shadow:0 -5px 18px rgba(29,33,41,.06)}.app-bottom-nav__item{position:relative;min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:#4E5969;font-size:11px;text-decoration:none}.app-bottom-nav__item i{font-size:20px}.app-bottom-nav__item.is-active{color:#165DFF;font-weight:600}.app-bottom-nav__item.is-active:before{content:"";position:absolute;top:-7px;left:50%;width:30px;height:3px;transform:translateX(-50%);border-radius:0 0 3px 3px;background:#165DFF}.workbench-task-view{padding-bottom:76px}.dynamic-task{margin:0 0 12px;padding:13px 14px;border:1px solid #BEDAFF;border-radius:12px;background:#fff;box-shadow:0 2px 8px rgba(29,33,41,.04)}.dynamic-task strong{display:block;margin-bottom:7px;font-size:15px}.dynamic-task p{margin:4px 0;color:#4E5969;font-size:12px}.dynamic-task span{color:#165DFF;font-size:11px}.orders-panel{padding-bottom:88px;min-height:calc(100vh - 180px)}
 </style>
 </head>
 <body>
@@ -385,8 +314,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif
   </div>
 </div>
 
-<!-- 工单列表：待办/已办、搜索、地图、已办日历、卡片 -->
-<div id="panel-list">
+<div id="taskOrderSwitch" class="order-switch" aria-label="工作台内容切换">
+  <button id="workTaskTab" class="is-active" type="button">任务</button>
+  <button id="workOrderTab" type="button">订单</button>
+</div>
+
+<!-- 工单列表：待办/已办、搜索、地图、已办日历、导出、卡片 -->
+<div id="panel-list" class="workbench-task-view">
   <div style="display:flex; background:#fff; border-bottom:1px solid #E5E6EB;">
     <div id="segTodo" class="seg on" data-seg="todo">待办</div>
     <div id="segDone" class="seg" data-seg="done">已办</div>
@@ -405,9 +339,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif
     <div class="toolbar-row-right">
       <a href="../../工单/列表/app_order_map.html" style="color:#165DFF;text-decoration:none;font-size:13px;white-space:nowrap;"><i class="fa-solid fa-map-location-dot"></i> 地图</a>
       <button type="button" id="btnCalendar" style="border:none;background:none;color:#165DFF;font-size:13px;cursor:pointer;white-space:nowrap;"><i class="fa-solid fa-calendar-days"></i> 已办日历</button>
+      <button type="button" id="btnExport" style="border:none;background:none;color:#165DFF;font-size:13px;cursor:pointer;white-space:nowrap;"><i class="fa-solid fa-file-excel"></i> 导出</button>
     </div>
   </div>
-  <div id="listArea" style="padding:8px 16px 24px; overflow-y:auto; height:calc(100vh - 44px - 90px - 42px - 56px - 45px - 76px - env(safe-area-inset-bottom, 0px));">
+  <div id="listArea" style="padding:8px 16px 88px; overflow-y:auto; height:calc(100vh - 44px - 90px - 46px - 42px - 72px - 45px);">
+    <div id="dynamicOrderTasks"></div>
 
     <div class="order-card" data-scope="todo" data-status="待检测" data-urged="1" data-deadline="2026-05-15" data-dispatch="2026-05-06" data-lat="30.2084" data-lng="120.2126" data-search="dd20260506001 zz-hz-bj01 滨江 年检 单管 tt-bj 年度常规 120.2126 30.2084 2026-05-15 催办 催">
       <div class="order-card-inner">
@@ -440,15 +376,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif
       </div>
     </div>
 
-    <div class="order-card" data-scope="todo" data-status="检测中" data-rejected="1" data-deadline="2026-05-18" data-dispatch="2026-05-07" data-lat="30.2955" data-lng="120.0891" data-search="dd20260507002 zz-hz-cx03 城西 专项 角钢 tt-cx 120.0891 30.2955 2026-05-18 驳回 驳">
+    <div class="order-card" data-scope="todo" data-status="检测中" data-deadline="2026-05-18" data-dispatch="2026-05-07" data-lat="30.2955" data-lng="120.0891" data-search="dd20260507002 zz-hz-cx03 城西 专项 角钢 tt-cx 120.0891 30.2955 2026-05-18">
       <div class="order-card-inner">
         <a class="order-card-body" href="../../工单/详情/app_order_detail.html?order=DD20260507002">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
             <span style="font-size:12px; color:#86909C; font-family:ui-monospace,monospace;">DD20260507002</span>
-            <span style="display:inline-flex; align-items:center; gap:6px; flex-shrink:0;">
-              <span class="tag-rejected" title="驳回" aria-label="驳回">驳</span>
-              <span class="tag-f" style="background:#FFF7E8; color:#FF7D00;">检测中</span>
-            </span>
+            <span class="tag-f" style="background:#FFF7E8; color:#FF7D00;">检测中</span>
           </div>
           <div class="card-site-title" style="font-size:15px; font-weight:600; color:#1D2129; margin-bottom:10px; line-height:1.35;">城西03#角钢塔站</div>
           <div class="card-meta">
@@ -462,6 +395,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif
             <a class="card-nav-inline" href="https://uri.amap.com/navigation?to=120.0891,30.2955&amp;mode=car&amp;src=tower-app&amp;callnative=1" target="_blank" rel="noopener noreferrer" title="在高德地图中打开导航">
               <i class="fa-solid fa-diamond-turn-right" aria-hidden="true"></i><span>导航</span>
             </a>
+          </div>
+          <div class="card-act-actions">
+            <button type="button" class="card-act-btn card-act-reject" data-order="DD20260507002" data-task="RW202606007" data-title="城西03#角钢塔站"><i class="fa-solid fa-circle-xmark" aria-hidden="true"></i><span>拒绝</span></button>
+            <button type="button" class="card-act-btn card-act-transfer" data-order="DD20260507002" data-task="RW202606007" data-title="城西03#角钢塔站"><i class="fa-solid fa-right-left" aria-hidden="true"></i><span>转派</span></button>
           </div>
         </div>
       </div>
@@ -546,30 +483,25 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif
   </div>
 </div>
 
+<section id="ordersPanel" class="orders-panel order-v11-hidden" aria-label="订单">
+  <div style="padding:12px 16px 0;">
+    <div class="order-search-box"><i class="fa-solid fa-search" aria-hidden="true"></i><input id="orderKeyword" type="search" placeholder="搜索：订单名称/编号" aria-label="搜索订单名称或编号"></div>
+    <div class="order-filter-row"><label class="order-status-control"><i class="fa-solid fa-filter" aria-hidden="true"></i><select id="orderStatus" aria-label="订单状态"><option value="all">全部状态</option><option value="pending">待派单</option><option value="assigned">已派单</option><option value="completed">已完成</option></select></label><button id="orderQueryBtn" class="order-query-action" type="button"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> 查询</button></div>
+    <p class="orders-sort-note">已催办订单置顶，其余按派单时间倒序；订单草稿尚未达到派单门槛。</p>
+    <div id="ordersList"></div>
+  </div>
+  <button id="createOrderBtn" class="orders-add" type="button" aria-label="新增订单" title="新增订单"></button>
+</section>
+
 <nav class="app-bottom-nav" aria-label="底部导航">
-  <a class="app-bottom-nav__item is-active" href="app_workbench_index.html" aria-current="page" aria-label="任务">
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M9 5.2h6M9.5 3.5h5A1.5 1.5 0 0 1 16 5v1H8V5a1.5 1.5 0 0 1 1.5-1.5Z"></path>
-      <path d="M7 5.5H5.8A1.8 1.8 0 0 0 4 7.3v11.9A1.8 1.8 0 0 0 5.8 21h12.4a1.8 1.8 0 0 0 1.8-1.8V7.3a1.8 1.8 0 0 0-1.8-1.8H17"></path>
-      <path d="m8 12 1.3 1.3 2.7-2.8M14.5 12h2M8 17l1.3 1.3 2.7-2.8M14.5 17h2"></path>
-    </svg>
-    <span>任务</span>
-  </a>
-  <a class="app-bottom-nav__item" href="app_message_center.html" aria-label="消息">
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M18 8.5a6 6 0 0 0-12 0c0 7-3 7-3 8.5h18c0-1.5-3-1.5-3-8.5Z"></path>
-      <path d="M9.5 20a2.8 2.8 0 0 0 5 0"></path>
-    </svg>
-    <span>消息</span>
-  </a>
-  <a class="app-bottom-nav__item" href="../../个人中心/首页/app_profile_index.html" aria-label="我的">
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <circle cx="12" cy="7.5" r="3.5"></circle>
-      <path d="M5 20c.6-4 3.2-6.2 7-6.2S18.4 16 19 20"></path>
-    </svg>
-    <span>我的</span>
-  </a>
+  <a class="app-bottom-nav__item is-active" href="app_workbench_index.html" aria-current="page"><i class="fa-solid fa-clipboard-check"></i><span>工作台</span></a>
+  <a class="app-bottom-nav__item" href="../../检测/app_inspect_shell.html"><i class="fa-solid fa-tower-broadcast"></i><span>设备</span></a>
+  <a class="app-bottom-nav__item" href="app_message_center.html"><i class="fa-regular fa-bell"></i><span>消息</span></a>
+  <a class="app-bottom-nav__item" href="../../个人中心/首页/app_profile_index.html"><i class="fa-regular fa-user"></i><span>我的</span></a>
 </nav>
+
+<div id="orderAssignMask" class="order-mask"><div class="order-sheet"><h3>指派检测人</h3><p>请选择当前权限范围内的检测人。合法指派只会按 orderId 生成一条关联任务。</p><button class="order-person" data-person="李明">李明 · 检测一组</button><button class="order-person" data-person="王强">王强 · 检测二组</button><div class="order-sheet-actions"><button id="orderAssignCancel" class="order-sheet-cancel">取消</button><button id="orderAssignConfirm" class="order-sheet-confirm">确认指派</button></div></div></div>
+<div id="orderToast" class="order-toast"></div>
 
 <div id="sortMask" class="mask" role="dialog" aria-modal="true" aria-labelledby="sortSheetTitle">
   <div class="sheet" style="padding-bottom:calc(16px + env(safe-area-inset-bottom, 0px));">
@@ -623,6 +555,18 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif
         <span class="cal-cell">31</span><span class="cal-cell cal-cell--muted"></span><span class="cal-cell cal-cell--muted"></span><span class="cal-cell cal-cell--muted"></span><span class="cal-cell cal-cell--muted"></span><span class="cal-cell cal-cell--muted"></span><span class="cal-cell cal-cell--muted"></span>
       </div>
     </div>
+  </div>
+</div>
+
+<div id="exportMask" class="mask">
+  <div class="sheet">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <span style="font-size:16px;font-weight:600;">导出订单 Excel</span>
+      <button type="button" id="closeExport" style="border:none;background:none;font-size:20px;color:#86909C;cursor:pointer;">×</button>
+    </div>
+    <p style="font-size:13px;color:#4E5969;line-height:1.6;margin:0 0 16px;">将当前「待办/已办」视图下可见订单生成表格，供在电脑端下载或通过企业微信发送文件。</p>
+    <button type="button" id="doExport" style="width:100%;height:44px;background:#165DFF;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;">生成并通知 PC 下载</button>
+    <p id="exportOk" style="display:none;margin-top:12px;font-size:13px;color:#00B42A;text-align:center;">已生成，请在 PC 端「消息中心」查收下载链接</p>
   </div>
 </div>
 
@@ -769,17 +713,10 @@ function openCalendarSheet() {
     return card.getAttribute('data-urged') === '1';
   }
 
-  function isRejectedCard(card) {
-    return card.getAttribute('data-rejected') === '1';
-  }
-
   function compareCards(a, b) {
     var ua = isUrgedCard(a) ? 1 : 0;
     var ub = isUrgedCard(b) ? 1 : 0;
     if (ua !== ub) return ub - ua;
-    var ra = isRejectedCard(a) ? 1 : 0;
-    var rb = isRejectedCard(b) ? 1 : 0;
-    if (ra !== rb) return rb - ra;
     var A = cardSortPayload(a);
     var B = cardSortPayload(b);
     var primary = 0;
@@ -894,7 +831,7 @@ function openCalendarSheet() {
 
   window.syncListAreaHeight = function () {
     if (!listArea) return;
-    listArea.style.height = 'calc(100vh - 44px - 90px - 42px - 56px - 45px - 76px - env(safe-area-inset-bottom, 0px))';
+    listArea.style.height = 'calc(100vh - 44px - 90px - 42px - 56px - 45px)';
   };
 
   function refresh() {
@@ -920,6 +857,22 @@ function openCalendarSheet() {
 
   var si = document.getElementById('searchInput');
   if (si) si.addEventListener('input', refresh);
+
+  var mask = document.getElementById('exportMask');
+  var btnExport = document.getElementById('btnExport');
+  if (btnExport) btnExport.addEventListener('click', function () {
+    var ok = document.getElementById('exportOk');
+    if (ok) ok.style.display = 'none';
+    if (mask) mask.classList.add('show');
+  });
+  var closeExport = document.getElementById('closeExport');
+  if (closeExport) closeExport.addEventListener('click', function () { if (mask) mask.classList.remove('show'); });
+  if (mask) mask.addEventListener('click', function (e) { if (e.target === mask) mask.classList.remove('show'); });
+  var doExport = document.getElementById('doExport');
+  if (doExport) doExport.addEventListener('click', function () {
+    var ok = document.getElementById('exportOk');
+    if (ok) ok.style.display = 'block';
+  });
 
   var btnCal = document.getElementById('btnCalendar');
   if (btnCal) btnCal.addEventListener('click', function () { openCalendarSheet(); });
@@ -1042,6 +995,23 @@ function boot() {
   }
 }
 window.addEventListener('load', boot);
+</script>
+<script src="../../../../assets/app-order-v11.js"></script>
+<script>
+(function(){
+  var perms=OrderV11.getPermissions(),state=OrderV11.getListState(),assignOrderId='',selectedPerson='';
+  function el(id){return document.getElementById(id)}
+  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  function toast(message){var t=el('orderToast');t.textContent=message;t.classList.add('is-on');setTimeout(function(){t.classList.remove('is-on')},2800)}
+  function saveState(){state.scrollTop=window.pageYOffset||0;OrderV11.setListState(state)}
+  function view(mode){var order=mode==='orders'&&perms.canViewOrders;el('panel-list').classList.toggle('order-v11-hidden',order);el('ordersPanel').classList.toggle('order-v11-hidden',!order);el('workTaskTab').classList.toggle('is-active',!order);el('workOrderTab').classList.toggle('is-active',order);if(order){if(location.hash!=='#orders')history.replaceState(null,'','#orders');renderOrders();setTimeout(function(){window.scrollTo(0,state.scrollTop||0)},0)}else if(location.hash==='#orders'){history.replaceState(null,'',location.pathname+location.search)} }
+  function renderTasks(){var tasks=OrderV11.getTasks().filter(function(t){return t.assignee==='李明'}),box=el('dynamicOrderTasks');box.innerHTML=tasks.map(function(t){return '<article class="dynamic-task"><span>订单指派任务</span><strong>'+esc(t.stationName||t.orderName)+'</strong><p>关联订单：'+esc(t.orderCode)+'</p><p>检测人：'+esc(t.assignee)+' · 状态：待处理</p></article>'}).join('')}
+  function matches(o){var q=(state.keyword||'').toLowerCase(),s=state.status||'all';var qok=!q||(o.orderName+' '+o.orderCode).toLowerCase().indexOf(q)>=0;var sok=s==='all'||o.status===s;return qok&&sok}
+  function renderOrders(){var list=OrderV11.sortedOrders(OrderV11.getOrders()).filter(matches);el('ordersList').innerHTML=list.length?list.map(function(o){var m=OrderV11.statusMeta(o),canAssign=perms.canAssignOrder&&!o.draft&&o.approved&&o.status==='pending';var right=o.status==='assigned'?'<span class="order-assigned">已指派：'+esc(o.assignedTo)+'</span>':(canAssign?'<button class="order-action js-assign" data-id="'+esc(o.orderId)+'">指派</button>':'');return '<article class="order-card"><div class="order-card__body"><div class="order-card__top"><h3 class="order-card__name">'+esc(o.orderName)+'</h3><div class="order-card__badges">'+(o.urged?'<span class="order-urge">催办</span>':'')+'<span class="order-status '+m.cls+'">'+m.text+'</span></div></div><div class="order-card__rows"><div class="order-card__row"><span>订单编号</span><strong>'+esc(o.orderCode||'—')+'</strong></div><div class="order-card__row"><span>站点名称</span><strong>'+esc(o.stationName||'—')+'</strong></div><div class="order-card__row"><span>创建时间</span><strong>'+esc(o.createdAt||'—')+'</strong></div></div></div><div class="order-card__foot"><a class="order-action js-detail" data-id="'+esc(o.orderId)+'" href="../../个人中心/app_profile_order_detail.html?id='+encodeURIComponent(o.orderId)+'">查看详情</a>'+right+'</div></article>'}).join(''):'<div class="order-empty">暂无匹配订单<br><button id="clearOrderFilter" class="order-action" type="button">清除查询条件</button></div>';var clear=el('clearOrderFilter');if(clear)clear.onclick=function(){state.keyword='';state.status='all';el('orderKeyword').value='';el('orderStatus').value='all';OrderV11.setListState(state);renderOrders()}}
+  function openAssign(id){assignOrderId=id;selectedPerson='';document.querySelectorAll('#orderAssignMask .order-person').forEach(function(x){x.classList.remove('is-selected')});el('orderAssignMask').classList.add('is-on')}
+  function init(){if(!perms.canViewOrders){el('taskOrderSwitch').classList.add('order-v11-hidden');el('ordersPanel').classList.add('order-v11-hidden');if(location.hash==='#orders')history.replaceState(null,'',location.pathname+location.search)}else{el('createOrderBtn').classList.toggle('order-v11-hidden',!perms.canCreateOrder)}el('orderKeyword').value=state.keyword||'';el('orderStatus').value=state.status||'all';renderTasks();if(location.hash==='#orders'&&perms.canViewOrders)view('orders');else view('tasks');var flash=OrderV11.popFlash();if(flash){var created=OrderV11.getOrder(flash.orderId);var hidden=created&&!matches(created);toast(hidden?flash.message+' 当前查询条件会排除该订单，请清除筛选查看。':flash.message)}}
+  el('workTaskTab').onclick=function(){saveState();view('tasks')};el('workOrderTab').onclick=function(){view('orders')};el('orderQueryBtn').onclick=function(){state.keyword=el('orderKeyword').value.trim();state.status=el('orderStatus').value;state.scrollTop=0;OrderV11.setListState(state);renderOrders();window.scrollTo(0,0)};el('createOrderBtn').onclick=function(){saveState();location.href='../../个人中心/app_profile_order_create.html'};el('ordersList').addEventListener('click',function(e){var a=e.target.closest('.js-assign');if(a){e.preventDefault();openAssign(a.dataset.id)}else if(e.target.closest('.js-detail'))saveState()});document.querySelectorAll('#orderAssignMask .order-person').forEach(function(b){b.onclick=function(){selectedPerson=b.dataset.person;document.querySelectorAll('#orderAssignMask .order-person').forEach(function(x){x.classList.toggle('is-selected',x===b)})}});el('orderAssignCancel').onclick=function(){el('orderAssignMask').classList.remove('is-on')};el('orderAssignMask').onclick=function(e){if(e.target===this)this.classList.remove('is-on')};el('orderAssignConfirm').onclick=function(){if(!selectedPerson){toast('请先选择检测人');return}var r=OrderV11.assign(assignOrderId,selectedPerson);toast(r.message||'指派成功，已生成关联任务。');if(r.ok){el('orderAssignMask').classList.remove('is-on');renderOrders();renderTasks()}};window.addEventListener('hashchange',function(){if(location.hash==='#orders'&&perms.canViewOrders)view('orders');else view('tasks')});window.addEventListener('beforeunload',saveState);init();
+})();
 </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>通信铁塔检测系统 · APP端</title>
+<title>通信铁塔检测系统 · APP端订单管理 V1.1</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script>
@@ -92,7 +92,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI"
       <!-- 订单 -->
       <div class="nav-group-title">订单管理</div>
       <div style="padding:0 8px;">
-        <a class="nav-link" onclick="loadPage('工作台/首页/app_workbench_index.html#orders', this)"><i class="fa-solid fa-file-lines" style="width:20px; color:#C9CDD4;"></i> 工作台（工单列表）</a>
+        <a class="nav-link" onclick="loadPage('工作台/首页/app_workbench_index.html#orders', this)"><i class="fa-solid fa-file-lines" style="width:20px; color:#C9CDD4;"></i> 工作台（订单）</a>
+        <a class="nav-link" onclick="loadPage('个人中心/app_profile_order_create.html', this)"><i class="fa-solid fa-plus" style="width:20px; color:#C9CDD4;"></i> 新增订单</a>
+        <a class="nav-link" onclick="loadPage('个人中心/app_profile_order_detail.html?id=order-003', this)"><i class="fa-solid fa-file-circle-info" style="width:20px; color:#C9CDD4;"></i> 订单详情与指派</a>
         <a class="nav-link" onclick="loadPage('工作台/首页/app_message_center.html', this)"><i class="fa-regular fa-bell" style="width:20px; color:#C9CDD4;"></i> 消息中心</a>
         <a class="nav-link" onclick="loadPage('工单/列表/app_order_map.html', this)"><i class="fa-solid fa-map-location-dot" style="width:20px; color:#C9CDD4;"></i> 订单地图</a>
         <a class="nav-link" onclick="loadPage('工单/列表/app_order_create.html', this)"><i class="fa-solid fa-plus" style="width:20px; color:#C9CDD4;"></i> 添加订单</a>
@@ -122,8 +124,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI"
         <a class="nav-link" onclick="loadPage('检测/校验/app_inspect_validate.html', this)"><i class="fa-solid fa-check-double" style="width:20px; color:#C9CDD4;"></i> 数据校验</a>
         <a class="nav-link" onclick="loadPage('系统/同步/app_sync_index.html', this)"><i class="fa-solid fa-cloud-arrow-up" style="width:20px; color:#C9CDD4;"></i> 数据同步</a>
         <a class="nav-link" onclick="loadPage('个人中心/首页/app_profile_index.html', this)"><i class="fa-solid fa-user" style="width:20px; color:#C9CDD4;"></i> 我的</a>
-        <a class="nav-link" onclick="loadPage('个人中心/app_profile_orders.html', this)"><i class="fa-solid fa-file-invoice" style="width:20px; color:#C9CDD4;"></i> 订单管理（APP）</a>
-        <a class="nav-link" onclick="loadPage('个人中心/app_profile_order_create.html', this)"><i class="fa-solid fa-plus" style="width:20px; color:#C9CDD4;"></i> 新增订单（APP）</a>
+        <a class="nav-link" onclick="loadPage('个人中心/app_profile_orders.html', this)"><i class="fa-solid fa-file-invoice" style="width:20px; color:#C9CDD4;"></i> 旧订单入口兼容跳转</a>
         <a class="nav-link" onclick="loadPage('个人中心/app_profile_flow.html', this)"><i class="fa-solid fa-diagram-project" style="width:20px; color:#C9CDD4;"></i> 流程中心（APP）</a>
         <a class="nav-link" onclick="loadPage('个人中心/app_profile_ops_log.html', this)"><i class="fa-solid fa-clock-rotate-left" style="width:20px; color:#C9CDD4;"></i> 操作记录（APP）</a>
       </div>
